@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useBundles } from "@/hooks/useBundles";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -25,131 +26,19 @@ import {
   MessageSquare,
 } from "lucide-react";
 
-interface Bundle {
-  id: string;
-  name: string;
-  description: string;
-  services: string[];
-  originalPrice: number;
-  discountedPrice: number;
-  discount: number;
-  duration: string;
-  popular?: boolean;
-  badge?: string;
-  features: string[];
-}
-
-const bundles: Bundle[] = [
-  {
-    id: "starter-pack",
-    name: "Starter Pack",
-    description: "Perfect for new Helldivers looking to get started quickly",
-    services: [
-      "Level Boost (1-25)",
-      "Basic Equipment Unlock",
-      "Tutorial Completion",
-    ],
-    originalPrice: 49.97,
-    discountedPrice: 34.99,
-    discount: 30,
-    duration: "1-2 days",
-    features: [
-      "Level 1-25 boost",
-      "Essential equipment unlocked",
-      "Basic difficulty access",
-      "24/7 progress updates",
-    ],
-  },
-  {
-    id: "elite-package",
-    name: "Elite Package",
-    description: "Complete transformation for serious Helldivers",
-    services: [
-      "Level Boost (1-50)",
-      "Planet Liberation x3",
-      "All Difficulties Unlock",
-      "Super Sample Farming",
-    ],
-    originalPrice: 134.96,
-    discountedPrice: 89.99,
-    discount: 33,
-    duration: "3-5 days",
-    popular: true,
-    badge: "Best Value",
-    features: [
-      "Full level 50 boost",
-      "3 Planet liberations",
-      "All difficulty levels unlocked",
-      "50+ Super samples",
-      "Priority support",
-      "VIP treatment",
-    ],
-  },
-  {
-    id: "champion-bundle",
-    name: "Champion Bundle",
-    description: "Ultimate package for becoming a Helldivers legend",
-    services: [
-      "Level Boost (1-50)",
-      "Planet Liberation x5",
-      "Galactic War Progress",
-      "Medal & Credits Farming",
-      "Super Sample Farming",
-    ],
-    originalPrice: 189.95,
-    discountedPrice: 129.99,
-    discount: 32,
-    duration: "5-7 days",
-    badge: "Most Popular",
-    features: [
-      "Complete level 50 boost",
-      "5 Planet liberations",
-      "Major order completion",
-      "1000+ Medals collected",
-      "500+ Super credits",
-      "All achievements unlocked",
-      "Premium support",
-      "Post-completion guidance",
-    ],
-  },
-  {
-    id: "speed-run",
-    name: "Speed Run Special",
-    description: "Express service for immediate results",
-    services: ["Level Boost (1-30)", "Difficulty Unlock", "Equipment Boost"],
-    originalPrice: 79.97,
-    discountedPrice: 59.99,
-    discount: 25,
-    duration: "12-24 hours",
-    badge: "Express",
-    features: [
-      "Level 30 in under 24h",
-      "Fast difficulty unlock",
-      "Essential equipment",
-      "Express queue priority",
-      "Real-time updates",
-    ],
-  },
-];
-
 export default function Bundles() {
+  const { bundles, loading, error } = useBundles();
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const handleAddBundle = (bundle: Bundle) => {
-    // Create a bundle service object
+  const handleAddBundle = (bundle: any) => {
+    // Create a bundle service object for cart
     const bundleService = {
       id: bundle.id,
       title: bundle.name,
-      description: bundle.description,
       price: bundle.discountedPrice,
-      originalPrice: bundle.originalPrice,
       duration: bundle.duration,
-      difficulty: "Various",
-      features: bundle.features,
-      active: true,
-      createdAt: new Date().toISOString(),
-      orders: 0,
+      difficulty: "Bundle",
     };
 
     addToCart(bundleService);
@@ -158,6 +47,28 @@ export default function Bundles() {
       description: `${bundle.name} has been added to your cart.`,
     });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading bundles...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-destructive mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -239,7 +150,16 @@ export default function Bundles() {
 
         {/* Bundles Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {bundles.map((bundle) => (
+          {bundles.length === 0 ? (
+            <div className="col-span-2 text-center py-20">
+              <Package className="w-20 h-20 mx-auto text-primary/50 mb-6" />
+              <h3 className="text-2xl font-bold mb-4">No Bundles Available</h3>
+              <p className="text-muted-foreground">
+                Check back soon for amazing bundle deals!
+              </p>
+            </div>
+          ) : (
+            bundles.map((bundle) => (
             <Card
               key={bundle.id}
               className={`relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
@@ -355,7 +275,8 @@ export default function Bundles() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+            ))
+          )}
         </div>
 
         {/* Custom Bundle CTA */}

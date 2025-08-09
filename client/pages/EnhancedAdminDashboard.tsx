@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useServices } from "@/hooks/useServices";
+import { useBundles } from "@/hooks/useBundles";
 import { useOrders } from "@/hooks/useOrders";
 import { ServiceModal } from "@/components/ServiceModal";
+import { BundleModal } from "@/components/BundleModal";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -53,10 +55,19 @@ export default function EnhancedAdminDashboard() {
     deleteService,
     toggleServiceStatus,
   } = useServices();
+  const {
+    bundles,
+    addBundle,
+    updateBundle,
+    deleteBundle,
+    toggleBundleStatus,
+  } = useBundles();
   const { orders, updateOrderStatus, addOrderMessage, assignBooster } =
     useOrders();
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
+  const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
+  const [selectedBundle, setSelectedBundle] = useState<any>(null);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [newMessage, setNewMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -104,6 +115,31 @@ export default function EnhancedAdminDashboard() {
   const handleDeleteService = (id: string) => {
     if (confirm("Are you sure you want to delete this service?")) {
       deleteService(id);
+    }
+  };
+
+  // Bundle management functions
+  const handleAddBundle = () => {
+    setSelectedBundle(null);
+    setIsBundleModalOpen(true);
+  };
+
+  const handleEditBundle = (bundle: any) => {
+    setSelectedBundle(bundle);
+    setIsBundleModalOpen(true);
+  };
+
+  const handleSaveBundle = (bundleData: any) => {
+    if (selectedBundle) {
+      updateBundle(selectedBundle.id, bundleData);
+    } else {
+      addBundle(bundleData);
+    }
+  };
+
+  const handleDeleteBundle = (id: string) => {
+    if (confirm("Are you sure you want to delete this bundle?")) {
+      deleteBundle(id);
     }
   };
 
@@ -274,10 +310,11 @@ export default function EnhancedAdminDashboard() {
 
         {/* Enhanced Main Content */}
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
+            <TabsTrigger value="bundles">Bundles</TabsTrigger>
             <TabsTrigger value="customers">Customers</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
@@ -732,6 +769,137 @@ export default function EnhancedAdminDashboard() {
             </Card>
           </TabsContent>
 
+          {/* Bundles Tab */}
+          <TabsContent value="bundles" className="space-y-6">
+            <Card className="border border-border/50">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center">
+                    <Package className="w-5 h-5 mr-2" />
+                    Manage Bundles ({bundles.length})
+                  </CardTitle>
+                  <CardDescription>
+                    Create and manage service bundle packages
+                  </CardDescription>
+                </div>
+                <Button
+                  onClick={handleAddBundle}
+                  className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Bundle
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {bundles.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                    <h3 className="text-lg font-semibold mb-2">
+                      No bundles yet
+                    </h3>
+                    <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                      Create your first service bundle to offer discounted packages to customers.
+                    </p>
+                    <Button
+                      onClick={handleAddBundle}
+                      className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Your First Bundle
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {bundles.map((bundle) => (
+                      <Card
+                        key={bundle.id}
+                        className="border border-border/30 hover:border-primary/30 transition-colors"
+                      >
+                        <CardHeader className="pb-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <CardTitle className="text-lg">
+                                {bundle.name}
+                              </CardTitle>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {bundle.orders} orders • {bundle.discount}% discount
+                              </p>
+                            </div>
+                            <div className="flex flex-col items-end space-y-1">
+                              <Badge
+                                variant={bundle.active ? "default" : "secondary"}
+                                className="cursor-pointer"
+                                onClick={() => toggleBundleStatus(bundle.id)}
+                              >
+                                {bundle.active ? "Active" : "Inactive"}
+                              </Badge>
+                              {bundle.popular && (
+                                <Badge variant="outline" className="text-xs">
+                                  Popular
+                                </Badge>
+                              )}
+                              {bundle.badge && (
+                                <Badge variant="outline" className="text-xs bg-primary/10">
+                                  {bundle.badge}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-2xl font-bold text-primary">
+                                  ${bundle.discountedPrice}
+                                </span>
+                                <span className="text-sm text-muted-foreground line-through">
+                                  ${bundle.originalPrice}
+                                </span>
+                              </div>
+                              <span className="text-sm text-muted-foreground">
+                                {bundle.duration}
+                              </span>
+                            </div>
+
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {bundle.description}
+                            </p>
+
+                            <div className="flex justify-between text-xs text-muted-foreground">
+                              <span>{bundle.services.length} services</span>
+                              <span>{bundle.features.length} features</span>
+                            </div>
+
+                            <div className="flex space-x-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleEditBundle(bundle)}
+                                className="flex-1"
+                              >
+                                <Edit className="w-3 h-3 mr-1" />
+                                Edit
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleDeleteBundle(bundle.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Customers Tab */}
           <TabsContent value="customers" className="space-y-6">
             <Card className="border border-border/50">
@@ -792,6 +960,13 @@ export default function EnhancedAdminDashboard() {
         onClose={() => setIsServiceModalOpen(false)}
         onSave={handleSaveService}
         service={editingService}
+      />
+
+      <BundleModal
+        isOpen={isBundleModalOpen}
+        onClose={() => setIsBundleModalOpen(false)}
+        onSave={handleSaveBundle}
+        bundle={selectedBundle}
       />
     </div>
   );

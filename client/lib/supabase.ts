@@ -40,3 +40,21 @@ export interface Service {
   created_at: string;
   updated_at: string;
 }
+
+export interface Bundle {
+  id: string;
+  name: string;
+  description: string;
+  services: string[];
+  original_price: number;
+  discounted_price: number;
+  discount: number;
+  duration: string;
+  popular: boolean;
+  badge: string | null;
+  features: string[];
+  active: boolean;
+  orders_count: number;
+  created_at: string;
+  updated_at: string;
+}

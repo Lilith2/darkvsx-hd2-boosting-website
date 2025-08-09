@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ServicesProvider } from "@/hooks/useServices";
+import { BundlesProvider } from "@/hooks/useBundles";
 import { CartProvider } from "@/hooks/useCart";
 import { OrdersProvider } from "@/hooks/useOrders";
 import { AppContent } from "@/components/AppContent";
@@ -18,13 +19,15 @@ function App() {
       <TooltipProvider>
         <AuthProvider>
           <ServicesProvider>
-            <CartProvider>
-              <OrdersProvider>
-                <Toaster />
-                <Sonner />
-                <AppContent />
-              </OrdersProvider>
-            </CartProvider>
+            <BundlesProvider>
+              <CartProvider>
+                <OrdersProvider>
+                  <Toaster />
+                  <Sonner />
+                  <AppContent />
+                </OrdersProvider>
+              </CartProvider>
+            </BundlesProvider>
           </ServicesProvider>
         </AuthProvider>
       </TooltipProvider>
