@@ -6,6 +6,8 @@ interface CartItem {
     id: string;
     title: string;
     price: number;
+    duration?: string;
+    difficulty?: string;
   };
   quantity: number;
 }
@@ -13,8 +15,8 @@ interface CartItem {
 interface CartContextType {
   items: CartItem[];
   cartItems: CartItem[];
-  addItem: (service: { id: string; title: string; price: number }) => void;
-  addToCart: (service: { id: string; title: string; price: number }) => void;
+  addItem: (service: { id: string; title: string; price: number; duration?: string; difficulty?: string }) => void;
+  addToCart: (service: { id: string; title: string; price: number; duration?: string; difficulty?: string }) => void;
   removeItem: (id: string) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
@@ -30,7 +32,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  const addItem = (service: { id: string; title: string; price: number }) => {
+  const addItem = (service: { id: string; title: string; price: number; duration?: string; difficulty?: string }) => {
     setItems((prev) => {
       const existing = prev.find(item => item.service.id === service.id);
       if (existing) {
@@ -45,7 +47,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         service: {
           id: service.id,
           title: service.title,
-          price: service.price
+          price: service.price,
+          duration: service.duration,
+          difficulty: service.difficulty
         },
         quantity: 1
       }];

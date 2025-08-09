@@ -333,7 +333,22 @@ export default function AdminDashboard() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => handleEditService(service)}
+                              onClick={() => handleEditService({
+                                id: service.id,
+                                title: service.title,
+                                description: service.description,
+                                price: service.price,
+                                original_price: service.originalPrice || null,
+                                duration: service.duration,
+                                difficulty: service.difficulty,
+                                features: service.features,
+                                active: service.active,
+                                popular: service.popular || false,
+                                orders_count: service.orders,
+                                category: service.category,
+                                created_at: service.createdAt,
+                                updated_at: new Date().toISOString()
+                              })}
                             >
                               <Edit className="w-4 h-4" />
                             </Button>

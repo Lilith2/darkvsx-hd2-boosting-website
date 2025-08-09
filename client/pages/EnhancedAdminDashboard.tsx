@@ -115,7 +115,7 @@ export default function EnhancedAdminDashboard() {
 
   const handleSendMessage = (orderId: string) => {
     if (!newMessage.trim()) return;
-    addOrderMessage(orderId, "admin", newMessage);
+    addOrderMessage(orderId, { from: "admin", message: newMessage });
     setNewMessage("");
   };
 
@@ -538,9 +538,6 @@ export default function EnhancedAdminDashboard() {
                                     <SelectContent>
                                       <SelectItem value="pending">
                                         Pending
-                                      </SelectItem>
-                                      <SelectItem value="processing">
-                                        Processing
                                       </SelectItem>
                                       <SelectItem value="in-progress">
                                         In Progress

@@ -11,11 +11,15 @@ export interface Order {
     price: number;
     quantity: number;
   }[];
-  status: "pending" | "processing" | "in-progress" | "completed" | "cancelled";
+  status: "pending" | "in-progress" | "completed" | "cancelled";
   totalAmount: number;
   paymentStatus: "pending" | "paid" | "failed" | "refunded";
   createdAt: string;
   updatedAt: string;
+  progress?: number;
+  assignedBooster?: string;
+  estimatedCompletion?: string;
+  notes?: string;
   messages: {
     id: string;
     from: "customer" | "admin" | "booster";
@@ -35,6 +39,9 @@ interface OrdersContextType {
   addOrder: (order: Omit<Order, "id" | "createdAt" | "updatedAt" | "messages" | "tracking">) => string;
   getUserOrders: (userId: string) => Order[];
   getOrder: (orderId: string) => Order | undefined;
+  updateOrderStatus: (orderId: string, status: Order['status']) => Promise<void>;
+  addOrderMessage: (orderId: string, message: { from: "customer" | "admin" | "booster"; message: string }) => Promise<void>;
+  assignBooster: (orderId: string, boosterName: string) => Promise<void>;
 }
 
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
@@ -71,6 +78,37 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     return orders.find((order) => order.id === orderId);
   };
 
+  const updateOrderStatus = async (orderId: string, status: Order['status']) => {
+    setOrders(prev => prev.map(order => 
+      order.id === orderId 
+        ? { ...order, status, updatedAt: new Date().toISOString() }
+        : order
+    ));
+  };
+
+  const addOrderMessage = async (orderId: string, messageData: { from: "customer" | "admin" | "booster"; message: string }) => {
+    const newMessage = {
+      id: `MSG-${Date.now()}`,
+      ...messageData,
+      timestamp: new Date().toISOString(),
+      isRead: false,
+    };
+
+    setOrders(prev => prev.map(order => 
+      order.id === orderId 
+        ? { ...order, messages: [...order.messages, newMessage], updatedAt: new Date().toISOString() }
+        : order
+    ));
+  };
+
+  const assignBooster = async (orderId: string, boosterName: string) => {
+    setOrders(prev => prev.map(order => 
+      order.id === orderId 
+        ? { ...order, assignedBooster: boosterName, updatedAt: new Date().toISOString() }
+        : order
+    ));
+  };
+
   return (
     <OrdersContext.Provider
       value={{
@@ -78,6 +116,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         addOrder,
         getUserOrders,
         getOrder,
+        updateOrderStatus,
+        addOrderMessage,
+        assignBooster,
       }}
     >
       {children}

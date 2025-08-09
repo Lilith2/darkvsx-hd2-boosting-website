@@ -53,7 +53,7 @@ export function ServiceModal({
         title: service.title,
         description: service.description,
         price: service.price.toString(),
-        originalPrice: service.originalPrice?.toString() || "",
+        originalPrice: service.original_price?.toString() || "",
         duration: service.duration,
         difficulty: service.difficulty,
         features: service.features.length > 0 ? service.features : [""],
@@ -93,14 +93,18 @@ export function ServiceModal({
       title: formData.title,
       description: formData.description,
       price: parseFloat(formData.price),
-      originalPrice: formData.originalPrice
+      original_price: formData.originalPrice
         ? parseFloat(formData.originalPrice)
-        : undefined,
+        : null,
       duration: formData.duration,
       difficulty: formData.difficulty,
       features: formData.features.filter((feature) => feature.trim() !== ""),
       active: formData.active,
       popular: formData.popular,
+      category: "Level Boost" as const,
+      orders_count: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     onSave(serviceData);

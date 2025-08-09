@@ -102,7 +102,7 @@ export default function OrderTracking() {
   const sendMessage = () => {
     if (!newMessage.trim() || !user) return;
 
-    addOrderMessage(order.id, "customer", newMessage);
+    addOrderMessage(order.id, { from: "customer", message: newMessage });
     setNewMessage("");
     setOrder(getOrder(order.id));
   };
@@ -115,8 +115,6 @@ export default function OrderTracking() {
     switch (order.status) {
       case "pending":
         return 10;
-      case "processing":
-        return 25;
       case "in-progress":
         return order.progress || 50;
       case "completed":

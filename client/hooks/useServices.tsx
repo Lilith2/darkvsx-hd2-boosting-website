@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase, type Service } from '../lib/supabase';
 
+// Re-export Service type for external use
+export type { Service } from '../lib/supabase';
+
 export interface ServiceData {
   id: string;
   title: string;
@@ -22,6 +25,10 @@ interface ServicesContextType {
   loading: boolean;
   error: string | null;
   refreshServices: () => Promise<void>;
+  addService: (service: Omit<Service, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  updateService: (id: string, updates: Partial<Service>) => Promise<void>;
+  deleteService: (id: string) => Promise<void>;
+  toggleServiceStatus: (id: string) => Promise<void>;
 }
 
 const ServicesContext = createContext<ServicesContextType | undefined>(undefined);
@@ -72,6 +79,57 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const addService = async (serviceData: Omit<Service, 'id' | 'created_at' | 'updated_at'>) => {
+    try {
+      const { error } = await supabase.from('services').insert([serviceData]);
+      if (error) throw error;
+      await refreshServices();
+    } catch (err) {
+      console.error('Error adding service:', err);
+      throw err;
+    }
+  };
+
+  const updateService = async (id: string, updates: Partial<Service>) => {
+    try {
+      const { error } = await supabase.from('services').update(updates).eq('id', id);
+      if (error) throw error;
+      await refreshServices();
+    } catch (err) {
+      console.error('Error updating service:', err);
+      throw err;
+    }
+  };
+
+  const deleteService = async (id: string) => {
+    try {
+      const { error } = await supabase.from('services').delete().eq('id', id);
+      if (error) throw error;
+      await refreshServices();
+    } catch (err) {
+      console.error('Error deleting service:', err);
+      throw err;
+    }
+  };
+
+  const toggleServiceStatus = async (id: string) => {
+    try {
+      const service = services.find(s => s.id === id);
+      if (!service) return;
+      
+      const { error } = await supabase
+        .from('services')
+        .update({ active: !service.active })
+        .eq('id', id);
+      
+      if (error) throw error;
+      await refreshServices();
+    } catch (err) {
+      console.error('Error toggling service status:', err);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     refreshServices();
   }, []);
@@ -83,6 +141,10 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
         loading,
         error,
         refreshServices,
+        addService,
+        updateService,
+        deleteService,
+        toggleServiceStatus,
       }}
     >
       {children}
