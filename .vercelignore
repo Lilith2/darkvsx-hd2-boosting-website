@@ -17,4 +17,4 @@ client/lib/seedData.ts
 client/lib/testSupabase.ts
 client/lib/utils.spec.ts
 netlify
-server/routes/demo.ts
+!server/routes/demo.ts
