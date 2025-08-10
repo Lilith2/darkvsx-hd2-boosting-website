@@ -13,6 +13,7 @@ import FAQ from "../pages/FAQ";
 import Bundles from "../pages/Bundles";
 import Contact from "../pages/Contact";
 import EmailConfirmation from "../pages/EmailConfirmation";
+import ForgotPassword from "../pages/ForgotPassword";
 import Checkout from "../pages/Checkout";
 import Terms from "../pages/Terms";
 import Privacy from "../pages/Privacy";
@@ -53,6 +54,7 @@ export function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/email-confirmation" element={<EmailConfirmation />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route
             path="/cart"
             element={
