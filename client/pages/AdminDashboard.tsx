@@ -38,6 +38,10 @@ import {
   Activity,
   MessageSquare,
   HelpCircle,
+  Send,
+  Clock,
+  User,
+  X,
 } from "lucide-react";
 
 export default function AdminDashboard() {
