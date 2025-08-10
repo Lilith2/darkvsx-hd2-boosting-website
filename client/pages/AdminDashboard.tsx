@@ -791,7 +791,7 @@ export default function AdminDashboard() {
                               onClick={() => handleViewTicket(ticket)}
                             >
                               <MessageSquare className="w-3 h-3 mr-1" />
-                              Details
+                              Reply
                             </Button>
                           </div>
                         </div>
