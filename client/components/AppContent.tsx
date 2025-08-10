@@ -12,6 +12,7 @@ import AdminDashboard from "../pages/AdminDashboard";
 import FAQ from "../pages/FAQ";
 import Bundles from "../pages/Bundles";
 import Contact from "../pages/Contact";
+import EmailConfirmation from "../pages/EmailConfirmation";
 import Checkout from "../pages/Checkout";
 import Terms from "../pages/Terms";
 import Privacy from "../pages/Privacy";
@@ -51,6 +52,7 @@ export function AppContent() {
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/email-confirmation" element={<EmailConfirmation />} />
           <Route
             path="/cart"
             element={
