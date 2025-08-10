@@ -735,10 +735,9 @@ export default function AdminDashboard() {
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                // Handle ticket status update
                                 const newStatus = ticket.status === 'pending' ? 'in-progress' :
                                                 ticket.status === 'in-progress' ? 'completed' : 'pending';
-                                // You would call updateOrderStatus here
+                                updateOrderStatus(ticket.id, newStatus as any);
                               }}
                             >
                               {ticket.status === 'pending' && 'Start Working'}
