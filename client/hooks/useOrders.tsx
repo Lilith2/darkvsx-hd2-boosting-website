@@ -130,18 +130,27 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Fetch orders with messages and tracking
       const { data: ordersData, error: ordersError } = await supabase
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (ordersError) throw ordersError;
+      if (ordersError) {
+        // Check if it's a table not found error (likely means database not set up)
+        if (ordersError.code === 'PGRST116' || ordersError.message?.includes('relation') || ordersError.message?.includes('does not exist')) {
+          console.warn('Orders table not found - using demo data. Set up your Supabase database to persist real data.');
+          setOrders([]); // Empty orders array for demo
+          setError(null);
+          return;
+        }
+        throw ordersError;
+      }
 
       // Fetch all messages and tracking for these orders
       const orderIds = ordersData?.map(order => order.id) || [];
-      
+
       const [messagesResult, trackingResult] = await Promise.all([
         supabase.from('order_messages').select('*').in('order_id', orderIds),
         supabase.from('order_tracking').select('*').in('order_id', orderIds)
@@ -161,7 +170,13 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     } catch (err: any) {
       console.error('Error fetching orders:', err);
       const errorMessage = err?.message || err?.error_description || 'Failed to load orders';
-      setError(`Failed to load orders: ${errorMessage}`);
+
+      // Check for database connection issues
+      if (err?.message?.includes('Failed to fetch') || err?.message?.includes('NetworkError')) {
+        setError('Unable to connect to database. Please check your internet connection.');
+      } else {
+        setError(`Database error: ${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
