@@ -158,9 +158,10 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       }) || [];
 
       setOrders(transformedOrders);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching orders:', err);
-      setError('Failed to load orders');
+      const errorMessage = err?.message || err?.error_description || 'Failed to load orders';
+      setError(`Failed to load orders: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -197,9 +198,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
       await refreshOrders();
       return orderResult.id;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error adding order:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to add order');
     }
   };
 
@@ -228,9 +229,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       }]);
 
       await refreshOrders();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating order status:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to update order status');
     }
   };
 
@@ -248,9 +249,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       await refreshOrders();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error adding order message:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to add order message');
     }
   };
 
@@ -274,9 +275,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       }]);
 
       await refreshOrders();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error assigning booster:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to assign booster');
     }
   };
 
@@ -293,9 +294,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       await refreshOrders();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating order progress:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to update order progress');
     }
   };
 
