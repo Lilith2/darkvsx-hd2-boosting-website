@@ -11,7 +11,6 @@ import Account from "../pages/Account";
 import AdminDashboard from "../pages/AdminDashboard";
 import FAQ from "../pages/FAQ";
 import Bundles from "../pages/Bundles";
-import About from "../pages/About";
 import Contact from "../pages/Contact";
 import Checkout from "../pages/Checkout";
 import Terms from "../pages/Terms";
@@ -70,7 +69,6 @@ export function AppContent() {
           />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/bundles" element={<Bundles />} />
-          <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/terms" element={<Terms />} />
