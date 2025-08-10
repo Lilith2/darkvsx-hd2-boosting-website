@@ -59,7 +59,7 @@ export default function AdminDashboard() {
     deleteBundle,
     toggleBundleStatus,
   } = useBundles();
-  const { orders, updateOrderStatus } = useOrders();
+  const { orders, updateOrderStatus, addOrderMessage } = useOrders();
   
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
