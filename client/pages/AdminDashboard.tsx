@@ -788,9 +788,7 @@ export default function AdminDashboard() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => {
-                                // Handle viewing full ticket details
-                              }}
+                              onClick={() => handleViewTicket(ticket)}
                             >
                               <MessageSquare className="w-3 h-3 mr-1" />
                               Details
