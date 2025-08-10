@@ -25,6 +25,7 @@ function App() {
                 <OrdersProvider>
                   <Toaster />
                   <Sonner />
+                  <DatabaseStatus />
                   <AppContent />
                 </OrdersProvider>
               </CartProvider>
