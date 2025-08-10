@@ -75,7 +75,7 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       setError(null);
-      
+
       const { data, error: fetchError } = await supabase
         .from('bundles')
         .select('*')
@@ -83,6 +83,13 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
         .order('created_at', { ascending: false });
 
       if (fetchError) {
+        // Check if it's a table not found error (likely means database not set up)
+        if (fetchError.code === 'PGRST116' || fetchError.message?.includes('relation') || fetchError.message?.includes('does not exist')) {
+          console.warn('Bundles table not found - using demo data. Set up your Supabase database to persist real data.');
+          setBundles([]); // Empty bundles array for demo
+          setError(null);
+          return;
+        }
         throw fetchError;
       }
 
@@ -91,7 +98,13 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
     } catch (err: any) {
       console.error('Error fetching bundles:', err);
       const errorMessage = err?.message || err?.error_description || 'Failed to load bundles';
-      setError(`Failed to load bundles: ${errorMessage}`);
+
+      // Check for database connection issues
+      if (err?.message?.includes('Failed to fetch') || err?.message?.includes('NetworkError')) {
+        setError('Unable to connect to database. Please check your internet connection.');
+      } else {
+        setError(`Database error: ${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
