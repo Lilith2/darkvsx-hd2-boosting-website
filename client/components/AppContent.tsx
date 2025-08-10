@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Layout } from "@/components/Layout";
@@ -70,6 +70,8 @@ export function AppContent() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/bundles" element={<Bundles />} />
           <Route path="/contact" element={<Contact />} />
+          {/* Redirect old about page to home */}
+          <Route path="/about" element={<Navigate to="/" replace />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Privacy />} />
