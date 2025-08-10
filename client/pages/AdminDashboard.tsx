@@ -148,6 +148,31 @@ export default function AdminDashboard() {
     }
   };
 
+  // Ticket management functions
+  const handleViewTicket = (ticket: any) => {
+    setSelectedTicket(ticket);
+    setIsTicketModalOpen(true);
+  };
+
+  const handleSendReply = async () => {
+    if (!ticketReply.trim() || !selectedTicket) return;
+
+    try {
+      await addOrderMessage(selectedTicket.id, {
+        from: "admin",
+        message: ticketReply
+      });
+      setTicketReply("");
+
+      // Update ticket status to in-progress if it's still pending
+      if (selectedTicket.status === 'pending') {
+        await updateOrderStatus(selectedTicket.id, 'in-progress' as any);
+      }
+    } catch (error) {
+      console.error("Error sending reply:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
