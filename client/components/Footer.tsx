@@ -18,14 +18,14 @@ export function Footer() {
   return (
     <footer className="bg-background border-t border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8">
-                <img 
-                  src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64" 
-                  alt="HelldiversBoost Logo" 
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64"
+                  alt="HelldiversBoost Logo"
                   className="w-full h-full object-contain"
                 />
               </div>
@@ -47,35 +47,10 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Services */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Services</h3>
-            <div className="space-y-2">
-              <Link to="/#services" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                Level Boosting
-              </Link>
-              <Link to="/#services" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                Weapon Mastery
-              </Link>
-              <Link to="/#services" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                Super Credits
-              </Link>
-              <Link to="/#services" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                Research Samples
-              </Link>
-              <Link to="/bundles" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                Service Bundles
-              </Link>
-            </div>
-          </div>
-
           {/* Company */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Company</h3>
             <div className="space-y-2">
-              <Link to="/about" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
-                About Us
-              </Link>
               <Link to="/faq" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
                 FAQ
               </Link>
@@ -95,9 +70,9 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Community</h3>
             <div className="space-y-3">
-              <a 
-                href="https://discord.gg/helldivers2boost" 
-                target="_blank" 
+              <a
+                href="https://discord.gg/helldivers2boost"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-primary transition-colors"
               >
@@ -113,10 +88,6 @@ export function Footer() {
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                   <Award className="w-4 h-4" />
                   <span>Professional Team</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Discord Community</span>
                 </div>
               </div>
             </div>
