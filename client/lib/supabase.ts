@@ -2,10 +2,10 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl =
   import.meta.env.VITE_SUPABASE_URL ||
-  "https://mpsjdysumtxjxipdapaz.supabase.co";
+  "https://ahqqptrclqtwqjgmtesv.supabase.co";
 const supabaseAnonKey =
   import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  "";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFocXFwdHJjbHF0d3FqZ210ZXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNDM3NTMsImV4cCI6MjA2OTkxOTc1M30.FRFHf-XvnBLzZvcGseS82HJIORQXs_8OEEVq0RpabN0";
 
 // Validate configuration
 if (!supabaseUrl || !supabaseAnonKey) {
