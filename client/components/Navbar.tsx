@@ -3,13 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
-import {
-  ShoppingCart,
-  User,
-  LogIn,
-  Menu,
-  X,
-} from "lucide-react";
+import { ShoppingCart, User, LogIn, Menu, X } from "lucide-react";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -29,19 +23,21 @@ export function Navbar() {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled 
-        ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg" 
-        : "bg-background/95 backdrop-blur-md border-b border-border shadow-lg"
-    }`}>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg"
+          : "bg-background/95 backdrop-blur-md border-b border-border shadow-lg"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <div className="w-10 h-10">
-              <img 
-                src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64" 
-                alt="HelldiversBoost Logo" 
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64"
+                alt="HelldiversBoost Logo"
                 className="w-full h-full object-contain"
               />
             </div>
@@ -49,9 +45,7 @@ export function Navbar() {
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
                 HELLDIVERS II
               </span>
-              <div className="text-sm text-primary font-semibold">
-                BOOSTING
-              </div>
+              <div className="text-sm text-primary font-semibold">BOOSTING</div>
             </div>
           </Link>
 
@@ -171,7 +165,7 @@ export function Navbar() {
               >
                 FAQ
               </Link>
-              
+
               <div className="border-t border-border pt-2 mt-2">
                 {isAuthenticated ? (
                   <>

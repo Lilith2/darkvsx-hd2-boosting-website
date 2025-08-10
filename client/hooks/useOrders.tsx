@@ -1,5 +1,11 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { supabase } from '@/lib/supabase';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { supabase } from "@/lib/supabase";
 
 export interface Order {
   id: string;
@@ -79,11 +85,22 @@ interface OrdersContextType {
   orders: OrderData[];
   loading: boolean;
   error: string | null;
-  addOrder: (order: Omit<OrderData, "id" | "createdAt" | "updatedAt" | "messages" | "tracking">) => Promise<string>;
+  addOrder: (
+    order: Omit<
+      OrderData,
+      "id" | "createdAt" | "updatedAt" | "messages" | "tracking"
+    >,
+  ) => Promise<string>;
   getUserOrders: (userId: string) => OrderData[];
   getOrder: (orderId: string) => OrderData | undefined;
-  updateOrderStatus: (orderId: string, status: OrderData['status']) => Promise<void>;
-  addOrderMessage: (orderId: string, message: { from: "customer" | "admin" | "booster"; message: string }) => Promise<void>;
+  updateOrderStatus: (
+    orderId: string,
+    status: OrderData["status"],
+  ) => Promise<void>;
+  addOrderMessage: (
+    orderId: string,
+    message: { from: "customer" | "admin" | "booster"; message: string },
+  ) => Promise<void>;
   assignBooster: (orderId: string, boosterName: string) => Promise<void>;
   updateOrderProgress: (orderId: string, progress: number) => Promise<void>;
   refreshOrders: () => Promise<void>;
@@ -97,7 +114,11 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   // Transform database order to frontend format
-  const transformOrder = (order: any, messages: OrderMessage[] = [], tracking: OrderTracking[] = []): OrderData => ({
+  const transformOrder = (
+    order: any,
+    messages: OrderMessage[] = [],
+    tracking: OrderTracking[] = [],
+  ): OrderData => ({
     id: order.id,
     userId: order.user_id,
     customerEmail: order.customer_email,
@@ -112,18 +133,18 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     assignedBooster: order.assigned_booster,
     estimatedCompletion: order.estimated_completion,
     notes: order.notes,
-    messages: messages.map(msg => ({
+    messages: messages.map((msg) => ({
       id: msg.id,
       from: msg.from,
       message: msg.message,
       timestamp: msg.created_at,
-      isRead: msg.is_read
+      isRead: msg.is_read,
     })),
-    tracking: tracking.map(track => ({
+    tracking: tracking.map((track) => ({
       status: track.status,
       timestamp: track.created_at,
-      description: track.description
-    }))
+      description: track.description,
+    })),
   });
 
   const refreshOrders = async () => {
@@ -133,14 +154,20 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
       // Fetch orders with messages and tracking
       const { data: ordersData, error: ordersError } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from("orders")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (ordersError) {
         // Check if it's a table not found error (likely means database not set up)
-        if (ordersError.code === 'PGRST116' || ordersError.message?.includes('relation') || ordersError.message?.includes('does not exist')) {
-          console.warn('Orders table not found - using demo data. Set up your Supabase database to persist real data.');
+        if (
+          ordersError.code === "PGRST116" ||
+          ordersError.message?.includes("relation") ||
+          ordersError.message?.includes("does not exist")
+        ) {
+          console.warn(
+            "Orders table not found - using demo data. Set up your Supabase database to persist real data.",
+          );
           setOrders([]); // Empty orders array for demo
           setError(null);
           return;
@@ -149,31 +176,42 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       }
 
       // Fetch all messages and tracking for these orders
-      const orderIds = ordersData?.map(order => order.id) || [];
+      const orderIds = ordersData?.map((order) => order.id) || [];
 
       const [messagesResult, trackingResult] = await Promise.all([
-        supabase.from('order_messages').select('*').in('order_id', orderIds),
-        supabase.from('order_tracking').select('*').in('order_id', orderIds)
+        supabase.from("order_messages").select("*").in("order_id", orderIds),
+        supabase.from("order_tracking").select("*").in("order_id", orderIds),
       ]);
 
       const messages = messagesResult.data || [];
       const tracking = trackingResult.data || [];
 
       // Transform and combine data
-      const transformedOrders = ordersData?.map(order => {
-        const orderMessages = messages.filter(msg => msg.order_id === order.id);
-        const orderTracking = tracking.filter(track => track.order_id === order.id);
-        return transformOrder(order, orderMessages, orderTracking);
-      }) || [];
+      const transformedOrders =
+        ordersData?.map((order) => {
+          const orderMessages = messages.filter(
+            (msg) => msg.order_id === order.id,
+          );
+          const orderTracking = tracking.filter(
+            (track) => track.order_id === order.id,
+          );
+          return transformOrder(order, orderMessages, orderTracking);
+        }) || [];
 
       setOrders(transformedOrders);
     } catch (err: any) {
-      console.error('Error fetching orders:', err);
-      const errorMessage = err?.message || err?.error_description || 'Failed to load orders';
+      console.error("Error fetching orders:", err);
+      const errorMessage =
+        err?.message || err?.error_description || "Failed to load orders";
 
       // Check for database connection issues
-      if (err?.message?.includes('Failed to fetch') || err?.message?.includes('NetworkError')) {
-        setError('Unable to connect to database. Please check your internet connection.');
+      if (
+        err?.message?.includes("Failed to fetch") ||
+        err?.message?.includes("NetworkError")
+      ) {
+        setError(
+          "Unable to connect to database. Please check your internet connection.",
+        );
       } else {
         setError(`Database error: ${errorMessage}`);
       }
@@ -182,136 +220,169 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const addOrder = async (orderData: Omit<OrderData, "id" | "createdAt" | "updatedAt" | "messages" | "tracking">): Promise<string> => {
+  const addOrder = async (
+    orderData: Omit<
+      OrderData,
+      "id" | "createdAt" | "updatedAt" | "messages" | "tracking"
+    >,
+  ): Promise<string> => {
     try {
       const { data: orderResult, error: orderError } = await supabase
-        .from('orders')
-        .insert([{
-          user_id: orderData.userId,
-          customer_email: orderData.customerEmail,
-          customer_name: orderData.customerName,
-          services: orderData.services,
-          status: orderData.status,
-          total_amount: orderData.totalAmount,
-          payment_status: orderData.paymentStatus,
-          progress: orderData.progress,
-          assigned_booster: orderData.assignedBooster,
-          estimated_completion: orderData.estimatedCompletion,
-          notes: orderData.notes
-        }])
+        .from("orders")
+        .insert([
+          {
+            user_id: orderData.userId,
+            customer_email: orderData.customerEmail,
+            customer_name: orderData.customerName,
+            services: orderData.services,
+            status: orderData.status,
+            total_amount: orderData.totalAmount,
+            payment_status: orderData.paymentStatus,
+            progress: orderData.progress,
+            assigned_booster: orderData.assignedBooster,
+            estimated_completion: orderData.estimatedCompletion,
+            notes: orderData.notes,
+          },
+        ])
         .select()
         .single();
 
       if (orderError) throw orderError;
 
       // Add initial tracking entry
-      await supabase.from('order_tracking').insert([{
-        order_id: orderResult.id,
-        status: "Order Placed",
-        description: "Your order has been received and is being processed"
-      }]);
+      await supabase.from("order_tracking").insert([
+        {
+          order_id: orderResult.id,
+          status: "Order Placed",
+          description: "Your order has been received and is being processed",
+        },
+      ]);
 
       await refreshOrders();
       return orderResult.id;
     } catch (err: any) {
-      console.error('Error adding order:', err);
-      throw new Error(err?.message || err?.error_description || 'Failed to add order');
+      console.error("Error adding order:", err);
+      throw new Error(
+        err?.message || err?.error_description || "Failed to add order",
+      );
     }
   };
 
   const getUserOrders = (userId: string): OrderData[] => {
-    return orders.filter(order => order.userId === userId);
+    return orders.filter((order) => order.userId === userId);
   };
 
   const getOrder = (orderId: string): OrderData | undefined => {
-    return orders.find(order => order.id === orderId);
+    return orders.find((order) => order.id === orderId);
   };
 
-  const updateOrderStatus = async (orderId: string, status: OrderData['status']) => {
+  const updateOrderStatus = async (
+    orderId: string,
+    status: OrderData["status"],
+  ) => {
     try {
       const { error } = await supabase
-        .from('orders')
+        .from("orders")
         .update({ status, updated_at: new Date().toISOString() })
-        .eq('id', orderId);
+        .eq("id", orderId);
 
       if (error) throw error;
 
       // Add tracking entry for status change
-      await supabase.from('order_tracking').insert([{
-        order_id: orderId,
-        status: `Status changed to ${status}`,
-        description: `Order status has been updated to ${status}`
-      }]);
+      await supabase.from("order_tracking").insert([
+        {
+          order_id: orderId,
+          status: `Status changed to ${status}`,
+          description: `Order status has been updated to ${status}`,
+        },
+      ]);
 
       await refreshOrders();
     } catch (err: any) {
-      console.error('Error updating order status:', err);
-      throw new Error(err?.message || err?.error_description || 'Failed to update order status');
+      console.error("Error updating order status:", err);
+      throw new Error(
+        err?.message ||
+          err?.error_description ||
+          "Failed to update order status",
+      );
     }
   };
 
-  const addOrderMessage = async (orderId: string, messageData: { from: "customer" | "admin" | "booster"; message: string }) => {
+  const addOrderMessage = async (
+    orderId: string,
+    messageData: { from: "customer" | "admin" | "booster"; message: string },
+  ) => {
     try {
-      const { error } = await supabase
-        .from('order_messages')
-        .insert([{
+      const { error } = await supabase.from("order_messages").insert([
+        {
           order_id: orderId,
           from: messageData.from,
           message: messageData.message,
-          is_read: false
-        }]);
+          is_read: false,
+        },
+      ]);
 
       if (error) throw error;
 
       await refreshOrders();
     } catch (err: any) {
-      console.error('Error adding order message:', err);
-      throw new Error(err?.message || err?.error_description || 'Failed to add order message');
+      console.error("Error adding order message:", err);
+      throw new Error(
+        err?.message || err?.error_description || "Failed to add order message",
+      );
     }
   };
 
   const assignBooster = async (orderId: string, boosterName: string) => {
     try {
       const { error } = await supabase
-        .from('orders')
-        .update({ 
+        .from("orders")
+        .update({
           assigned_booster: boosterName,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
-        .eq('id', orderId);
+        .eq("id", orderId);
 
       if (error) throw error;
 
       // Add tracking entry
-      await supabase.from('order_tracking').insert([{
-        order_id: orderId,
-        status: "Booster Assigned",
-        description: `${boosterName} has been assigned to your order`
-      }]);
+      await supabase.from("order_tracking").insert([
+        {
+          order_id: orderId,
+          status: "Booster Assigned",
+          description: `${boosterName} has been assigned to your order`,
+        },
+      ]);
 
       await refreshOrders();
     } catch (err: any) {
-      console.error('Error assigning booster:', err);
-      throw new Error(err?.message || err?.error_description || 'Failed to assign booster');
+      console.error("Error assigning booster:", err);
+      throw new Error(
+        err?.message || err?.error_description || "Failed to assign booster",
+      );
     }
   };
 
   const updateOrderProgress = async (orderId: string, progress: number) => {
     try {
       const { error } = await supabase
-        .from('orders')
-        .update({ 
+        .from("orders")
+        .update({
           progress,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
-        .eq('id', orderId);
+        .eq("id", orderId);
 
       if (error) throw error;
 
       await refreshOrders();
     } catch (err: any) {
-      console.error('Error updating order progress:', err);
-      throw new Error(err?.message || err?.error_description || 'Failed to update order progress');
+      console.error("Error updating order progress:", err);
+      throw new Error(
+        err?.message ||
+          err?.error_description ||
+          "Failed to update order progress",
+      );
     }
   };
 

@@ -76,18 +76,34 @@ export default function Account() {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [referralCode] = useState("HD2BOOST-" + user?.id?.slice(-6) || "ABCD12");
+  const [referralCode] = useState(
+    "HD2BOOST-" + user?.id?.slice(-6) || "ABCD12",
+  );
   const [copied, setCopied] = useState(false);
 
   const userOrders = user ? getUserOrders(user.id) : [];
-  
+
   // Calculate user statistics
-  const totalSpent = userOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-  const completedOrders = userOrders.filter(order => order.status === 'completed').length;
-  const activeOrders = userOrders.filter(order => ['pending', 'processing', 'in-progress'].includes(order.status)).length;
+  const totalSpent = userOrders.reduce(
+    (sum, order) => sum + order.totalAmount,
+    0,
+  );
+  const completedOrders = userOrders.filter(
+    (order) => order.status === "completed",
+  ).length;
+  const activeOrders = userOrders.filter((order) =>
+    ["pending", "processing", "in-progress"].includes(order.status),
+  ).length;
   const totalOrders = userOrders.length;
   const joinDate = user?.id ? new Date(2024, 0, 1) : new Date(); // Mock join date
-  const loyaltyLevel = totalSpent >= 500 ? "Diamond" : totalSpent >= 200 ? "Gold" : totalSpent >= 100 ? "Silver" : "Bronze";
+  const loyaltyLevel =
+    totalSpent >= 500
+      ? "Diamond"
+      : totalSpent >= 200
+        ? "Gold"
+        : totalSpent >= 100
+          ? "Silver"
+          : "Bronze";
 
   const [accountData, setAccountData] = useState({
     username: user?.username || "",
@@ -107,9 +123,17 @@ export default function Account() {
   });
 
   const [favoriteServices] = useState([
-    { name: "Level 1-20 Boost", category: "Level Boost", lastUsed: "2024-01-15" },
+    {
+      name: "Level 1-20 Boost",
+      category: "Level Boost",
+      lastUsed: "2024-01-15",
+    },
     { name: "Weapon Mastery", category: "Weapons", lastUsed: "2024-01-10" },
-    { name: "Super Credits Farm", category: "Currency", lastUsed: "2024-01-08" },
+    {
+      name: "Super Credits Farm",
+      category: "Currency",
+      lastUsed: "2024-01-08",
+    },
   ]);
 
   const getStatusColor = (status: OrderData["status"]) => {
@@ -148,10 +172,14 @@ export default function Account() {
 
   const getLoyaltyColor = (level: string) => {
     switch (level) {
-      case "Diamond": return "text-blue-400";
-      case "Gold": return "text-yellow-400";
-      case "Silver": return "text-gray-400";
-      default: return "text-orange-400";
+      case "Diamond":
+        return "text-blue-400";
+      case "Gold":
+        return "text-yellow-400";
+      case "Silver":
+        return "text-gray-400";
+      default:
+        return "text-orange-400";
     }
   };
 
@@ -165,7 +193,7 @@ export default function Account() {
 
   const handlePasswordChange = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (accountData.newPassword !== accountData.confirmPassword) {
       toast({
         title: "Password Error",
@@ -177,7 +205,7 @@ export default function Account() {
 
     if (accountData.newPassword.length < 6) {
       toast({
-        title: "Password Error", 
+        title: "Password Error",
         description: "Password must be at least 6 characters long!",
         variant: "destructive",
       });
@@ -215,10 +243,30 @@ export default function Account() {
   };
 
   const recentActivity = [
-    { action: "Order placed", details: "Level 50-60 Boost", time: "2 hours ago", icon: Package },
-    { action: "Order completed", details: "Weapon Mastery", time: "1 day ago", icon: CheckCircle },
-    { action: "Referral earned", details: "$5 bonus credit", time: "3 days ago", icon: Gift },
-    { action: "Profile updated", details: "Changed email address", time: "1 week ago", icon: User },
+    {
+      action: "Order placed",
+      details: "Level 50-60 Boost",
+      time: "2 hours ago",
+      icon: Package,
+    },
+    {
+      action: "Order completed",
+      details: "Weapon Mastery",
+      time: "1 day ago",
+      icon: CheckCircle,
+    },
+    {
+      action: "Referral earned",
+      details: "$5 bonus credit",
+      time: "3 days ago",
+      icon: Gift,
+    },
+    {
+      action: "Profile updated",
+      details: "Changed email address",
+      time: "1 week ago",
+      icon: User,
+    },
   ];
 
   return (
@@ -232,9 +280,14 @@ export default function Account() {
                 <User className="w-8 h-8 text-primary" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-foreground">{user?.username}</h1>
+                <h1 className="text-3xl font-bold text-foreground">
+                  {user?.username}
+                </h1>
                 <div className="flex items-center space-x-3 mt-1">
-                  <Badge className={`${getLoyaltyColor(loyaltyLevel)} border-current`} variant="outline">
+                  <Badge
+                    className={`${getLoyaltyColor(loyaltyLevel)} border-current`}
+                    variant="outline"
+                  >
                     <Trophy className="w-3 h-3 mr-1" />
                     {loyaltyLevel} Member
                   </Badge>
@@ -263,8 +316,12 @@ export default function Account() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Spent</p>
-                  <p className="text-2xl font-bold text-primary">${totalSpent}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Spent
+                  </p>
+                  <p className="text-2xl font-bold text-primary">
+                    ${totalSpent}
+                  </p>
                 </div>
                 <DollarSign className="w-8 h-8 text-primary/50" />
               </div>
@@ -275,8 +332,12 @@ export default function Account() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Completed Orders</p>
-                  <p className="text-2xl font-bold text-green-600">{completedOrders}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Completed Orders
+                  </p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {completedOrders}
+                  </p>
                 </div>
                 <CheckCircle className="w-8 h-8 text-green-600/50" />
               </div>
@@ -287,8 +348,12 @@ export default function Account() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Active Orders</p>
-                  <p className="text-2xl font-bold text-orange-600">{activeOrders}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Active Orders
+                  </p>
+                  <p className="text-2xl font-bold text-orange-600">
+                    {activeOrders}
+                  </p>
                 </div>
                 <Clock className="w-8 h-8 text-orange-600/50" />
               </div>
@@ -299,8 +364,14 @@ export default function Account() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Loyalty Level</p>
-                  <p className={`text-2xl font-bold ${getLoyaltyColor(loyaltyLevel)}`}>{loyaltyLevel}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Loyalty Level
+                  </p>
+                  <p
+                    className={`text-2xl font-bold ${getLoyaltyColor(loyaltyLevel)}`}
+                  >
+                    {loyaltyLevel}
+                  </p>
                 </div>
                 <Award className="w-8 h-8 text-yellow-500/50" />
               </div>
@@ -332,13 +403,22 @@ export default function Account() {
                 <CardContent>
                   <div className="space-y-4">
                     {recentActivity.map((activity, index) => (
-                      <div key={index} className="flex items-center space-x-3 p-3 border border-border/30 rounded-lg">
+                      <div
+                        key={index}
+                        className="flex items-center space-x-3 p-3 border border-border/30 rounded-lg"
+                      >
                         <activity.icon className="w-5 h-5 text-primary" />
                         <div className="flex-1">
-                          <p className="font-medium text-sm">{activity.action}</p>
-                          <p className="text-xs text-muted-foreground">{activity.details}</p>
+                          <p className="font-medium text-sm">
+                            {activity.action}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {activity.details}
+                          </p>
                         </div>
-                        <span className="text-xs text-muted-foreground">{activity.time}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {activity.time}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -356,14 +436,20 @@ export default function Account() {
                 <CardContent>
                   <div className="space-y-3">
                     {favoriteServices.map((service, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 border border-border/30 rounded-lg">
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 border border-border/30 rounded-lg"
+                      >
                         <div>
                           <p className="font-medium text-sm">{service.name}</p>
-                          <p className="text-xs text-muted-foreground">{service.category}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {service.category}
+                          </p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <span className="text-xs text-muted-foreground">
-                            Last: {new Date(service.lastUsed).toLocaleDateString()}
+                            Last:{" "}
+                            {new Date(service.lastUsed).toLocaleDateString()}
                           </span>
                           <Button size="sm" variant="outline">
                             <RefreshCw className="w-3 h-3 mr-1" />
@@ -392,15 +478,35 @@ export default function Account() {
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span>Current: {loyaltyLevel}</span>
-                    <span>Next: {loyaltyLevel === "Bronze" ? "Silver ($100)" : loyaltyLevel === "Silver" ? "Gold ($200)" : loyaltyLevel === "Gold" ? "Diamond ($500)" : "Max Level"}</span>
+                    <span>
+                      Next:{" "}
+                      {loyaltyLevel === "Bronze"
+                        ? "Silver ($100)"
+                        : loyaltyLevel === "Silver"
+                          ? "Gold ($200)"
+                          : loyaltyLevel === "Gold"
+                            ? "Diamond ($500)"
+                            : "Max Level"}
+                    </span>
                   </div>
-                  <Progress 
-                    value={loyaltyLevel === "Diamond" ? 100 : (totalSpent / (loyaltyLevel === "Bronze" ? 100 : loyaltyLevel === "Silver" ? 200 : 500)) * 100} 
+                  <Progress
+                    value={
+                      loyaltyLevel === "Diamond"
+                        ? 100
+                        : (totalSpent /
+                            (loyaltyLevel === "Bronze"
+                              ? 100
+                              : loyaltyLevel === "Silver"
+                                ? 200
+                                : 500)) *
+                          100
+                    }
                     className="h-2"
                   />
                   <p className="text-xs text-muted-foreground">
-                    {loyaltyLevel === "Diamond" ? "You've reached the highest level!" : 
-                     `Spend $${(loyaltyLevel === "Bronze" ? 100 : loyaltyLevel === "Silver" ? 200 : 500) - totalSpent} more to reach the next level`}
+                    {loyaltyLevel === "Diamond"
+                      ? "You've reached the highest level!"
+                      : `Spend $${(loyaltyLevel === "Bronze" ? 100 : loyaltyLevel === "Silver" ? 200 : 500) - totalSpent} more to reach the next level`}
                   </p>
                 </div>
               </CardContent>
@@ -520,7 +626,9 @@ export default function Account() {
                       >
                         <div className="flex items-center justify-between mb-3">
                           <div>
-                            <h3 className="font-medium">Order #{order.id.slice(-6)}</h3>
+                            <h3 className="font-medium">
+                              Order #{order.id.slice(-6)}
+                            </h3>
                             <p className="text-sm text-muted-foreground">
                               {order.services.map((s) => s.name).join(", ")}
                             </p>
@@ -559,7 +667,7 @@ export default function Account() {
                             >
                               Track Order
                             </Link>
-                            {order.status === 'completed' && (
+                            {order.status === "completed" && (
                               <Button size="sm" variant="outline">
                                 <Star className="w-3 h-3 mr-1" />
                                 Review
@@ -598,7 +706,10 @@ export default function Account() {
                   <Switch
                     checked={preferences.emailNotifications}
                     onCheckedChange={(checked) =>
-                      setPreferences(prev => ({...prev, emailNotifications: checked}))
+                      setPreferences((prev) => ({
+                        ...prev,
+                        emailNotifications: checked,
+                      }))
                     }
                   />
                 </div>
@@ -613,7 +724,10 @@ export default function Account() {
                   <Switch
                     checked={preferences.orderUpdates}
                     onCheckedChange={(checked) =>
-                      setPreferences(prev => ({...prev, orderUpdates: checked}))
+                      setPreferences((prev) => ({
+                        ...prev,
+                        orderUpdates: checked,
+                      }))
                     }
                   />
                 </div>
@@ -628,7 +742,10 @@ export default function Account() {
                   <Switch
                     checked={preferences.promotions}
                     onCheckedChange={(checked) =>
-                      setPreferences(prev => ({...prev, promotions: checked}))
+                      setPreferences((prev) => ({
+                        ...prev,
+                        promotions: checked,
+                      }))
                     }
                   />
                 </div>
@@ -643,7 +760,10 @@ export default function Account() {
                   <Switch
                     checked={preferences.discordNotifications}
                     onCheckedChange={(checked) =>
-                      setPreferences(prev => ({...prev, discordNotifications: checked}))
+                      setPreferences((prev) => ({
+                        ...prev,
+                        discordNotifications: checked,
+                      }))
                     }
                   />
                 </div>
@@ -708,11 +828,16 @@ export default function Account() {
                   <div className="flex items-center space-x-2">
                     <Input value={referralCode} readOnly className="flex-1" />
                     <Button onClick={copyReferralCode} variant="outline">
-                      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      {copied ? (
+                        <Check className="w-4 h-4" />
+                      ) : (
+                        <Copy className="w-4 h-4" />
+                      )}
                     </Button>
                   </div>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Share this code with friends and earn 10% of their first order!
+                    Share this code with friends and earn 10% of their first
+                    order!
                   </p>
                 </div>
 
@@ -721,7 +846,9 @@ export default function Account() {
                     <CardContent className="p-4 text-center">
                       <Users className="w-8 h-8 text-primary mx-auto mb-2" />
                       <p className="text-2xl font-bold">0</p>
-                      <p className="text-sm text-muted-foreground">Friends Referred</p>
+                      <p className="text-sm text-muted-foreground">
+                        Friends Referred
+                      </p>
                     </CardContent>
                   </Card>
                   <Card>
@@ -914,7 +1041,8 @@ export default function Account() {
                       <DialogHeader>
                         <DialogTitle>Are you sure?</DialogTitle>
                         <DialogDescription>
-                          This action cannot be undone. This will permanently delete your account and remove all data.
+                          This action cannot be undone. This will permanently
+                          delete your account and remove all data.
                         </DialogDescription>
                       </DialogHeader>
                       <DialogFooter>

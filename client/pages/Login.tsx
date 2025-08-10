@@ -30,7 +30,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (searchParams.get('confirmed') === 'true') {
+    if (searchParams.get("confirmed") === "true") {
       setSuccess("Email confirmed! You can now sign in to your account.");
     }
   }, [searchParams]);
@@ -58,7 +58,6 @@ export default function Login() {
       setIsLoading(false);
     }
   };
-
 
   return (
     <div className="flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4 min-h-[calc(100vh-8rem)]">
@@ -97,7 +96,8 @@ export default function Login() {
               <p className="font-medium mb-2">Welcome to HelldiversBoost!</p>
               <p className="text-xs text-muted-foreground">
                 Sign in to your account or create a new one to get started.
-                Admin accounts can be created with @helldivers.com email addresses.
+                Admin accounts can be created with @helldivers.com email
+                addresses.
               </p>
             </div>
 

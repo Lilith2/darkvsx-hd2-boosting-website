@@ -64,12 +64,14 @@ export default function ForgotPassword() {
               </div>
               <CardTitle className="text-2xl">Check Your Email</CardTitle>
               <CardDescription>
-                We've sent password reset instructions to <strong>{email}</strong>
+                We've sent password reset instructions to{" "}
+                <strong>{email}</strong>
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center space-y-4">
               <p className="text-sm text-muted-foreground">
-                Click the link in the email to reset your password. The link will expire in 1 hour.
+                Click the link in the email to reset your password. The link
+                will expire in 1 hour.
               </p>
               <Link to="/login">
                 <Button variant="outline" className="w-full">
@@ -101,7 +103,8 @@ export default function ForgotPassword() {
             </div>
             <CardTitle className="text-2xl">Reset Password</CardTitle>
             <CardDescription>
-              Enter your email address and we'll send you a link to reset your password
+              Enter your email address and we'll send you a link to reset your
+              password
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -135,8 +138,8 @@ export default function ForgotPassword() {
             </form>
 
             <div className="mt-6 text-center">
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="inline-flex items-center text-sm text-muted-foreground hover:text-primary"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />

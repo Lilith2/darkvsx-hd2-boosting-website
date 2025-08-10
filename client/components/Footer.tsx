@@ -39,7 +39,9 @@ export function Footer() {
               </div>
             </div>
             <p className="text-sm text-muted-foreground max-w-md">
-              Professional Helldivers 2 boosting services. Fast, secure, and reliable gaming enhancement for the ultimate Super Earth experience.
+              Professional Helldivers 2 boosting services. Fast, secure, and
+              reliable gaming enhancement for the ultimate Super Earth
+              experience.
             </p>
             <div className="flex items-center space-x-2 text-sm">
               <Shield className="w-4 h-4 text-green-600" />
@@ -51,16 +53,28 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Company</h3>
             <div className="space-y-2">
-              <Link to="/faq" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+              <Link
+                to="/faq"
+                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
                 FAQ
               </Link>
-              <Link to="/contact" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+              <Link
+                to="/contact"
+                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
                 Contact
               </Link>
-              <Link to="/terms" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+              <Link
+                to="/terms"
+                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
                 Terms of Service
               </Link>
-              <Link to="/privacy" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+              <Link
+                to="/privacy"
+                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
                 Privacy Policy
               </Link>
             </div>
@@ -106,7 +120,9 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-2">
                 <Shield className="w-4 h-4 text-green-600" />
-                <span className="text-xs text-muted-foreground">SSL Secured</span>
+                <span className="text-xs text-muted-foreground">
+                  SSL Secured
+                </span>
               </div>
             </div>
           </div>

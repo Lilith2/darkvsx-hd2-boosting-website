@@ -9,15 +9,17 @@ const supabaseAnonKey =
 
 // Validate configuration
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Supabase configuration missing. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.');
+  console.error(
+    "Supabase configuration missing. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.",
+  );
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   global: {
     headers: {
-      'X-Client-Info': 'fusion-starter'
-    }
-  }
+      "X-Client-Info": "fusion-starter",
+    },
+  },
 });
 
 // Clean, simple types

@@ -15,10 +15,10 @@ export function DatabaseStatus() {
 
     const checkForDbErrors = (message: string) => {
       if (
-        message.includes('table not found') || 
-        message.includes('relation') || 
-        message.includes('does not exist') ||
-        message.includes('Supabase connection test failed')
+        message.includes("table not found") ||
+        message.includes("relation") ||
+        message.includes("does not exist") ||
+        message.includes("Supabase connection test failed")
       ) {
         setHasDbError(true);
         setIsVisible(true);
@@ -26,13 +26,13 @@ export function DatabaseStatus() {
     };
 
     console.warn = (...args) => {
-      const message = args.join(' ');
+      const message = args.join(" ");
       checkForDbErrors(message);
       originalWarn.apply(console, args);
     };
 
     console.error = (...args) => {
-      const message = args.join(' ');
+      const message = args.join(" ");
       checkForDbErrors(message);
       originalError.apply(console, args);
     };
@@ -57,13 +57,16 @@ export function DatabaseStatus() {
                 <h4 className="font-medium text-yellow-800 dark:text-yellow-200">
                   Demo Mode Active
                 </h4>
-                <Badge variant="outline" className="text-xs border-yellow-300 text-yellow-700 dark:text-yellow-300">
+                <Badge
+                  variant="outline"
+                  className="text-xs border-yellow-300 text-yellow-700 dark:text-yellow-300"
+                >
                   <Database className="w-3 h-3 mr-1" />
                   No Database
                 </Badge>
               </div>
               <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-3">
-                The app is running in demo mode. Database features are disabled. 
+                The app is running in demo mode. Database features are disabled.
                 Connect a Supabase database to enable full functionality.
               </p>
               <div className="flex gap-2">
@@ -73,9 +76,9 @@ export function DatabaseStatus() {
                   className="text-xs border-yellow-300 hover:bg-yellow-100 dark:hover:bg-yellow-900"
                   asChild
                 >
-                  <a 
-                    href="https://supabase.com/dashboard/new" 
-                    target="_blank" 
+                  <a
+                    href="https://supabase.com/dashboard/new"
+                    target="_blank"
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="w-3 h-3 mr-1" />

@@ -50,12 +50,20 @@ export default function Register() {
     }
 
     try {
-      const success = await register(formData.email, formData.password, formData.username);
+      const success = await register(
+        formData.email,
+        formData.password,
+        formData.username,
+      );
 
       if (success) {
-        setSuccess("Account created successfully! Redirecting to email confirmation...");
+        setSuccess(
+          "Account created successfully! Redirecting to email confirmation...",
+        );
         setTimeout(() => {
-          navigate(`/email-confirmation?email=${encodeURIComponent(formData.email)}&type=signup`);
+          navigate(
+            `/email-confirmation?email=${encodeURIComponent(formData.email)}&type=signup`,
+          );
         }, 1500);
       } else {
         setError("Registration failed. Please try again.");
