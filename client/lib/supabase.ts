@@ -7,7 +7,32 @@ const supabaseAnonKey =
   import.meta.env.VITE_SUPABASE_ANON_KEY ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFocXFwdHJjbHF0d3FqZ210ZXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNDM3NTMsImV4cCI6MjA2OTkxOTc1M30.FRFHf-XvnBLzZvcGseS82HJIORQXs_8OEEVq0RpabN0";
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Validate configuration
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Supabase configuration missing. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.');
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  global: {
+    headers: {
+      'X-Client-Info': 'fusion-starter'
+    }
+  }
+});
+
+// Test connection on initialization
+supabase.from('profiles').select('count', { count: 'exact', head: true }).then(
+  ({ error }) => {
+    if (error) {
+      console.warn('Supabase connection test failed:', error.message);
+      console.warn('This is normal if you haven\'t set up your Supabase database yet.');
+    } else {
+      console.log('✅ Supabase connection successful');
+    }
+  }
+).catch(() => {
+  console.warn('Supabase connection test failed - database may not be configured yet');
+});
 
 // Clean, simple types
 export interface Profile {
