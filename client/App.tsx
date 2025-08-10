@@ -10,7 +10,6 @@ import { BundlesProvider } from "@/hooks/useBundles";
 import { CartProvider } from "@/hooks/useCart";
 import { OrdersProvider } from "@/hooks/useOrders";
 import { AppContent } from "@/components/AppContent";
-import { DatabaseStatus } from "@/components/DatabaseStatus";
 
 const queryClient = new QueryClient();
 
