@@ -760,6 +760,11 @@ export default function AdminDashboard() {
                                 {ticket.status === 'completed' && 'Resolved'}
                                 {ticket.status === 'cancelled' && 'Closed'}
                               </Badge>
+                              {ticket.messages && ticket.messages.filter((m: any) => !m.isRead && m.from === 'customer').length > 0 && (
+                                <Badge className="bg-red-500/20 text-red-700 text-xs">
+                                  {ticket.messages.filter((m: any) => !m.isRead && m.from === 'customer').length} new
+                                </Badge>
+                              )}
                             </div>
                             <div className="text-sm text-muted-foreground mb-2">
                               <p><strong>From:</strong> {ticket.customerName} ({ticket.customerEmail})</p>
