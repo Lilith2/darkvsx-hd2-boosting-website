@@ -53,12 +53,21 @@ export default function AdminDashboard() {
 
   // Analytics calculations
   const totalRevenue = orders
-    .filter((order) => order.paymentStatus === "paid")
+    .filter((order) => order.paymentStatus === "paid" && !order.services.some(s => s.id === "support-ticket"))
     .reduce((sum, order) => sum + order.totalAmount, 0);
 
   const pendingOrders = orders.filter(
-    (order) => order.status === "pending",
+    (order) => order.status === "pending" && !order.services.some(s => s.id === "support-ticket"),
   ).length;
+
+  const supportTickets = orders.filter(
+    (order) => order.services.some(s => s.id === "support-ticket")
+  );
+
+  const pendingTickets = supportTickets.filter(
+    (ticket) => ticket.status === "pending"
+  ).length;
+
   const activeServices = services.filter((service) => service.active).length;
   const totalCustomers = new Set(orders.map((order) => order.userId)).size;
 
