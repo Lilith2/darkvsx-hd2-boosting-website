@@ -14,6 +14,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   register: (email: string, password: string, username: string) => Promise<boolean>;
   logout: () => Promise<void>;
+  resendConfirmation: (email: string) => Promise<boolean>;
   isAuthenticated: boolean;
   isAdmin: boolean;
 }
@@ -138,12 +139,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
         options: {
-          data: { username }
+          data: { username },
+          emailRedirectTo: `${window.location.origin}/login?confirmed=true`
         }
       });
       return !error;
     } catch (error) {
       console.error('Registration error:', error);
+      return false;
+    }
+  };
+
+  const resendConfirmation = async (email: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login?confirmed=true`
+        }
+      });
+      return !error;
+    } catch (error) {
+      console.error('Resend confirmation error:', error);
       return false;
     }
   };
@@ -163,6 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
+        resendConfirmation,
         isAuthenticated,
         isAdmin,
       }}
