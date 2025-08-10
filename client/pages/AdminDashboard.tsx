@@ -27,6 +27,8 @@ import {
   BarChart3,
   Star,
   Activity,
+  MessageSquare,
+  HelpCircle,
 } from "lucide-react";
 
 export default function AdminDashboard() {
