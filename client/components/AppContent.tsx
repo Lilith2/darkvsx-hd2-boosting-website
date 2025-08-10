@@ -87,7 +87,7 @@ export function AppContent() {
             path="/admin"
             element={
               <ProtectedRoute requireAdmin>
-                <EnhancedAdminDashboard />
+                <AdminDashboard />
               </ProtectedRoute>
             }
           />
