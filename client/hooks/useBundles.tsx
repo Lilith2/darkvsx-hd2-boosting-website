@@ -88,9 +88,10 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
 
       const mappedBundles = data?.map(mapBundle) || [];
       setBundles(mappedBundles);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching bundles:', err);
-      setError('Failed to load bundles');
+      const errorMessage = err?.message || err?.error_description || 'Failed to load bundles';
+      setError(`Failed to load bundles: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -101,9 +102,9 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
       const { error } = await supabase.from('bundles').insert([bundleData]);
       if (error) throw error;
       await refreshBundles();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error adding bundle:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to add bundle');
     }
   };
 
@@ -112,9 +113,9 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
       const { error } = await supabase.from('bundles').update(updates).eq('id', id);
       if (error) throw error;
       await refreshBundles();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating bundle:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to update bundle');
     }
   };
 
@@ -123,9 +124,9 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
       const { error } = await supabase.from('bundles').delete().eq('id', id);
       if (error) throw error;
       await refreshBundles();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error deleting bundle:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to delete bundle');
     }
   };
 
@@ -141,9 +142,9 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
       
       if (error) throw error;
       await refreshBundles();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error toggling bundle status:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to toggle bundle status');
     }
   };
 
