@@ -611,7 +611,158 @@ export default function AdminDashboard() {
 
           {/* Orders Tab */}
           <TabsContent value="orders" className="space-y-6">
-            <TicketSystem isAdmin={true} />
+            <Card className="border border-border/50">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Package className="w-5 h-5 mr-2" />
+                  Order Management
+                </CardTitle>
+                <CardDescription>
+                  Manage customer orders (excluding support tickets)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {orders.filter(order => !order.services.some(s => s.id === "support-ticket")).length === 0 ? (
+                    <div className="text-center py-12">
+                      <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                      <h3 className="text-lg font-semibold mb-2">No orders yet</h3>
+                      <p className="text-muted-foreground">When customers place orders, they will appear here.</p>
+                    </div>
+                  ) : (
+                    orders
+                      .filter(order => !order.services.some(s => s.id === "support-ticket"))
+                      .map((order) => (
+                        <div
+                          key={order.id}
+                          className="border border-border/30 rounded-lg p-4 hover:border-primary/30 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <div>
+                                <p className="font-medium">Order {order.id.slice(0, 8)}...</p>
+                                <p className="text-sm text-muted-foreground">{order.customerName}</p>
+                                <p className="text-xs text-muted-foreground">{order.customerEmail}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">
+                                  {order.services.map((s) => s.name).join(", ")}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(order.createdAt).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-3">
+                              <div className="text-right">
+                                <Badge className={
+                                  order.status === 'pending' ? 'bg-yellow-500/20 text-yellow-700' :
+                                  order.status === 'completed' ? 'bg-green-500/20 text-green-700' :
+                                  'bg-blue-500/20 text-blue-700'
+                                }>
+                                  <span className="capitalize">{order.status}</span>
+                                </Badge>
+                                <p className="text-sm font-medium mt-1">${order.totalAmount}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Support Tickets Tab */}
+          <TabsContent value="tickets" className="space-y-6">
+            <Card className="border border-border/50">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <MessageSquare className="w-5 h-5 mr-2" />
+                  Support Tickets ({supportTickets.length})
+                </CardTitle>
+                <CardDescription>
+                  Manage customer support requests and inquiries
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {supportTickets.length === 0 ? (
+                    <div className="text-center py-12">
+                      <HelpCircle className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                      <h3 className="text-lg font-semibold mb-2">No support tickets</h3>
+                      <p className="text-muted-foreground">
+                        Customer support requests will appear here when submitted through the contact form.
+                      </p>
+                    </div>
+                  ) : (
+                    supportTickets.map((ticket) => (
+                      <div
+                        key={ticket.id}
+                        className="border border-border/30 rounded-lg p-4 hover:border-primary/30 transition-colors"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3 mb-2">
+                              <h4 className="font-medium">
+                                {ticket.services[0]?.name || 'Support Request'}
+                              </h4>
+                              <Badge className={
+                                ticket.status === 'pending' ? 'bg-orange-500/20 text-orange-700' :
+                                ticket.status === 'in-progress' ? 'bg-blue-500/20 text-blue-700' :
+                                ticket.status === 'completed' ? 'bg-green-500/20 text-green-700' :
+                                'bg-gray-500/20 text-gray-700'
+                              }>
+                                {ticket.status === 'pending' && 'New'}
+                                {ticket.status === 'in-progress' && 'In Progress'}
+                                {ticket.status === 'completed' && 'Resolved'}
+                                {ticket.status === 'cancelled' && 'Closed'}
+                              </Badge>
+                            </div>
+                            <div className="text-sm text-muted-foreground mb-2">
+                              <p><strong>From:</strong> {ticket.customerName} ({ticket.customerEmail})</p>
+                              <p><strong>Created:</strong> {new Date(ticket.createdAt).toLocaleString()}</p>
+                            </div>
+                            {ticket.notes && (
+                              <div className="bg-muted/50 p-3 rounded-md text-sm">
+                                <div className="whitespace-pre-wrap">{ticket.notes}</div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex flex-col gap-2 ml-4">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                // Handle ticket status update
+                                const newStatus = ticket.status === 'pending' ? 'in-progress' :
+                                                ticket.status === 'in-progress' ? 'completed' : 'pending';
+                                // You would call updateOrderStatus here
+                              }}
+                            >
+                              {ticket.status === 'pending' && 'Start Working'}
+                              {ticket.status === 'in-progress' && 'Mark Resolved'}
+                              {ticket.status === 'completed' && 'Reopen'}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                // Handle viewing full ticket details
+                              }}
+                            >
+                              <MessageSquare className="w-3 h-3 mr-1" />
+                              Details
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
