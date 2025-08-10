@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useOrders } from "@/hooks/useOrders";
 import {
   ArrowLeft,
   MessageSquare,
@@ -81,29 +83,55 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { addOrder } = useOrders();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // Create support ticket as a special order
+      const ticketId = await addOrder({
+        userId: user?.id || "guest",
+        customerEmail: formData.email,
+        customerName: formData.name,
+        services: [{
+          id: "support-ticket",
+          name: `Support: ${formData.subject}`,
+          price: 0,
+          quantity: 1
+        }],
+        status: "pending",
+        totalAmount: 0,
+        paymentStatus: "paid", // Support tickets are free
+        notes: `Category: ${formData.category}\nUrgency: ${formData.urgency}\nOrder ID: ${formData.orderId || "N/A"}\n\nMessage:\n${formData.message}`
+      });
 
-    toast({
-      title: "Support ticket created!",
-      description: `Your ticket #${Date.now().toString().slice(-6)} has been submitted. We'll respond within 24 hours.`,
-    });
+      toast({
+        title: "Support ticket created!",
+        description: `Your ticket #${ticketId.slice(-6)} has been submitted. We'll respond within 24 hours.`,
+      });
 
-    setFormData({
-      name: "",
-      email: "",
-      subject: "",
-      category: "",
-      urgency: "",
-      orderId: "",
-      message: "",
-    });
-    setIsSubmitting(false);
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        category: "",
+        urgency: "",
+        orderId: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Error creating support ticket:", error);
+      toast({
+        title: "Error creating ticket",
+        description: "Please try again or contact us directly via Discord.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
