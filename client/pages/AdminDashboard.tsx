@@ -63,8 +63,11 @@ export default function AdminDashboard() {
   
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
   const [selectedBundle, setSelectedBundle] = useState<any>(null);
+  const [selectedTicket, setSelectedTicket] = useState<any>(null);
+  const [ticketReply, setTicketReply] = useState("");
 
   // Analytics calculations
   const totalRevenue = orders
