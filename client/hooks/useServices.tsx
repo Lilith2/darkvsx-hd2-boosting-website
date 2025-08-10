@@ -58,7 +58,7 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       setError(null);
-      
+
       const { data, error: fetchError } = await supabase
         .from('services')
         .select('*')
@@ -66,14 +66,28 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
         .order('created_at', { ascending: false });
 
       if (fetchError) {
+        // Check if it's a table not found error (likely means database not set up)
+        if (fetchError.code === 'PGRST116' || fetchError.message?.includes('relation') || fetchError.message?.includes('does not exist')) {
+          console.warn('Services table not found - using demo data. Set up your Supabase database to persist real data.');
+          setServices([]); // Empty services array for demo
+          setError(null);
+          return;
+        }
         throw fetchError;
       }
 
       const mappedServices = data?.map(mapService) || [];
       setServices(mappedServices);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching services:', err);
-      setError('Failed to load services');
+      const errorMessage = err?.message || err?.error_description || 'Failed to load services';
+
+      // Check for database connection issues
+      if (err?.message?.includes('Failed to fetch') || err?.message?.includes('NetworkError')) {
+        setError('Unable to connect to database. Please check your internet connection.');
+      } else {
+        setError(`Database error: ${errorMessage}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -84,9 +98,9 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       const { error } = await supabase.from('services').insert([serviceData]);
       if (error) throw error;
       await refreshServices();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error adding service:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to add service');
     }
   };
 
@@ -95,9 +109,9 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       const { error } = await supabase.from('services').update(updates).eq('id', id);
       if (error) throw error;
       await refreshServices();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating service:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to update service');
     }
   };
 
@@ -106,9 +120,9 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       const { error } = await supabase.from('services').delete().eq('id', id);
       if (error) throw error;
       await refreshServices();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error deleting service:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to delete service');
     }
   };
 
@@ -124,9 +138,9 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       
       if (error) throw error;
       await refreshServices();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error toggling service status:', err);
-      throw err;
+      throw new Error(err?.message || err?.error_description || 'Failed to toggle service status');
     }
   };
 
