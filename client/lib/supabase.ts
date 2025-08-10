@@ -20,20 +20,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   }
 });
 
-// Test connection on initialization
-supabase.from('profiles').select('count', { count: 'exact', head: true }).then(
-  ({ error }) => {
-    if (error) {
-      console.warn('Supabase connection test failed:', error.message);
-      console.warn('This is normal if you haven\'t set up your Supabase database yet.');
-    } else {
-      console.log('✅ Supabase connection successful');
-    }
-  }
-).catch(() => {
-  console.warn('Supabase connection test failed - database may not be configured yet');
-});
-
 // Clean, simple types
 export interface Profile {
   id: string;
