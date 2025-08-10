@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useOrders } from "@/hooks/useOrders";
+import { useOrders, OrderData } from "@/hooks/useOrders";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,36 +25,13 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
+  Trophy,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-interface Order {
-  id: string;
-  service: string;
-  status: "pending" | "in-progress" | "completed" | "cancelled";
-  amount: number;
-  date: string;
-  progress?: string;
-}
+// Using Order interface from useOrders hook
 
-const mockOrders: Order[] = [
-  {
-    id: "ORD-2024-001",
-    service: "Level Boost (1-50)",
-    status: "completed",
-    amount: 29.99,
-    date: "2024-01-10",
-    progress: "Completed successfully",
-  },
-  {
-    id: "ORD-2024-002",
-    service: "Super Sample Farming",
-    status: "in-progress",
-    amount: 34.99,
-    date: "2024-01-15",
-    progress: "30/50 samples collected",
-  },
-];
+// Mock orders removed - using real data from useOrders hook
 
 export default function Account() {
   const { user, logout } = useAuth();
@@ -71,12 +48,14 @@ export default function Account() {
     confirmPassword: "",
   });
 
-  const getStatusColor = (status: Order["status"]) => {
+  const getStatusColor = (status: OrderData["status"]) => {
     switch (status) {
       case "pending":
         return "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400";
-      case "in-progress":
+      case "processing":
         return "bg-blue-500/20 text-blue-700 dark:text-blue-400";
+      case "in-progress":
+        return "bg-purple-500/20 text-purple-700 dark:text-purple-400";
       case "completed":
         return "bg-green-500/20 text-green-700 dark:text-green-400";
       case "cancelled":
@@ -86,14 +65,18 @@ export default function Account() {
     }
   };
 
-  const getStatusIcon = (status: Order["status"]) => {
+  const getStatusIcon = (status: OrderData["status"]) => {
     switch (status) {
       case "pending":
         return <Clock className="w-3 h-3" />;
+      case "processing":
+        return <Package className="w-3 h-3" />;
       case "in-progress":
         return <AlertCircle className="w-3 h-3" />;
       case "completed":
         return <CheckCircle className="w-3 h-3" />;
+      case "cancelled":
+        return <AlertCircle className="w-3 h-3" />;
       default:
         return null;
     }

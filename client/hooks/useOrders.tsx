@@ -1,6 +1,47 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { supabase } from '@/lib/supabase';
 
 export interface Order {
+  id: string;
+  user_id: string;
+  customer_email: string;
+  customer_name: string;
+  services: {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }[];
+  status: "pending" | "processing" | "in-progress" | "completed" | "cancelled";
+  total_amount: number;
+  payment_status: "pending" | "paid" | "failed" | "refunded";
+  created_at: string;
+  updated_at: string;
+  progress?: number;
+  assigned_booster?: string;
+  estimated_completion?: string;
+  notes?: string;
+}
+
+export interface OrderMessage {
+  id: string;
+  order_id: string;
+  from: "customer" | "admin" | "booster";
+  message: string;
+  created_at: string;
+  is_read: boolean;
+}
+
+export interface OrderTracking {
+  id: string;
+  order_id: string;
+  status: string;
+  description: string;
+  created_at: string;
+}
+
+// Transformed interfaces for frontend
+export interface OrderData {
   id: string;
   userId: string;
   customerEmail: string;
@@ -11,7 +52,7 @@ export interface Order {
     price: number;
     quantity: number;
   }[];
-  status: "pending" | "in-progress" | "completed" | "cancelled";
+  status: "pending" | "processing" | "in-progress" | "completed" | "cancelled";
   totalAmount: number;
   paymentStatus: "pending" | "paid" | "failed" | "refunded";
   createdAt: string;
@@ -35,90 +76,247 @@ export interface Order {
 }
 
 interface OrdersContextType {
-  orders: Order[];
-  addOrder: (order: Omit<Order, "id" | "createdAt" | "updatedAt" | "messages" | "tracking">) => string;
-  getUserOrders: (userId: string) => Order[];
-  getOrder: (orderId: string) => Order | undefined;
-  updateOrderStatus: (orderId: string, status: Order['status']) => Promise<void>;
+  orders: OrderData[];
+  loading: boolean;
+  error: string | null;
+  addOrder: (order: Omit<OrderData, "id" | "createdAt" | "updatedAt" | "messages" | "tracking">) => Promise<string>;
+  getUserOrders: (userId: string) => OrderData[];
+  getOrder: (orderId: string) => OrderData | undefined;
+  updateOrderStatus: (orderId: string, status: OrderData['status']) => Promise<void>;
   addOrderMessage: (orderId: string, message: { from: "customer" | "admin" | "booster"; message: string }) => Promise<void>;
   assignBooster: (orderId: string, boosterName: string) => Promise<void>;
+  updateOrderProgress: (orderId: string, progress: number) => Promise<void>;
+  refreshOrders: () => Promise<void>;
 }
 
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
 
 export function OrdersProvider({ children }: { children: ReactNode }) {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const addOrder = (orderData: Omit<Order, "id" | "createdAt" | "updatedAt" | "messages" | "tracking">): string => {
-    const orderId = `ORD-${Date.now()}`;
-    const newOrder: Order = {
-      ...orderData,
-      id: orderId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      messages: [],
-      tracking: [
-        {
-          status: "Order Placed",
-          timestamp: new Date().toISOString(),
-          description: "Your order has been received and is being processed",
-        },
-      ],
-    };
+  // Transform database order to frontend format
+  const transformOrder = (order: any, messages: OrderMessage[] = [], tracking: OrderTracking[] = []): OrderData => ({
+    id: order.id,
+    userId: order.user_id,
+    customerEmail: order.customer_email,
+    customerName: order.customer_name,
+    services: order.services,
+    status: order.status,
+    totalAmount: Number(order.total_amount),
+    paymentStatus: order.payment_status,
+    createdAt: order.created_at,
+    updatedAt: order.updated_at,
+    progress: order.progress,
+    assignedBooster: order.assigned_booster,
+    estimatedCompletion: order.estimated_completion,
+    notes: order.notes,
+    messages: messages.map(msg => ({
+      id: msg.id,
+      from: msg.from,
+      message: msg.message,
+      timestamp: msg.created_at,
+      isRead: msg.is_read
+    })),
+    tracking: tracking.map(track => ({
+      status: track.status,
+      timestamp: track.created_at,
+      description: track.description
+    }))
+  });
 
-    setOrders((prev) => [...prev, newOrder]);
-    return orderId;
+  const refreshOrders = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Fetch orders with messages and tracking
+      const { data: ordersData, error: ordersError } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (ordersError) throw ordersError;
+
+      // Fetch all messages and tracking for these orders
+      const orderIds = ordersData?.map(order => order.id) || [];
+      
+      const [messagesResult, trackingResult] = await Promise.all([
+        supabase.from('order_messages').select('*').in('order_id', orderIds),
+        supabase.from('order_tracking').select('*').in('order_id', orderIds)
+      ]);
+
+      const messages = messagesResult.data || [];
+      const tracking = trackingResult.data || [];
+
+      // Transform and combine data
+      const transformedOrders = ordersData?.map(order => {
+        const orderMessages = messages.filter(msg => msg.order_id === order.id);
+        const orderTracking = tracking.filter(track => track.order_id === order.id);
+        return transformOrder(order, orderMessages, orderTracking);
+      }) || [];
+
+      setOrders(transformedOrders);
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+      setError('Failed to load orders');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getUserOrders = (userId: string): Order[] => {
-    return orders.filter((order) => order.userId === userId);
+  const addOrder = async (orderData: Omit<OrderData, "id" | "createdAt" | "updatedAt" | "messages" | "tracking">): Promise<string> => {
+    try {
+      const { data: orderResult, error: orderError } = await supabase
+        .from('orders')
+        .insert([{
+          user_id: orderData.userId,
+          customer_email: orderData.customerEmail,
+          customer_name: orderData.customerName,
+          services: orderData.services,
+          status: orderData.status,
+          total_amount: orderData.totalAmount,
+          payment_status: orderData.paymentStatus,
+          progress: orderData.progress,
+          assigned_booster: orderData.assignedBooster,
+          estimated_completion: orderData.estimatedCompletion,
+          notes: orderData.notes
+        }])
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // Add initial tracking entry
+      await supabase.from('order_tracking').insert([{
+        order_id: orderResult.id,
+        status: "Order Placed",
+        description: "Your order has been received and is being processed"
+      }]);
+
+      await refreshOrders();
+      return orderResult.id;
+    } catch (err) {
+      console.error('Error adding order:', err);
+      throw err;
+    }
   };
 
-  const getOrder = (orderId: string): Order | undefined => {
-    return orders.find((order) => order.id === orderId);
+  const getUserOrders = (userId: string): OrderData[] => {
+    return orders.filter(order => order.userId === userId);
   };
 
-  const updateOrderStatus = async (orderId: string, status: Order['status']) => {
-    setOrders(prev => prev.map(order => 
-      order.id === orderId 
-        ? { ...order, status, updatedAt: new Date().toISOString() }
-        : order
-    ));
+  const getOrder = (orderId: string): OrderData | undefined => {
+    return orders.find(order => order.id === orderId);
+  };
+
+  const updateOrderStatus = async (orderId: string, status: OrderData['status']) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      // Add tracking entry for status change
+      await supabase.from('order_tracking').insert([{
+        order_id: orderId,
+        status: `Status changed to ${status}`,
+        description: `Order status has been updated to ${status}`
+      }]);
+
+      await refreshOrders();
+    } catch (err) {
+      console.error('Error updating order status:', err);
+      throw err;
+    }
   };
 
   const addOrderMessage = async (orderId: string, messageData: { from: "customer" | "admin" | "booster"; message: string }) => {
-    const newMessage = {
-      id: `MSG-${Date.now()}`,
-      ...messageData,
-      timestamp: new Date().toISOString(),
-      isRead: false,
-    };
+    try {
+      const { error } = await supabase
+        .from('order_messages')
+        .insert([{
+          order_id: orderId,
+          from: messageData.from,
+          message: messageData.message,
+          is_read: false
+        }]);
 
-    setOrders(prev => prev.map(order => 
-      order.id === orderId 
-        ? { ...order, messages: [...order.messages, newMessage], updatedAt: new Date().toISOString() }
-        : order
-    ));
+      if (error) throw error;
+
+      await refreshOrders();
+    } catch (err) {
+      console.error('Error adding order message:', err);
+      throw err;
+    }
   };
 
   const assignBooster = async (orderId: string, boosterName: string) => {
-    setOrders(prev => prev.map(order => 
-      order.id === orderId 
-        ? { ...order, assignedBooster: boosterName, updatedAt: new Date().toISOString() }
-        : order
-    ));
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ 
+          assigned_booster: boosterName,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      // Add tracking entry
+      await supabase.from('order_tracking').insert([{
+        order_id: orderId,
+        status: "Booster Assigned",
+        description: `${boosterName} has been assigned to your order`
+      }]);
+
+      await refreshOrders();
+    } catch (err) {
+      console.error('Error assigning booster:', err);
+      throw err;
+    }
   };
+
+  const updateOrderProgress = async (orderId: string, progress: number) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ 
+          progress,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      await refreshOrders();
+    } catch (err) {
+      console.error('Error updating order progress:', err);
+      throw err;
+    }
+  };
+
+  useEffect(() => {
+    refreshOrders();
+  }, []);
 
   return (
     <OrdersContext.Provider
       value={{
         orders,
+        loading,
+        error,
         addOrder,
         getUserOrders,
         getOrder,
         updateOrderStatus,
         addOrderMessage,
         assignBooster,
+        updateOrderProgress,
+        refreshOrders,
       }}
     >
       {children}

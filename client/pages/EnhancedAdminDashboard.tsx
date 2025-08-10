@@ -4,6 +4,7 @@ import { useBundles } from "@/hooks/useBundles";
 import { useOrders } from "@/hooks/useOrders";
 import { ServiceModal } from "@/components/ServiceModal";
 import { BundleModal } from "@/components/BundleModal";
+import { TicketSystem } from "@/components/TicketSystem";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -310,9 +311,10 @@ export default function EnhancedAdminDashboard() {
 
         {/* Enhanced Main Content */}
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
+            <TabsTrigger value="tickets">Tickets</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="bundles">Bundles</TabsTrigger>
             <TabsTrigger value="customers">Customers</TabsTrigger>
@@ -434,7 +436,21 @@ export default function EnhancedAdminDashboard() {
 
           {/* Enhanced Orders Tab */}
           <TabsContent value="orders" className="space-y-6">
-            {/* Order Filters */}
+            <div className="text-center py-12">
+              <p className="text-muted-foreground mb-4">Order management has been moved to the Tickets tab for better organization.</p>
+              <Button onClick={() => (document.querySelector('[value="tickets"]') as HTMLElement)?.click()}>
+                Go to Tickets
+              </Button>
+            </div>
+          </TabsContent>
+
+            {/* Tickets Tab */}
+          <TabsContent value="tickets" className="space-y-6">
+            <TicketSystem isAdmin={true} />
+          </TabsContent>
+
+          {/* Enhanced Services Tab */}
+          <TabsContent value="services" className="space-y-6">
             <Card className="border border-border/50">
               <CardContent className="p-4">
                 <div className="flex flex-col md:flex-row gap-4">
@@ -643,10 +659,6 @@ export default function EnhancedAdminDashboard() {
                 )}
               </CardContent>
             </Card>
-          </TabsContent>
-
-          {/* Enhanced Services Tab */}
-          <TabsContent value="services" className="space-y-6">
             <Card className="border border-border/50">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
