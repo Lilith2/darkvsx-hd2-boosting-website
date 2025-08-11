@@ -33,17 +33,26 @@ import {
 
 export default function OrderTracking() {
   const { orderId } = useParams<{ orderId: string }>();
-  const { getOrder, addOrderMessage } = useOrders();
+  const { getOrder, addOrderMessage, orders, loading } = useOrders();
   const { user } = useAuth();
   const [order, setOrder] = useState(getOrder(orderId || ""));
   const [newMessage, setNewMessage] = useState("");
   const [showMessages, setShowMessages] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     if (orderId) {
-      setOrder(getOrder(orderId));
+      const foundOrder = getOrder(orderId);
+      setOrder(foundOrder);
+
+      // If we still haven't found the order and we're not loading, mark as not found
+      if (!foundOrder && !loading && !isInitialLoad) {
+        setIsInitialLoad(false);
+      } else if (foundOrder && isInitialLoad) {
+        setIsInitialLoad(false);
+      }
     }
-  }, [orderId, getOrder]);
+  }, [orderId, getOrder, orders, loading, isInitialLoad]);
 
   if (!order) {
     return (
