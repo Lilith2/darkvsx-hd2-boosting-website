@@ -66,8 +66,13 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
 
       if (referralsError) {
         // Handle case where referrals table doesn't exist yet
-        if (referralsError.code === "PGRST116" || referralsError.message?.includes("relation")) {
-          console.warn("Referrals table not found - using default data");
+        if (
+          referralsError.code === "PGRST116" ||
+          referralsError.message?.includes("relation") ||
+          referralsError.message?.includes("does not exist") ||
+          referralsError.message?.includes("referrals")
+        ) {
+          console.warn("Referrals table not found - using default data. Error:", referralsError.message);
           setStats({
             totalReferred: 0,
             totalEarned: 0,
@@ -75,6 +80,7 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
             referrals: [],
           });
           setError(null);
+          setLoading(false);
           return;
         }
         throw referralsError;
