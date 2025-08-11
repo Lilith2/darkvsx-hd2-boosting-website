@@ -339,15 +339,13 @@ export default function Account() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
-                    Loyalty Level
+                    Referral Earnings
                   </p>
-                  <p
-                    className={`text-2xl font-bold ${getLoyaltyColor(loyaltyLevel)}`}
-                  >
-                    {loyaltyLevel}
+                  <p className="text-2xl font-bold text-green-600">
+                    $0
                   </p>
                 </div>
-                <Award className="w-8 h-8 text-yellow-500/50" />
+                <Gift className="w-8 h-8 text-green-600/50" />
               </div>
             </CardContent>
           </Card>
