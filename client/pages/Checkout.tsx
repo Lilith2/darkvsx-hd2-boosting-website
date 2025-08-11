@@ -83,7 +83,7 @@ export default function Checkout() {
 
     try {
       // Create the order with paid status only after successful PayPal payment
-      const orderId = addOrder({
+      const orderId = await addOrder({
         userId: user?.id || "guest",
         customerEmail: user?.email || guestInfo.email,
         customerName: user?.username || guestInfo.name,
@@ -105,7 +105,7 @@ export default function Checkout() {
 
       toast({
         title: "Payment successful!",
-        description: `Your order #${orderId} has been confirmed. Payment ID: ${details.id}`,
+        description: `Your order #${orderId.slice(-6)} has been confirmed. Payment ID: ${details.id}`,
       });
 
       // Redirect to order tracking
