@@ -333,10 +333,10 @@ export default function Account() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">
-                    Referral Earnings
+                    Credit Balance
                   </p>
                   <p className="text-2xl font-bold text-green-600">
-                    ${referralError ? "0.00" : referralStats.totalEarned.toFixed(2)}
+                    ${referralError ? "0.00" : referralStats.credits.balance.toFixed(2)}
                   </p>
                 </div>
                 <Gift className="w-8 h-8 text-green-600/50" />
