@@ -69,7 +69,7 @@ export default function Checkout() {
     }
 
     // Check if code format is valid (HD2BOOST-XXXXXX)
-    if (!code.match(/^HD2BOOST-[A-Z0-9]{6}$/)) {
+    if (!code.match(REFERRAL_CONFIG.codeFormat)) {
       toast({
         title: "Invalid referral code",
         description: "Please enter a valid referral code format.",
@@ -88,8 +88,8 @@ export default function Checkout() {
       return;
     }
 
-    // Apply 5% discount for valid referral code
-    const discountAmount = subtotal * 0.05;
+    // Apply 10% discount for valid referral code
+    const discountAmount = subtotal * REFERRAL_CONFIG.customerDiscount;
     setReferralDiscount(discountAmount);
     toast({
       title: "Referral code applied!",
