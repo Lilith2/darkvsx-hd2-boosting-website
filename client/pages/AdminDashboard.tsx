@@ -721,11 +721,16 @@ export default function AdminDashboard() {
                                     {order.paymentStatus === 'paid' ? 'Paid' : 'Payment ' + order.paymentStatus}
                                   </Badge>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                                   <div>
                                     <p className="text-muted-foreground">Customer</p>
                                     <p className="font-medium">{order.customerName}</p>
                                     <p className="text-xs text-muted-foreground">{order.customerEmail}</p>
+                                    {order.ipAddress && (
+                                      <p className="text-xs text-muted-foreground mt-1">
+                                        IP: {order.ipAddress}
+                                      </p>
+                                    )}
                                   </div>
                                   <div>
                                     <p className="text-muted-foreground">Services</p>
@@ -743,10 +748,21 @@ export default function AdminDashboard() {
                                     </p>
                                   </div>
                                   <div>
-                                    <p className="text-muted-foreground">Order Details</p>
-                                    <p className="font-medium text-primary text-xl">${order.totalAmount}</p>
+                                    <p className="text-muted-foreground">Payment</p>
+                                    <p className="font-medium text-primary text-xl">${order.totalAmount.toFixed(2)}</p>
+                                    {order.transactionId && (
+                                      <p className="text-xs text-muted-foreground mt-1">
+                                        TX: {order.transactionId}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground">Created</p>
                                     <p className="text-xs text-muted-foreground">
                                       {new Date(order.createdAt).toLocaleString()}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      Updated: {new Date(order.updatedAt).toLocaleString()}
                                     </p>
                                   </div>
                                 </div>
