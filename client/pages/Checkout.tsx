@@ -212,6 +212,22 @@ export default function Checkout() {
     });
   };
 
+  const handleReferralCreditsToggle = (checked: boolean) => {
+    setUseReferralCredits(checked);
+    if (checked && availableCredits > 0) {
+      // Apply up to the subtotal amount or available credits, whichever is smaller
+      const creditsToApply = Math.min(availableCredits, subtotal);
+      setReferralCreditsApplied(creditsToApply);
+
+      toast({
+        title: "Referral credits applied!",
+        description: `You saved $${creditsToApply.toFixed(2)} using your referral credits.`,
+      });
+    } else {
+      setReferralCreditsApplied(0);
+    }
+  };
+
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
