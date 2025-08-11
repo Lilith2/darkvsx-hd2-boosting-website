@@ -1,5 +1,6 @@
 import "./global.css";
 
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,6 +14,8 @@ import { ReferralsProvider } from "@/hooks/useReferrals";
 import { AppContent } from "@/components/AppContent";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AccessibilityWrapper } from "@/components/AccessibilityWrapper";
+import { SEOHead } from "@/components/SEOHead";
+import { initializeAnalytics } from "@/lib/analytics";
 
 const queryClient = new QueryClient({
   defaultOptions: {
