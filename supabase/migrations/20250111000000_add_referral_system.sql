@@ -44,13 +44,14 @@ BEGIN
   -- Only process if order has a referral code and positive discount
   IF NEW.referral_code IS NOT NULL AND NEW.referral_discount > 0 THEN
     -- Extract user ID from referral code (HD2BOOST-XXXXXX format)
-    SELECT id INTO referrer_id 
-    FROM auth.users 
-    WHERE RIGHT(id::text, 6) = RIGHT(NEW.referral_code, 6) 
+    SELECT id INTO referrer_id
+    FROM auth.users
+    WHERE RIGHT(id::text, 6) = RIGHT(NEW.referral_code, 6)
     AND NEW.referral_code LIKE 'HD2BOOST-%';
-    
-    -- If referrer found and it's not the same user
-    IF referrer_id IS NOT NULL AND referrer_id != NEW.user_id THEN
+
+    -- If referrer found and it's not the same user and user hasn't used referrals before
+    IF referrer_id IS NOT NULL AND referrer_id != NEW.user_id AND
+       NOT EXISTS (SELECT 1 FROM referrals WHERE referred_user_id = NEW.user_id) THEN
       -- Update order with referrer ID
       UPDATE orders 
       SET referred_by_user_id = referrer_id 
