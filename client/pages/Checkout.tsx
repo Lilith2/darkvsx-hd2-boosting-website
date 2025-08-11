@@ -97,6 +97,7 @@ export default function Checkout() {
         totalAmount: total,
         paymentStatus: "paid", // Only set to paid after successful PayPal payment
         notes: orderNotes,
+        transactionId: details.id || data.orderID, // Capture PayPal transaction ID
       });
 
       // Clear cart
