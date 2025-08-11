@@ -706,7 +706,7 @@ export default function Account() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Get boosted in Helldivers 2! Use code "${referralCode}" for 5% off: https://helldivers-boost.com`)}`)}
+                      onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Get boosted in Helldivers 2! Use code "${referralCode}" for 10% off: ${getSiteUrl()}`)}`)}
                     >
                       <ExternalLink className="w-3 h-3 mr-1" />
                       Share on Twitter
