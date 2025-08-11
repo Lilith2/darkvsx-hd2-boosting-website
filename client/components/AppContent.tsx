@@ -1,24 +1,31 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Layout } from "@/components/Layout";
+import { LoadingFallback, OptimizedSpinner } from "@/components/LoadingFallback";
+
+// Keep critical pages non-lazy for immediate loading
 import Index from "../pages/Index";
-import Cart from "../pages/Cart";
-import Account from "../pages/Account";
-import AdminDashboard from "../pages/AdminDashboard";
-import FAQ from "../pages/FAQ";
-import Bundles from "../pages/Bundles";
-import Contact from "../pages/Contact";
-import ForgotPassword from "../pages/ForgotPassword";
-import Checkout from "../pages/Checkout";
-import Terms from "../pages/Terms";
-import Privacy from "../pages/Privacy";
-import OrderTracking from "../pages/OrderTracking";
 import NotFound from "../pages/NotFound";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
-import EmailConfirmation from "../pages/EmailConfirmation";
+
+// Lazy load all other pages for better performance
+import {
+  LazyAccount,
+  LazyAdminDashboard,
+  LazyBundles,
+  LazyCart,
+  LazyCheckout,
+  LazyContact,
+  LazyEmailConfirmation,
+  LazyFAQ,
+  LazyForgotPassword,
+  LazyLogin,
+  LazyOrderTracking,
+  LazyPrivacy,
+  LazyRegister,
+  LazyTerms,
+} from "@/components/LazyComponents";
 
 export function AppContent() {
   const { loading } = useAuth();
@@ -38,8 +45,8 @@ export function AppContent() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-lg font-medium text-foreground">
+          <OptimizedSpinner size="lg" />
+          <p className="text-lg font-medium text-foreground mt-4">
             Loading HelldiversBoost...
           </p>
           <p className="text-sm text-muted-foreground mt-2">
@@ -53,58 +60,75 @@ export function AppContent() {
   return (
     <BrowserRouter>
       <Layout>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/email-confirmation"
-            element={<EmailConfirmation />}
-          />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route
-            path="/cart"
-            element={
-              <ProtectedRoute>
-                <Cart />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/account"
-            element={
-              <ProtectedRoute>
-                <Account />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/bundles" element={<Bundles />} />
-          <Route path="/contact" element={<Contact />} />
-          {/* Redirect old about page to home */}
-          <Route path="/about" element={<Navigate to="/" replace />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route
-            path="/order/:orderId"
-            element={
-              <ProtectedRoute>
-                <OrderTracking />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute requireAdmin>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<LoadingFallback variant="page" />}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<LazyLogin />} />
+            <Route path="/register" element={<LazyRegister />} />
+            <Route
+              path="/email-confirmation"
+              element={<LazyEmailConfirmation />}
+            />
+            <Route path="/forgot-password" element={<LazyForgotPassword />} />
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute>
+                  <Suspense fallback={<LoadingFallback variant="card" />}>
+                    <LazyCart />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account"
+              element={
+                <ProtectedRoute>
+                  <Suspense fallback={<LoadingFallback variant="page" />}>
+                    <LazyAccount />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/faq" element={<LazyFAQ />} />
+            <Route path="/bundles" element={<LazyBundles />} />
+            <Route path="/contact" element={<LazyContact />} />
+            {/* Redirect old about page to home */}
+            <Route path="/about" element={<Navigate to="/" replace />} />
+            <Route
+              path="/checkout"
+              element={
+                <Suspense fallback={<LoadingFallback variant="card" />}>
+                  <LazyCheckout />
+                </Suspense>
+              }
+            />
+            <Route path="/terms" element={<LazyTerms />} />
+            <Route path="/privacy" element={<LazyPrivacy />} />
+            <Route
+              path="/order/:orderId"
+              element={
+                <ProtectedRoute>
+                  <Suspense fallback={<LoadingFallback variant="card" />}>
+                    <LazyOrderTracking />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <Suspense fallback={<LoadingFallback variant="page" />}>
+                    <LazyAdminDashboard />
+                  </Suspense>
+                </ProtectedRoute>
+              }
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </Layout>
     </BrowserRouter>
   );
