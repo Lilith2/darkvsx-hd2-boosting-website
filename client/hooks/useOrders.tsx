@@ -159,16 +159,11 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
-      console.log("🔍 Fetching orders from Supabase...");
-
       // Fetch orders with messages and tracking
       const { data: ordersData, error: ordersError } = await supabase
         .from("orders")
         .select("*")
         .order("created_at", { ascending: false });
-
-      console.log("📊 Raw orders data:", ordersData);
-      console.log("❌ Orders error:", ordersError);
 
       if (ordersError) {
         // Check if it's a table not found error (likely means database not set up)
