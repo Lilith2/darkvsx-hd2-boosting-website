@@ -334,7 +334,7 @@ export default function Checkout() {
                     Referral Code
                   </CardTitle>
                   <CardDescription>
-                    Have a referral code? Get 5% off your order!
+                    Have a referral code? Get 10% off your order!
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
