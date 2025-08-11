@@ -284,6 +284,10 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         insertData.referral_discount = orderData.referralDiscount;
       }
 
+      if (orderData.referralCreditsUsed) {
+        insertData.referral_credits_used = orderData.referralCreditsUsed;
+      }
+
       const { data: orderResult, error: orderError } = await supabase
         .from("orders")
         .insert([insertData])
