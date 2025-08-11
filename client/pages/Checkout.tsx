@@ -78,31 +78,44 @@ export default function Checkout() {
 
       try {
         const { supabase } = await import("@/integrations/supabase/client");
-        const { data: referrals, error } = await supabase
+
+        // Get total earned credits
+        const { data: referrals, error: referralsError } = await supabase
           .from("referrals")
           .select("commission_amount")
           .eq("referrer_user_id", user.id)
           .eq("status", "completed");
 
-        if (error) {
+        // Get total used credits
+        const { data: usedCredits, error: usedError } = await supabase
+          .from("referral_credit_usage")
+          .select("credits_used")
+          .eq("user_id", user.id);
+
+        if (referralsError || usedError) {
           if (
-            error.code === "PGRST116" ||
-            error.message?.includes("relation") ||
-            error.message?.includes("does not exist")
+            (referralsError && (referralsError.code === "PGRST116" || referralsError.message?.includes("relation"))) ||
+            (usedError && (usedError.code === "PGRST116" || usedError.message?.includes("relation")))
           ) {
-            console.warn("Referrals table not found");
+            console.warn("Referrals/usage tables not found");
             setAvailableCredits(0);
             return;
           }
-          throw error;
+          throw referralsError || usedError;
         }
 
-        const totalCredits = (referrals || []).reduce((sum, r) => {
+        const totalEarned = (referrals || []).reduce((sum, r) => {
           const amount = parseFloat(r.commission_amount) || 0;
           return sum + amount;
         }, 0);
 
-        setAvailableCredits(parseFloat(totalCredits.toFixed(2)));
+        const totalUsed = (usedCredits || []).reduce((sum, u) => {
+          const amount = parseFloat(u.credits_used) || 0;
+          return sum + amount;
+        }, 0);
+
+        const availableBalance = totalEarned - totalUsed;
+        setAvailableCredits(parseFloat(Math.max(0, availableBalance).toFixed(2)));
       } catch (err) {
         console.error("Error fetching referral credits:", err);
         setAvailableCredits(0);
