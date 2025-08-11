@@ -100,7 +100,8 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
 
     } catch (err: any) {
       console.error("Error fetching referral stats:", err);
-      setError(`Failed to load referral data: ${err.message}`);
+      const errorMessage = err?.message || err?.error_description || String(err) || "Unknown error occurred";
+      setError(`Failed to load referral data: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
