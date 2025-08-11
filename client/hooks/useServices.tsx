@@ -5,10 +5,10 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { supabase, type Service } from "../lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 
-// Re-export Service type for external use
-export type { Service } from "../lib/supabase";
+export type Service = Tables<"services">;
 
 export interface ServiceData {
   id: string;

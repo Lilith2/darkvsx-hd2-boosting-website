@@ -143,6 +143,7 @@ export type Database = {
           customer_name: string
           estimated_completion: string | null
           id: string
+          ip_address: unknown | null
           notes: string | null
           payment_status: string
           progress: number | null
@@ -159,6 +160,7 @@ export type Database = {
           customer_name: string
           estimated_completion?: string | null
           id?: string
+          ip_address?: unknown | null
           notes?: string | null
           payment_status?: string
           progress?: number | null
@@ -175,6 +177,7 @@ export type Database = {
           customer_name?: string
           estimated_completion?: string | null
           id?: string
+          ip_address?: unknown | null
           notes?: string | null
           payment_status?: string
           progress?: number | null

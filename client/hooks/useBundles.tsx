@@ -5,25 +5,12 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { supabase } from "../lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 
-export interface Bundle {
-  id: string;
-  name: string;
-  description: string;
-  services: string[];
-  original_price: number;
-  discounted_price: number;
-  discount: number;
-  duration: string;
-  popular: boolean;
-  badge: string | null;
-  features: string[];
-  active: boolean;
-  created_at: string;
-  updated_at: string;
-  orders_count: number;
-}
+export type Bundle = Tables<"bundles">;
+
+// Use the Supabase generated type
 
 export interface BundleData {
   id: string;

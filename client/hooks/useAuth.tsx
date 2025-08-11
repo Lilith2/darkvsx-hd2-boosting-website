@@ -5,7 +5,10 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { supabase, type Profile } from "../lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
+
+type Profile = Tables<"profiles">;
 
 interface User {
   id: string;

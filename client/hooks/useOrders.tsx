@@ -5,7 +5,8 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
+import { getCurrentIPAddress } from "./useIPAddress";
 
 export interface Order {
   id: string;
@@ -32,7 +33,7 @@ export interface Order {
 export interface OrderMessage {
   id: string;
   order_id: string;
-  from: "customer" | "admin" | "booster";
+  from: string;
   message: string;
   created_at: string;
   is_read: boolean;
@@ -135,7 +136,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     notes: order.notes,
     messages: messages.map((msg) => ({
       id: msg.id,
-      from: msg.from,
+      from: msg.from as "customer" | "admin" | "booster",
       message: msg.message,
       timestamp: msg.created_at,
       isRead: msg.is_read,
@@ -227,6 +228,11 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     >,
   ): Promise<string> => {
     try {
+      // Get user's IP address for chargeback protection
+      const ipAddress = await getCurrentIPAddress();
+      
+      console.log('Creating order with IP address:', ipAddress);
+      
       const { data: orderResult, error: orderError } = await supabase
         .from("orders")
         .insert([
@@ -242,6 +248,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
             assigned_booster: orderData.assignedBooster,
             estimated_completion: orderData.estimatedCompletion,
             notes: orderData.notes,
+            ip_address: ipAddress, // Add IP address for PayPal chargeback protection
           },
         ])
         .select()
