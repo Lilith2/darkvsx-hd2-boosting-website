@@ -138,8 +138,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     assignedBooster: order.assigned_booster,
     estimatedCompletion: order.estimated_completion,
     notes: order.notes,
-    transactionId: order.transaction_id,
-    ipAddress: order.ip_address,
+    transactionId: order.transaction_id || undefined,
+    ipAddress: order.ip_address || undefined,
     messages: messages.map((msg) => ({
       id: msg.id,
       from: msg.from as "customer" | "admin" | "booster",
