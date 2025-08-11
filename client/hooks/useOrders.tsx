@@ -146,6 +146,9 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     notes: order.notes,
     transactionId: order.transaction_id || undefined,
     ipAddress: order.ip_address || undefined,
+    referralCode: order.referral_code || undefined,
+    referralDiscount: order.referral_discount ? parseFloat(Number(order.referral_discount).toFixed(2)) : undefined,
+    referredByUserId: order.referred_by_user_id || undefined,
     messages: messages.map((msg) => ({
       id: msg.id,
       from: msg.from as "customer" | "admin" | "booster",
