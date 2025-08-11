@@ -771,6 +771,7 @@ export default function Account() {
 
           {/* Referrals Tab */}
           <TabsContent value="referrals" className="space-y-6">
+            {/* Main Referral Card */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -778,63 +779,161 @@ export default function Account() {
                   Referral Program
                 </CardTitle>
                 <CardDescription>
-                  Earn rewards by referring friends to HelldiversBoost
+                  Earn 10% commission on every friend you refer! No limits.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="bg-gradient-to-r from-primary/10 to-blue-500/10 p-6 rounded-lg">
-                  <h3 className="font-semibold mb-2">Your Referral Code</h3>
-                  <div className="flex items-center space-x-2">
-                    <Input value={referralCode} readOnly className="flex-1" />
-                    <Button onClick={copyReferralCode} variant="outline">
+                {/* Referral Code Section */}
+                <div className="bg-gradient-to-r from-primary/10 to-blue-500/10 p-6 rounded-lg border border-primary/20">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-semibold text-lg">Your Referral Code</h3>
+                    <Badge className="bg-green-500/20 text-green-700">
+                      Active
+                    </Badge>
+                  </div>
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Input
+                      value={referralCode}
+                      readOnly
+                      className="flex-1 font-mono text-center bg-background/50"
+                    />
+                    <Button onClick={copyReferralCode} variant="outline" className="px-4">
                       {copied ? (
-                        <Check className="w-4 h-4" />
+                        <>
+                          <Check className="w-4 h-4 mr-2" />
+                          Copied!
+                        </>
                       ) : (
-                        <Copy className="w-4 h-4" />
+                        <>
+                          <Copy className="w-4 h-4 mr-2" />
+                          Copy
+                        </>
                       )}
                     </Button>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Share this code with friends and earn 10% of their first
-                    order!
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <Users className="w-8 h-8 text-primary mx-auto mb-2" />
-                      <p className="text-2xl font-bold">0</p>
-                      <p className="text-sm text-muted-foreground">
-                        Friends Referred
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <DollarSign className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                      <p className="text-2xl font-bold">$0</p>
-                      <p className="text-sm text-muted-foreground">Earned</p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <TrendingUp className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                      <p className="text-2xl font-bold">$0</p>
-                      <p className="text-sm text-muted-foreground">Pending</p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div>
-                  <h4 className="font-medium mb-3">How it works:</h4>
-                  <div className="space-y-2 text-sm text-muted-foreground">
-                    <p>1. Share your referral code with friends</p>
-                    <p>2. They use your code when placing their first order</p>
-                    <p>3. You earn 10% of their order value as credit</p>
-                    <p>4. Your friend gets a 5% discount on their order</p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const text = `🎮 Get boosted in Helldivers 2! Use my code "${referralCode}" for 5% off your first order: https://helldivers-boost.com`;
+                        navigator.clipboard.writeText(text);
+                        toast({ title: "Message copied!", description: "Ready to share on Discord or social media" });
+                      }}
+                    >
+                      <Share2 className="w-3 h-3 mr-1" />
+                      Share Message
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Get boosted in Helldivers 2! Use code "${referralCode}" for 5% off: https://helldivers-boost.com`)}`)}
+                    >
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      Share on Twitter
+                    </Button>
                   </div>
                 </div>
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card className="border border-border/50">
+                    <CardContent className="p-6 text-center">
+                      <Users className="w-10 h-10 text-primary mx-auto mb-3" />
+                      <p className="text-3xl font-bold">0</p>
+                      <p className="text-sm text-muted-foreground">Friends Referred</p>
+                      <p className="text-xs text-muted-foreground mt-1">All time</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border border-border/50">
+                    <CardContent className="p-6 text-center">
+                      <DollarSign className="w-10 h-10 text-green-600 mx-auto mb-3" />
+                      <p className="text-3xl font-bold text-green-600">$0.00</p>
+                      <p className="text-sm text-muted-foreground">Total Earned</p>
+                      <p className="text-xs text-muted-foreground mt-1">Available to spend</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border border-border/50">
+                    <CardContent className="p-6 text-center">
+                      <Clock className="w-10 h-10 text-blue-600 mx-auto mb-3" />
+                      <p className="text-3xl font-bold text-blue-600">$0.00</p>
+                      <p className="text-sm text-muted-foreground">Pending</p>
+                      <p className="text-xs text-muted-foreground mt-1">Processing orders</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* How it Works */}
+                <Card className="border border-border/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg">How Referrals Work</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="flex items-start space-x-3">
+                          <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-sm font-bold text-primary">1</span>
+                          </div>
+                          <div>
+                            <h4 className="font-medium">Share Your Code</h4>
+                            <p className="text-sm text-muted-foreground">Send your unique referral code to friends</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-sm font-bold text-primary">2</span>
+                          </div>
+                          <div>
+                            <h4 className="font-medium">Friend Places Order</h4>
+                            <p className="text-sm text-muted-foreground">They use your code and get 5% discount</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="flex items-start space-x-3">
+                          <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-sm font-bold text-green-600">3</span>
+                          </div>
+                          <div>
+                            <h4 className="font-medium">Earn Commission</h4>
+                            <p className="text-sm text-muted-foreground">Get 10% of their order value as credit</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-sm font-bold text-green-600">4</span>
+                          </div>
+                          <div>
+                            <h4 className="font-medium">Use Your Credits</h4>
+                            <p className="text-sm text-muted-foreground">Apply earnings to future orders</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Referral History */}
+                <Card className="border border-border/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Referral History</CardTitle>
+                    <CardDescription>Track your successful referrals and earnings</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-8">
+                      <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                      <h3 className="font-medium mb-2">No referrals yet</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Start sharing your code to see your earnings here
+                      </p>
+                      <Button onClick={copyReferralCode} className="bg-primary hover:bg-primary/90">
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Copy Referral Code
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               </CardContent>
             </Card>
           </TabsContent>
