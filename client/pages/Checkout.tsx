@@ -126,14 +126,44 @@ export default function Checkout() {
       return;
     }
 
-    // Check if user is trying to use their own code
-    if (user?.id && code === `HD2BOOST-${user.id.slice(-6)}`) {
-      toast({
-        title: "Invalid referral code",
-        description: "You cannot use your own referral code.",
-        variant: "destructive",
-      });
-      return;
+    // Check if user is trying to use their own code (multiple methods for security)
+    if (user?.id) {
+      const userCodeFromId = `HD2BOOST-${user.id.slice(-6)}`;
+      const userCodeFromIdUpper = `HD2BOOST-${user.id.slice(-6).toUpperCase()}`;
+
+      if (code === userCodeFromId || code === userCodeFromIdUpper || code.includes(user.id.slice(-6))) {
+        toast({
+          title: "Invalid referral code",
+          description: "You cannot use your own referral code.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Also check by querying the database to find who owns this code
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const codeUserId = code.replace("HD2BOOST-", "");
+
+        // Check if this code belongs to the current user
+        const { data: users, error } = await supabase
+          .from("auth.users")
+          .select("id")
+          .ilike("id", `%${codeUserId}`)
+          .limit(1);
+
+        if (!error && users && users.length > 0 && users[0].id === user.id) {
+          toast({
+            title: "Invalid referral code",
+            description: "You cannot use your own referral code.",
+            variant: "destructive",
+          });
+          return;
+        }
+      } catch (err) {
+        console.warn("Could not verify code ownership:", err);
+        // Continue with other checks
+      }
     }
 
     // Check if user has already used a referral code before (if authenticated)
