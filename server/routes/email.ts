@@ -36,37 +36,54 @@ export const handleSendEmail: RequestHandler = async (req, res) => {
     const emailContent = {
       to,
       from: "support@helldivers-boost.com",
-      subject: `Re: Support Ticket #${ticketId.slice(-6)} - ${subject}`,
+      subject: subject.includes('Ticket')
+        ? `Re: Support Ticket #${ticketId.slice(-6)} - ${subject.replace('Support:', '').trim()}`
+        : `Re: Order Update #${ticketId.slice(-6)} - ${subject}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0;">
           <div style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; padding: 20px; text-align: center;">
-            <h1 style="margin: 0;">HelldiversBoost Support</h1>
-            <p style="margin: 5px 0 0 0;">Response to your support request</p>
+            <h1 style="margin: 0; font-size: 24px;">⚡ HelldiversBoost</h1>
+            <p style="margin: 5px 0 0 0; opacity: 0.9;">
+              ${subject.includes('Support') ? 'Support Team Response' : 'Order Update'}
+            </p>
           </div>
-          
-          <div style="padding: 20px; background: #f8fafc;">
-            <h2 style="color: #1e3a8a;">Hi ${customerName},</h2>
-            
-            <p>We've received your support request and here's our response:</p>
-            
-            <div style="background: white; padding: 15px; border-left: 4px solid #3b82f6; margin: 20px 0;">
-              <strong>Ticket #${ticketId.slice(-6)}</strong>
-              <p style="margin: 10px 0 0 0; white-space: pre-wrap;">${message}</p>
+
+          <div style="padding: 25px; background: #ffffff;">
+            <h2 style="color: #1e3a8a; margin-top: 0;">Hi ${customerName}! 👋</h2>
+
+            <p style="color: #374151; line-height: 1.6;">
+              ${subject.includes('Support')
+                ? "Thank you for contacting our support team. Here's our response to your inquiry:"
+                : "We have an update regarding your order:"
+              }
+            </p>
+
+            <div style="background: #f8fafc; padding: 20px; border-left: 4px solid #3b82f6; margin: 25px 0; border-radius: 4px;">
+              <div style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">
+                <strong>${subject.includes('Support') ? '🎫 Ticket' : '📦 Order'} #${ticketId.slice(-6)}</strong>
+                ${subject.includes('Support') ? '' : ` | ${subject}`}
+              </div>
+              <div style="color: #111827; white-space: pre-wrap; line-height: 1.6;">${message}</div>
             </div>
-            
-            <p>If you have any additional questions or need further assistance, please reply to this email or contact us through our support system.</p>
-            
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-              <p style="color: #64748b; font-size: 14px;">
+
+            <div style="background: #ecfdf5; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0; margin: 20px 0;">
+              <p style="margin: 0; color: #065f46; font-size: 14px;">
+                💡 <strong>Need more help?</strong> Reply to this email or visit our support portal for faster assistance.
+              </p>
+            </div>
+
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+              <p style="color: #6b7280; font-size: 14px; margin: 0;">
                 Best regards,<br>
-                The HelldiversBoost Support Team
+                <strong>The HelldiversBoost Team</strong> 🚀<br>
+                <span style="font-size: 12px;">Boosting Helldivers to Glory</span>
               </p>
             </div>
           </div>
-          
-          <div style="background: #1e293b; color: #94a3b8; padding: 15px; text-align: center; font-size: 12px;">
-            <p>This is an automated response from HelldiversBoost Support System</p>
-            <p>Please do not reply directly to this email</p>
+
+          <div style="background: #f9fafb; color: #6b7280; padding: 20px; text-align: center; font-size: 12px; border-top: 1px solid #e5e7eb;">
+            <p style="margin: 0 0 5px 0;">📧 This email was sent from the HelldiversBoost Admin Panel</p>
+            <p style="margin: 0;">🕒 Sent on ${new Date().toLocaleString()}</p>
           </div>
         </div>
       `
