@@ -66,6 +66,50 @@ export default function Checkout() {
   const tax = (subtotal - discount) * 0.08; // 8% tax on discounted amount
   const total = subtotal - discount + tax;
 
+  // Fetch user's available referral credits
+  useEffect(() => {
+    const fetchReferralCredits = async () => {
+      if (!user?.id) {
+        setAvailableCredits(0);
+        return;
+      }
+
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data: referrals, error } = await supabase
+          .from("referrals")
+          .select("commission_amount")
+          .eq("referrer_user_id", user.id)
+          .eq("status", "completed");
+
+        if (error) {
+          if (
+            error.code === "PGRST116" ||
+            error.message?.includes("relation") ||
+            error.message?.includes("does not exist")
+          ) {
+            console.warn("Referrals table not found");
+            setAvailableCredits(0);
+            return;
+          }
+          throw error;
+        }
+
+        const totalCredits = (referrals || []).reduce((sum, r) => {
+          const amount = parseFloat(r.commission_amount) || 0;
+          return sum + amount;
+        }, 0);
+
+        setAvailableCredits(parseFloat(totalCredits.toFixed(2)));
+      } catch (err) {
+        console.error("Error fetching referral credits:", err);
+        setAvailableCredits(0);
+      }
+    };
+
+    fetchReferralCredits();
+  }, [user?.id]);
+
   const validateReferralCode = async (code: string) => {
     if (!code.trim()) {
       setReferralDiscount(0);
