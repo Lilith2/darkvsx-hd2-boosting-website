@@ -2,6 +2,7 @@
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS referred_by_user_id uuid REFERENCES auth.users(id);
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS referral_code text;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS referral_discount numeric(10,2) DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS referral_credits_used numeric(10,2) DEFAULT 0;
 
 -- Create referrals table to track referral stats
 CREATE TABLE IF NOT EXISTS referrals (
