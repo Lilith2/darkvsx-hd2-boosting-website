@@ -1,219 +1,204 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
-import { AuthContainer } from "@/components/auth/AuthContainer";
-import { AnimatedInput } from "@/components/auth/AnimatedInput";
-import { AnimatedButton } from "@/components/auth/AnimatedButton";
-import { Mail, Lock, CheckCircle, AlertTriangle } from "lucide-react";
-import { validateField, validationRules } from "@/lib/validation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Mail, Lock, Eye, EyeOff, CheckCircle, AlertTriangle, Zap } from "lucide-react";
 
-export default function NewLogin() {
+export default function Login() {
   const [searchParams] = useSearchParams();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    rememberMe: false,
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [generalError, setGeneralError] = useState("");
 
   const { login, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (searchParams.get("confirmed") === "true") {
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 5000);
+      setSuccess("Email confirmed! You can now sign in to your account.");
     }
   }, [searchParams]);
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    const emailValidation = validateField(
-      formData.email,
-      validationRules.email,
-    );
-    if (!emailValidation.isValid) {
-      newErrors.email = emailValidation.errors[0];
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setGeneralError("");
-
-    if (!validateForm()) return;
-
     setIsLoading(true);
+    setError("");
 
     try {
       const success = await login(formData.email, formData.password);
 
       if (success) {
-        await new Promise((resolve) => setTimeout(resolve, 500)); // Small delay for UX
-        navigate(isAdmin ? "/admin" : "/");
+        // Small delay to allow auth state to update
+        setTimeout(() => {
+          navigate(isAdmin ? "/admin" : "/");
+        }, 100);
       } else {
-        setGeneralError("Invalid email or password. Please try again.");
+        setError("Invalid email or password");
       }
     } catch (err) {
-      setGeneralError(
-        "Login failed. Please check your connection and try again.",
-      );
+      setError("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
-    }
-    if (generalError) {
-      setGeneralError("");
-    }
-  };
-
   return (
-    <AuthContainer
-      title="Welcome Back"
-      subtitle="Sign in to continue your Helldivers journey"
-      showLogo={false}
-    >
-      <AnimatePresence>
-        {showSuccess && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="bg-green-500/20 border border-green-500/30 text-green-300 px-4 py-3 rounded-lg text-sm mb-6 flex items-center space-x-2"
-          >
-            <CheckCircle className="w-4 h-4" />
-            <span>Email confirmed! You can now sign in to your account.</span>
-          </motion.div>
-        )}
-
-        {generalError && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="bg-red-500/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-lg text-sm mb-6 flex items-center space-x-2"
-          >
-            <AlertTriangle className="w-4 h-4" />
-            <span>{generalError}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <AnimatedInput
-          label="Email Address"
-          type="email"
-          placeholder="Enter your email"
-          value={formData.email}
-          onChange={(value) => handleInputChange("email", value)}
-          error={errors.email}
-          icon={<Mail className="w-4 h-4" />}
-        />
-
-        <AnimatedInput
-          label="Password"
-          type="password"
-          placeholder="Enter your password"
-          value={formData.password}
-          onChange={(value) => handleInputChange("password", value)}
-          error={errors.password}
-          icon={<Lock className="w-4 h-4" />}
-          showPasswordToggle
-        />
-
-        <div className="flex items-center justify-between">
-          <motion.label
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="flex items-center space-x-2 text-sm text-gray-300 cursor-pointer"
-          >
-            <input
-              type="checkbox"
-              checked={formData.rememberMe}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  rememberMe: e.target.checked,
-                }))
-              }
-              className="rounded border-border bg-muted text-primary focus:ring-primary/20"
-            />
-            <span>Remember me</span>
-          </motion.label>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Link
-              to="/forgot-password"
-              className="text-sm text-primary hover:text-primary/80 transition-colors"
-            >
-              Forgot password?
-            </Link>
-          </motion.div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/50 p-4">
+      <div className="w-full max-w-md">
+        {/* Header with branding */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center space-x-3 mb-4">
+            <div className="w-12 h-12">
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64"
+                alt="HelldiversBoost Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <div>
+              <div className="text-lg font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
+                HELLDIVERS II
+              </div>
+              <div className="text-sm text-primary font-semibold">BOOSTING</div>
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Welcome Back</h1>
+          <p className="text-muted-foreground">
+            Sign in to continue your Helldivers journey
+          </p>
         </div>
 
-        <AnimatedButton
-          type="submit"
-          loading={isLoading}
-          disabled={isLoading}
-          className="w-full"
-        >
-          {isLoading ? "Signing In..." : "Sign In"}
-        </AnimatedButton>
-      </form>
+        <Card className="border-border/50 shadow-xl">
+          <CardContent className="p-6">
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="mt-8 text-center"
-      >
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-white/20" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-background text-muted-foreground">
-              New to HelldiversBoost?
-            </span>
-          </div>
-        </div>
+            {success && (
+              <Alert className="mb-4 border-green-500/20 bg-green-500/10">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-600">
+                  {success}
+                </AlertDescription>
+              </Alert>
+            )}
 
-        <Link
-          to="/register"
-          className="mt-4 inline-flex items-center text-primary hover:text-primary/80 transition-colors font-medium"
-        >
-          Create your account
-          <span className="ml-1">
-            →
-          </span>
-        </Link>
-      </motion.div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    className="pl-10"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+              </div>
 
-    </AuthContainer>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    className="pl-10 pr-10"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <label className="flex items-center space-x-2 text-sm">
+                  <input type="checkbox" className="rounded border-border" />
+                  <span>Remember me</span>
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-primary hover:text-primary/80 hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-lg hover:shadow-xl transition-all duration-200" 
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2"></div>
+                    Signing In...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 mr-2" />
+                    Sign In
+                  </>
+                )}
+              </Button>
+            </form>
+
+            <div className="mt-6">
+              <Separator className="my-4" />
+              <div className="text-center text-sm text-muted-foreground">
+                Don't have an account?{" "}
+                <Link
+                  to="/register"
+                  className="text-primary hover:text-primary/80 font-medium hover:underline"
+                >
+                  Create account
+                </Link>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
