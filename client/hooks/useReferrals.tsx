@@ -91,20 +91,31 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       }
 
       const referralData = referrals || [];
-      
-      // Calculate stats
+      console.log("Processing referral data:", referralData);
+
+      // Calculate stats with safety checks
       const totalReferred = referralData.length;
       const totalEarned = referralData
-        .filter(r => r.status === "completed")
+        .filter(r => r && r.status === "completed")
         .reduce((sum, r) => {
-          const amount = parseFloat(r.commission_amount) || 0;
-          return sum + (isNaN(amount) ? 0 : amount);
+          try {
+            const amount = r.commission_amount ? parseFloat(String(r.commission_amount)) : 0;
+            return sum + (isNaN(amount) ? 0 : amount);
+          } catch (err) {
+            console.warn("Error parsing commission amount:", r.commission_amount, err);
+            return sum;
+          }
         }, 0);
       const pendingEarnings = referralData
-        .filter(r => r.status === "pending")
+        .filter(r => r && r.status === "pending")
         .reduce((sum, r) => {
-          const amount = parseFloat(r.commission_amount) || 0;
-          return sum + (isNaN(amount) ? 0 : amount);
+          try {
+            const amount = r.commission_amount ? parseFloat(String(r.commission_amount)) : 0;
+            return sum + (isNaN(amount) ? 0 : amount);
+          } catch (err) {
+            console.warn("Error parsing commission amount:", r.commission_amount, err);
+            return sum;
+          }
         }, 0);
 
       setStats({
