@@ -265,13 +265,6 @@ export default function Account() {
                   {user?.username}
                 </h1>
                 <div className="flex items-center space-x-3 mt-1">
-                  <Badge
-                    className={`${getLoyaltyColor(loyaltyLevel)} border-current`}
-                    variant="outline"
-                  >
-                    <Trophy className="w-3 h-3 mr-1" />
-                    {loyaltyLevel} Member
-                  </Badge>
                   <span className="text-sm text-muted-foreground">
                     Member since {joinDate.toLocaleDateString()}
                   </span>
