@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useOrders } from "@/hooks/useOrders";
+import { getCurrentIPAddress } from "@/hooks/useIPAddress";
 import {
   ArrowLeft,
   MessageSquare,
