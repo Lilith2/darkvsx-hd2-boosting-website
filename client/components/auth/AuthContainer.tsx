@@ -16,39 +16,14 @@ export function AuthContainer({
   showLogo = true,
 }: AuthContainerProps) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
-      {/* Animated background particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute bg-white/5 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${Math.random() * 3 + 1}px`,
-              height: `${Math.random() * 3 + 1}px`,
-            }}
-            animate={{
-              y: [-20, -100],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: Math.random() * 3 + 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
-      </div>
-
+    <div className="flex items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4 min-h-[calc(100vh-8rem)]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md relative z-10"
+        className="w-full max-w-md"
       >
-        <Card className="backdrop-blur-xl bg-white/10 border-white/20 shadow-2xl">
+        <Card>
           <CardContent className="p-8">
             {showLogo && (
               <motion.div
