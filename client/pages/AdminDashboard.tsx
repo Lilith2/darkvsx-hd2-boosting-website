@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useServices } from "@/hooks/useServices";
 import { useBundles } from "@/hooks/useBundles";
 import { useOrders } from "@/hooks/useOrders";
+import { useToast } from "@/hooks/use-toast";
 import { ServiceModal } from "@/components/ServiceModal";
 import { BundleModal } from "@/components/BundleModal";
 import { TicketSystem } from "@/components/TicketSystem";
 import { Button } from "@/components/ui/button";
+import { sendTicketReplyEmail, generateTicketSubject } from "@/lib/emailService";
 import {
   Card,
   CardContent,
