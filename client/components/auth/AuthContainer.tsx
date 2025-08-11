@@ -24,7 +24,7 @@ export function AuthContainer({
         className="w-full max-w-md"
       >
         <Card>
-          <CardContent className="p-8">
+          <CardContent>
             {showLogo && (
               <motion.div
                 initial={{ scale: 0 }}
