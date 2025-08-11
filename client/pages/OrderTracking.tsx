@@ -54,6 +54,23 @@ export default function OrderTracking() {
     }
   }, [orderId, getOrder, orders, loading, isInitialLoad]);
 
+  // Show loading state while orders are being fetched
+  if (loading && isInitialLoad) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-8 text-center">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Loading Order...</h2>
+            <p className="text-muted-foreground">
+              Please wait while we retrieve your order information.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (!order) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
