@@ -75,9 +75,12 @@ export default function AdminDashboard() {
   const [ticketReply, setTicketReply] = useState("");
 
   // Analytics calculations
-  const totalRevenue = orders
-    .filter((order) => order.paymentStatus === "paid" && !order.services.some(s => s.id === "support-ticket"))
-    .reduce((sum, order) => sum + order.totalAmount, 0);
+  const totalRevenue = parseFloat(
+    orders
+      .filter((order) => order.paymentStatus === "paid" && !order.services.some(s => s.id === "support-ticket"))
+      .reduce((sum, order) => sum + order.totalAmount, 0)
+      .toFixed(2)
+  );
 
   const pendingOrders = orders.filter(
     (order) => order.status === "pending" && !order.services.some(s => s.id === "support-ticket"),
