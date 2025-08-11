@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useOrders, OrderData } from "@/hooks/useOrders";
+import { useReferrals } from "@/hooks/useReferrals";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
