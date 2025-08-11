@@ -30,6 +30,9 @@ export interface Order {
   notes?: string;
   transaction_id?: string;
   ip_address?: string;
+  referral_code?: string;
+  referral_discount?: number;
+  referred_by_user_id?: string;
 }
 
 export interface OrderMessage {
