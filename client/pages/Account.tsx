@@ -93,25 +93,45 @@ export default function Account() {
   const [accountData, setAccountData] = useState({
     username: user?.username || "",
     email: user?.email || "",
+    discord: "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
 
 
-  const [favoriteServices] = useState([
-    {
-      name: "Level 1-20 Boost",
-      category: "Level Boost",
-      lastUsed: "2024-01-15",
-    },
-    { name: "Weapon Mastery", category: "Weapons", lastUsed: "2024-01-10" },
-    {
-      name: "Super Credits Farm",
-      category: "Currency",
-      lastUsed: "2024-01-08",
-    },
-  ]);
+  // Generate recent activity from actual orders
+  const recentActivity = userOrders.slice(0, 4).map(order => ({
+    action: order.status === "completed" ? "Order completed" : "Order placed",
+    details: order.services.map(s => s.name).join(", "),
+    time: new Date(order.createdAt).toLocaleDateString(),
+    icon: order.status === "completed" ? CheckCircle : Package,
+  }));
+
+  // Generate favorite services from completed orders
+  const favoriteServices = (() => {
+    const completedOrderServices = userOrders
+      .filter(order => order.status === "completed")
+      .flatMap(order => order.services);
+
+    const serviceCount = completedOrderServices.reduce((acc, service) => {
+      acc[service.name] = (acc[service.name] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    return Object.entries(serviceCount)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 3)
+      .map(([name, count]) => ({
+        name,
+        category: "Boosting Service",
+        lastUsed: userOrders
+          .filter(order => order.services.some(s => s.name === name))
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+          ?.createdAt || new Date().toISOString(),
+        count
+      }));
+  })();
 
   const getStatusColor = (status: OrderData["status"]) => {
     switch (status) {
@@ -217,32 +237,6 @@ export default function Account() {
     }
   };
 
-  const recentActivity = [
-    {
-      action: "Order placed",
-      details: "Level 50-60 Boost",
-      time: "2 hours ago",
-      icon: Package,
-    },
-    {
-      action: "Order completed",
-      details: "Weapon Mastery",
-      time: "1 day ago",
-      icon: CheckCircle,
-    },
-    {
-      action: "Referral earned",
-      details: "$5 bonus credit",
-      time: "3 days ago",
-      icon: Gift,
-    },
-    {
-      action: "Profile updated",
-      details: "Changed email address",
-      time: "1 week ago",
-      icon: User,
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -366,27 +360,42 @@ export default function Account() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {recentActivity.map((activity, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center space-x-3 p-3 border border-border/30 rounded-lg"
-                      >
-                        <activity.icon className="w-5 h-5 text-primary" />
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">
-                            {activity.action}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {activity.details}
-                          </p>
+                  {recentActivity.length === 0 ? (
+                    <div className="text-center py-8">
+                      <History className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                      <h3 className="text-lg font-semibold mb-2">
+                        No activity yet
+                      </h3>
+                      <p className="text-muted-foreground mb-4">
+                        Your recent orders and actions will appear here
+                      </p>
+                      <Link to="/">
+                        <Button size="sm">Browse Services</Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {recentActivity.map((activity, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-3 p-3 border border-border/30 rounded-lg"
+                        >
+                          <activity.icon className="w-5 h-5 text-primary" />
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">
+                              {activity.action}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {activity.details}
+                            </p>
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            {activity.time}
+                          </span>
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                          {activity.time}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -399,31 +408,46 @@ export default function Account() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {favoriteServices.map((service, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-3 border border-border/30 rounded-lg"
-                      >
-                        <div>
-                          <p className="font-medium text-sm">{service.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {service.category}
-                          </p>
+                  {favoriteServices.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Heart className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                      <h3 className="text-lg font-semibold mb-2">
+                        No favorites yet
+                      </h3>
+                      <p className="text-muted-foreground mb-4">
+                        Complete orders to see your most used services here
+                      </p>
+                      <Link to="/">
+                        <Button size="sm">Browse Services</Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {favoriteServices.map((service, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 border border-border/30 rounded-lg"
+                        >
+                          <div>
+                            <p className="font-medium text-sm">{service.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Used {service.count} time{service.count !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs text-muted-foreground">
+                              Last:{" "}
+                              {new Date(service.lastUsed).toLocaleDateString()}
+                            </span>
+                            <Button size="sm" variant="outline">
+                              <RefreshCw className="w-3 h-3 mr-1" />
+                              Reorder
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xs text-muted-foreground">
-                            Last:{" "}
-                            {new Date(service.lastUsed).toLocaleDateString()}
-                          </span>
-                          <Button size="sm" variant="outline">
-                            <RefreshCw className="w-3 h-3 mr-1" />
-                            Reorder
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -517,8 +541,14 @@ export default function Account() {
                     <Label htmlFor="discord">Discord Username (Optional)</Label>
                     <Input
                       id="discord"
+                      value={accountData.discord}
+                      onChange={(e) =>
+                        setAccountData((prev) => ({
+                          ...prev,
+                          discord: e.target.value,
+                        }))
+                      }
                       placeholder="YourDiscord#1234"
-                      disabled
                     />
                     <p className="text-xs text-muted-foreground">
                       Link your Discord for faster support communication
