@@ -261,7 +261,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         notes: orderData.notes,
       };
 
-      // Only add transaction_id and ip_address if they exist and if the columns exist in the schema
+      // Only add optional fields if they exist and if the columns exist in the schema
       const insertData = { ...baseOrderData };
 
       // Try to add optional fields - if they fail, we'll continue without them
@@ -271,6 +271,14 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
       if (ipAddress) {
         insertData.ip_address = ipAddress;
+      }
+
+      if (orderData.referralCode) {
+        insertData.referral_code = orderData.referralCode;
+      }
+
+      if (orderData.referralDiscount) {
+        insertData.referral_discount = orderData.referralDiscount;
       }
 
       const { data: orderResult, error: orderError } = await supabase
