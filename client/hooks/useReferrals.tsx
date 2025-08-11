@@ -118,12 +118,15 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
           }
         }, 0);
 
-      setStats({
-        totalReferred,
-        totalEarned: parseFloat(totalEarned.toFixed(2)),
-        pendingEarnings: parseFloat(pendingEarnings.toFixed(2)),
-        referrals: referralData,
-      });
+      const safeStats = {
+        totalReferred: Math.max(0, totalReferred || 0),
+        totalEarned: Math.max(0, parseFloat((totalEarned || 0).toFixed(2))),
+        pendingEarnings: Math.max(0, parseFloat((pendingEarnings || 0).toFixed(2))),
+        referrals: Array.isArray(referralData) ? referralData : [],
+      };
+
+      console.log("Setting referral stats:", safeStats);
+      setStats(safeStats);
 
     } catch (err: any) {
       console.error("Error fetching referral stats:", err);
