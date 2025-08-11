@@ -65,7 +65,7 @@ BEGIN
         NEW.user_id,
         NEW.referral_code,
         NEW.id,
-        NEW.referral_discount * 2, -- 10% commission (5% discount * 2)
+        NEW.referral_discount * 0.5, -- 5% commission (10% discount * 0.5)
         CASE WHEN NEW.payment_status = 'paid' THEN 'completed' ELSE 'pending' END
       );
     END IF;
