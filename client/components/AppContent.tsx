@@ -16,9 +16,9 @@ import Terms from "../pages/Terms";
 import Privacy from "../pages/Privacy";
 import OrderTracking from "../pages/OrderTracking";
 import NotFound from "../pages/NotFound";
-import Login from "../pages/NewLogin";
-import Register from "../pages/NewRegister";
-import EmailConfirmation from "../pages/NewEmailConfirmation";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import EmailConfirmation from "../pages/EmailConfirmation";
 
 export function AppContent() {
   const { loading } = useAuth();
