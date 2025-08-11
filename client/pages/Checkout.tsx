@@ -267,7 +267,7 @@ export default function Checkout() {
                     </div>
                     {referralDiscount > 0 && (
                       <div className="flex justify-between text-sm text-green-600">
-                        <span>Referral Discount (5%)</span>
+                        <span>Referral Discount (10%)</span>
                         <span>-${referralDiscount.toFixed(2)}</span>
                       </div>
                     )}
