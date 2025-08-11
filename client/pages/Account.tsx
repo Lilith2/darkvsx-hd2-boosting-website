@@ -647,7 +647,7 @@ export default function Account() {
                   Referral Program
                 </CardTitle>
                 <CardDescription>
-                  Earn 10% commission on every friend you refer! No limits.
+                  Earn 5% commission when friends use your code! They get 10% off.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
