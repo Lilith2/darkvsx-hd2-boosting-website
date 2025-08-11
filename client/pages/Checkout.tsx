@@ -273,6 +273,7 @@ export default function Checkout() {
         transactionId: details.id || data.orderID, // Capture PayPal transaction ID
         referralCode: referralCode || undefined,
         referralDiscount: referralDiscount || undefined,
+        referralCreditsUsed: referralCreditsApplied || undefined,
       });
 
       // Clear cart
