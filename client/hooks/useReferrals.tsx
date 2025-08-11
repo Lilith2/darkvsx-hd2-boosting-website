@@ -14,11 +14,18 @@ export interface Referral {
   updated_at: string;
 }
 
+export interface ReferralCredits {
+  balance: number;
+  totalEarned: number;
+  totalSpent: number;
+}
+
 export interface ReferralStats {
   totalReferred: number;
   totalEarned: number;
   pendingEarnings: number;
   referrals: Referral[];
+  credits: ReferralCredits;
 }
 
 interface ReferralsContextType {
@@ -26,6 +33,8 @@ interface ReferralsContextType {
   loading: boolean;
   error: string | null;
   refreshStats: () => Promise<void>;
+  getUserCredits: () => Promise<number>;
+  hasCredits: (amount: number) => Promise<boolean>;
 }
 
 const ReferralsContext = createContext<ReferralsContextType | undefined>(undefined);
@@ -37,19 +46,31 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
     totalEarned: 0,
     pendingEarnings: 0,
     referrals: [],
+    credits: {
+      balance: 0,
+      totalEarned: 0,
+      totalSpent: 0,
+    },
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getDefaultStats = (): ReferralStats => ({
+    totalReferred: 0,
+    totalEarned: 0,
+    pendingEarnings: 0,
+    referrals: [],
+    credits: {
+      balance: 0,
+      totalEarned: 0,
+      totalSpent: 0,
+    },
+  });
+
   const refreshStats = async () => {
     if (!user?.id) {
       console.log("No user ID, using default stats");
-      setStats({
-        totalReferred: 0,
-        totalEarned: 0,
-        pendingEarnings: 0,
-        referrals: [],
-      });
+      setStats(getDefaultStats());
       setLoading(false);
       return;
     }
@@ -77,12 +98,7 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
           referralsError.message?.includes("referrals")
         ) {
           console.warn("Referrals table not found - using default data. Error:", referralsError.message);
-          setStats({
-            totalReferred: 0,
-            totalEarned: 0,
-            pendingEarnings: 0,
-            referrals: [],
-          });
+          setStats(getDefaultStats());
           setError(null);
           setLoading(false);
           return;
@@ -92,6 +108,39 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
 
       const referralData = referrals || [];
       console.log("Processing referral data:", referralData);
+
+      // Fetch user's referral credits
+      const { data: creditsData, error: creditsError } = await supabase
+        .from("referral_credits")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      console.log("Credits query result:", { creditsData, creditsError });
+
+      // Initialize credits if not found
+      let userCredits = {
+        balance: 0,
+        totalEarned: 0,
+        totalSpent: 0,
+      };
+
+      if (creditsError) {
+        if (creditsError.code === "PGRST116" ||
+            creditsError.message?.includes("referral_credits") ||
+            creditsError.message?.includes("does not exist")) {
+          console.warn("Referral credits table not found - using default values");
+        } else if (creditsError.code !== "PGRST116") {
+          // If user doesn't have a credits record yet, that's normal
+          console.log("User credits record not found, will be created on first use");
+        }
+      } else if (creditsData) {
+        userCredits = {
+          balance: parseFloat(String(creditsData.balance || 0)),
+          totalEarned: parseFloat(String(creditsData.total_earned || 0)),
+          totalSpent: parseFloat(String(creditsData.total_spent || 0)),
+        };
+      }
 
       // Calculate stats with safety checks
       const totalReferred = referralData.length;
@@ -123,6 +172,11 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         totalEarned: Math.max(0, parseFloat((totalEarned || 0).toFixed(2))),
         pendingEarnings: Math.max(0, parseFloat((pendingEarnings || 0).toFixed(2))),
         referrals: Array.isArray(referralData) ? referralData : [],
+        credits: {
+          balance: Math.max(0, parseFloat((userCredits.balance || 0).toFixed(2))),
+          totalEarned: Math.max(0, parseFloat((userCredits.totalEarned || 0).toFixed(2))),
+          totalSpent: Math.max(0, parseFloat((userCredits.totalSpent || 0).toFixed(2))),
+        },
       };
 
       console.log("Setting referral stats:", safeStats);
@@ -137,6 +191,33 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const getUserCredits = async (): Promise<number> => {
+    if (!user?.id) return 0;
+
+    try {
+      const { data: creditsData, error } = await supabase
+        .from("referral_credits")
+        .select("balance")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error) {
+        console.log("No credits record found for user, returning 0");
+        return 0;
+      }
+
+      return parseFloat(String(creditsData?.balance || 0));
+    } catch (err) {
+      console.error("Error fetching user credits:", err);
+      return 0;
+    }
+  };
+
+  const hasCredits = async (amount: number): Promise<boolean> => {
+    const balance = await getUserCredits();
+    return balance >= amount;
+  };
+
   useEffect(() => {
     refreshStats();
   }, [user?.id]);
@@ -148,6 +229,8 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         loading,
         error,
         refreshStats,
+        getUserCredits,
+        hasCredits,
       }}
     >
       {children}
