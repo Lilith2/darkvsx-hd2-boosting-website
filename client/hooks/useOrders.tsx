@@ -153,11 +153,16 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
+      console.log("🔍 Fetching orders from Supabase...");
+
       // Fetch orders with messages and tracking
       const { data: ordersData, error: ordersError } = await supabase
         .from("orders")
         .select("*")
         .order("created_at", { ascending: false });
+
+      console.log("📊 Raw orders data:", ordersData);
+      console.log("❌ Orders error:", ordersError);
 
       if (ordersError) {
         // Check if it's a table not found error (likely means database not set up)
@@ -178,6 +183,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
       // Fetch all messages and tracking for these orders
       const orderIds = ordersData?.map((order) => order.id) || [];
+      console.log("🆔 Order IDs found:", orderIds);
 
       const [messagesResult, trackingResult] = await Promise.all([
         supabase.from("order_messages").select("*").in("order_id", orderIds),
@@ -186,6 +192,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
       const messages = messagesResult.data || [];
       const tracking = trackingResult.data || [];
+      console.log("💬 Messages found:", messages.length);
+      console.log("📈 Tracking entries found:", tracking.length);
 
       // Transform and combine data
       const transformedOrders =
@@ -199,6 +207,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
           return transformOrder(order, orderMessages, orderTracking);
         }) || [];
 
+      console.log("✅ Transformed orders:", transformedOrders.length, transformedOrders);
       setOrders(transformedOrders);
     } catch (err: any) {
       console.error("Error fetching orders:", err);
