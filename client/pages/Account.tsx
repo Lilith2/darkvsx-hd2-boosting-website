@@ -60,6 +60,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getSiteUrl } from "@/lib/config";
 
 export default function Account() {
   const { user, logout } = useAuth();
