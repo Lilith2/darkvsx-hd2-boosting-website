@@ -122,11 +122,14 @@ export default function Contact() {
         orderId: "",
         message: "",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating support ticket:", error);
+
+      const errorMessage = error?.message || "Unknown error occurred";
+
       toast({
         title: "Error creating ticket",
-        description: "Please try again or contact us directly via Discord.",
+        description: `${errorMessage}. Please try again or contact us directly via Discord.`,
         variant: "destructive",
       });
     } finally {
