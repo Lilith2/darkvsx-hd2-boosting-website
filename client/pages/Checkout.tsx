@@ -35,6 +35,7 @@ import {
 import { Link } from "react-router-dom";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { REFERRAL_CONFIG } from "@/lib/config";
+import { useEffect } from "react";
 
 const PAYPAL_CLIENT_ID =
   import.meta.env.VITE_PAYPAL_CLIENT_ID ||
