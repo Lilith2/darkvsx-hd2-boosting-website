@@ -719,7 +719,7 @@ export default function Account() {
                   <Card className="border border-border/50">
                     <CardContent className="p-6 text-center">
                       <Users className="w-10 h-10 text-primary mx-auto mb-3" />
-                      <p className="text-3xl font-bold">{referralStats.totalReferred}</p>
+                      <p className="text-3xl font-bold">{referralError ? "0" : referralStats.totalReferred}</p>
                       <p className="text-sm text-muted-foreground">Friends Referred</p>
                       <p className="text-xs text-muted-foreground mt-1">All time</p>
                     </CardContent>
@@ -727,7 +727,7 @@ export default function Account() {
                   <Card className="border border-border/50">
                     <CardContent className="p-6 text-center">
                       <DollarSign className="w-10 h-10 text-green-600 mx-auto mb-3" />
-                      <p className="text-3xl font-bold text-green-600">${referralStats.totalEarned.toFixed(2)}</p>
+                      <p className="text-3xl font-bold text-green-600">${referralError ? "0.00" : referralStats.totalEarned.toFixed(2)}</p>
                       <p className="text-sm text-muted-foreground">Total Earned</p>
                       <p className="text-xs text-muted-foreground mt-1">Available to spend</p>
                     </CardContent>
@@ -735,7 +735,7 @@ export default function Account() {
                   <Card className="border border-border/50">
                     <CardContent className="p-6 text-center">
                       <Clock className="w-10 h-10 text-blue-600 mx-auto mb-3" />
-                      <p className="text-3xl font-bold text-blue-600">${referralStats.pendingEarnings.toFixed(2)}</p>
+                      <p className="text-3xl font-bold text-blue-600">${referralError ? "0.00" : referralStats.pendingEarnings.toFixed(2)}</p>
                       <p className="text-sm text-muted-foreground">Pending</p>
                       <p className="text-xs text-muted-foreground mt-1">Processing orders</p>
                     </CardContent>
