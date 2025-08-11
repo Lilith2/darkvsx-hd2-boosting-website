@@ -21,6 +21,10 @@ CREATE INDEX IF NOT EXISTS idx_referrals_referrer ON referrals(referrer_user_id)
 CREATE INDEX IF NOT EXISTS idx_referrals_code ON referrals(referral_code);
 CREATE INDEX IF NOT EXISTS idx_orders_referral ON orders(referral_code);
 
+-- Create unique constraint to prevent users from using multiple referral codes
+CREATE UNIQUE INDEX IF NOT EXISTS idx_referrals_one_per_user ON referrals(referred_user_id)
+WHERE referred_user_id IS NOT NULL;
+
 -- Enable RLS (Row Level Security)
 ALTER TABLE referrals ENABLE ROW LEVEL SECURITY;
 
