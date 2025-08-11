@@ -188,14 +188,30 @@ export default function Account() {
   };
 
 
-  const copyReferralCode = () => {
-    navigator.clipboard.writeText(referralCode);
-    setCopied(true);
-    toast({
-      title: "Copied!",
-      description: "Referral code copied to clipboard.",
-    });
-    setTimeout(() => setCopied(false), 2000);
+  const copyReferralCode = async () => {
+    try {
+      await navigator.clipboard.writeText(referralCode);
+      setCopied(true);
+      toast({
+        title: "Copied!",
+        description: "Referral code copied to clipboard.",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      // Fallback for older browsers or if clipboard API fails
+      const textArea = document.createElement('textarea');
+      textArea.value = referralCode;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      toast({
+        title: "Copied!",
+        description: "Referral code copied to clipboard.",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const recentActivity = [
