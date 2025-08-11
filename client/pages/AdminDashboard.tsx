@@ -59,7 +59,7 @@ export default function AdminDashboard() {
     deleteBundle,
     toggleBundleStatus,
   } = useBundles();
-  const { orders, updateOrderStatus, addOrderMessage } = useOrders();
+  const { orders, updateOrderStatus, addOrderMessage, assignBooster, updateOrderProgress } = useOrders();
   
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
@@ -656,10 +656,10 @@ export default function AdminDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Package className="w-5 h-5 mr-2" />
-                  Order Management
+                  Order Management ({orders.filter(order => !order.services.some(s => s.id === "support-ticket")).length})
                 </CardTitle>
                 <CardDescription>
-                  Manage customer orders (excluding support tickets)
+                  Manage customer orders and track delivery progress
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -673,38 +673,198 @@ export default function AdminDashboard() {
                   ) : (
                     orders
                       .filter(order => !order.services.some(s => s.id === "support-ticket"))
+                      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                       .map((order) => (
                         <div
                           key={order.id}
-                          className="border border-border/30 rounded-lg p-4 hover:border-primary/30 transition-colors"
+                          className="border border-border/30 rounded-lg p-6 hover:border-primary/30 transition-colors bg-card/50"
                         >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                              <div>
-                                <p className="font-medium">Order {order.id.slice(0, 8)}...</p>
-                                <p className="text-sm text-muted-foreground">{order.customerName}</p>
-                                <p className="text-xs text-muted-foreground">{order.customerEmail}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium">
-                                  {order.services.map((s) => s.name).join(", ")}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  {new Date(order.createdAt).toLocaleDateString()}
-                                </p>
+                          <div className="space-y-4">
+                            {/* Order Header */}
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-3 mb-2">
+                                  <h3 className="font-semibold text-lg">Order #{order.id.slice(-6)}</h3>
+                                  <Badge className={
+                                    order.status === 'pending' ? 'bg-yellow-500/20 text-yellow-700' :
+                                    order.status === 'processing' ? 'bg-blue-500/20 text-blue-700' :
+                                    order.status === 'in-progress' ? 'bg-purple-500/20 text-purple-700' :
+                                    order.status === 'completed' ? 'bg-green-500/20 text-green-700' :
+                                    'bg-red-500/20 text-red-700'
+                                  }>
+                                    <span className="capitalize">{order.status}</span>
+                                  </Badge>
+                                  <Badge variant="outline" className={
+                                    order.paymentStatus === 'paid' ? 'border-green-500/50 text-green-600' :
+                                    order.paymentStatus === 'pending' ? 'border-yellow-500/50 text-yellow-600' :
+                                    'border-red-500/50 text-red-600'
+                                  }>
+                                    {order.paymentStatus === 'paid' ? 'Paid' : 'Payment ' + order.paymentStatus}
+                                  </Badge>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                  <div>
+                                    <p className="text-muted-foreground">Customer</p>
+                                    <p className="font-medium">{order.customerName}</p>
+                                    <p className="text-xs text-muted-foreground">{order.customerEmail}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground">Services</p>
+                                    <p className="font-medium">
+                                      {order.services.map((s, idx) => (
+                                        <span key={s.id}>
+                                          {s.name}
+                                          {s.quantity > 1 && ` (x${s.quantity})`}
+                                          {idx < order.services.length - 1 && ', '}
+                                        </span>
+                                      ))}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {order.services.reduce((sum, s) => sum + s.quantity, 0)} item(s)
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground">Order Details</p>
+                                    <p className="font-medium text-primary text-xl">${order.totalAmount}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {new Date(order.createdAt).toLocaleString()}
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-3">
-                              <div className="text-right">
-                                <Badge className={
-                                  order.status === 'pending' ? 'bg-yellow-500/20 text-yellow-700' :
-                                  order.status === 'completed' ? 'bg-green-500/20 text-green-700' :
-                                  'bg-blue-500/20 text-blue-700'
-                                }>
-                                  <span className="capitalize">{order.status}</span>
-                                </Badge>
-                                <p className="text-sm font-medium mt-1">${order.totalAmount}</p>
+
+                            {/* Progress Bar (if in progress) */}
+                            {order.status === 'in-progress' && (
+                              <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span>Progress</span>
+                                  <span>{order.progress || 0}%</span>
+                                </div>
+                                <div className="w-full bg-muted rounded-full h-2">
+                                  <div
+                                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                                    style={{ width: `${order.progress || 0}%` }}
+                                  ></div>
+                                </div>
                               </div>
+                            )}
+
+                            {/* Assigned Booster */}
+                            {order.assignedBooster && (
+                              <div className="flex items-center space-x-2 text-sm">
+                                <User className="w-4 h-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">Assigned to:</span>
+                                <span className="font-medium">{order.assignedBooster}</span>
+                              </div>
+                            )}
+
+                            {/* Notes */}
+                            {order.notes && (
+                              <div className="bg-muted/50 p-3 rounded-md">
+                                <p className="text-sm text-muted-foreground mb-1">Order Notes</p>
+                                <p className="text-sm whitespace-pre-wrap">{order.notes}</p>
+                              </div>
+                            )}
+
+                            {/* Recent Messages */}
+                            {order.messages && order.messages.length > 0 && (
+                              <div className="space-y-2">
+                                <p className="text-sm font-medium flex items-center gap-2">
+                                  <MessageSquare className="w-4 h-4" />
+                                  Messages ({order.messages.length})
+                                  {order.messages.filter(m => !m.isRead && m.from === 'customer').length > 0 && (
+                                    <Badge className="bg-red-500/20 text-red-700 text-xs">
+                                      {order.messages.filter(m => !m.isRead && m.from === 'customer').length} new
+                                    </Badge>
+                                  )}
+                                </p>
+                                <div className="max-h-40 overflow-y-auto space-y-2">
+                                  {order.messages.slice(-3).map((message, idx) => (
+                                    <div key={idx} className={`text-xs p-2 rounded ${
+                                      message.from === 'admin' ? 'bg-primary/10 ml-4' : 'bg-muted/70 mr-4'
+                                    }`}>
+                                      <div className="flex justify-between items-center mb-1">
+                                        <span className="font-medium capitalize">
+                                          {message.from === 'admin' ? 'You' : message.from}
+                                        </span>
+                                        <span className="text-muted-foreground">
+                                          {new Date(message.timestamp).toLocaleString()}
+                                        </span>
+                                      </div>
+                                      <p className="whitespace-pre-wrap">{message.message}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Action Buttons */}
+                            <div className="flex flex-wrap gap-2 pt-2 border-t border-border/50">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const newStatus =
+                                    order.status === 'pending' ? 'processing' :
+                                    order.status === 'processing' ? 'in-progress' :
+                                    order.status === 'in-progress' ? 'completed' :
+                                    'pending';
+                                  updateOrderStatus(order.id, newStatus as any);
+                                }}
+                                className="text-xs"
+                              >
+                                {order.status === 'pending' && '▶️ Start Processing'}
+                                {order.status === 'processing' && '🚀 Begin Work'}
+                                {order.status === 'in-progress' && '✅ Mark Complete'}
+                                {order.status === 'completed' && '🔄 Reopen'}
+                              </Button>
+
+                              {order.status !== 'completed' && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    const booster = prompt('Assign booster:', order.assignedBooster || '');
+                                    if (booster !== null) {
+                                      assignBooster(order.id, booster);
+                                    }
+                                  }}
+                                  className="text-xs"
+                                >
+                                  👤 {order.assignedBooster ? 'Change' : 'Assign'} Booster
+                                </Button>
+                              )}
+
+                              {order.status === 'in-progress' && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    const progress = prompt('Update progress (0-100):', String(order.progress || 0));
+                                    if (progress !== null && !isNaN(Number(progress))) {
+                                      updateOrderProgress(order.id, Math.min(100, Math.max(0, Number(progress))));
+                                    }
+                                  }}
+                                  className="text-xs"
+                                >
+                                  📊 Update Progress
+                                </Button>
+                              )}
+
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const message = prompt('Send message to customer:');
+                                  if (message) {
+                                    addOrderMessage(order.id, { from: 'admin', message });
+                                  }
+                                }}
+                                className="text-xs"
+                              >
+                                💬 Send Message
+                              </Button>
                             </div>
                           </div>
                         </div>
