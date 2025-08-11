@@ -96,14 +96,6 @@ export default function Account() {
   ).length;
   const totalOrders = userOrders.length;
   const joinDate = user?.id ? new Date(2024, 0, 1) : new Date(); // Mock join date
-  const loyaltyLevel =
-    totalSpent >= 500
-      ? "Diamond"
-      : totalSpent >= 200
-        ? "Gold"
-        : totalSpent >= 100
-          ? "Silver"
-          : "Bronze";
 
   const [accountData, setAccountData] = useState({
     username: user?.username || "",
