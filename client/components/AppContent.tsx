@@ -51,9 +51,13 @@ export function AppContent() {
       <Layout>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/email-confirmation" element={<EmailConfirmation />} />
+          <Route path="/login" element={<NewLogin />} />
+          <Route path="/register" element={<NewRegister />} />
+          <Route path="/email-confirmation" element={<NewEmailConfirmation />} />
+          {/* Legacy auth routes for fallback */}
+          <Route path="/login-old" element={<Login />} />
+          <Route path="/register-old" element={<Register />} />
+          <Route path="/email-confirmation-old" element={<EmailConfirmation />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route
             path="/cart"
