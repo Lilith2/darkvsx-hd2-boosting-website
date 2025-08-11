@@ -764,6 +764,11 @@ export default function AdminDashboard() {
                                         IP: {order.ipAddress}
                                       </p>
                                     )}
+                                    {order.referralCode && (
+                                      <p className="text-xs text-green-600 mt-1">
+                                        Referral: {order.referralCode} (-${order.referralDiscount?.toFixed(2) || '0.00'})
+                                      </p>
+                                    )}
                                   </div>
                                   <div>
                                     <p className="text-muted-foreground">Services</p>
