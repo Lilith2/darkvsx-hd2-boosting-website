@@ -58,7 +58,6 @@ import {
   TrendingUp,
   Calendar,
   DollarSign,
-  Award,
   Target,
   BarChart3,
   History,
@@ -67,6 +66,8 @@ import {
   Copy,
   Check,
   RefreshCw,
+  Share2,
+  ExternalLink,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
