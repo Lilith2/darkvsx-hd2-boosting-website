@@ -115,3 +115,47 @@ CREATE TRIGGER trigger_update_referral_status
   AFTER UPDATE ON orders
   FOR EACH ROW
   EXECUTE FUNCTION update_referral_status();
+
+-- Create table to track referral credit usage
+CREATE TABLE IF NOT EXISTS referral_credit_usage (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES auth.users(id) NOT NULL,
+  order_id uuid REFERENCES orders(id) NOT NULL,
+  credits_used numeric(10,2) NOT NULL,
+  created_at timestamp with time zone DEFAULT now()
+);
+
+-- Enable RLS for referral credit usage
+ALTER TABLE referral_credit_usage ENABLE ROW LEVEL SECURITY;
+
+-- Create RLS policy for referral credit usage
+CREATE POLICY "Users can view their own credit usage" ON referral_credit_usage
+  FOR SELECT USING (user_id = auth.uid());
+
+-- Create function to track referral credit usage
+CREATE OR REPLACE FUNCTION handle_referral_credit_usage()
+RETURNS trigger AS $$
+BEGIN
+  -- If order uses referral credits, record the usage
+  IF NEW.referral_credits_used > 0 AND NEW.payment_status = 'paid' THEN
+    INSERT INTO referral_credit_usage (
+      user_id,
+      order_id,
+      credits_used
+    ) VALUES (
+      NEW.user_id,
+      NEW.id,
+      NEW.referral_credits_used
+    );
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create trigger for credit usage tracking
+DROP TRIGGER IF EXISTS trigger_handle_referral_credit_usage ON orders;
+CREATE TRIGGER trigger_handle_referral_credit_usage
+  AFTER INSERT ON orders
+  FOR EACH ROW
+  EXECUTE FUNCTION handle_referral_credit_usage();
