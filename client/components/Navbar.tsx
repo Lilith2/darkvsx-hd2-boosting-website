@@ -185,6 +185,13 @@ export function Navbar() {
                       </Link>
                     )}
                     <Link
+                      to="/account"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Account
+                    </Link>
+                    <Link
                       to="/cart"
                       className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
                       onClick={() => setMobileMenuOpen(false)}
