@@ -106,14 +106,6 @@ export default function Account() {
     confirmPassword: "",
   });
 
-  const [preferences, setPreferences] = useState({
-    emailNotifications: true,
-    orderUpdates: true,
-    promotions: false,
-    discordNotifications: true,
-    timezone: "UTC",
-    language: "en",
-  });
 
   const [favoriteServices] = useState([
     {
