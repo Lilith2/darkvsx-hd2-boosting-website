@@ -263,6 +263,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
             assigned_booster: orderData.assignedBooster,
             estimated_completion: orderData.estimatedCompletion,
             notes: orderData.notes,
+            transaction_id: orderData.transactionId,
             ip_address: ipAddress, // Add IP address for PayPal chargeback protection
           },
         ])
