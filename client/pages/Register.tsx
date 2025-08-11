@@ -1,114 +1,53 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
-import { AuthContainer } from "@/components/auth/AuthContainer";
-import { AnimatedInput } from "@/components/auth/AnimatedInput";
-import { AnimatedButton } from "@/components/auth/AnimatedButton";
-import { PasswordStrength } from "@/components/auth/PasswordStrength";
-import { StepIndicator } from "@/components/auth/StepIndicator";
+import { Button } from "@/components/ui/button";
 import {
-  User,
-  Mail,
-  Lock,
-  Shield,
-  CheckCircle,
-  AlertTriangle,
-} from "lucide-react";
-import { validateField, validationRules } from "@/lib/validation";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Mail, Lock, Eye, EyeOff, User, AlertTriangle, CheckCircle, Zap } from "lucide-react";
 
-const steps = [
-  { id: "info", title: "Info", description: "Basic details" },
-  { id: "security", title: "Security", description: "Password setup" },
-  { id: "verify", title: "Verify", description: "Email confirmation" },
-];
-
-export default function NewRegister() {
-  const [currentStep, setCurrentStep] = useState("info");
-  const [completedSteps, setCompletedSteps] = useState<string[]>([]);
+export default function Register() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
-    agreeToTerms: false,
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [generalError, setGeneralError] = useState("");
 
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const validateCurrentStep = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (currentStep === "info") {
-      const usernameValidation = validateField(
-        formData.username,
-        validationRules.username,
-      );
-      if (!usernameValidation.isValid) {
-        newErrors.username = usernameValidation.errors[0];
-      }
-
-      const emailValidation = validateField(
-        formData.email,
-        validationRules.email,
-      );
-      if (!emailValidation.isValid) {
-        newErrors.email = emailValidation.errors[0];
-      }
-    }
-
-    if (currentStep === "security") {
-      const passwordValidation = validateField(
-        formData.password,
-        validationRules.password,
-      );
-      if (!passwordValidation.isValid) {
-        newErrors.password = passwordValidation.errors[0];
-      }
-
-      const confirmPasswordValidation = validateField(
-        formData.confirmPassword,
-        validationRules.confirmPassword(formData.password),
-      );
-      if (!confirmPasswordValidation.isValid) {
-        newErrors.confirmPassword = confirmPasswordValidation.errors[0];
-      }
-
-      if (!formData.agreeToTerms) {
-        newErrors.terms = "You must agree to the terms and conditions";
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleNext = () => {
-    if (!validateCurrentStep()) return;
-
-    if (currentStep === "info") {
-      setCompletedSteps((prev) => [...prev, "info"]);
-      setCurrentStep("security");
-    } else if (currentStep === "security") {
-      handleSubmit();
-    }
-  };
-
-  const handleBack = () => {
-    if (currentStep === "security") {
-      setCurrentStep("info");
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!validateCurrentStep()) return;
-
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
-    setGeneralError("");
+    setError("");
+    setSuccess("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords don't match!");
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const success = await register(
@@ -118,296 +57,222 @@ export default function NewRegister() {
       );
 
       if (success) {
-        setCompletedSteps((prev) => [...prev, "security"]);
-        setCurrentStep("verify");
-
+        setSuccess(
+          "Account created successfully! Redirecting to email confirmation...",
+        );
         setTimeout(() => {
           navigate(
             `/email-confirmation?email=${encodeURIComponent(formData.email)}&type=signup`,
           );
-        }, 2000);
+        }, 1500);
       } else {
-        setGeneralError(
-          "Registration failed. This email may already be in use.",
-        );
+        setError("Registration failed. Please try again.");
       }
     } catch (err) {
-      setGeneralError(
-        "Registration failed. Please check your connection and try again.",
-      );
+      setError("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
-    }
-    if (generalError) {
-      setGeneralError("");
-    }
-  };
-
-  const canProceed = () => {
-    if (currentStep === "info") {
-      return (
-        formData.username && formData.email && !errors.username && !errors.email
-      );
-    }
-    if (currentStep === "security") {
-      return (
-        formData.password &&
-        formData.confirmPassword &&
-        formData.agreeToTerms &&
-        !errors.password &&
-        !errors.confirmPassword
-      );
-    }
-    return false;
-  };
-
   return (
-    <AuthContainer
-      title="Join HelldiversBoost"
-      subtitle="Create your account and start your elite journey"
-    >
-      <StepIndicator
-        steps={steps}
-        currentStep={currentStep}
-        completedSteps={completedSteps}
-      />
-
-      <AnimatePresence>
-        {generalError && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="bg-red-500/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-lg text-sm mb-6 flex items-center space-x-2"
-          >
-            <AlertTriangle className="w-4 h-4" />
-            <span>{generalError}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence mode="wait">
-        {currentStep === "info" && (
-          <motion.div
-            key="info"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
-          >
-            <AnimatedInput
-              label="Username"
-              type="text"
-              placeholder="Choose a unique username"
-              value={formData.username}
-              onChange={(value) => handleInputChange("username", value)}
-              error={errors.username}
-              success={formData.username && !errors.username}
-              icon={<User className="w-4 h-4" />}
-            />
-
-            <AnimatedInput
-              label="Email Address"
-              type="email"
-              placeholder="Enter your email address"
-              value={formData.email}
-              onChange={(value) => handleInputChange("email", value)}
-              error={errors.email}
-              success={formData.email && !errors.email}
-              icon={<Mail className="w-4 h-4" />}
-            />
-
-            <div className="flex space-x-3 pt-4">
-              <AnimatedButton
-                onClick={handleNext}
-                disabled={!canProceed()}
-                className="flex-1"
-              >
-                Continue
-              </AnimatedButton>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/50 p-4">
+      <div className="w-full max-w-md">
+        {/* Header with branding */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center space-x-3 mb-4">
+            <div className="w-12 h-12">
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64"
+                alt="HelldiversBoost Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
-          </motion.div>
-        )}
+            <div>
+              <div className="text-lg font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
+                HELLDIVERS II
+              </div>
+              <div className="text-sm text-primary font-semibold">BOOSTING</div>
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Create Account</h1>
+          <p className="text-muted-foreground">
+            Join the elite helldivers and start boosting your gameplay
+          </p>
+        </div>
 
-        {currentStep === "security" && (
-          <motion.div
-            key="security"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
-          >
-            <AnimatedInput
-              label="Password"
-              type="password"
-              placeholder="Create a strong password"
-              value={formData.password}
-              onChange={(value) => handleInputChange("password", value)}
-              error={errors.password}
-              icon={<Lock className="w-4 h-4" />}
-              showPasswordToggle
-            />
+        <Card className="border-border/50 shadow-xl">
+          <CardContent className="p-6">
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-            <PasswordStrength password={formData.password} />
+            {success && (
+              <Alert className="mb-4 border-green-500/20 bg-green-500/10">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-600">
+                  {success}
+                </AlertDescription>
+              </Alert>
+            )}
 
-            <AnimatedInput
-              label="Confirm Password"
-              type="password"
-              placeholder="Confirm your password"
-              value={formData.confirmPassword}
-              onChange={(value) => handleInputChange("confirmPassword", value)}
-              error={errors.confirmPassword}
-              success={
-                formData.confirmPassword &&
-                formData.password === formData.confirmPassword
-              }
-              icon={<Shield className="w-4 h-4" />}
-              showPasswordToggle
-            />
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="username"
+                    type="text"
+                    placeholder="Choose a username"
+                    className="pl-10"
+                    value={formData.username}
+                    onChange={(e) =>
+                      setFormData({ ...formData, username: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+              </div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="space-y-4"
-            >
-              <label className="flex items-start space-x-3 text-sm text-gray-300 cursor-pointer">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    className="pl-10"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a password"
+                    className="pl-10 pr-10"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    className="pl-10 pr-10"
+                    value={formData.confirmPassword}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        confirmPassword: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-2">
                 <input
                   type="checkbox"
-                  checked={formData.agreeToTerms}
-                  onChange={(e) =>
-                    handleInputChange("agreeToTerms", e.target.checked)
-                  }
-                  className="mt-1 rounded border-white/20 bg-white/10 text-orange-500 focus:ring-orange-500/20"
+                  className="rounded border-border mt-1"
+                  required
                 />
-                <span className="leading-relaxed">
+                <label className="text-xs text-muted-foreground leading-relaxed">
                   I agree to the{" "}
-                  <Link
-                    to="/terms"
-                    className="text-orange-400 hover:text-orange-300 underline"
-                  >
+                  <Link to="/terms" className="text-primary hover:underline">
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link
-                    to="/privacy"
-                    className="text-orange-400 hover:text-orange-300 underline"
-                  >
+                  <Link to="/privacy" className="text-primary hover:underline">
                     Privacy Policy
                   </Link>
-                </span>
-              </label>
+                </label>
+              </div>
 
-              {errors.terms && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-400 text-xs flex items-center space-x-1"
-                >
-                  <AlertTriangle className="w-3 h-3" />
-                  <span>{errors.terms}</span>
-                </motion.div>
-              )}
-            </motion.div>
-
-            <div className="flex space-x-3 pt-4">
-              <AnimatedButton
-                variant="outline"
-                onClick={handleBack}
+              <Button 
+                type="submit" 
+                className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-lg hover:shadow-xl transition-all duration-200" 
                 disabled={isLoading}
-                className="flex-1"
               >
-                Back
-              </AnimatedButton>
-              <AnimatedButton
-                type="submit"
-                loading={isLoading}
-                disabled={!canProceed() || isLoading}
-                onClick={handleNext}
-                className="flex-1"
-              >
-                {isLoading ? "Creating Account..." : "Create Account"}
-              </AnimatedButton>
-            </div>
-          </motion.div>
-        )}
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2"></div>
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 mr-2" />
+                    Create Account
+                  </>
+                )}
+              </Button>
+            </form>
 
-        {currentStep === "verify" && (
-          <motion.div
-            key="verify"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="text-center space-y-6"
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 200 }}
-              className="w-16 h-16 mx-auto bg-green-500/20 rounded-full flex items-center justify-center"
-            >
-              <CheckCircle className="w-8 h-8 text-green-400" />
-            </motion.div>
-
-            <div>
-              <h3 className="text-xl font-semibold text-white mb-2">
-                Account Created!
-              </h3>
-              <p className="text-gray-300 text-sm">
-                We've sent a confirmation email to{" "}
-                <strong>{formData.email}</strong>
-              </p>
+            <div className="mt-6">
+              <Separator className="my-4" />
+              <div className="text-center text-sm text-muted-foreground">
+                Already have an account?{" "}
+                <Link
+                  to="/login"
+                  className="text-primary hover:text-primary/80 font-medium hover:underline"
+                >
+                  Sign in
+                </Link>
+              </div>
             </div>
-
-            <div className="bg-white/5 border border-white/10 rounded-lg p-4 text-sm text-gray-300">
-              <p>Redirecting to email verification...</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {currentStep !== "verify" && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-8 text-center"
-        >
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/20" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-gray-400">
-                Already have an account?
-              </span>
-            </div>
-          </div>
-
-          <Link
-            to="/login"
-            className="mt-4 inline-flex items-center text-orange-400 hover:text-orange-300 transition-colors font-medium"
-          >
-            Sign in here
-            <motion.span
-              className="ml-1"
-              animate={{ x: [0, 4, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              →
-            </motion.span>
-          </Link>
-        </motion.div>
-      )}
-    </AuthContainer>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
