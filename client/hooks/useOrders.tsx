@@ -150,6 +150,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     ipAddress: order.ip_address || undefined,
     referralCode: order.referral_code || undefined,
     referralDiscount: order.referral_discount ? parseFloat(Number(order.referral_discount).toFixed(2)) : undefined,
+    referralCreditsUsed: order.referral_credits_used ? parseFloat(Number(order.referral_credits_used).toFixed(2)) : undefined,
     referredByUserId: order.referred_by_user_id || undefined,
     messages: messages.map((msg) => ({
       id: msg.id,
