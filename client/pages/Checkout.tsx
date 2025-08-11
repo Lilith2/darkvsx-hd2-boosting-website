@@ -76,45 +76,8 @@ export default function Checkout() {
       }
 
       try {
-        const { supabase } = await import("@/integrations/supabase/client");
-
-        // Get total earned credits
-        const { data: referrals, error: referralsError } = await supabase
-          .from("referrals")
-          .select("commission_amount")
-          .eq("referrer_user_id", user.id)
-          .eq("status", "completed");
-
-        // Get total used credits
-        const { data: usedCredits, error: usedError } = await supabase
-          .from("referral_credit_usage")
-          .select("credits_used")
-          .eq("user_id", user.id);
-
-        if (referralsError || usedError) {
-          if (
-            (referralsError && (referralsError.code === "PGRST116" || referralsError.message?.includes("relation"))) ||
-            (usedError && (usedError.code === "PGRST116" || usedError.message?.includes("relation")))
-          ) {
-            console.warn("Referrals/usage tables not found");
-            setAvailableCredits(0);
-            return;
-          }
-          throw referralsError || usedError;
-        }
-
-        const totalEarned = (referrals || []).reduce((sum, r) => {
-          const amount = parseFloat(r.commission_amount) || 0;
-          return sum + amount;
-        }, 0);
-
-        const totalUsed = (usedCredits || []).reduce((sum, u) => {
-          const amount = parseFloat(u.credits_used) || 0;
-          return sum + amount;
-        }, 0);
-
-        const availableBalance = totalEarned - totalUsed;
-        setAvailableCredits(parseFloat(Math.max(0, availableBalance).toFixed(2)));
+        const balance = await getUserCredits();
+        setAvailableCredits(balance);
       } catch (err) {
         console.error("Error fetching referral credits:", err);
         setAvailableCredits(0);
@@ -122,7 +85,7 @@ export default function Checkout() {
     };
 
     fetchReferralCredits();
-  }, [user?.id]);
+  }, [user?.id, getUserCredits]);
 
   const validateReferralCode = async (code: string) => {
     if (!code.trim()) {
