@@ -207,28 +207,12 @@ export default function NewLogin() {
           className="mt-4 inline-flex items-center text-orange-400 hover:text-orange-300 transition-colors font-medium"
         >
           Create your account
-          <motion.span
-            className="ml-1"
-            animate={{ x: [0, 4, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
+          <span className="ml-1">
             →
-          </motion.span>
+          </span>
         </Link>
       </motion.div>
 
-      {/* Admin info */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        className="mt-6 p-4 bg-white/5 border border-white/10 rounded-lg"
-      >
-        <p className="text-xs text-gray-400 text-center">
-          <span className="font-medium text-orange-400">Admin Access:</span> Use
-          @helldivers.com email addresses for admin privileges
-        </p>
-      </motion.div>
     </AuthContainer>
   );
 }
