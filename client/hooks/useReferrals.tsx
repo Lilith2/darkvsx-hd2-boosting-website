@@ -43,6 +43,7 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
 
   const refreshStats = async () => {
     if (!user?.id) {
+      console.log("No user ID, using default stats");
       setStats({
         totalReferred: 0,
         totalEarned: 0,
@@ -56,6 +57,7 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       setError(null);
+      console.log("Fetching referrals for user:", user.id);
 
       // Fetch user's referrals
       const { data: referrals, error: referralsError } = await supabase
@@ -63,6 +65,8 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         .select("*")
         .eq("referrer_user_id", user.id)
         .order("created_at", { ascending: false });
+
+      console.log("Referrals query result:", { referrals, referralsError });
 
       if (referralsError) {
         // Handle case where referrals table doesn't exist yet
