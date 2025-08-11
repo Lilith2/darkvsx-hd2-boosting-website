@@ -799,17 +799,59 @@ export default function Account() {
                     <CardDescription>Track your successful referrals and earnings</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-8">
-                      <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                      <h3 className="font-medium mb-2">No referrals yet</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Start sharing your code to see your earnings here
-                      </p>
-                      <Button onClick={copyReferralCode} className="bg-primary hover:bg-primary/90">
-                        <Share2 className="w-4 h-4 mr-2" />
-                        Copy Referral Code
-                      </Button>
-                    </div>
+                    {referralLoading ? (
+                      <div className="text-center py-8">
+                        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                        <p className="text-sm text-muted-foreground">Loading referral history...</p>
+                      </div>
+                    ) : referralStats.referrals.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                        <h3 className="font-medium mb-2">No referrals yet</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          Start sharing your code to see your earnings here
+                        </p>
+                        <Button onClick={copyReferralCode} className="bg-primary hover:bg-primary/90">
+                          <Share2 className="w-4 h-4 mr-2" />
+                          Copy Referral Code
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {referralStats.referrals.map((referral) => (
+                          <div key={referral.id} className="flex items-center justify-between p-4 border border-border/30 rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                referral.status === 'completed' ? 'bg-green-500/20 text-green-600' :
+                                referral.status === 'pending' ? 'bg-yellow-500/20 text-yellow-600' :
+                                'bg-red-500/20 text-red-600'
+                              }`}>
+                                {referral.status === 'completed' ? '✓' :
+                                 referral.status === 'pending' ? '○' : '✗'}
+                              </div>
+                              <div>
+                                <p className="font-medium text-sm">Order #{referral.order_id.slice(-6)}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(referral.created_at).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className={`font-bold ${
+                                referral.status === 'completed' ? 'text-green-600' :
+                                referral.status === 'pending' ? 'text-yellow-600' :
+                                'text-red-600'
+                              }`}>
+                                ${parseFloat(referral.commission_amount).toFixed(2)}
+                              </p>
+                              <p className="text-xs text-muted-foreground capitalize">
+                                {referral.status}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </CardContent>
