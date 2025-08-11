@@ -92,10 +92,16 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       const totalReferred = referralData.length;
       const totalEarned = referralData
         .filter(r => r.status === "completed")
-        .reduce((sum, r) => sum + parseFloat(r.commission_amount), 0);
+        .reduce((sum, r) => {
+          const amount = parseFloat(r.commission_amount) || 0;
+          return sum + (isNaN(amount) ? 0 : amount);
+        }, 0);
       const pendingEarnings = referralData
         .filter(r => r.status === "pending")
-        .reduce((sum, r) => sum + parseFloat(r.commission_amount), 0);
+        .reduce((sum, r) => {
+          const amount = parseFloat(r.commission_amount) || 0;
+          return sum + (isNaN(amount) ? 0 : amount);
+        }, 0);
 
       setStats({
         totalReferred,
