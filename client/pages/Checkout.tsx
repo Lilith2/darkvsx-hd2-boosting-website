@@ -136,6 +136,8 @@ export default function Checkout() {
         paymentStatus: "paid", // Only set to paid after successful PayPal payment
         notes: orderNotes,
         transactionId: details.id || data.orderID, // Capture PayPal transaction ID
+        referralCode: referralCode || undefined,
+        referralDiscount: referralDiscount || undefined,
       });
 
       // Clear cart
