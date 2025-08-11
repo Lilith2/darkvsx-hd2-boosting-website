@@ -198,12 +198,6 @@ export default function Account() {
     }));
   };
 
-  const handlePreferencesUpdate = () => {
-    toast({
-      title: "Preferences Updated",
-      description: "Your notification preferences have been saved.",
-    });
-  };
 
   const copyReferralCode = () => {
     navigator.clipboard.writeText(referralCode);
