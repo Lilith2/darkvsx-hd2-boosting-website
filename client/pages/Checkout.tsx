@@ -88,6 +88,32 @@ export default function Checkout() {
       return;
     }
 
+    // Check if user has already used a referral code before (if authenticated)
+    if (user?.id) {
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data: existingReferrals, error } = await supabase
+          .from("referrals")
+          .select("id")
+          .eq("referred_user_id", user.id)
+          .limit(1);
+
+        if (error && !error.message?.includes("relation")) {
+          console.error("Error checking existing referrals:", error);
+        } else if (existingReferrals && existingReferrals.length > 0) {
+          toast({
+            title: "Already used referral",
+            description: "You have already used a referral code before. Each user can only use one referral code.",
+            variant: "destructive",
+          });
+          return;
+        }
+      } catch (err) {
+        console.warn("Could not check referral history:", err);
+        // Continue anyway if there's an error checking
+      }
+    }
+
     // Apply 10% discount for valid referral code
     const discountAmount = subtotal * REFERRAL_CONFIG.customerDiscount;
     setReferralDiscount(discountAmount);
