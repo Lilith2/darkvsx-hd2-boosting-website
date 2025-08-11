@@ -684,7 +684,7 @@ export default function Account() {
                       size="sm"
                       variant="outline"
                       onClick={async () => {
-                        const text = `🎮 Get boosted in Helldivers 2! Use my code "${referralCode}" for 5% off your first order: https://helldivers-boost.com`;
+                        const text = `🎮 Get boosted in Helldivers 2! Use my code "${referralCode}" for 10% off your first order: ${getSiteUrl()}`;
                         try {
                           await navigator.clipboard.writeText(text);
                           toast({ title: "Message copied!", description: "Ready to share on Discord or social media" });
