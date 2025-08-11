@@ -130,7 +130,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     customerName: order.customer_name,
     services: order.services,
     status: order.status,
-    totalAmount: Number(order.total_amount),
+    totalAmount: parseFloat(Number(order.total_amount).toFixed(2)),
     paymentStatus: order.payment_status,
     createdAt: order.created_at,
     updatedAt: order.updated_at,
@@ -138,6 +138,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     assignedBooster: order.assigned_booster,
     estimatedCompletion: order.estimated_completion,
     notes: order.notes,
+    transactionId: order.transaction_id,
+    ipAddress: order.ip_address,
     messages: messages.map((msg) => ({
       id: msg.id,
       from: msg.from as "customer" | "admin" | "booster",
