@@ -78,6 +78,7 @@ export interface OrderData {
   ipAddress?: string;
   referralCode?: string;
   referralDiscount?: number;
+  referralCreditsUsed?: number;
   referredByUserId?: string;
   messages: {
     id: string;
