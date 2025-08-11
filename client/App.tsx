@@ -31,9 +31,15 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  useEffect(() => {
+    // Initialize analytics and performance tracking
+    initializeAnalytics();
+  }, []);
+
   return (
     <ErrorBoundary>
       <AccessibilityWrapper>
+        <SEOHead />
         <QueryClientProvider client={queryClient}>
           <TooltipProvider>
             <AuthProvider>
