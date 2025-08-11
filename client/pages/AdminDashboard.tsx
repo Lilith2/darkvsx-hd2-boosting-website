@@ -923,10 +923,43 @@ export default function AdminDashboard() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => {
+                                onClick={async () => {
                                   const message = prompt('Send message to customer:');
                                   if (message) {
-                                    addOrderMessage(order.id, { from: 'admin', message });
+                                    try {
+                                      // Add message to database
+                                      await addOrderMessage(order.id, { from: 'admin', message });
+
+                                      // Send email notification
+                                      try {
+                                        await sendTicketReplyEmail({
+                                          to: order.customerEmail,
+                                          subject: `Order Update #${order.id.slice(-6)}`,
+                                          message: message,
+                                          ticketId: order.id,
+                                          customerName: order.customerName
+                                        });
+
+                                        toast({
+                                          title: "Message sent!",
+                                          description: `Update sent to ${order.customerEmail}`,
+                                        });
+                                      } catch (emailError) {
+                                        console.error("Email error:", emailError);
+                                        toast({
+                                          title: "Message saved but email failed",
+                                          description: "Message was saved but email notification failed.",
+                                          variant: "destructive",
+                                        });
+                                      }
+                                    } catch (error) {
+                                      console.error("Error sending message:", error);
+                                      toast({
+                                        title: "Error sending message",
+                                        description: "Failed to send message. Please try again.",
+                                        variant: "destructive",
+                                      });
+                                    }
                                   }
                                 }}
                                 className="text-xs"
