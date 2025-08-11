@@ -163,18 +163,6 @@ export default function Account() {
     }
   };
 
-  const getLoyaltyColor = (level: string) => {
-    switch (level) {
-      case "Diamond":
-        return "text-blue-400";
-      case "Gold":
-        return "text-yellow-400";
-      case "Silver":
-        return "text-gray-400";
-      default:
-        return "text-orange-400";
-    }
-  };
 
   const handleAccountUpdate = (e: React.FormEvent) => {
     e.preventDefault();
