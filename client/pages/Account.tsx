@@ -434,51 +434,39 @@ export default function Account() {
               </Card>
             </div>
 
-            {/* Progress Toward Next Level */}
+            {/* Quick Referral Overview */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Target className="w-5 h-5 mr-2" />
-                  Loyalty Progress
+                  <Gift className="w-5 h-5 mr-2" />
+                  Referral Quick Stats
                 </CardTitle>
                 <CardDescription>
-                  Progress toward your next loyalty level
+                  Share your code and earn rewards
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span>Current: {loyaltyLevel}</span>
-                    <span>
-                      Next:{" "}
-                      {loyaltyLevel === "Bronze"
-                        ? "Silver ($100)"
-                        : loyaltyLevel === "Silver"
-                          ? "Gold ($200)"
-                          : loyaltyLevel === "Gold"
-                            ? "Diamond ($500)"
-                            : "Max Level"}
-                    </span>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-primary/5 rounded-lg">
+                    <Users className="w-6 h-6 text-primary mx-auto mb-2" />
+                    <p className="text-xl font-bold">0</p>
+                    <p className="text-sm text-muted-foreground">Referred</p>
                   </div>
-                  <Progress
-                    value={
-                      loyaltyLevel === "Diamond"
-                        ? 100
-                        : (totalSpent /
-                            (loyaltyLevel === "Bronze"
-                              ? 100
-                              : loyaltyLevel === "Silver"
-                                ? 200
-                                : 500)) *
-                          100
-                    }
-                    className="h-2"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {loyaltyLevel === "Diamond"
-                      ? "You've reached the highest level!"
-                      : `Spend $${(loyaltyLevel === "Bronze" ? 100 : loyaltyLevel === "Silver" ? 200 : 500) - totalSpent} more to reach the next level`}
-                  </p>
+                  <div className="text-center p-4 bg-green-500/5 rounded-lg">
+                    <DollarSign className="w-6 h-6 text-green-600 mx-auto mb-2" />
+                    <p className="text-xl font-bold">$0</p>
+                    <p className="text-sm text-muted-foreground">Earned</p>
+                  </div>
+                  <div className="text-center p-4 bg-blue-500/5 rounded-lg">
+                    <Share2 className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                    <div className="flex items-center justify-center space-x-1">
+                      <Input value={referralCode} readOnly className="text-xs h-6 text-center" />
+                      <Button onClick={copyReferralCode} size="sm" variant="ghost" className="h-6 w-6 p-0">
+                        {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                      </Button>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">Your Code</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
