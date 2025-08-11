@@ -7,7 +7,14 @@ import { AnimatedInput } from "@/components/auth/AnimatedInput";
 import { AnimatedButton } from "@/components/auth/AnimatedButton";
 import { PasswordStrength } from "@/components/auth/PasswordStrength";
 import { StepIndicator } from "@/components/auth/StepIndicator";
-import { User, Mail, Lock, Shield, CheckCircle, AlertTriangle } from "lucide-react";
+import {
+  User,
+  Mail,
+  Lock,
+  Shield,
+  CheckCircle,
+  AlertTriangle,
+} from "lucide-react";
 import { validateField, validationRules } from "@/lib/validation";
 
 const steps = [
@@ -37,26 +44,35 @@ export default function NewRegister() {
     const newErrors: Record<string, string> = {};
 
     if (currentStep === "info") {
-      const usernameValidation = validateField(formData.username, validationRules.username);
+      const usernameValidation = validateField(
+        formData.username,
+        validationRules.username,
+      );
       if (!usernameValidation.isValid) {
         newErrors.username = usernameValidation.errors[0];
       }
 
-      const emailValidation = validateField(formData.email, validationRules.email);
+      const emailValidation = validateField(
+        formData.email,
+        validationRules.email,
+      );
       if (!emailValidation.isValid) {
         newErrors.email = emailValidation.errors[0];
       }
     }
 
     if (currentStep === "security") {
-      const passwordValidation = validateField(formData.password, validationRules.password);
+      const passwordValidation = validateField(
+        formData.password,
+        validationRules.password,
+      );
       if (!passwordValidation.isValid) {
         newErrors.password = passwordValidation.errors[0];
       }
 
       const confirmPasswordValidation = validateField(
-        formData.confirmPassword, 
-        validationRules.confirmPassword(formData.password)
+        formData.confirmPassword,
+        validationRules.confirmPassword(formData.password),
       );
       if (!confirmPasswordValidation.isValid) {
         newErrors.confirmPassword = confirmPasswordValidation.errors[0];
@@ -75,7 +91,7 @@ export default function NewRegister() {
     if (!validateCurrentStep()) return;
 
     if (currentStep === "info") {
-      setCompletedSteps(prev => [...prev, "info"]);
+      setCompletedSteps((prev) => [...prev, "info"]);
       setCurrentStep("security");
     } else if (currentStep === "security") {
       handleSubmit();
@@ -95,31 +111,41 @@ export default function NewRegister() {
     setGeneralError("");
 
     try {
-      const success = await register(formData.email, formData.password, formData.username);
+      const success = await register(
+        formData.email,
+        formData.password,
+        formData.username,
+      );
 
       if (success) {
-        setCompletedSteps(prev => [...prev, "security"]);
+        setCompletedSteps((prev) => [...prev, "security"]);
         setCurrentStep("verify");
-        
+
         setTimeout(() => {
-          navigate(`/email-confirmation?email=${encodeURIComponent(formData.email)}&type=signup`);
+          navigate(
+            `/email-confirmation?email=${encodeURIComponent(formData.email)}&type=signup`,
+          );
         }, 2000);
       } else {
-        setGeneralError("Registration failed. This email may already be in use.");
+        setGeneralError(
+          "Registration failed. This email may already be in use.",
+        );
       }
     } catch (err) {
-      setGeneralError("Registration failed. Please check your connection and try again.");
+      setGeneralError(
+        "Registration failed. Please check your connection and try again.",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
     if (generalError) {
       setGeneralError("");
@@ -128,11 +154,18 @@ export default function NewRegister() {
 
   const canProceed = () => {
     if (currentStep === "info") {
-      return formData.username && formData.email && !errors.username && !errors.email;
+      return (
+        formData.username && formData.email && !errors.username && !errors.email
+      );
     }
     if (currentStep === "security") {
-      return formData.password && formData.confirmPassword && formData.agreeToTerms && 
-             !errors.password && !errors.confirmPassword;
+      return (
+        formData.password &&
+        formData.confirmPassword &&
+        formData.agreeToTerms &&
+        !errors.password &&
+        !errors.confirmPassword
+      );
     }
     return false;
   };
@@ -142,10 +175,10 @@ export default function NewRegister() {
       title="Join HelldiversBoost"
       subtitle="Create your account and start your elite journey"
     >
-      <StepIndicator 
-        steps={steps} 
-        currentStep={currentStep} 
-        completedSteps={completedSteps} 
+      <StepIndicator
+        steps={steps}
+        currentStep={currentStep}
+        completedSteps={completedSteps}
       />
 
       <AnimatePresence>
@@ -233,7 +266,10 @@ export default function NewRegister() {
               value={formData.confirmPassword}
               onChange={(value) => handleInputChange("confirmPassword", value)}
               error={errors.confirmPassword}
-              success={formData.confirmPassword && formData.password === formData.confirmPassword}
+              success={
+                formData.confirmPassword &&
+                formData.password === formData.confirmPassword
+              }
               icon={<Shield className="w-4 h-4" />}
               showPasswordToggle
             />
@@ -248,16 +284,24 @@ export default function NewRegister() {
                 <input
                   type="checkbox"
                   checked={formData.agreeToTerms}
-                  onChange={(e) => handleInputChange("agreeToTerms", e.target.checked)}
+                  onChange={(e) =>
+                    handleInputChange("agreeToTerms", e.target.checked)
+                  }
                   className="mt-1 rounded border-white/20 bg-white/10 text-orange-500 focus:ring-orange-500/20"
                 />
                 <span className="leading-relaxed">
                   I agree to the{" "}
-                  <Link to="/terms" className="text-orange-400 hover:text-orange-300 underline">
+                  <Link
+                    to="/terms"
+                    className="text-orange-400 hover:text-orange-300 underline"
+                  >
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link to="/privacy" className="text-orange-400 hover:text-orange-300 underline">
+                  <Link
+                    to="/privacy"
+                    className="text-orange-400 hover:text-orange-300 underline"
+                  >
                     Privacy Policy
                   </Link>
                 </span>
@@ -315,9 +359,12 @@ export default function NewRegister() {
             </motion.div>
 
             <div>
-              <h3 className="text-xl font-semibold text-white mb-2">Account Created!</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                Account Created!
+              </h3>
               <p className="text-gray-300 text-sm">
-                We've sent a confirmation email to <strong>{formData.email}</strong>
+                We've sent a confirmation email to{" "}
+                <strong>{formData.email}</strong>
               </p>
             </div>
 

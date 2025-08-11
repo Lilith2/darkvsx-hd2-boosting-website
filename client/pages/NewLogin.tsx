@@ -24,7 +24,7 @@ export default function NewLogin() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (searchParams.get('confirmed') === 'true') {
+    if (searchParams.get("confirmed") === "true") {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 5000);
     }
@@ -32,8 +32,11 @@ export default function NewLogin() {
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
-    const emailValidation = validateField(formData.email, validationRules.email);
+
+    const emailValidation = validateField(
+      formData.email,
+      validationRules.email,
+    );
     if (!emailValidation.isValid) {
       newErrors.email = emailValidation.errors[0];
     }
@@ -58,24 +61,26 @@ export default function NewLogin() {
       const success = await login(formData.email, formData.password);
 
       if (success) {
-        await new Promise(resolve => setTimeout(resolve, 500)); // Small delay for UX
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Small delay for UX
         navigate(isAdmin ? "/admin" : "/");
       } else {
         setGeneralError("Invalid email or password. Please try again.");
       }
     } catch (err) {
-      setGeneralError("Login failed. Please check your connection and try again.");
+      setGeneralError(
+        "Login failed. Please check your connection and try again.",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
     if (generalError) {
       setGeneralError("");
@@ -145,7 +150,12 @@ export default function NewLogin() {
             <input
               type="checkbox"
               checked={formData.rememberMe}
-              onChange={(e) => setFormData(prev => ({ ...prev, rememberMe: e.target.checked }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  rememberMe: e.target.checked,
+                }))
+              }
               className="rounded border-white/20 bg-white/10 text-orange-500 focus:ring-orange-500/20"
             />
             <span>Remember me</span>
@@ -215,7 +225,8 @@ export default function NewLogin() {
         className="mt-6 p-4 bg-white/5 border border-white/10 rounded-lg"
       >
         <p className="text-xs text-gray-400 text-center">
-          <span className="font-medium text-orange-400">Admin Access:</span> Use @helldivers.com email addresses for admin privileges
+          <span className="font-medium text-orange-400">Admin Access:</span> Use
+          @helldivers.com email addresses for admin privileges
         </p>
       </motion.div>
     </AuthContainer>

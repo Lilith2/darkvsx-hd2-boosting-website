@@ -42,8 +42,12 @@ export function AppContent() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-lg font-medium text-foreground">Loading HelldiversBoost...</p>
-          <p className="text-sm text-muted-foreground mt-2">Connecting to database...</p>
+          <p className="text-lg font-medium text-foreground">
+            Loading HelldiversBoost...
+          </p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Connecting to database...
+          </p>
         </div>
       </div>
     );
@@ -56,11 +60,17 @@ export function AppContent() {
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<NewLogin />} />
           <Route path="/register" element={<NewRegister />} />
-          <Route path="/email-confirmation" element={<NewEmailConfirmation />} />
+          <Route
+            path="/email-confirmation"
+            element={<NewEmailConfirmation />}
+          />
           {/* Legacy auth routes for fallback */}
           <Route path="/login-old" element={<Login />} />
           <Route path="/register-old" element={<Register />} />
-          <Route path="/email-confirmation-old" element={<EmailConfirmation />} />
+          <Route
+            path="/email-confirmation-old"
+            element={<EmailConfirmation />}
+          />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route
             path="/cart"

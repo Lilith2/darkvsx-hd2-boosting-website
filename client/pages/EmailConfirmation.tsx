@@ -12,15 +12,15 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Mail, 
-  RefreshCw, 
-  CheckCircle, 
-  Clock, 
+import {
+  Mail,
+  RefreshCw,
+  CheckCircle,
+  Clock,
   AlertCircle,
   Inbox,
   ArrowLeft,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -28,21 +28,21 @@ export default function EmailConfirmation() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [isResending, setIsResending] = useState(false);
   const [resendCount, setResendCount] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
-  
-  const email = searchParams.get('email') || '';
-  const isSignUp = searchParams.get('type') === 'signup';
-  
+
+  const email = searchParams.get("email") || "";
+  const isSignUp = searchParams.get("type") === "signup";
+
   // Timer for resend cooldown
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    
+
     if (timeLeft > 0 && !canResend) {
       interval = setInterval(() => {
         setTimeLeft((prev) => {
@@ -54,7 +54,7 @@ export default function EmailConfirmation() {
         });
       }, 1000);
     }
-    
+
     return () => {
       if (interval) clearInterval(interval);
     };
@@ -64,7 +64,9 @@ export default function EmailConfirmation() {
   useEffect(() => {
     const checkConfirmation = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user && user.email_confirmed_at) {
           setIsConfirmed(true);
           toast({
@@ -72,32 +74,32 @@ export default function EmailConfirmation() {
             description: "Your account has been verified successfully.",
           });
           setTimeout(() => {
-            navigate('/login?confirmed=true');
+            navigate("/login?confirmed=true");
           }, 2000);
         }
       } catch (error) {
-        console.error('Error checking confirmation:', error);
+        console.error("Error checking confirmation:", error);
       }
     };
 
     // Check immediately and then every 5 seconds
     checkConfirmation();
     const interval = setInterval(checkConfirmation, 5000);
-    
+
     return () => clearInterval(interval);
   }, [navigate, toast]);
 
   const handleResendEmail = async () => {
     if (!email || !canResend) return;
-    
+
     setIsResending(true);
-    
+
     try {
       const { error } = await supabase.auth.resend({
-        type: 'signup',
+        type: "signup",
         email: email,
       });
-      
+
       if (error) {
         toast({
           title: "Resend Failed",
@@ -105,7 +107,7 @@ export default function EmailConfirmation() {
           variant: "destructive",
         });
       } else {
-        setResendCount(prev => prev + 1);
+        setResendCount((prev) => prev + 1);
         setCanResend(false);
         setTimeLeft(60);
         toast({
@@ -128,8 +130,10 @@ export default function EmailConfirmation() {
     setIsChecking(true);
     try {
       await supabase.auth.refreshSession();
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (user && user.email_confirmed_at) {
         setIsConfirmed(true);
         toast({
@@ -137,12 +141,13 @@ export default function EmailConfirmation() {
           description: "Your account has been verified successfully.",
         });
         setTimeout(() => {
-          navigate('/login?confirmed=true');
+          navigate("/login?confirmed=true");
         }, 2000);
       } else {
         toast({
           title: "Not Confirmed Yet",
-          description: "Please check your email and click the confirmation link.",
+          description:
+            "Please check your email and click the confirmation link.",
           variant: "destructive",
         });
       }
@@ -158,18 +163,18 @@ export default function EmailConfirmation() {
   };
 
   const getEmailProvider = (email: string) => {
-    const domain = email.split('@')[1]?.toLowerCase();
+    const domain = email.split("@")[1]?.toLowerCase();
     switch (domain) {
-      case 'gmail.com':
-        return { name: 'Gmail', url: 'https://mail.google.com' };
-      case 'yahoo.com':
-        return { name: 'Yahoo Mail', url: 'https://mail.yahoo.com' };
-      case 'outlook.com':
-      case 'hotmail.com':
-      case 'live.com':
-        return { name: 'Outlook', url: 'https://outlook.live.com' };
+      case "gmail.com":
+        return { name: "Gmail", url: "https://mail.google.com" };
+      case "yahoo.com":
+        return { name: "Yahoo Mail", url: "https://mail.yahoo.com" };
+      case "outlook.com":
+      case "hotmail.com":
+      case "live.com":
+        return { name: "Outlook", url: "https://outlook.live.com" };
       default:
-        return { name: 'Email', url: null };
+        return { name: "Email", url: null };
     }
   };
 
@@ -184,9 +189,12 @@ export default function EmailConfirmation() {
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
-              <CardTitle className="text-2xl text-green-600">Email Confirmed!</CardTitle>
+              <CardTitle className="text-2xl text-green-600">
+                Email Confirmed!
+              </CardTitle>
               <CardDescription>
-                Your account has been successfully verified. Redirecting to login...
+                Your account has been successfully verified. Redirecting to
+                login...
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -211,7 +219,7 @@ export default function EmailConfirmation() {
               We've sent a confirmation link to <strong>{email}</strong>
             </CardDescription>
           </CardHeader>
-          
+
           <CardContent className="space-y-6">
             {/* Progress indicator */}
             <div className="space-y-3">
@@ -261,14 +269,10 @@ export default function EmailConfirmation() {
             {/* Action buttons */}
             <div className="space-y-3">
               {emailProvider.url && (
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  asChild
-                >
-                  <a 
-                    href={emailProvider.url} 
-                    target="_blank" 
+                <Button variant="outline" className="w-full" asChild>
+                  <a
+                    href={emailProvider.url}
+                    target="_blank"
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
@@ -301,7 +305,7 @@ export default function EmailConfirmation() {
                   ) : (
                     <RefreshCw className="w-4 h-4 mr-2" />
                   )}
-                  {canResend ? 'Resend' : `Wait ${timeLeft}s`}
+                  {canResend ? "Resend" : `Wait ${timeLeft}s`}
                 </Button>
               </div>
             </div>
@@ -324,8 +328,8 @@ export default function EmailConfirmation() {
 
             {/* Back to login */}
             <div className="border-t pt-4 text-center">
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="inline-flex items-center text-sm text-muted-foreground hover:text-primary"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />

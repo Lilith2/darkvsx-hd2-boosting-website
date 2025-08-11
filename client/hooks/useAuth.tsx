@@ -1,5 +1,11 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { supabase, type Profile } from '../lib/supabase';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { supabase, type Profile } from "../lib/supabase";
 
 interface User {
   id: string;
@@ -12,7 +18,11 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (email: string, password: string, username: string) => Promise<boolean>;
+  register: (
+    email: string,
+    password: string,
+    username: string,
+  ) => Promise<boolean>;
   logout: () => Promise<void>;
   resendConfirmation: (email: string) => Promise<boolean>;
   isAuthenticated: boolean;
@@ -36,72 +46,74 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          loadUserProfile(session.user.id);
-        } else {
-          setUser(null);
-          setLoading(false);
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        loadUserProfile(session.user.id);
+      } else {
+        setUser(null);
+        setLoading(false);
       }
-    );
+    });
 
     return () => subscription.unsubscribe();
   }, []);
 
   const loadUserProfile = async (userId: string) => {
     try {
-      console.log('Loading profile for user:', userId);
+      console.log("Loading profile for user:", userId);
 
       const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
         .single();
 
-      if (error && error.code === 'PGRST116') {
+      if (error && error.code === "PGRST116") {
         // Profile doesn't exist, try to create it
-        console.log('Profile not found, creating new profile...');
+        console.log("Profile not found, creating new profile...");
 
         // Get user data from auth.users
         const { data: userData } = await supabase.auth.getUser();
 
         if (userData.user) {
           const { data: newProfile, error: createError } = await supabase
-            .from('profiles')
+            .from("profiles")
             .insert({
               id: userId,
               email: userData.user.email,
-              username: userData.user.email?.split('@')[0] || 'User',
-              role: userData.user.email?.includes('@helldivers.com') ? 'admin' : 'user'
+              username: userData.user.email?.split("@")[0] || "User",
+              role: userData.user.email?.includes("@helldivers.com")
+                ? "admin"
+                : "user",
             })
             .select()
             .single();
 
           if (createError) {
-            console.error('Error creating profile:', createError);
+            console.error("Error creating profile:", createError);
           } else if (newProfile) {
-            console.log('Profile created successfully:', newProfile);
+            console.log("Profile created successfully:", newProfile);
             setUser({
               id: newProfile.id,
-              username: newProfile.username || 'User',
-              email: newProfile.email || '',
-              role: newProfile.role
+              username: newProfile.username || "User",
+              email: newProfile.email || "",
+              role: newProfile.role,
             });
           }
         }
       } else if (profile) {
-        console.log('Profile loaded successfully:', profile);
+        console.log("Profile loaded successfully:", profile);
         setUser({
           id: profile.id,
-          username: profile.username || 'User',
-          email: profile.email || '',
-          role: profile.role
+          username: profile.username || "User",
+          email: profile.email || "",
+          role: profile.role,
         });
       }
     } catch (error) {
-      console.error('Error loading profile:', error);
+      console.error("Error loading profile:", error);
     } finally {
       setLoading(false);
     }
@@ -109,43 +121,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      console.log('Attempting login for:', email);
+      console.log("Attempting login for:", email);
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password
+        password,
       });
 
       if (error) {
-        console.error('Login error:', error.message);
+        console.error("Login error:", error.message);
         return false;
       }
 
       if (data.user) {
-        console.log('Login successful for user:', data.user.id);
+        console.log("Login successful for user:", data.user.id);
         return true;
       }
 
       return false;
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       return false;
     }
   };
 
-  const register = async (email: string, password: string, username: string): Promise<boolean> => {
+  const register = async (
+    email: string,
+    password: string,
+    username: string,
+  ): Promise<boolean> => {
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: { username },
-          emailRedirectTo: `${window.location.origin}/login?confirmed=true`
-        }
+          emailRedirectTo: `${window.location.origin}/login?confirmed=true`,
+        },
       });
       return !error;
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
       return false;
     }
   };
@@ -153,15 +169,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const resendConfirmation = async (email: string): Promise<boolean> => {
     try {
       const { error } = await supabase.auth.resend({
-        type: 'signup',
+        type: "signup",
         email: email,
         options: {
-          emailRedirectTo: `${window.location.origin}/login?confirmed=true`
-        }
+          emailRedirectTo: `${window.location.origin}/login?confirmed=true`,
+        },
       });
       return !error;
     } catch (error) {
-      console.error('Resend confirmation error:', error);
+      console.error("Resend confirmation error:", error);
       return false;
     }
   };

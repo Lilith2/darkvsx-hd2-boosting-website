@@ -7,7 +7,11 @@ interface AuthTransitionProps {
   useNewAuth?: boolean;
 }
 
-export function AuthTransition({ children, fallback, useNewAuth = true }: AuthTransitionProps) {
+export function AuthTransition({
+  children,
+  fallback,
+  useNewAuth = true,
+}: AuthTransitionProps) {
   const [showNew, setShowNew] = useState(useNewAuth);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -36,7 +40,7 @@ export function AuthTransition({ children, fallback, useNewAuth = true }: AuthTr
       </AnimatePresence>
 
       {/* Optional toggle button for development */}
-      {process.env.NODE_ENV === 'development' && (
+      {process.env.NODE_ENV === "development" && (
         <motion.button
           onClick={toggleAuth}
           className="fixed bottom-4 right-4 bg-orange-500 text-white px-3 py-2 rounded-lg text-xs z-50"

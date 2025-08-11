@@ -6,17 +6,17 @@ import { useToast } from "@/hooks/use-toast";
 import { AuthContainer } from "@/components/auth/AuthContainer";
 import { AnimatedButton } from "@/components/auth/AnimatedButton";
 import { StepIndicator } from "@/components/auth/StepIndicator";
-import { 
-  Mail, 
-  RefreshCw, 
-  CheckCircle, 
-  Clock, 
+import {
+  Mail,
+  RefreshCw,
+  CheckCircle,
+  Clock,
   AlertCircle,
   Inbox,
   ArrowLeft,
   ExternalLink,
   Zap,
-  Shield
+  Shield,
 } from "lucide-react";
 
 const steps = [
@@ -29,7 +29,7 @@ export default function NewEmailConfirmation() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [currentStep, setCurrentStep] = useState("sent");
   const [completedSteps, setCompletedSteps] = useState<string[]>(["sent"]);
   const [isResending, setIsResending] = useState(false);
@@ -38,15 +38,15 @@ export default function NewEmailConfirmation() {
   const [canResend, setCanResend] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
-  
-  const email = searchParams.get('email') || '';
-  const isSignUp = searchParams.get('type') === 'signup';
+
+  const email = searchParams.get("email") || "";
+  const isSignUp = searchParams.get("type") === "signup";
 
   // Auto progress to waiting step
   useEffect(() => {
     const timer = setTimeout(() => {
       setCurrentStep("waiting");
-      setCompletedSteps(prev => [...prev, "waiting"]);
+      setCompletedSteps((prev) => [...prev, "waiting"]);
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
@@ -54,7 +54,7 @@ export default function NewEmailConfirmation() {
   // Timer for resend cooldown
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    
+
     if (timeLeft > 0 && !canResend) {
       interval = setInterval(() => {
         setTimeLeft((prev) => {
@@ -66,7 +66,7 @@ export default function NewEmailConfirmation() {
         });
       }, 1000);
     }
-    
+
     return () => {
       if (interval) clearInterval(interval);
     };
@@ -76,23 +76,25 @@ export default function NewEmailConfirmation() {
   useEffect(() => {
     const checkConfirmation = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user && user.email_confirmed_at) {
           setIsConfirmed(true);
           setCurrentStep("confirmed");
           setCompletedSteps(["sent", "waiting", "confirmed"]);
-          
+
           toast({
             title: "Email Confirmed!",
             description: "Your account has been verified successfully.",
           });
-          
+
           setTimeout(() => {
-            navigate('/login?confirmed=true');
+            navigate("/login?confirmed=true");
           }, 3000);
         }
       } catch (error) {
-        console.error('Error checking confirmation:', error);
+        console.error("Error checking confirmation:", error);
       }
     };
 
@@ -106,15 +108,15 @@ export default function NewEmailConfirmation() {
 
   const handleResendEmail = async () => {
     if (!email || !canResend) return;
-    
+
     setIsResending(true);
-    
+
     try {
       const { error } = await supabase.auth.resend({
-        type: 'signup',
+        type: "signup",
         email: email,
       });
-      
+
       if (error) {
         toast({
           title: "Resend Failed",
@@ -122,7 +124,7 @@ export default function NewEmailConfirmation() {
           variant: "destructive",
         });
       } else {
-        setResendCount(prev => prev + 1);
+        setResendCount((prev) => prev + 1);
         setCanResend(false);
         setTimeLeft(60);
         toast({
@@ -145,25 +147,28 @@ export default function NewEmailConfirmation() {
     setIsChecking(true);
     try {
       await supabase.auth.refreshSession();
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (user && user.email_confirmed_at) {
         setIsConfirmed(true);
         setCurrentStep("confirmed");
         setCompletedSteps(["sent", "waiting", "confirmed"]);
-        
+
         toast({
           title: "Email Confirmed!",
           description: "Your account has been verified successfully.",
         });
-        
+
         setTimeout(() => {
-          navigate('/login?confirmed=true');
+          navigate("/login?confirmed=true");
         }, 3000);
       } else {
         toast({
           title: "Not Confirmed Yet",
-          description: "Please check your email and click the confirmation link.",
+          description:
+            "Please check your email and click the confirmation link.",
           variant: "destructive",
         });
       }
@@ -179,18 +184,30 @@ export default function NewEmailConfirmation() {
   };
 
   const getEmailProvider = (email: string) => {
-    const domain = email.split('@')[1]?.toLowerCase();
+    const domain = email.split("@")[1]?.toLowerCase();
     switch (domain) {
-      case 'gmail.com':
-        return { name: 'Gmail', url: 'https://mail.google.com', color: 'text-red-400' };
-      case 'yahoo.com':
-        return { name: 'Yahoo Mail', url: 'https://mail.yahoo.com', color: 'text-purple-400' };
-      case 'outlook.com':
-      case 'hotmail.com':
-      case 'live.com':
-        return { name: 'Outlook', url: 'https://outlook.live.com', color: 'text-blue-400' };
+      case "gmail.com":
+        return {
+          name: "Gmail",
+          url: "https://mail.google.com",
+          color: "text-red-400",
+        };
+      case "yahoo.com":
+        return {
+          name: "Yahoo Mail",
+          url: "https://mail.yahoo.com",
+          color: "text-purple-400",
+        };
+      case "outlook.com":
+      case "hotmail.com":
+      case "live.com":
+        return {
+          name: "Outlook",
+          url: "https://outlook.live.com",
+          color: "text-blue-400",
+        };
       default:
-        return { name: 'Email', url: null, color: 'text-gray-400' };
+        return { name: "Email", url: null, color: "text-gray-400" };
     }
   };
 
@@ -202,10 +219,10 @@ export default function NewEmailConfirmation() {
       subtitle={`We sent a confirmation link to ${email}`}
       showLogo={false}
     >
-      <StepIndicator 
-        steps={steps} 
-        currentStep={currentStep} 
-        completedSteps={completedSteps} 
+      <StepIndicator
+        steps={steps}
+        currentStep={currentStep}
+        completedSteps={completedSteps}
       />
 
       <AnimatePresence mode="wait">
@@ -218,14 +235,14 @@ export default function NewEmailConfirmation() {
             className="text-center space-y-6"
           >
             <motion.div
-              animate={{ 
+              animate={{
                 rotate: [0, 10, -10, 0],
-                scale: [1, 1.1, 1]
+                scale: [1, 1.1, 1],
               }}
-              transition={{ 
+              transition={{
                 duration: 2,
                 repeat: Infinity,
-                repeatDelay: 3
+                repeatDelay: 3,
               }}
               className="w-20 h-20 mx-auto bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center"
             >
@@ -233,10 +250,10 @@ export default function NewEmailConfirmation() {
             </motion.div>
 
             <div>
-              <h3 className="text-xl font-semibold text-white mb-2">Email Sent!</h3>
-              <p className="text-gray-300">
-                Check your inbox and spam folder
-              </p>
+              <h3 className="text-xl font-semibold text-white mb-2">
+                Email Sent!
+              </h3>
+              <p className="text-gray-300">Check your inbox and spam folder</p>
             </div>
 
             <motion.div
@@ -259,19 +276,21 @@ export default function NewEmailConfirmation() {
             {/* Status indicator */}
             <div className="text-center">
               <motion.div
-                animate={{ 
+                animate={{
                   scale: [1, 1.1, 1],
-                  opacity: [0.7, 1, 0.7]
+                  opacity: [0.7, 1, 0.7],
                 }}
-                transition={{ 
+                transition={{
                   duration: 2,
-                  repeat: Infinity
+                  repeat: Infinity,
                 }}
                 className="w-16 h-16 mx-auto bg-blue-500/20 rounded-full flex items-center justify-center mb-4"
               >
                 <Clock className="w-8 h-8 text-blue-400" />
               </motion.div>
-              <h3 className="text-lg font-semibold text-white mb-2">Waiting for Confirmation</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">
+                Waiting for Confirmation
+              </h3>
               <p className="text-gray-300 text-sm">
                 Click the link in your email to verify your account
               </p>
@@ -287,10 +306,12 @@ export default function NewEmailConfirmation() {
                 <AnimatedButton
                   variant="outline"
                   className="w-full border-white/30 hover:border-white/50"
-                  onClick={() => window.open(emailProvider.url, '_blank')}
+                  onClick={() => window.open(emailProvider.url, "_blank")}
                 >
                   <ExternalLink className="w-4 h-4 mr-2" />
-                  <span className={emailProvider.color}>Open {emailProvider.name}</span>
+                  <span className={emailProvider.color}>
+                    Open {emailProvider.name}
+                  </span>
                   <Zap className="w-4 h-4 ml-2 text-yellow-400" />
                 </AnimatedButton>
               </motion.div>
@@ -323,7 +344,7 @@ export default function NewEmailConfirmation() {
                 ) : (
                   <RefreshCw className="w-4 h-4 mr-2" />
                 )}
-                {canResend ? 'Resend' : `${timeLeft}s`}
+                {canResend ? "Resend" : `${timeLeft}s`}
               </AnimatedButton>
             </div>
 
@@ -334,7 +355,7 @@ export default function NewEmailConfirmation() {
                 animate={{ opacity: 1 }}
                 className="text-center text-xs text-gray-400"
               >
-                Email resent {resendCount} time{resendCount > 1 ? 's' : ''}
+                Email resent {resendCount} time{resendCount > 1 ? "s" : ""}
               </motion.div>
             )}
 
@@ -391,10 +412,10 @@ export default function NewEmailConfirmation() {
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ 
-                type: "spring", 
+              transition={{
+                type: "spring",
                 stiffness: 200,
-                delay: 0.2
+                delay: 0.2,
               }}
               className="w-20 h-20 mx-auto bg-green-500/20 rounded-full flex items-center justify-center"
             >
@@ -406,7 +427,9 @@ export default function NewEmailConfirmation() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <h3 className="text-2xl font-bold text-green-400 mb-2">Verified!</h3>
+              <h3 className="text-2xl font-bold text-green-400 mb-2">
+                Verified!
+              </h3>
               <p className="text-gray-300">
                 Your account has been successfully verified
               </p>
@@ -438,8 +461,8 @@ export default function NewEmailConfirmation() {
           transition={{ delay: 0.8 }}
           className="mt-8 text-center"
         >
-          <Link 
-            to="/login" 
+          <Link
+            to="/login"
             className="inline-flex items-center text-sm text-gray-400 hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />

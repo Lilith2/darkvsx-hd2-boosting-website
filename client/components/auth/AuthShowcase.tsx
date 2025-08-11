@@ -1,59 +1,63 @@
 import { motion } from "framer-motion";
-import { 
-  Zap, 
-  Shield, 
-  Sparkles, 
-  Target, 
-  CheckCircle, 
-  Users, 
+import {
+  Zap,
+  Shield,
+  Sparkles,
+  Target,
+  CheckCircle,
+  Users,
   Lock,
   Mail,
   Eye,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 
 const features = [
   {
     icon: <Zap className="w-6 h-6" />,
     title: "Lightning Fast",
-    description: "Instant validation with smooth animations and micro-interactions",
-    color: "text-yellow-400"
+    description:
+      "Instant validation with smooth animations and micro-interactions",
+    color: "text-yellow-400",
   },
   {
     icon: <Shield className="w-6 h-6" />,
-    title: "Secure by Design", 
-    description: "Real-time password strength validation and security best practices",
-    color: "text-green-400"
+    title: "Secure by Design",
+    description:
+      "Real-time password strength validation and security best practices",
+    color: "text-green-400",
   },
   {
     icon: <Sparkles className="w-6 h-6" />,
     title: "Modern UI",
     description: "Beautiful glassmorphism design with particle animations",
-    color: "text-purple-400"
+    color: "text-purple-400",
   },
   {
     icon: <Target className="w-6 h-6" />,
     title: "Smart Validation",
-    description: "Progressive validation with helpful error messages and guidance",
-    color: "text-orange-400"
+    description:
+      "Progressive validation with helpful error messages and guidance",
+    color: "text-orange-400",
   },
   {
     icon: <Users className="w-6 h-6" />,
     title: "Better UX",
-    description: "Multi-step flows with progress tracking and intuitive navigation",
-    color: "text-blue-400"
+    description:
+      "Multi-step flows with progress tracking and intuitive navigation",
+    color: "text-blue-400",
   },
   {
     icon: <RefreshCw className="w-6 h-6" />,
     title: "Auto-Checking",
     description: "Automatic email verification checking with smart retry logic",
-    color: "text-red-400"
-  }
+    color: "text-red-400",
+  },
 ];
 
 const improvements = [
   "🎨 Modern glassmorphism design with animated backgrounds",
-  "⚡ Real-time form validation with debounced input checking", 
+  "⚡ Real-time form validation with debounced input checking",
   "🔒 Advanced password strength indicator with security tips",
   "📧 Enhanced email verification with provider detection",
   "🎯 Multi-step registration with progress tracking",
@@ -61,7 +65,7 @@ const improvements = [
   "🔄 Auto-refresh session checking for email confirmation",
   "📱 Fully responsive design optimized for all devices",
   "🛡️ Security-first approach with validation best practices",
-  "🎮 Theme integration with Helldivers brand colors"
+  "🎮 Theme integration with Helldivers brand colors",
 ];
 
 export function AuthShowcase() {
@@ -78,7 +82,8 @@ export function AuthShowcase() {
             New Authentication System
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            A complete overhaul of the login, registration, and email verification experience
+            A complete overhaul of the login, registration, and email
+            verification experience
           </p>
         </motion.div>
 
@@ -97,15 +102,11 @@ export function AuthShowcase() {
               transition={{ delay: index * 0.1 }}
               className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-6 hover:bg-white/15 transition-all duration-300"
             >
-              <div className={`${feature.color} mb-4`}>
-                {feature.icon}
-              </div>
+              <div className={`${feature.color} mb-4`}>{feature.icon}</div>
               <h3 className="text-lg font-semibold text-white mb-2">
                 {feature.title}
               </h3>
-              <p className="text-gray-300 text-sm">
-                {feature.description}
-              </p>
+              <p className="text-gray-300 text-sm">{feature.description}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -121,7 +122,7 @@ export function AuthShowcase() {
             <CheckCircle className="w-6 h-6 text-green-400 mr-3" />
             What's New & Improved
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {improvements.map((improvement, index) => (
               <motion.div
@@ -147,7 +148,7 @@ export function AuthShowcase() {
           <h3 className="text-xl font-semibold text-white mb-6">
             Try the New Authentication System
           </h3>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <motion.a
               href="/login"
@@ -158,7 +159,7 @@ export function AuthShowcase() {
               <Lock className="w-4 h-4 mr-2" />
               New Login Page
             </motion.a>
-            
+
             <motion.a
               href="/register"
               whileHover={{ scale: 1.05 }}
@@ -168,7 +169,7 @@ export function AuthShowcase() {
               <Users className="w-4 h-4 mr-2" />
               New Registration
             </motion.a>
-            
+
             <motion.a
               href="/email-confirmation?email=demo@example.com&type=signup"
               whileHover={{ scale: 1.05 }}

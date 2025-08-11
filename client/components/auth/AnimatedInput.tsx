@@ -24,24 +24,31 @@ interface AnimatedInputProps {
 }
 
 export const AnimatedInput = forwardRef<HTMLInputElement, AnimatedInputProps>(
-  ({ 
-    label, 
-    type = "text", 
-    placeholder, 
-    value, 
-    onChange, 
-    error, 
-    success, 
-    icon, 
-    showPasswordToggle = false,
-    validation,
-    ...props 
-  }, ref) => {
+  (
+    {
+      label,
+      type = "text",
+      placeholder,
+      value,
+      onChange,
+      error,
+      success,
+      icon,
+      showPasswordToggle = false,
+      validation,
+      ...props
+    },
+    ref,
+  ) => {
     const [focused, setFocused] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [isDirty, setIsDirty] = useState(false);
 
-    const inputType = showPasswordToggle ? (showPassword ? "text" : "password") : type;
+    const inputType = showPasswordToggle
+      ? showPassword
+        ? "text"
+        : "password"
+      : type;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
@@ -68,21 +75,21 @@ export const AnimatedInput = forwardRef<HTMLInputElement, AnimatedInputProps>(
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Label 
+          <Label
             className={`text-sm font-medium transition-colors duration-200 ${
               focused ? "text-orange-400" : "text-gray-300"
             }`}
           >
             {label}
           </Label>
-          
+
           <div className="relative mt-1">
             {icon && (
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                 {icon}
               </div>
             )}
-            
+
             <Input
               ref={ref}
               type={inputType}
@@ -164,7 +171,7 @@ export const AnimatedInput = forwardRef<HTMLInputElement, AnimatedInputProps>(
         </AnimatePresence>
       </div>
     );
-  }
+  },
 );
 
 AnimatedInput.displayName = "AnimatedInput";

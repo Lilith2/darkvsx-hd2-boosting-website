@@ -54,7 +54,7 @@ export function AnimatedButton({
             <Loader2 className="w-4 h-4 animate-spin" />
           </motion.div>
         )}
-        
+
         <motion.span
           animate={{ opacity: loading ? 0 : 1 }}
           transition={{ duration: 0.2 }}

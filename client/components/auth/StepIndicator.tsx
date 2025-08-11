@@ -13,8 +13,12 @@ interface StepIndicatorProps {
   completedSteps: string[];
 }
 
-export function StepIndicator({ steps, currentStep, completedSteps }: StepIndicatorProps) {
-  const currentIndex = steps.findIndex(step => step.id === currentStep);
+export function StepIndicator({
+  steps,
+  currentStep,
+  completedSteps,
+}: StepIndicatorProps) {
+  const currentIndex = steps.findIndex((step) => step.id === currentStep);
 
   return (
     <div className="flex justify-between mb-8">
@@ -53,15 +57,15 @@ export function StepIndicator({ steps, currentStep, completedSteps }: StepIndica
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 + 0.2 }}
             >
-              <p className={`text-xs font-medium ${
-                isCompleted || isCurrent ? "text-white" : "text-gray-400"
-              }`}>
+              <p
+                className={`text-xs font-medium ${
+                  isCompleted || isCurrent ? "text-white" : "text-gray-400"
+                }`}
+              >
                 {step.title}
               </p>
               {step.description && (
-                <p className="text-xs text-gray-500 mt-1">
-                  {step.description}
-                </p>
+                <p className="text-xs text-gray-500 mt-1">{step.description}</p>
               )}
             </motion.div>
 
@@ -71,9 +75,13 @@ export function StepIndicator({ steps, currentStep, completedSteps }: StepIndica
                 <motion.div
                   className="h-full bg-gradient-to-r from-orange-500 to-green-500"
                   initial={{ width: 0 }}
-                  animate={{ 
-                    width: index < currentIndex ? "100%" : 
-                           index === currentIndex ? "50%" : "0%" 
+                  animate={{
+                    width:
+                      index < currentIndex
+                        ? "100%"
+                        : index === currentIndex
+                          ? "50%"
+                          : "0%",
                   }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 />

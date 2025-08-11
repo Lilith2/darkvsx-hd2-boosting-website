@@ -1,12 +1,19 @@
 import { motion } from "framer-motion";
-import { calculatePasswordStrength, getPasswordStrengthLabel, getPasswordStrengthColor } from "@/lib/validation";
+import {
+  calculatePasswordStrength,
+  getPasswordStrengthLabel,
+  getPasswordStrengthColor,
+} from "@/lib/validation";
 
 interface PasswordStrengthProps {
   password: string;
   className?: string;
 }
 
-export function PasswordStrength({ password, className = "" }: PasswordStrengthProps) {
+export function PasswordStrength({
+  password,
+  className = "",
+}: PasswordStrengthProps) {
   const strength = calculatePasswordStrength(password);
   const label = getPasswordStrengthLabel(strength);
   const colorClass = getPasswordStrengthColor(strength);
@@ -34,13 +41,17 @@ export function PasswordStrength({ password, className = "" }: PasswordStrengthP
           <span className="text-xs text-gray-300">Password strength</span>
           <span className={`text-xs font-medium ${colorClass}`}>{label}</span>
         </div>
-        
+
         <div className="h-2 bg-white/10 rounded-full overflow-hidden">
           <motion.div
             className={`h-full rounded-full transition-colors duration-300 ${
-              strength < 30 ? "bg-red-400" :
-              strength < 60 ? "bg-yellow-400" :
-              strength < 80 ? "bg-blue-400" : "bg-green-400"
+              strength < 30
+                ? "bg-red-400"
+                : strength < 60
+                  ? "bg-yellow-400"
+                  : strength < 80
+                    ? "bg-blue-400"
+                    : "bg-green-400"
             }`}
             initial={{ width: 0 }}
             animate={{ width: `${strength}%` }}
