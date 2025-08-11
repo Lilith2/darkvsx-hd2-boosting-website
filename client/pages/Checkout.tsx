@@ -52,13 +52,16 @@ export default function Checkout() {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [referralCode, setReferralCode] = useState("");
   const [referralDiscount, setReferralDiscount] = useState(0);
+  const [useReferralCredits, setUseReferralCredits] = useState(false);
+  const [referralCreditsApplied, setReferralCreditsApplied] = useState(0);
+  const [availableCredits, setAvailableCredits] = useState(0);
   const [guestInfo, setGuestInfo] = useState({
     name: "",
     email: "",
   });
 
   const subtotal = getCartTotal();
-  const discount = referralDiscount;
+  const discount = referralDiscount + referralCreditsApplied;
   const tax = (subtotal - discount) * 0.08; // 8% tax on discounted amount
   const total = subtotal - discount + tax;
 
