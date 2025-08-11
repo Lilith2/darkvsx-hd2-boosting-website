@@ -184,7 +184,6 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
       // Fetch all messages and tracking for these orders
       const orderIds = ordersData?.map((order) => order.id) || [];
-      console.log("🆔 Order IDs found:", orderIds);
 
       const [messagesResult, trackingResult] = await Promise.all([
         supabase.from("order_messages").select("*").in("order_id", orderIds),
@@ -193,8 +192,6 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
       const messages = messagesResult.data || [];
       const tracking = trackingResult.data || [];
-      console.log("💬 Messages found:", messages.length);
-      console.log("📈 Tracking entries found:", tracking.length);
 
       // Transform and combine data
       const transformedOrders =
