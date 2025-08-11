@@ -125,12 +125,20 @@ export default function OrderTracking() {
     }
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!newMessage.trim() || !user) return;
 
-    addOrderMessage(order.id, { from: "customer", message: newMessage });
-    setNewMessage("");
-    setOrder(getOrder(order.id));
+    try {
+      await addOrderMessage(order.id, { from: "customer", message: newMessage });
+      setNewMessage("");
+      // Update local order state after message is sent
+      const updatedOrder = getOrder(order.id);
+      if (updatedOrder) {
+        setOrder(updatedOrder);
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   const formatDate = (dateString: string) => {
