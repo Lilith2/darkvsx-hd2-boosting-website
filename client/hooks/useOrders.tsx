@@ -75,6 +75,9 @@ export interface OrderData {
   notes?: string;
   transactionId?: string;
   ipAddress?: string;
+  referralCode?: string;
+  referralDiscount?: number;
+  referredByUserId?: string;
   messages: {
     id: string;
     from: "customer" | "admin" | "booster";
