@@ -64,6 +64,7 @@ import { Link } from "react-router-dom";
 export default function Account() {
   const { user, logout } = useAuth();
   const { getUserOrders } = useOrders();
+  const { stats: referralStats, loading: referralLoading, refreshStats } = useReferrals();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
