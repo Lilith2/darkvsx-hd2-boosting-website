@@ -32,6 +32,7 @@ export interface Order {
   ip_address?: string;
   referral_code?: string;
   referral_discount?: number;
+  referral_credits_used?: number;
   referred_by_user_id?: string;
 }
 
