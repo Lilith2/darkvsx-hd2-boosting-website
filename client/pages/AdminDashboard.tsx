@@ -197,6 +197,20 @@ export default function AdminDashboard() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Debug Info */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <h3 className="font-semibold text-red-600 mb-2">Database Connection Error</h3>
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
+        {loading && (
+          <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+            <p className="text-blue-600">Loading orders...</p>
+          </div>
+        )}
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <Card className="border border-border/50 hover:border-primary/30 transition-colors">
