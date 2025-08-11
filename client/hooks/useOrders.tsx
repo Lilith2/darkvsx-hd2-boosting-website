@@ -296,9 +296,55 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       return orderResult.id;
     } catch (err: any) {
       console.error("Error adding order:", err);
-      throw new Error(
-        err?.message || err?.error_description || "Failed to add order",
-      );
+
+      // Handle specific database schema errors
+      if (err?.message?.includes("transaction_id") || err?.message?.includes("ip_address")) {
+        console.warn("Database schema missing transaction_id or ip_address columns. Order created without these fields.");
+        // Try again without the optional fields
+        try {
+          const baseOrderData = {
+            user_id: orderData.userId,
+            customer_email: orderData.customerEmail,
+            customer_name: orderData.customerName,
+            services: orderData.services,
+            status: orderData.status,
+            total_amount: orderData.totalAmount,
+            payment_status: orderData.paymentStatus,
+            progress: orderData.progress,
+            assigned_booster: orderData.assignedBooster,
+            estimated_completion: orderData.estimatedCompletion,
+            notes: orderData.notes,
+          };
+
+          const { data: orderResult, error: orderError } = await supabase
+            .from("orders")
+            .insert([baseOrderData])
+            .select()
+            .single();
+
+          if (orderError) throw orderError;
+
+          // Add initial tracking entry
+          await supabase.from("order_tracking").insert([
+            {
+              order_id: orderResult.id,
+              status: "Order Placed",
+              description: "Your order has been received and is being processed",
+            },
+          ]);
+
+          await refreshOrders();
+          return orderResult.id;
+        } catch (retryErr: any) {
+          console.error("Error on retry:", retryErr);
+          throw new Error(
+            retryErr?.message || retryErr?.error_description || "Failed to add order after retry",
+          );
+        }
+      }
+
+      const errorMessage = err?.message || err?.error_description || "Failed to add order";
+      throw new Error(`Database error: ${errorMessage}`);
     }
   };
 
