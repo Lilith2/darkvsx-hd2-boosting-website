@@ -9,6 +9,7 @@ import { ServicesProvider } from "@/hooks/useServices";
 import { BundlesProvider } from "@/hooks/useBundles";
 import { CartProvider } from "@/hooks/useCart";
 import { OrdersProvider } from "@/hooks/useOrders";
+import { ReferralsProvider } from "@/hooks/useReferrals";
 import { AppContent } from "@/components/AppContent";
 
 const queryClient = new QueryClient();
