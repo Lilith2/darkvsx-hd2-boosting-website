@@ -237,8 +237,6 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       // Get user's IP address for chargeback protection
       const ipAddress = await getCurrentIPAddress();
       
-      console.log('Creating order with IP address:', ipAddress);
-      
       // Prepare the base order data
       const baseOrderData = {
         user_id: orderData.userId,
