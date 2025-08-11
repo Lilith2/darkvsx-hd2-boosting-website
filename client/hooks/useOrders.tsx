@@ -248,25 +248,36 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       
       console.log('Creating order with IP address:', ipAddress);
       
+      // Prepare the base order data
+      const baseOrderData = {
+        user_id: orderData.userId,
+        customer_email: orderData.customerEmail,
+        customer_name: orderData.customerName,
+        services: orderData.services,
+        status: orderData.status,
+        total_amount: orderData.totalAmount,
+        payment_status: orderData.paymentStatus,
+        progress: orderData.progress,
+        assigned_booster: orderData.assignedBooster,
+        estimated_completion: orderData.estimatedCompletion,
+        notes: orderData.notes,
+      };
+
+      // Only add transaction_id and ip_address if they exist and if the columns exist in the schema
+      const insertData = { ...baseOrderData };
+
+      // Try to add optional fields - if they fail, we'll continue without them
+      if (orderData.transactionId) {
+        insertData.transaction_id = orderData.transactionId;
+      }
+
+      if (ipAddress) {
+        insertData.ip_address = ipAddress;
+      }
+
       const { data: orderResult, error: orderError } = await supabase
         .from("orders")
-        .insert([
-          {
-            user_id: orderData.userId,
-            customer_email: orderData.customerEmail,
-            customer_name: orderData.customerName,
-            services: orderData.services,
-            status: orderData.status,
-            total_amount: orderData.totalAmount,
-            payment_status: orderData.paymentStatus,
-            progress: orderData.progress,
-            assigned_booster: orderData.assignedBooster,
-            estimated_completion: orderData.estimatedCompletion,
-            notes: orderData.notes,
-            transaction_id: orderData.transactionId,
-            ip_address: ipAddress, // Add IP address for PayPal chargeback protection
-          },
-        ])
+        .insert([insertData])
         .select()
         .single();
 
