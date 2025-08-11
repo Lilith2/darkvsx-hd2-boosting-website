@@ -43,8 +43,6 @@ import {
   MessageSquare,
   Bell,
   Shield,
-  CreditCard,
-  Settings,
   Gift,
   TrendingUp,
   Calendar,
