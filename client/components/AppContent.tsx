@@ -4,24 +4,21 @@ import { useAuth } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Layout } from "@/components/Layout";
 import Index from "../pages/Index";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
 import Cart from "../pages/Cart";
 import Account from "../pages/Account";
 import AdminDashboard from "../pages/AdminDashboard";
 import FAQ from "../pages/FAQ";
 import Bundles from "../pages/Bundles";
 import Contact from "../pages/Contact";
-import EmailConfirmation from "../pages/EmailConfirmation";
 import ForgotPassword from "../pages/ForgotPassword";
 import Checkout from "../pages/Checkout";
 import Terms from "../pages/Terms";
 import Privacy from "../pages/Privacy";
 import OrderTracking from "../pages/OrderTracking";
 import NotFound from "../pages/NotFound";
-import NewLogin from "../pages/NewLogin";
-import NewRegister from "../pages/NewRegister";
-import NewEmailConfirmation from "../pages/NewEmailConfirmation";
+import Login from "../pages/NewLogin";
+import Register from "../pages/NewRegister";
+import EmailConfirmation from "../pages/NewEmailConfirmation";
 
 export function AppContent() {
   const { loading } = useAuth();
