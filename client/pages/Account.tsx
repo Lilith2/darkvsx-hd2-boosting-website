@@ -442,12 +442,12 @@ export default function Account() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="text-center p-4 bg-primary/5 rounded-lg">
                     <Users className="w-6 h-6 text-primary mx-auto mb-2" />
-                    <p className="text-xl font-bold">0</p>
+                    <p className="text-xl font-bold">{referralStats.totalReferred}</p>
                     <p className="text-sm text-muted-foreground">Referred</p>
                   </div>
                   <div className="text-center p-4 bg-green-500/5 rounded-lg">
                     <DollarSign className="w-6 h-6 text-green-600 mx-auto mb-2" />
-                    <p className="text-xl font-bold">$0</p>
+                    <p className="text-xl font-bold">${referralStats.totalEarned.toFixed(2)}</p>
                     <p className="text-sm text-muted-foreground">Earned</p>
                   </div>
                   <div className="text-center p-4 bg-blue-500/5 rounded-lg">
