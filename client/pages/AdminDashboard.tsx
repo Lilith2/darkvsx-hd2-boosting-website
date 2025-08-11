@@ -60,11 +60,6 @@ export default function AdminDashboard() {
     toggleBundleStatus,
   } = useBundles();
   const { orders, updateOrderStatus, addOrderMessage, assignBooster, updateOrderProgress, loading, error } = useOrders();
-
-  // Debug logging
-  console.log("🏪 Admin Dashboard - Orders:", orders.length, orders);
-  console.log("🏪 Admin Dashboard - Loading:", loading);
-  console.log("🏪 Admin Dashboard - Error:", error);
   
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
