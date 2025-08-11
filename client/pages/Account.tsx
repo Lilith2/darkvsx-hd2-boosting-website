@@ -765,7 +765,7 @@ export default function Account() {
                           </div>
                           <div>
                             <h4 className="font-medium">Friend Places Order</h4>
-                            <p className="text-sm text-muted-foreground">They use your code and get 5% discount</p>
+                            <p className="text-sm text-muted-foreground">They use your code and get 10% discount</p>
                           </div>
                         </div>
                       </div>
@@ -776,7 +776,7 @@ export default function Account() {
                           </div>
                           <div>
                             <h4 className="font-medium">Earn Commission</h4>
-                            <p className="text-sm text-muted-foreground">Get 10% of their order value as credit</p>
+                            <p className="text-sm text-muted-foreground">Get 5% of their order value as credit</p>
                           </div>
                         </div>
                         <div className="flex items-start space-x-3">
