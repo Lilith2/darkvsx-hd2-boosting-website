@@ -769,6 +769,11 @@ export default function AdminDashboard() {
                                         Referral: {order.referralCode} (-${order.referralDiscount?.toFixed(2) || '0.00'})
                                       </p>
                                     )}
+                                    {order.referralCreditsUsed && order.referralCreditsUsed > 0 && (
+                                      <p className="text-xs text-blue-600 mt-1">
+                                        Credits Used: -${order.referralCreditsUsed.toFixed(2)}
+                                      </p>
+                                    )}
                                   </div>
                                   <div>
                                     <p className="text-muted-foreground">Services</p>
