@@ -28,6 +28,8 @@ export interface Order {
   assigned_booster?: string;
   estimated_completion?: string;
   notes?: string;
+  transaction_id?: string;
+  ip_address?: string;
 }
 
 export interface OrderMessage {
@@ -68,6 +70,8 @@ export interface OrderData {
   assignedBooster?: string;
   estimatedCompletion?: string;
   notes?: string;
+  transactionId?: string;
+  ipAddress?: string;
   messages: {
     id: string;
     from: "customer" | "admin" | "booster";
