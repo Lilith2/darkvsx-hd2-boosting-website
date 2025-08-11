@@ -680,10 +680,21 @@ export default function Account() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => {
+                      onClick={async () => {
                         const text = `🎮 Get boosted in Helldivers 2! Use my code "${referralCode}" for 5% off your first order: https://helldivers-boost.com`;
-                        navigator.clipboard.writeText(text);
-                        toast({ title: "Message copied!", description: "Ready to share on Discord or social media" });
+                        try {
+                          await navigator.clipboard.writeText(text);
+                          toast({ title: "Message copied!", description: "Ready to share on Discord or social media" });
+                        } catch (err) {
+                          // Fallback
+                          const textArea = document.createElement('textarea');
+                          textArea.value = text;
+                          document.body.appendChild(textArea);
+                          textArea.select();
+                          document.execCommand('copy');
+                          document.body.removeChild(textArea);
+                          toast({ title: "Message copied!", description: "Ready to share on Discord or social media" });
+                        }
                       }}
                     >
                       <Share2 className="w-3 h-3 mr-1" />
