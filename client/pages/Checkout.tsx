@@ -263,6 +263,12 @@ export default function Checkout() {
                       <span>Subtotal</span>
                       <span>${subtotal.toFixed(2)}</span>
                     </div>
+                    {referralDiscount > 0 && (
+                      <div className="flex justify-between text-sm text-green-600">
+                        <span>Referral Discount (5%)</span>
+                        <span>-${referralDiscount.toFixed(2)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-sm">
                       <span>Tax (8%)</span>
                       <span>${tax.toFixed(2)}</span>
