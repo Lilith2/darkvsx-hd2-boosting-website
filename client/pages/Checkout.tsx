@@ -47,6 +47,7 @@ export default function Checkout() {
   const { cartItems, getCartTotal, clearCart } = useCart();
   const { addOrder } = useOrders();
   const { user, isAuthenticated } = useAuth();
+  const { getUserCredits } = useReferrals();
   const { toast } = useToast();
   const navigate = useNavigate();
 
