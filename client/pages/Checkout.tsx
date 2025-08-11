@@ -60,6 +60,41 @@ export default function Checkout() {
   const tax = (subtotal - discount) * 0.08; // 8% tax on discounted amount
   const total = subtotal - discount + tax;
 
+  const validateReferralCode = async (code: string) => {
+    if (!code.trim()) {
+      setReferralDiscount(0);
+      return;
+    }
+
+    // Check if code format is valid (HD2BOOST-XXXXXX)
+    if (!code.match(/^HD2BOOST-[A-Z0-9]{6}$/)) {
+      toast({
+        title: "Invalid referral code",
+        description: "Please enter a valid referral code format.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if user is trying to use their own code
+    if (user?.id && code === `HD2BOOST-${user.id.slice(-6)}`) {
+      toast({
+        title: "Invalid referral code",
+        description: "You cannot use your own referral code.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Apply 5% discount for valid referral code
+    const discountAmount = subtotal * 0.05;
+    setReferralDiscount(discountAmount);
+    toast({
+      title: "Referral code applied!",
+      description: `You saved $${discountAmount.toFixed(2)} with the referral code.`,
+    });
+  };
+
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
