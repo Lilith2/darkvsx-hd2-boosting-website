@@ -40,7 +40,7 @@ export function AnimatedButton({
         onClick={onClick}
         className={`
           relative overflow-hidden
-          ${variant === "default" ? "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 border-0" : ""}
+          ${variant === "default" ? "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-0" : ""}
           ${className}
         `}
         {...props}
