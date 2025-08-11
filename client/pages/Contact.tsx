@@ -92,6 +92,9 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
+      // Get user's IP address for support ticket tracking
+      const ipAddress = await getCurrentIPAddress();
+
       // Create support ticket as a special order
       const ticketId = await addOrder({
         userId: user?.id || "guest",
@@ -106,7 +109,7 @@ export default function Contact() {
         status: "pending",
         totalAmount: 0,
         paymentStatus: "paid", // Support tickets are free
-        notes: `Category: ${formData.category}\nUrgency: ${formData.urgency}\nOrder ID: ${formData.orderId || "N/A"}\n\nMessage:\n${formData.message}`
+        notes: `Category: ${formData.category}\nUrgency: ${formData.urgency}\nOrder ID: ${formData.orderId || "N/A"}\n\nMessage:\n${formData.message}${ipAddress ? `\n\nSubmitted from IP: ${ipAddress}` : ""}`
       });
 
       toast({
