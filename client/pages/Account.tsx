@@ -58,7 +58,6 @@ import {
   RefreshCw,
   Share2,
   ExternalLink,
-  AlertCircle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getSiteUrl } from "@/lib/config";
