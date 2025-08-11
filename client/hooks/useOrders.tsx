@@ -205,7 +205,6 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
           return transformOrder(order, orderMessages, orderTracking);
         }) || [];
 
-      console.log("✅ Transformed orders:", transformedOrders.length, transformedOrders);
       setOrders(transformedOrders);
     } catch (err: any) {
       console.error("Error fetching orders:", err);
