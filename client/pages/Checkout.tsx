@@ -98,8 +98,19 @@ export default function Checkout() {
           .eq("referred_user_id", user.id)
           .limit(1);
 
-        if (error && !error.message?.includes("relation")) {
-          console.error("Error checking existing referrals:", error);
+        if (error) {
+          // If it's a table not found error, continue with the referral
+          if (
+            error.code === "PGRST116" ||
+            error.message?.includes("relation") ||
+            error.message?.includes("does not exist") ||
+            error.message?.includes("referrals")
+          ) {
+            console.warn("Referrals table not found, allowing referral to proceed");
+          } else {
+            console.error("Error checking existing referrals:", error);
+            // Continue anyway for unknown errors
+          }
         } else if (existingReferrals && existingReferrals.length > 0) {
           toast({
             title: "Already used referral",
