@@ -83,6 +83,12 @@ export function Navbar() {
                     </Link>
                   </Button>
                 )}
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/account">
+                    <User className="w-4 h-4 mr-2" />
+                    Account
+                  </Link>
+                </Button>
                 <Button variant="ghost" size="sm" asChild className="relative">
                   <Link to="/cart">
                     <ShoppingCart className="w-4 h-4 mr-2" />
