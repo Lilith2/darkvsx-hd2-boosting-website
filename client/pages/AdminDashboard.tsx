@@ -164,10 +164,37 @@ export default function AdminDashboard() {
     if (!ticketReply.trim() || !selectedTicket) return;
 
     try {
+      // Add message to database
       await addOrderMessage(selectedTicket.id, {
         from: "admin",
         message: ticketReply
       });
+
+      // Send email notification to customer
+      try {
+        const subject = generateTicketSubject(selectedTicket.services[0]?.name || 'Support Request');
+
+        await sendTicketReplyEmail({
+          to: selectedTicket.customerEmail,
+          subject: subject,
+          message: ticketReply,
+          ticketId: selectedTicket.id,
+          customerName: selectedTicket.customerName
+        });
+
+        toast({
+          title: "Reply sent successfully!",
+          description: `Message sent to ${selectedTicket.customerEmail}`,
+        });
+      } catch (emailError) {
+        console.error("Error sending email:", emailError);
+        toast({
+          title: "Reply saved but email failed",
+          description: "The reply was saved to the ticket but email notification failed to send.",
+          variant: "destructive",
+        });
+      }
+
       setTicketReply("");
 
       // Update ticket status to in-progress if it's still pending
@@ -176,6 +203,11 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error("Error sending reply:", error);
+      toast({
+        title: "Error sending reply",
+        description: "Failed to send reply. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
