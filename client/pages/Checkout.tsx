@@ -30,6 +30,7 @@ import {
   Lock,
   Wallet as Paypal,
   Package,
+  Gift,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
