@@ -91,6 +91,7 @@ export default function NewLogin() {
     <AuthContainer
       title="Welcome Back"
       subtitle="Sign in to continue your Helldivers journey"
+      showLogo={false}
     >
       <AnimatePresence>
         {showSuccess && (
@@ -156,7 +157,7 @@ export default function NewLogin() {
                   rememberMe: e.target.checked,
                 }))
               }
-              className="rounded border-white/20 bg-white/10 text-orange-500 focus:ring-orange-500/20"
+              className="rounded border-border bg-muted text-primary focus:ring-primary/20"
             />
             <span>Remember me</span>
           </motion.label>
@@ -168,7 +169,7 @@ export default function NewLogin() {
           >
             <Link
               to="/forgot-password"
-              className="text-sm text-orange-400 hover:text-orange-300 transition-colors"
+              className="text-sm text-primary hover:text-primary/80 transition-colors"
             >
               Forgot password?
             </Link>
@@ -196,7 +197,7 @@ export default function NewLogin() {
             <div className="w-full border-t border-white/20" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-gray-400">
+            <span className="px-4 bg-background text-muted-foreground">
               New to HelldiversBoost?
             </span>
           </div>
@@ -204,7 +205,7 @@ export default function NewLogin() {
 
         <Link
           to="/register"
-          className="mt-4 inline-flex items-center text-orange-400 hover:text-orange-300 transition-colors font-medium"
+          className="mt-4 inline-flex items-center text-primary hover:text-primary/80 transition-colors font-medium"
         >
           Create your account
           <span className="ml-1">
