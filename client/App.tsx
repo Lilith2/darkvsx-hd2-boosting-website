@@ -23,9 +23,11 @@ function App() {
             <BundlesProvider>
               <CartProvider>
                 <OrdersProvider>
-                  <Toaster />
-                  <Sonner />
-                  <AppContent />
+                  <ReferralsProvider>
+                    <Toaster />
+                    <Sonner />
+                    <AppContent />
+                  </ReferralsProvider>
                 </OrdersProvider>
               </CartProvider>
             </BundlesProvider>
