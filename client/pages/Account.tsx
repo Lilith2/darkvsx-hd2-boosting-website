@@ -800,7 +800,19 @@ export default function Account() {
                     <CardDescription>Track your successful referrals and earnings</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {referralLoading ? (
+                    {referralError ? (
+                      <div className="text-center py-8">
+                        <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
+                        <h3 className="font-medium mb-2">Unable to load referral data</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          The referral system is not fully set up yet. Your referrals will appear here once the database is configured.
+                        </p>
+                        <Button onClick={() => refreshStats()} variant="outline" size="sm">
+                          <RefreshCw className="w-4 h-4 mr-2" />
+                          Try Again
+                        </Button>
+                      </div>
+                    ) : referralLoading ? (
                       <div className="text-center py-8">
                         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                         <p className="text-sm text-muted-foreground">Loading referral history...</p>
