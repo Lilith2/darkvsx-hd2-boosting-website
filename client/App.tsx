@@ -29,25 +29,29 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
-          <ServicesProvider>
-            <BundlesProvider>
-              <CartProvider>
-                <OrdersProvider>
-                  <ReferralsProvider>
-                    <Toaster />
-                    <Sonner />
-                    <AppContent />
-                  </ReferralsProvider>
-                </OrdersProvider>
-              </CartProvider>
-            </BundlesProvider>
-          </ServicesProvider>
-        </AuthProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <AccessibilityWrapper>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <AuthProvider>
+              <ServicesProvider>
+                <BundlesProvider>
+                  <CartProvider>
+                    <OrdersProvider>
+                      <ReferralsProvider>
+                        <Toaster />
+                        <Sonner />
+                        <AppContent />
+                      </ReferralsProvider>
+                    </OrdersProvider>
+                  </CartProvider>
+                </BundlesProvider>
+              </ServicesProvider>
+            </AuthProvider>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </AccessibilityWrapper>
+    </ErrorBoundary>
   );
 }
 
