@@ -186,6 +186,16 @@ export default function EmailConfirmation() {
         <div className="w-full max-w-md">
           <Card>
             <CardHeader className="text-center">
+              <div className="flex items-center justify-center space-x-2 mb-4">
+                <img
+                  src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64"
+                  alt="HelldiversBoost Logo"
+                  className="w-8 h-8"
+                />
+                <span className="text-xl font-bold text-foreground">
+                  HelldiversBoost
+                </span>
+              </div>
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
@@ -211,8 +221,15 @@ export default function EmailConfirmation() {
       <div className="w-full max-w-md">
         <Card>
           <CardHeader className="text-center">
-            <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mail className="w-8 h-8 text-primary" />
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64"
+                alt="HelldiversBoost Logo"
+                className="w-8 h-8"
+              />
+              <span className="text-xl font-bold text-foreground">
+                HelldiversBoost
+              </span>
             </div>
             <CardTitle className="text-2xl">Check Your Email</CardTitle>
             <CardDescription>
