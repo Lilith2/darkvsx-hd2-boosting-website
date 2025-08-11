@@ -20,5 +20,8 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // Email routes
+  app.post("/api/send-email", handleSendEmail);
+
   return app;
 }
