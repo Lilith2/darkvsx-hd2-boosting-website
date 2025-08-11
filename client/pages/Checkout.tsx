@@ -324,6 +324,46 @@ export default function Checkout() {
                 </Card>
               )}
 
+              {/* Referral Code */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Gift className="w-5 h-5 mr-2" />
+                    Referral Code
+                  </CardTitle>
+                  <CardDescription>
+                    Have a referral code? Get 5% off your order!
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex space-x-2">
+                    <Input
+                      value={referralCode}
+                      onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                      placeholder="HD2BOOST-XXXXXX"
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={() => validateReferralCode(referralCode)}
+                      variant="outline"
+                      disabled={!referralCode.trim()}
+                    >
+                      Apply
+                    </Button>
+                  </div>
+                  {referralDiscount > 0 && (
+                    <div className="mt-2 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                        <span className="text-sm text-green-700 dark:text-green-400">
+                          Referral code applied! You saved ${referralDiscount.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
               {/* Order Notes */}
               <Card>
                 <CardHeader>
