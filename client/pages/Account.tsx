@@ -336,7 +336,7 @@ export default function Account() {
                     Referral Earnings
                   </p>
                   <p className="text-2xl font-bold text-green-600">
-                    ${referralStats.totalEarned.toFixed(2)}
+                    ${referralError ? "0.00" : referralStats.totalEarned.toFixed(2)}
                   </p>
                 </div>
                 <Gift className="w-8 h-8 text-green-600/50" />
