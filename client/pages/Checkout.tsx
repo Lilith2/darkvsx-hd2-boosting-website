@@ -503,6 +503,56 @@ export default function Checkout() {
                 </CardContent>
               </Card>
 
+              {/* Referral Credits */}
+              {isAuthenticated && availableCredits > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <DollarSign className="w-5 h-5 mr-2" />
+                      Use Referral Credits
+                    </CardTitle>
+                    <CardDescription>
+                      You have ${availableCredits.toFixed(2)} in referral credits available
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                          <DollarSign className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium">Apply Referral Credits</p>
+                          <p className="text-sm text-muted-foreground">
+                            Use ${Math.min(availableCredits, subtotal).toFixed(2)} of your ${availableCredits.toFixed(2)} available credits
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="useCredits"
+                          checked={useReferralCredits}
+                          onCheckedChange={handleReferralCreditsToggle}
+                        />
+                        <Label htmlFor="useCredits" className="cursor-pointer">
+                          Use Credits
+                        </Label>
+                      </div>
+                    </div>
+                    {useReferralCredits && referralCreditsApplied > 0 && (
+                      <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <CheckCircle className="w-4 h-4 text-blue-600" />
+                          <span className="text-sm text-blue-700 dark:text-blue-400">
+                            Applied ${referralCreditsApplied.toFixed(2)} in referral credits!
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Order Notes */}
               <Card>
                 <CardHeader>
