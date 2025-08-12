@@ -202,11 +202,11 @@ export default function AdminDashboard() {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 
-  // Calculate actual top performing services from real order data
+  // Calculate actual top performing services from both regular and custom orders
   const topServices = (() => {
     const serviceStats = new Map();
 
-    // Count actual orders for each service
+    // Count actual regular orders for each service
     orders.forEach((order) => {
       if (!order.services.some((s) => s.id === "support-ticket")) {
         order.services.forEach((service) => {
@@ -215,12 +215,30 @@ export default function AdminDashboard() {
             orders: 0,
             revenue: 0,
             id: service.id,
+            type: 'regular',
           };
           current.orders += service.quantity || 1;
           current.revenue += (service.price || 0) * (service.quantity || 1);
           serviceStats.set(service.name, current);
         });
       }
+    });
+
+    // Count custom orders as "custom order items"
+    customOrders.forEach((order) => {
+      order.items.forEach((item) => {
+        const serviceName = `${item.category}: ${item.item_name}`;
+        const current = serviceStats.get(serviceName) || {
+          name: serviceName,
+          orders: 0,
+          revenue: 0,
+          id: item.id,
+          type: 'custom',
+        };
+        current.orders += item.quantity;
+        current.revenue += item.total_price;
+        serviceStats.set(serviceName, current);
+      });
     });
 
     return Array.from(serviceStats.values())
