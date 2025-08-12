@@ -303,8 +303,13 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       console.error("Error adding order:", err);
 
       // Handle specific database schema errors
-      if (err?.message?.includes("transaction_id") || err?.message?.includes("ip_address")) {
-        console.warn("Database schema missing transaction_id or ip_address columns. Order created without these fields.");
+      if (err?.message?.includes("column") && (
+        err?.message?.includes("transaction_id") ||
+        err?.message?.includes("referral_code") ||
+        err?.message?.includes("referral_discount") ||
+        err?.message?.includes("referral_credits_used")
+      )) {
+        console.warn("Database schema missing some expected columns. Retrying with base fields only.");
         // Try again without the optional fields
         try {
           const baseOrderData = {
