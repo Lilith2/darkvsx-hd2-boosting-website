@@ -64,6 +64,12 @@ export function Navbar() {
               Bundles
             </Link>
             <Link
+              to="/custom-order"
+              className="text-muted-foreground hover:text-primary transition-colors font-medium"
+            >
+              Custom Order
+            </Link>
+            <Link
               to="/faq"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
             >
