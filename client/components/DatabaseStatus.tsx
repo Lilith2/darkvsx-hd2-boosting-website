@@ -1,104 +1,213 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Database, X, ExternalLink } from "lucide-react";
+import { AlertCircle, CheckCircle, Database, RefreshCw } from "lucide-react";
 
 export function DatabaseStatus() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [hasDbError, setHasDbError] = useState(false);
+  const [status, setStatus] = useState<{
+    connected: boolean;
+    tablesExist: boolean;
+    userCanRead: boolean;
+    error: string | null;
+    environment: string;
+    url: string;
+  }>({
+    connected: false,
+    tablesExist: false,
+    userCanRead: false,
+    error: null,
+    environment: 'unknown',
+    url: ''
+  });
+  const [loading, setLoading] = useState(true);
+
+  const checkDatabaseStatus = async () => {
+    setLoading(true);
+    try {
+      // Check environment variables
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://ahqqptrclqtwqjgmtesv.supabase.co";
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFocXFwdHJjbHF0d3FqZ210ZXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNDM3NTMsImV4cCI6MjA2OTkxOTc1M30.FRFHf-XvnBLzZvcGseS82HJIORQXs_8OEEVq0RpabN0";
+      
+      const environment = import.meta.env.MODE || 'unknown';
+
+      console.log('Environment:', environment);
+      console.log('Supabase URL:', supabaseUrl);
+      console.log('Supabase Key (first 20 chars):', supabaseKey.substring(0, 20) + '...');
+
+      // Test basic connection
+      const { data: connectionTest, error: connectionError } = await supabase
+        .from('profiles')
+        .select('count', { count: 'exact', head: true });
+
+      if (connectionError) {
+        if (connectionError.code === 'PGRST116' || connectionError.message?.includes('relation') || connectionError.message?.includes('does not exist')) {
+          setStatus({
+            connected: true,
+            tablesExist: false,
+            userCanRead: false,
+            error: 'Tables do not exist. Database needs to be set up.',
+            environment,
+            url: supabaseUrl
+          });
+          return;
+        }
+        throw connectionError;
+      }
+
+      // Test if we can read from profiles table
+      const { data: profilesTest, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id')
+        .limit(1);
+
+      if (profilesError) {
+        throw profilesError;
+      }
+
+      // Test if we can read from orders table
+      const { data: ordersTest, error: ordersError } = await supabase
+        .from('orders')
+        .select('id')
+        .limit(1);
+
+      setStatus({
+        connected: true,
+        tablesExist: true,
+        userCanRead: !ordersError,
+        error: ordersError ? `Orders table error: ${ordersError.message}` : null,
+        environment,
+        url: supabaseUrl
+      });
+
+    } catch (error: any) {
+      console.error('Database status check error:', error);
+      setStatus({
+        connected: false,
+        tablesExist: false,
+        userCanRead: false,
+        error: error.message || 'Unknown database error',
+        environment: import.meta.env.MODE || 'unknown',
+        url: import.meta.env.VITE_SUPABASE_URL || "https://ahqqptrclqtwqjgmtesv.supabase.co"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Listen for console warnings about missing tables
-    const originalWarn = console.warn;
-    const originalError = console.error;
-
-    const checkForDbErrors = (message: string) => {
-      if (
-        message.includes("table not found") ||
-        message.includes("relation") ||
-        message.includes("does not exist") ||
-        message.includes("Supabase connection test failed")
-      ) {
-        setHasDbError(true);
-        setIsVisible(true);
-      }
-    };
-
-    console.warn = (...args) => {
-      const message = args.join(" ");
-      checkForDbErrors(message);
-      originalWarn.apply(console, args);
-    };
-
-    console.error = (...args) => {
-      const message = args.join(" ");
-      checkForDbErrors(message);
-      originalError.apply(console, args);
-    };
-
-    // Cleanup
-    return () => {
-      console.warn = originalWarn;
-      console.error = originalError;
-    };
+    checkDatabaseStatus();
   }, []);
 
-  if (!isVisible || !hasDbError) return null;
+  const getStatusIcon = () => {
+    if (loading) return <RefreshCw className="w-5 h-5 animate-spin" />;
+    if (status.connected && status.tablesExist && status.userCanRead) {
+      return <CheckCircle className="w-5 h-5 text-green-600" />;
+    }
+    return <AlertCircle className="w-5 h-5 text-red-600" />;
+  };
+
+  const getStatusText = () => {
+    if (loading) return "Checking...";
+    if (status.connected && status.tablesExist && status.userCanRead) {
+      return "Connected";
+    }
+    if (status.connected && status.tablesExist) {
+      return "Tables exist but read issues";
+    }
+    if (status.connected) {
+      return "Connected but tables missing";
+    }
+    return "Connection failed";
+  };
+
+  const getStatusColor = () => {
+    if (loading) return "secondary";
+    if (status.connected && status.tablesExist && status.userCanRead) {
+      return "default";
+    }
+    return "destructive";
+  };
 
   return (
-    <div className="fixed top-4 right-4 z-50 max-w-md">
-      <Card className="border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/50">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <h4 className="font-medium text-yellow-800 dark:text-yellow-200">
-                  Demo Mode Active
-                </h4>
-                <Badge
-                  variant="outline"
-                  className="text-xs border-yellow-300 text-yellow-700 dark:text-yellow-300"
-                >
-                  <Database className="w-3 h-3 mr-1" />
-                  No Database
-                </Badge>
-              </div>
-              <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-3">
-                The app is running in demo mode. Database features are disabled.
-                Connect a Supabase database to enable full functionality.
-              </p>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-xs border-yellow-300 hover:bg-yellow-100 dark:hover:bg-yellow-900"
-                  asChild
-                >
-                  <a
-                    href="https://supabase.com/dashboard/new"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ExternalLink className="w-3 h-3 mr-1" />
-                    Setup Database
-                  </a>
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setIsVisible(false)}
-                  className="text-xs text-yellow-700 hover:bg-yellow-100 dark:text-yellow-300 dark:hover:bg-yellow-900"
-                >
-                  <X className="w-3 h-3 mr-1" />
-                  Dismiss
-                </Button>
-              </div>
-            </div>
+    <Card className="border border-border/50">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Database className="w-5 h-5" />
+          Database Status
+        </CardTitle>
+        <CardDescription>
+          Current database connection and environment information
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium">Status:</span>
+          <Badge variant={getStatusColor()} className="flex items-center gap-2">
+            {getStatusIcon()}
+            {getStatusText()}
+          </Badge>
+        </div>
+
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Environment:</span>
+            <span className="font-mono">{status.environment}</span>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Supabase URL:</span>
+            <span className="font-mono text-xs">{status.url.substring(0, 30)}...</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Connection:</span>
+            <Badge variant={status.connected ? "default" : "destructive"}>
+              {status.connected ? "Connected" : "Failed"}
+            </Badge>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Tables:</span>
+            <Badge variant={status.tablesExist ? "default" : "destructive"}>
+              {status.tablesExist ? "Exist" : "Missing"}
+            </Badge>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Read Access:</span>
+            <Badge variant={status.userCanRead ? "default" : "destructive"}>
+              {status.userCanRead ? "Working" : "Failed"}
+            </Badge>
+          </div>
+        </div>
+
+        {status.error && (
+          <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+            <p className="text-sm text-destructive font-medium">Error Details:</p>
+            <p className="text-xs text-destructive/80 mt-1 font-mono">{status.error}</p>
+          </div>
+        )}
+
+        <div className="pt-2">
+          <Button 
+            onClick={checkDatabaseStatus} 
+            size="sm" 
+            variant="outline"
+            disabled={loading}
+            className="w-full"
+          >
+            {loading ? (
+              <>
+                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                Checking...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Refresh Status
+              </>
+            )}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
