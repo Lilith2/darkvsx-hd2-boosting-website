@@ -15,6 +15,7 @@ interface User {
   username: string;
   email: string;
   role: "user" | "admin";
+  discord_username?: string;
 }
 
 interface AuthContextType {
@@ -104,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             username: newProfile.username || "User",
             email: newProfile.email || "",
             role: (newProfile.role as "user" | "admin") || "user",
+            discord_username: newProfile.discord_username || undefined,
           });
           }
         }
@@ -114,6 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           username: profile.username || "User",
           email: profile.email || "",
           role: (profile.role as "user" | "admin") || "user",
+          discord_username: profile.discord_username || undefined,
         });
       }
     } catch (error) {
