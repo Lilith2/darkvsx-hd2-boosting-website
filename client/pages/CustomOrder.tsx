@@ -638,7 +638,7 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
                 Math.max(item.minimum_quantity, Math.min(maxQty, value)),
               );
             }}
-            className="w-12 text-center text-xs h-6"
+            className="w-16 text-center text-xs h-6"
             min={item.minimum_quantity}
             max={item.maximum_quantity || 999999}
           />
