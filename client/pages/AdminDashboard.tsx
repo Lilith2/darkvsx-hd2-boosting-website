@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useServices } from "@/hooks/useServices";
 import { useBundles } from "@/hooks/useBundles";
 import { useOrders } from "@/hooks/useOrders";
@@ -7,8 +7,7 @@ import { ServiceModal } from "@/components/ServiceModal";
 import { BundleModal } from "@/components/BundleModal";
 import { TicketSystem } from "@/components/TicketSystem";
 import { PricingModal } from "@/components/PricingModal";
-import CustomOrdersManager from "@/components/CustomOrdersManager";
-import DatabaseTest from "@/components/DatabaseTest";
+import SimpleCustomOrders from "@/components/SimpleCustomOrders";
 import { Button } from "@/components/ui/button";
 import {
   sendTicketReplyEmail,
@@ -1556,8 +1555,22 @@ export default function AdminDashboard() {
 
           {/* Custom Orders Tab */}
           <TabsContent value="custom-orders" className="space-y-6">
-            <DatabaseTest />
-            <CustomOrdersManager />
+            <Card className="border border-border/50">
+              <CardHeader>
+                <div>
+                  <CardTitle className="flex items-center">
+                    <Package className="w-5 h-5 mr-2" />
+                    Custom Orders Management
+                  </CardTitle>
+                  <CardDescription>
+                    Manage custom order requests and track their progress
+                  </CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <SimpleCustomOrders />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Support Tickets Tab */}

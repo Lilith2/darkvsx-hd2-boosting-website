@@ -48,14 +48,14 @@ export function useCustomOrders() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Fetch custom orders
+  // Fetch custom orders - using dynamic query to avoid type errors
   const fetchOrders = async () => {
     try {
       setLoading(true);
       setError(null);
 
       const { data, error: fetchError } = await supabase
-        .from("custom_orders")
+        .from("custom_orders" as any)
         .select(
           `
           *,
@@ -77,7 +77,7 @@ export function useCustomOrders() {
       }
 
       // Transform the data to match our interface
-      const transformedOrders: CustomOrder[] = (data || []).map((order) => ({
+      const transformedOrders: CustomOrder[] = (data || []).map((order: any) => ({
         ...order,
         items: order.custom_order_items || [],
       }));
@@ -96,7 +96,7 @@ export function useCustomOrders() {
     try {
       // Try using the stored function first
       const { data, error: statsError } = await supabase.rpc(
-        "get_custom_order_stats",
+        "get_custom_order_stats" as any,
       );
 
       if (statsError) {
@@ -120,7 +120,7 @@ export function useCustomOrders() {
   const calculateStatsManually = async () => {
     try {
       const { data: allOrders, error } = await supabase
-        .from("custom_orders")
+        .from("custom_orders" as any)
         .select("*");
 
       if (error) {
@@ -132,19 +132,19 @@ export function useCustomOrders() {
       const stats: CustomOrderStats = {
         total_orders: orders.length,
         total_revenue: orders.reduce(
-          (sum, order) => sum + (order.total_amount || 0),
+          (sum: number, order: any) => sum + (order.total_amount || 0),
           0,
         ),
         avg_order_value:
           orders.length > 0
             ? orders.reduce(
-                (sum, order) => sum + (order.total_amount || 0),
+                (sum: number, order: any) => sum + (order.total_amount || 0),
                 0,
               ) / orders.length
             : 0,
-        pending_orders: orders.filter((order) => order.status === "pending")
+        pending_orders: orders.filter((order: any) => order.status === "pending")
           .length,
-        completed_orders: orders.filter((order) => order.status === "completed")
+        completed_orders: orders.filter((order: any) => order.status === "completed")
           .length,
       };
 
@@ -176,7 +176,7 @@ export function useCustomOrders() {
 
       // Create the main order
       const { data: orderResult, error: orderError } = await supabase
-        .from("custom_orders")
+        .from("custom_orders" as any)
         .insert({
           total_amount: totalAmount,
           special_instructions: orderData.special_instructions,
@@ -192,12 +192,12 @@ export function useCustomOrders() {
 
       // Create order items
       const orderItems = orderData.items.map((item) => ({
-        order_id: orderResult.id,
+        order_id: (orderResult as any).id,
         ...item,
       }));
 
       const { error: itemsError } = await supabase
-        .from("custom_order_items")
+        .from("custom_order_items" as any)
         .insert(orderItems);
 
       if (itemsError) {
@@ -206,7 +206,7 @@ export function useCustomOrders() {
 
       toast({
         title: "Order Created",
-        description: `Custom order ${orderResult.order_number} has been created successfully.`,
+        description: `Custom order ${(orderResult as any).order_number || (orderResult as any).id} has been created successfully.`,
       });
 
       // Refresh orders
@@ -232,7 +232,7 @@ export function useCustomOrders() {
   ) => {
     try {
       const { error } = await supabase
-        .from("custom_orders")
+        .from("custom_orders" as any)
         .update({ status })
         .eq("id", orderId);
 
@@ -271,7 +271,7 @@ export function useCustomOrders() {
       }
 
       const { error } = await supabase
-        .from("custom_orders")
+        .from("custom_orders" as any)
         .update(updates)
         .eq("id", orderId);
 
@@ -301,7 +301,7 @@ export function useCustomOrders() {
   const updateAdminNotes = async (orderId: string, notes: string) => {
     try {
       const { error } = await supabase
-        .from("custom_orders")
+        .from("custom_orders" as any)
         .update({ admin_notes: notes })
         .eq("id", orderId);
 
@@ -330,7 +330,7 @@ export function useCustomOrders() {
   const deleteOrder = async (orderId: string) => {
     try {
       const { error } = await supabase
-        .from("custom_orders")
+        .from("custom_orders" as any)
         .delete()
         .eq("id", orderId);
 
@@ -366,12 +366,12 @@ export function useCustomOrders() {
   useEffect(() => {
     const subscription = supabase
       .channel("custom_orders_changes")
-      .on(
+        .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
-          table: "custom_orders",
+          table: "custom_orders" as any,
         },
         () => {
           fetchOrders();
