@@ -59,32 +59,32 @@ export const handleSendEmail: RequestHandler = async (req, res) => {
     // - Nodemailer with SMTP
     
     console.log("📧 Sending support ticket reply email:");
-    console.log(`To: ${to}`);
-    console.log(`Subject: ${subject}`);
-    console.log(`Ticket ID: ${ticketId}`);
-    console.log(`Message: ${message}`);
-    
+    console.log(`To: ${sanitizedTo}`);
+    console.log(`Subject: ${sanitizedSubject}`);
+    console.log(`Ticket ID: ${sanitizedTicketId}`);
+    console.log(`Message: ${sanitizedMessage}`);
+
     // Simulate email sending
     const emailContent = {
-      to,
+      to: sanitizedTo,
       from: "support@helldivers-boost.com",
-      subject: subject.includes('Ticket')
-        ? `Re: Support Ticket #${ticketId.slice(-6)} - ${subject.replace('Support:', '').trim()}`
-        : `Re: Order Update #${ticketId.slice(-6)} - ${subject}`,
+      subject: sanitizedSubject.includes('Ticket')
+        ? `Re: Support Ticket #${sanitizedTicketId.slice(-6)} - ${sanitizedSubject.replace('Support:', '').trim()}`
+        : `Re: Order Update #${sanitizedTicketId.slice(-6)} - ${sanitizedSubject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0;">
           <div style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; padding: 20px; text-align: center;">
             <h1 style="margin: 0; font-size: 24px;">⚡ HelldiversBoost</h1>
             <p style="margin: 5px 0 0 0; opacity: 0.9;">
-              ${subject.includes('Support') ? 'Support Team Response' : 'Order Update'}
+              ${sanitizedSubject.includes('Support') ? 'Support Team Response' : 'Order Update'}
             </p>
           </div>
 
           <div style="padding: 25px; background: #ffffff;">
-            <h2 style="color: #1e3a8a; margin-top: 0;">Hi ${customerName}! 👋</h2>
+            <h2 style="color: #1e3a8a; margin-top: 0;">Hi ${sanitizedCustomerName}! 👋</h2>
 
             <p style="color: #374151; line-height: 1.6;">
-              ${subject.includes('Support')
+              ${sanitizedSubject.includes('Support')
                 ? "Thank you for contacting our support team. Here's our response to your inquiry:"
                 : "We have an update regarding your order:"
               }
@@ -92,10 +92,10 @@ export const handleSendEmail: RequestHandler = async (req, res) => {
 
             <div style="background: #f8fafc; padding: 20px; border-left: 4px solid #3b82f6; margin: 25px 0; border-radius: 4px;">
               <div style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">
-                <strong>${subject.includes('Support') ? '🎫 Ticket' : '📦 Order'} #${ticketId.slice(-6)}</strong>
-                ${subject.includes('Support') ? '' : ` | ${subject}`}
+                <strong>${sanitizedSubject.includes('Support') ? '🎫 Ticket' : '📦 Order'} #${sanitizedTicketId.slice(-6)}</strong>
+                ${sanitizedSubject.includes('Support') ? '' : ` | ${sanitizedSubject}`}
               </div>
-              <div style="color: #111827; white-space: pre-wrap; line-height: 1.6;">${message}</div>
+              <div style="color: #111827; white-space: pre-wrap; line-height: 1.6;">${sanitizedMessage}</div>
             </div>
 
             <div style="background: #ecfdf5; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0; margin: 20px 0;">
