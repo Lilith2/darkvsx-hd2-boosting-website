@@ -1423,7 +1423,7 @@ export default function AdminDashboard() {
                                   <p className="text-muted-foreground">
                                     Services
                                   </p>
-                                  <p className="font-medium">
+                                  <div className="font-medium">
                                     {order.services.map((s, idx) => (
                                       <span key={s.id}>
                                         {/* Show full custom order details if it's a custom order */}
@@ -1441,7 +1441,7 @@ export default function AdminDashboard() {
                                         {idx < order.services.length - 1 && !s.name.includes("Custom Order:") && ", "}
                                       </span>
                                     ))}
-                                  </p>
+                                  </div>
                                   <p className="text-xs text-muted-foreground">
                                     {order.services.reduce(
                                       (sum, s) => sum + s.quantity,
