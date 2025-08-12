@@ -688,10 +688,10 @@ export default function AdminDashboard() {
                           className="flex items-center justify-between p-3 border border-border/30 rounded-lg"
                         >
                           <div className="flex items-center space-x-3">
-                            <div className="w-2 h-2 bg-primary rounded-full"></div>
+                            <div className={`w-2 h-2 rounded-full ${order.type === 'custom' ? 'bg-purple-500' : 'bg-primary'}`}></div>
                             <div>
                               <p className="text-sm font-medium">
-                                Order {order.id.slice(0, 8)}...
+                                {order.type === 'custom' ? 'Custom ' : ''}Order {order.id.slice(0, 8)}...
                               </p>
                               <p className="text-xs text-muted-foreground">
                                 {order.customerName}
@@ -699,18 +699,25 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <Badge
-                              className={
-                                order.status === "pending"
-                                  ? "bg-yellow-500/20 text-yellow-700"
-                                  : order.status === "completed"
-                                    ? "bg-green-500/20 text-green-700"
-                                    : "bg-blue-500/20 text-blue-700"
-                              }
-                            >
-                              {order.status}
-                            </Badge>
-                            <p className="text-sm font-medium mt-1">
+                            <div className="flex items-center gap-1 mb-1">
+                              <Badge
+                                className={
+                                  order.status === "pending"
+                                    ? "bg-yellow-500/20 text-yellow-700"
+                                    : order.status === "completed"
+                                      ? "bg-green-500/20 text-green-700"
+                                      : "bg-blue-500/20 text-blue-700"
+                                }
+                              >
+                                {order.status}
+                              </Badge>
+                              {order.type === 'custom' && (
+                                <Badge variant="outline" className="text-xs bg-purple-100 text-purple-700">
+                                  Custom
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm font-medium">
                               ${order.totalAmount}
                             </p>
                           </div>
