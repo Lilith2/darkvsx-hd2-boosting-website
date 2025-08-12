@@ -74,7 +74,6 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
       const { data, error: fetchError } = await supabase
         .from("bundles")
         .select("*")
-        .eq("active", true)
         .order("created_at", { ascending: false });
 
       if (fetchError) {
