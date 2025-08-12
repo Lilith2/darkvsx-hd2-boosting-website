@@ -1395,11 +1395,9 @@ export default function AdminDashboard() {
                                   <p className="text-xs text-muted-foreground">
                                     {order.customerEmail}
                                   </p>
-                                  {order.ipAddress && (
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                      IP: {order.ipAddress}
-                                    </p>
-                                  )}
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    IP: {order.ipAddress || "Not recorded"}
+                                  </p>
                                   {order.referralCode && (
                                     <p className="text-xs text-green-600 mt-1">
                                       Referral: {order.referralCode} (-$
