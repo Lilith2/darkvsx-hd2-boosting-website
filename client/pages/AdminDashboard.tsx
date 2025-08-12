@@ -103,6 +103,15 @@ export default function AdminDashboard() {
     )
     .slice(0, 5);
 
+  // Filter orders based on selected filter
+  const filteredOrders = orders
+    .filter(order => !order.services.some(s => s.id === "support-ticket"))
+    .filter(order => {
+      if (orderFilter === "all") return true;
+      return order.status === orderFilter;
+    })
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
   // Calculate actual top performing services from real order data
   const topServices = (() => {
     const serviceStats = new Map();
