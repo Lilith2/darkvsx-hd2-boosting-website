@@ -308,12 +308,12 @@ export default function Checkout() {
       } else {
         navigate("/account"); // Redirect to account page for custom orders
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating order:", error);
+      const errorMessage = error?.message || error?.error_description || JSON.stringify(error) || "Unknown error";
       toast({
         title: "Order creation failed",
-        description:
-          "Payment was successful but we couldn't create your order. Please contact support.",
+        description: `Payment was successful but we couldn't create your order: ${errorMessage}. Please contact support.`,
         variant: "destructive",
       });
     } finally {
