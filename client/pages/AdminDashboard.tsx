@@ -752,33 +752,53 @@ export default function AdminDashboard() {
                     </CardDescription>
                   </div>
 
-                  {/* Filter Buttons */}
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      { value: "all", label: "All Orders", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket")).length },
-                      { value: "pending", label: "Pending", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "pending").length },
-                      { value: "processing", label: "Processing", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "processing").length },
-                      { value: "in-progress", label: "In Progress", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "in-progress").length },
-                      { value: "completed", label: "Completed", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "completed").length }
-                    ].map((filter) => (
-                      <Button
-                        key={filter.value}
-                        size="sm"
-                        variant={orderFilter === filter.value ? "default" : "outline"}
-                        onClick={() => setOrderFilter(filter.value)}
-                        className="text-xs"
-                      >
-                        {filter.label}
-                        {filter.count > 0 && (
-                          <Badge
-                            variant="secondary"
-                            className="ml-2 h-4 px-1 text-xs"
-                          >
-                            {filter.count}
-                          </Badge>
-                        )}
-                      </Button>
-                    ))}
+                  {/* Filter Section */}
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Filter className="w-4 h-4" />
+                      <span>Filter by Status:</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { value: "all", label: "All Orders", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket")).length, color: "default" },
+                        { value: "pending", label: "Pending", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "pending").length, color: "yellow" },
+                        { value: "processing", label: "Processing", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "processing").length, color: "blue" },
+                        { value: "in-progress", label: "In Progress", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "in-progress").length, color: "purple" },
+                        { value: "completed", label: "Completed", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "completed").length, color: "green" }
+                      ].map((filter) => (
+                        <Button
+                          key={filter.value}
+                          size="sm"
+                          variant={orderFilter === filter.value ? "default" : "outline"}
+                          onClick={() => setOrderFilter(filter.value)}
+                          className={`text-xs ${
+                            orderFilter === filter.value
+                              ? ""
+                              : filter.color === "yellow" ? "hover:bg-yellow-50 hover:border-yellow-300" :
+                                filter.color === "blue" ? "hover:bg-blue-50 hover:border-blue-300" :
+                                filter.color === "purple" ? "hover:bg-purple-50 hover:border-purple-300" :
+                                filter.color === "green" ? "hover:bg-green-50 hover:border-green-300" :
+                                ""
+                          }`}
+                        >
+                          {filter.label}
+                          {filter.count > 0 && (
+                            <Badge
+                              variant="secondary"
+                              className={`ml-2 h-4 px-1 text-xs ${
+                                filter.color === "yellow" ? "bg-yellow-100 text-yellow-700" :
+                                filter.color === "blue" ? "bg-blue-100 text-blue-700" :
+                                filter.color === "purple" ? "bg-purple-100 text-purple-700" :
+                                filter.color === "green" ? "bg-green-100 text-green-700" :
+                                ""
+                              }`}
+                            >
+                              {filter.count}
+                            </Badge>
+                          )}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </CardHeader>
