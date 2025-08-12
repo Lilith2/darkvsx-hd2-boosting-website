@@ -14,18 +14,12 @@ export interface Referral {
   updated_at: string;
 }
 
-export interface ReferralCredits {
-  balance: number;
-  totalEarned: number;
-  totalSpent: number;
-}
-
 export interface ReferralStats {
   totalReferred: number;
   totalEarned: number;
   pendingEarnings: number;
   referrals: Referral[];
-  credits: ReferralCredits;
+  creditBalance: number;
 }
 
 interface ReferralsContextType {
@@ -34,8 +28,7 @@ interface ReferralsContextType {
   error: string | null;
   refreshStats: () => Promise<void>;
   getUserCredits: () => Promise<number>;
-  hasCredits: (amount: number) => Promise<boolean>;
-  useCredits: (amount: number, orderId?: string, description?: string) => Promise<boolean>;
+  useCredits: (amount: number) => Promise<boolean>;
 }
 
 const ReferralsContext = createContext<ReferralsContextType | undefined>(undefined);
@@ -47,31 +40,20 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
     totalEarned: 0,
     pendingEarnings: 0,
     referrals: [],
-    credits: {
-      balance: 0,
-      totalEarned: 0,
-      totalSpent: 0,
-    },
+    creditBalance: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const getDefaultStats = (): ReferralStats => ({
-    totalReferred: 0,
-    totalEarned: 0,
-    pendingEarnings: 0,
-    referrals: [],
-    credits: {
-      balance: 0,
-      totalEarned: 0,
-      totalSpent: 0,
-    },
-  });
-
   const refreshStats = async () => {
     if (!user?.id) {
-      console.log("No user ID, using default stats");
-      setStats(getDefaultStats());
+      setStats({
+        totalReferred: 0,
+        totalEarned: 0,
+        pendingEarnings: 0,
+        referrals: [],
+        creditBalance: 0,
+      });
       setLoading(false);
       return;
     }
@@ -79,7 +61,6 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       setError(null);
-      console.log("Fetching referrals for user:", user.id);
 
       // Fetch user's referrals
       const { data: referrals, error: referralsError } = await supabase
@@ -88,104 +69,54 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         .eq("referrer_user_id", user.id)
         .order("created_at", { ascending: false });
 
-      console.log("Referrals query result:", { referrals, referralsError });
-
-      if (referralsError) {
-        // Handle case where referrals table doesn't exist yet
-        if (
-          referralsError.code === "PGRST116" ||
-          referralsError.message?.includes("relation") ||
-          referralsError.message?.includes("does not exist") ||
-          referralsError.message?.includes("referrals")
-        ) {
-          console.warn("Referrals table not found - using default data. Error:", referralsError.message);
-          setStats(getDefaultStats());
-          setError(null);
-          setLoading(false);
-          return;
-        }
-        throw referralsError;
-      }
-
-      const referralData = referrals || [];
-      console.log("Processing referral data:", referralData);
-
-      // Fetch user's credit balance from profile
+      // Fetch user's credit balance
       const { data: profileData, error: creditsError } = await supabase
         .from("profiles")
-        .select("credit_balance, total_credits_earned, total_credits_used")
+        .select("credit_balance")
         .eq("id", user.id)
         .single();
 
-      console.log("Credits query result:", { profileData, creditsError });
+      const referralData = referrals || [];
+      const creditBalance = profileData?.credit_balance || 0;
 
-      // Initialize credits if not found
-      let userCredits = {
-        balance: 0,
-        totalEarned: 0,
-        totalSpent: 0,
-      };
-
-      if (creditsError) {
-        // If credit columns don't exist, use default values
-        if (creditsError.code === 'PGRST116' || creditsError.message?.includes('column') || creditsError.message?.includes('does not exist')) {
-          console.warn("Credit columns do not exist in profiles table. Using default values. Database migration needed.");
-          userCredits = { balance: 0, totalEarned: 0, totalSpent: 0 };
-        } else {
-          console.warn("Error fetching user profile credits:", creditsError);
-        }
-      } else if (profileData) {
-        userCredits = {
-          balance: parseFloat(String(profileData.credit_balance || 0)),
-          totalEarned: parseFloat(String(profileData.total_credits_earned || 0)),
-          totalSpent: parseFloat(String(profileData.total_credits_used || 0)),
-        };
+      // Handle referrals table not existing
+      if (referralsError && 
+          (referralsError.code === "PGRST116" || 
+           referralsError.message?.includes("relation") || 
+           referralsError.message?.includes("does not exist"))) {
+        console.warn("Referrals table not found - using default data");
+      } else if (referralsError) {
+        throw referralsError;
       }
 
-      // Calculate stats with safety checks
+      // Handle credit_balance column not existing
+      if (creditsError && 
+          (creditsError.code === 'PGRST116' || 
+           creditsError.message?.includes('column') || 
+           creditsError.message?.includes('does not exist'))) {
+        console.warn("Credit balance column not found - using 0");
+      }
+
+      // Calculate stats
       const totalReferred = referralData.length;
       const totalEarned = referralData
-        .filter(r => r && r.status === "completed")
-        .reduce((sum, r) => {
-          try {
-            const amount = r.commission_amount ? parseFloat(String(r.commission_amount)) : 0;
-            return sum + (isNaN(amount) ? 0 : amount);
-          } catch (err) {
-            console.warn("Error parsing commission amount:", r.commission_amount, err);
-            return sum;
-          }
-        }, 0);
+        .filter(r => r?.status === "completed")
+        .reduce((sum, r) => sum + (parseFloat(String(r.commission_amount)) || 0), 0);
       const pendingEarnings = referralData
-        .filter(r => r && r.status === "pending")
-        .reduce((sum, r) => {
-          try {
-            const amount = r.commission_amount ? parseFloat(String(r.commission_amount)) : 0;
-            return sum + (isNaN(amount) ? 0 : amount);
-          } catch (err) {
-            console.warn("Error parsing commission amount:", r.commission_amount, err);
-            return sum;
-          }
-        }, 0);
+        .filter(r => r?.status === "pending")
+        .reduce((sum, r) => sum + (parseFloat(String(r.commission_amount)) || 0), 0);
 
-      const safeStats = {
-        totalReferred: Math.max(0, totalReferred || 0),
-        totalEarned: Math.max(0, parseFloat((totalEarned || 0).toFixed(2))),
-        pendingEarnings: Math.max(0, parseFloat((pendingEarnings || 0).toFixed(2))),
-        referrals: Array.isArray(referralData) ? referralData : [],
-        credits: {
-          balance: Math.max(0, parseFloat((userCredits.balance || 0).toFixed(2))),
-          totalEarned: Math.max(0, parseFloat((userCredits.totalEarned || 0).toFixed(2))),
-          totalSpent: Math.max(0, parseFloat((userCredits.totalSpent || 0).toFixed(2))),
-        },
-      };
-
-      console.log("Setting referral stats:", safeStats);
-      setStats(safeStats);
+      setStats({
+        totalReferred,
+        totalEarned,
+        pendingEarnings,
+        referrals: referralData,
+        creditBalance: parseFloat(String(creditBalance)) || 0,
+      });
 
     } catch (err: any) {
       console.error("Error fetching referral stats:", err);
-      const errorMessage = err?.message || err?.error_description || String(err) || "Unknown error occurred";
-      setError(`Failed to load referral data: ${errorMessage}`);
+      setError(`Failed to load referral data: ${err?.message || String(err)}`);
     } finally {
       setLoading(false);
     }
@@ -202,13 +133,10 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (error) {
-        // If credit columns don't exist, return 0
         if (error.code === 'PGRST116' || error.message?.includes('column') || error.message?.includes('does not exist')) {
-          console.warn("Credit columns do not exist in profiles table. Database migration needed.");
-          return 0;
+          return 0; // Column doesn't exist yet
         }
-        console.log("No profile found for user, returning 0");
-        return 0;
+        throw error;
       }
 
       return parseFloat(String(profileData?.credit_balance || 0));
@@ -218,86 +146,38 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const hasCredits = async (amount: number): Promise<boolean> => {
-    if (!user?.id) return false;
-    const balance = await getUserCredits();
-    return balance >= amount;
-  };
-
-  const useCredits = async (amount: number, orderId?: string, description?: string): Promise<boolean> => {
-    if (!user?.id) return false;
+  const useCredits = async (amount: number): Promise<boolean> => {
+    if (!user?.id || amount <= 0) return false;
 
     try {
-      // First try the database function
-      const { data, error } = await supabase.rpc('use_referral_credits', {
-        p_user_id: user.id,
-        p_amount: amount,
-        p_order_id: orderId,
-        p_description: description || 'Credits used for order'
-      });
-
-      if (!error) {
-        // Refresh stats after using credits
-        await refreshStats();
-        return data;
+      // Get current balance
+      const currentBalance = await getUserCredits();
+      
+      if (currentBalance < amount) {
+        console.error(`Insufficient credits. Available: ${currentBalance}, Requested: ${amount}`);
+        return false;
       }
 
-      // If function doesn't exist, use fallback direct update
-      if (error.code === 'PGRST202' || error.message?.includes('function') || error.message?.includes('does not exist')) {
-        console.log('Database function not found, using fallback implementation');
+      // Deduct credits
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          credit_balance: currentBalance - amount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
 
-        // Get current balance first
-        const { data: profileData, error: fetchError } = await supabase
-          .from('profiles')
-          .select('credit_balance, total_credits_used')
-          .eq('id', user.id)
-          .single();
-
-        if (fetchError) {
-          // If columns don't exist, simulate success for now
-          if (fetchError.code === 'PGRST116' || fetchError.message?.includes('column') || fetchError.message?.includes('does not exist')) {
-            console.warn('Credit columns do not exist in profiles table. Database migration needed.');
-            return true; // Simulate success to avoid blocking checkout
-          }
-          console.error('Error fetching profile:', fetchError);
-          return false;
+      if (error) {
+        if (error.code === 'PGRST116' || error.message?.includes('column') || error.message?.includes('does not exist')) {
+          console.warn('Credit balance column does not exist. Database migration needed.');
+          return true; // Simulate success to avoid blocking checkout
         }
-
-        const currentBalance = parseFloat(String(profileData?.credit_balance || 0));
-        const currentUsed = parseFloat(String(profileData?.total_credits_used || 0));
-
-        // Check if user has sufficient credits
-        if (currentBalance < amount) {
-          console.error(`Insufficient credits. Available: ${currentBalance}, Requested: ${amount}`);
-          return false;
-        }
-
-        // Update profile with new balance
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({
-            credit_balance: currentBalance - amount,
-            total_credits_used: currentUsed + amount,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', user.id);
-
-        if (updateError) {
-          // If columns don't exist, simulate success for now
-          if (updateError.code === 'PGRST116' || updateError.message?.includes('column') || updateError.message?.includes('does not exist')) {
-            console.warn('Credit columns do not exist in profiles table. Database migration needed.');
-            return true; // Simulate success to avoid blocking checkout
-          }
-          console.error('Error updating profile:', updateError);
-          return false;
-        }
-
-        // Refresh stats after using credits
-        await refreshStats();
-        return true;
+        throw error;
       }
 
-      throw error;
+      // Refresh stats
+      await refreshStats();
+      return true;
     } catch (error) {
       console.error("Error using credits:", error);
       return false;
@@ -316,7 +196,6 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         error,
         refreshStats,
         getUserCredits,
-        hasCredits,
         useCredits,
       }}
     >
