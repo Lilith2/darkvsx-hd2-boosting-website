@@ -27,6 +27,13 @@ import {
   Star,
   Award,
   Coins,
+  Target,
+  Sparkles,
+  Clock,
+  Shield,
+  Check,
+  ArrowRight,
+  Info,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -73,7 +80,6 @@ export default function CustomOrder() {
 
         if (error) {
           console.error("Error fetching pricing:", error);
-          // Use default pricing if database fails
           setDefaultPricing();
         } else {
           setPricing(data || []);
@@ -142,45 +148,60 @@ export default function CustomOrder() {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case "medals":
-        return <Trophy className="w-6 h-6" />;
+        return <Trophy className="w-8 h-8" />;
       case "levels":
-        return <TrendingUp className="w-6 h-6" />;
+        return <TrendingUp className="w-8 h-8" />;
       case "samples":
-        return <Zap className="w-6 h-6" />;
+        return <Zap className="w-8 h-8" />;
       case "super_credits":
-        return <Coins className="w-6 h-6" />;
+        return <Coins className="w-8 h-8" />;
       default:
-        return <Star className="w-6 h-6" />;
+        return <Star className="w-8 h-8" />;
     }
   };
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryGradient = (category: string) => {
     switch (category) {
       case "medals":
-        return "from-yellow-500 to-orange-500";
+        return "from-yellow-400 via-yellow-500 to-orange-500";
       case "levels":
-        return "from-blue-500 to-purple-500";
+        return "from-blue-400 via-blue-500 to-purple-500";
       case "samples":
-        return "from-green-500 to-teal-500";
+        return "from-green-400 via-green-500 to-teal-500";
       case "super_credits":
-        return "from-purple-500 to-pink-500";
+        return "from-purple-400 via-purple-500 to-pink-500";
       default:
-        return "from-gray-500 to-slate-500";
+        return "from-gray-400 via-gray-500 to-slate-500";
     }
   };
 
   const getCategoryTitle = (category: string) => {
     switch (category) {
       case "medals":
-        return "Medals";
+        return "Medals & Achievements";
       case "levels":
-        return "Levels";
+        return "Level Progression";
       case "samples":
-        return "Samples";
+        return "Research Samples";
       case "super_credits":
         return "Super Credits";
       default:
         return category;
+    }
+  };
+
+  const getCategorySubtitle = (category: string) => {
+    switch (category) {
+      case "medals":
+        return "Complete challenging objectives and unlock prestigious medals";
+      case "levels":
+        return "Advance your character level with professional boosting";
+      case "samples":
+        return "Gather rare research materials for weapon upgrades";
+      case "super_credits":
+        return "Premium currency for exclusive cosmetics and items";
+      default:
+        return "Custom boosting service";
     }
   };
 
@@ -218,11 +239,22 @@ export default function CustomOrder() {
       };
       setOrderItems([...orderItems, newItem]);
     }
+
+    toast({
+      title: "Item Added!",
+      description: `${quantity} ${pricingItem.item_name}${quantity > 1 ? "s" : ""} added to your order`,
+    });
   };
 
   const removeOrderItem = (index: number) => {
+    const removedItem = orderItems[index];
     const updatedItems = orderItems.filter((_, i) => i !== index);
     setOrderItems(updatedItems);
+    
+    toast({
+      title: "Item Removed",
+      description: `${removedItem.item_name} removed from your order`,
+    });
   };
 
   const getTotalPrice = () => {
@@ -239,7 +271,6 @@ export default function CustomOrder() {
       return;
     }
 
-    // Create a custom service object for the cart
     const customService = {
       id: `custom-order-${Date.now()}`,
       name: "Custom Helldivers 2 Order",
@@ -284,134 +315,185 @@ export default function CustomOrder() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-muted-foreground">Loading custom order options...</p>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+          <h3 className="text-xl font-semibold mb-2">Loading Custom Orders</h3>
+          <p className="text-muted-foreground">Fetching the latest pricing information...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-card to-card/80 border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-background">
+      {/* Enhanced Header */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-blue-500/10 to-purple-500/10 border-b border-border/50">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
-            <div className="inline-flex items-center bg-primary/10 text-primary px-6 py-3 rounded-full text-sm font-medium mb-6 border border-primary/20">
-              <Calculator className="w-4 h-4 mr-2" />
-              Custom Order Builder
+            <div className="inline-flex items-center bg-gradient-to-r from-primary/20 to-blue-500/20 text-primary px-8 py-4 rounded-full text-sm font-semibold mb-8 border border-primary/30 backdrop-blur-sm">
+              <Sparkles className="w-5 h-5 mr-3" />
+              Professional Custom Boosting
+              <div className="ml-3 flex space-x-1">
+                <div className="w-1.5 h-1.5 bg-primary rounded-full animate-ping"></div>
+                <div className="w-1.5 h-1.5 bg-primary rounded-full animate-ping delay-100"></div>
+                <div className="w-1.5 h-1.5 bg-primary rounded-full animate-ping delay-200"></div>
+              </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
-                Build Your Custom Order
+            
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent">
+                Build Your
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                Perfect Order
               </span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Create a personalized Helldivers 2 boosting package tailored to your exact needs
+            
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Create a completely personalized Helldivers 2 boosting experience with our 
+              <span className="text-primary font-semibold"> dynamic pricing system</span>
             </p>
+
+            {/* Trust Indicators */}
+            <div className="flex flex-wrap justify-center items-center gap-8 mt-12 pt-8 border-t border-border/50">
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <Shield className="w-4 h-4 text-green-500" />
+                <span>100% Safe & Secure</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <Clock className="w-4 h-4 text-blue-500" />
+                <span>24/7 Support</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <Target className="w-4 h-4 text-purple-500" />
+                <span>Professional Team</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-12">
           {/* Order Builder */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="xl:col-span-3 space-y-12">
             {Object.entries(groupedPricing).map(([category, items]) => (
-              <Card key={category} className="border border-border/50">
-                <CardHeader>
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${getCategoryColor(category)} p-2 text-white flex items-center justify-center`}>
+              <Card key={category} className="border-0 shadow-2xl bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-sm overflow-hidden">
+                <div className={`h-2 bg-gradient-to-r ${getCategoryGradient(category)}`}></div>
+                <CardHeader className="pb-8">
+                  <div className="flex items-center space-x-6">
+                    <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${getCategoryGradient(category)} p-4 text-white flex items-center justify-center shadow-lg`}>
                       {getCategoryIcon(category)}
                     </div>
-                    <div>
-                      <CardTitle className="text-2xl">{getCategoryTitle(category)}</CardTitle>
-                      <CardDescription>
-                        Choose the quantity you need
+                    <div className="flex-1">
+                      <CardTitle className="text-3xl font-bold mb-2">
+                        {getCategoryTitle(category)}
+                      </CardTitle>
+                      <CardDescription className="text-lg text-muted-foreground">
+                        {getCategorySubtitle(category)}
                       </CardDescription>
                     </div>
+                    <Badge variant="outline" className="px-4 py-2 text-sm">
+                      {items.length} option{items.length > 1 ? 's' : ''} available
+                    </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {items.map((item) => (
-                    <CustomOrderItem
-                      key={item.id}
-                      item={item}
-                      onAdd={addOrderItem}
-                      currentQuantity={
-                        orderItems.find(
-                          (orderItem) =>
-                            orderItem.category === item.category &&
-                            orderItem.item_name === item.item_name
-                        )?.quantity || 0
-                      }
-                    />
-                  ))}
+                <CardContent className="pt-0">
+                  <div className="grid gap-6">
+                    {items.map((item) => (
+                      <CustomOrderItem
+                        key={item.id}
+                        item={item}
+                        onAdd={addOrderItem}
+                        currentQuantity={
+                          orderItems.find(
+                            (orderItem) =>
+                              orderItem.category === item.category &&
+                              orderItem.item_name === item.item_name
+                          )?.quantity || 0
+                        }
+                        categoryGradient={getCategoryGradient(category)}
+                      />
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             ))}
 
-            {/* Order Notes */}
-            <Card className="border border-border/50">
+            {/* Enhanced Order Notes */}
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Award className="w-5 h-5 mr-2" />
-                  Special Instructions
-                </CardTitle>
-                <CardDescription>
-                  Any specific requirements or preferences for your order
-                </CardDescription>
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 p-3 text-white flex items-center justify-center">
+                    <Award className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-2xl">Special Instructions</CardTitle>
+                    <CardDescription className="text-base">
+                      Add any specific requirements, preferences, or account details
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <Textarea
-                  placeholder="Enter any special instructions, account details, preferred gaming hours, etc..."
-                  value={orderNotes}
-                  onChange={(e) => setOrderNotes(e.target.value)}
-                  rows={4}
-                />
+                <div className="space-y-4">
+                  <Textarea
+                    placeholder="• Account login details (if needed)&#10;• Preferred gaming hours&#10;• Specific mission preferences&#10;• Any other special requirements..."
+                    value={orderNotes}
+                    onChange={(e) => setOrderNotes(e.target.value)}
+                    rows={6}
+                    className="bg-muted/30 border-border/50 text-base"
+                  />
+                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                    <Info className="w-4 h-4" />
+                    <span>Your information is secure and will only be used for order completion</span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <Card className="border border-border/50 sticky top-6">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <ShoppingCart className="w-5 h-5 mr-2" />
+          {/* Enhanced Order Summary */}
+          <div className="xl:col-span-1">
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-sm sticky top-8">
+              <CardHeader className="bg-gradient-to-r from-primary/10 to-blue-500/10 border-b border-border/50">
+                <CardTitle className="flex items-center text-2xl">
+                  <ShoppingCart className="w-6 h-6 mr-3" />
                   Order Summary
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-8">
                 {orderItems.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Calculator className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                    <p className="text-muted-foreground">
-                      Add items to see your order summary
+                  <div className="text-center py-12">
+                    <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Calculator className="w-10 h-10 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-3">Ready to Build</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      Select items from the categories above to see your personalized order summary
                     </p>
                   </div>
                 ) : (
-                  <>
-                    <div className="space-y-3">
+                  <div className="space-y-6">
+                    <div className="space-y-4">
                       {orderItems.map((item, index) => (
                         <div
                           key={index}
-                          className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                          className="group flex items-center justify-between p-4 bg-gradient-to-r from-muted/40 to-muted/20 rounded-xl border border-border/30 hover:border-primary/30 transition-all"
                         >
                           <div className="flex-1">
-                            <p className="font-medium text-sm">
+                            <p className="font-semibold text-sm">
                               {item.quantity} {item.item_name}
                               {item.quantity > 1 ? "s" : ""}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              ${item.price_per_unit} each
+                              ${item.price_per_unit} × {item.quantity}
                             </p>
                           </div>
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-3">
                             <p className="font-bold text-primary">
                               ${item.total_price.toFixed(2)}
                             </p>
@@ -419,7 +501,7 @@ export default function CustomOrder() {
                               size="sm"
                               variant="ghost"
                               onClick={() => removeOrderItem(index)}
-                              className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                             >
                               ×
                             </Button>
@@ -428,26 +510,38 @@ export default function CustomOrder() {
                       ))}
                     </div>
 
-                    <Separator />
+                    <Separator className="bg-gradient-to-r from-transparent via-border to-transparent" />
 
-                    <div className="flex justify-between items-center text-lg font-bold">
-                      <span>Total:</span>
-                      <span className="text-primary">${getTotalPrice().toFixed(2)}</span>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center text-lg">
+                        <span className="font-semibold">Subtotal:</span>
+                        <span className="font-bold text-primary">${getTotalPrice().toFixed(2)}</span>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-xl p-4">
+                        <div className="flex items-center space-x-2 text-green-600 text-sm font-medium">
+                          <Check className="w-4 h-4" />
+                          <span>No hidden fees • Transparent pricing</span>
+                        </div>
+                      </div>
+
+                      <Button
+                        onClick={addToCartAndNavigate}
+                        className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 h-14 text-lg font-semibold shadow-lg"
+                        size="lg"
+                      >
+                        <ShoppingCart className="w-5 h-5 mr-3" />
+                        Add to Cart
+                        <ArrowRight className="w-5 h-5 ml-3" />
+                      </Button>
+
+                      <p className="text-xs text-muted-foreground text-center leading-relaxed">
+                        You'll review all details before payment. 
+                        <br />
+                        <span className="text-primary">24/7 support</span> available for any questions.
+                      </p>
                     </div>
-
-                    <Button
-                      onClick={addToCartAndNavigate}
-                      className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-                      size="lg"
-                    >
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      Add to Cart
-                    </Button>
-
-                    <p className="text-xs text-muted-foreground text-center">
-                      You'll be able to review your order before payment
-                    </p>
-                  </>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -458,14 +552,15 @@ export default function CustomOrder() {
   );
 }
 
-// Component for individual custom order items
+// Enhanced Custom Order Item Component
 interface CustomOrderItemProps {
   item: CustomPricing;
   onAdd: (item: CustomPricing, quantity: number) => void;
   currentQuantity: number;
+  categoryGradient: string;
 }
 
-function CustomOrderItem({ item, onAdd, currentQuantity }: CustomOrderItemProps) {
+function CustomOrderItem({ item, onAdd, currentQuantity, categoryGradient }: CustomOrderItemProps) {
   const [quantity, setQuantity] = useState(currentQuantity || item.minimum_quantity);
 
   useEffect(() => {
@@ -489,30 +584,39 @@ function CustomOrderItem({ item, onAdd, currentQuantity }: CustomOrderItemProps)
   const totalPrice = item.price_per_unit * quantity;
 
   return (
-    <div className="border border-border/30 rounded-lg p-4 hover:border-primary/30 transition-colors">
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <h4 className="font-medium">{item.item_name}</h4>
-          <p className="text-sm text-muted-foreground">{item.description}</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            ${item.price_per_unit} per {item.item_name.toLowerCase()}
-          </p>
+    <div className="group relative bg-gradient-to-r from-background/50 to-muted/20 rounded-2xl p-6 border border-border/30 hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
+      <div className="flex items-start justify-between mb-6">
+        <div className="flex-1">
+          <div className="flex items-center space-x-3 mb-3">
+            <h4 className="font-semibold text-lg">{item.item_name}</h4>
+            <Badge variant="outline" className={`bg-gradient-to-r ${categoryGradient} text-white border-0 px-3 py-1`}>
+              ${item.price_per_unit}
+            </Badge>
+          </div>
+          <p className="text-muted-foreground mb-4 leading-relaxed">{item.description}</p>
+          <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+            <span className="flex items-center space-x-1">
+              <Info className="w-3 h-3" />
+              <span>Min: {item.minimum_quantity}</span>
+            </span>
+            <span className="flex items-center space-x-1">
+              <Target className="w-3 h-3" />
+              <span>Max: {item.maximum_quantity}</span>
+            </span>
+          </div>
         </div>
-        <Badge variant="outline" className="bg-primary/10">
-          ${item.price_per_unit}
-        </Badge>
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           <Button
             size="sm"
             variant="outline"
             onClick={() => adjustQuantity(-1)}
             disabled={quantity <= item.minimum_quantity}
-            className="h-8 w-8 p-0"
+            className="h-10 w-10 p-0 hover:bg-primary/10"
           >
-            <Minus className="w-3 h-3" />
+            <Minus className="w-4 h-4" />
           </Button>
           <Input
             type="number"
@@ -523,7 +627,7 @@ function CustomOrderItem({ item, onAdd, currentQuantity }: CustomOrderItemProps)
                 Math.max(item.minimum_quantity, Math.min(item.maximum_quantity, value))
               );
             }}
-            className="w-20 text-center"
+            className="w-24 text-center font-semibold bg-muted/30"
             min={item.minimum_quantity}
             max={item.maximum_quantity}
           />
@@ -532,25 +636,24 @@ function CustomOrderItem({ item, onAdd, currentQuantity }: CustomOrderItemProps)
             variant="outline"
             onClick={() => adjustQuantity(1)}
             disabled={quantity >= item.maximum_quantity}
-            className="h-8 w-8 p-0"
+            className="h-10 w-10 p-0 hover:bg-primary/10"
           >
-            <Plus className="w-3 h-3" />
+            <Plus className="w-4 h-4" />
           </Button>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-4">
           <div className="text-right">
             <p className="text-sm text-muted-foreground">Total</p>
-            <p className="font-bold text-primary">${totalPrice.toFixed(2)}</p>
+            <p className="text-xl font-bold text-primary">${totalPrice.toFixed(2)}</p>
           </div>
-          <Button onClick={handleAdd} size="sm">
+          <Button 
+            onClick={handleAdd} 
+            className={`bg-gradient-to-r ${categoryGradient} hover:opacity-90 text-white border-0 px-6`}
+          >
             {currentQuantity > 0 ? "Update" : "Add"}
           </Button>
         </div>
-      </div>
-
-      <div className="text-xs text-muted-foreground mt-2">
-        Min: {item.minimum_quantity} • Max: {item.maximum_quantity}
       </div>
     </div>
   );
