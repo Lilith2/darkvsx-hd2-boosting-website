@@ -869,76 +869,83 @@ export default function Account() {
                   </CardContent>
                 </Card>
 
-                {/* Referral History */}
+                {/* Current Balance & Summary */}
                 <Card className="border border-border/50">
                   <CardHeader>
-                    <CardTitle className="text-lg">Referral History</CardTitle>
-                    <CardDescription>Track your successful referrals and earnings</CardDescription>
+                    <CardTitle className="text-lg">Your Earnings Summary</CardTitle>
+                    <CardDescription>Track your referral earnings and current credit balance</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {referralError ? (
-                      <div className="text-center py-8">
-                        <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
-                        <h3 className="font-medium mb-2">Unable to load referral data</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          The referral system is not fully set up yet. Your referrals will appear here once the database is configured.
-                        </p>
-                        <Button onClick={() => refreshStats()} variant="outline" size="sm">
-                          <RefreshCw className="w-4 h-4 mr-2" />
-                          Try Again
-                        </Button>
-                      </div>
-                    ) : referralLoading ? (
-                      <div className="text-center py-8">
-                        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                        <p className="text-sm text-muted-foreground">Loading referral history...</p>
-                      </div>
-                    ) : referralStats.referrals.length === 0 ? (
-                      <div className="text-center py-8">
-                        <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                        <h3 className="font-medium mb-2">No referrals yet</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Start sharing your code to see your earnings here
-                        </p>
-                        <Button onClick={copyReferralCode} className="bg-primary hover:bg-primary/90">
-                          <Share2 className="w-4 h-4 mr-2" />
-                          Copy Referral Code
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {referralStats.referrals.map((referral) => (
-                          <div key={referral.id} className="flex items-center justify-between p-4 border border-border/30 rounded-lg">
-                            <div className="flex items-center space-x-3">
-                              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                                referral.status === 'completed' ? 'bg-green-500/20 text-green-600' :
-                                referral.status === 'pending' ? 'bg-yellow-500/20 text-yellow-600' :
-                                'bg-red-500/20 text-red-600'
-                              }`}>
-                                {referral.status === 'completed' ? '✓' :
-                                 referral.status === 'pending' ? '○' : '✗'}
-                              </div>
-                              <div>
-                                <p className="font-medium text-sm">Order #{referral.order_id.slice(-6)}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  {new Date(referral.created_at).toLocaleDateString()}
-                                </p>
-                              </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                              <DollarSign className="w-5 h-5 text-green-600" />
                             </div>
-                            <div className="text-right">
-                              <p className={`font-bold ${
-                                referral.status === 'completed' ? 'text-green-600' :
-                                referral.status === 'pending' ? 'text-yellow-600' :
-                                'text-red-600'
-                              }`}>
-                                ${parseFloat(referral.commission_amount).toFixed(2)}
-                              </p>
-                              <p className="text-xs text-muted-foreground capitalize">
-                                {referral.status}
+                            <div>
+                              <p className="text-sm text-green-600 dark:text-green-400">Current Credit Balance</p>
+                              <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+                                ${referralError ? "0.00" : referralStats.creditBalance.toFixed(2)}
                               </p>
                             </div>
                           </div>
-                        ))}
+                        </div>
+
+                        <div className="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                              <TrendingUp className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm text-blue-600 dark:text-blue-400">Total Earned</p>
+                              <p className="text-xl font-bold text-blue-700 dark:text-blue-300">
+                                ${referralError ? "0.00" : referralStats.totalEarned.toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-yellow-500/20 rounded-full flex items-center justify-center">
+                              <Clock className="w-5 h-5 text-yellow-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm text-yellow-600 dark:text-yellow-400">Pending Earnings</p>
+                              <p className="text-xl font-bold text-yellow-700 dark:text-yellow-300">
+                                ${referralError ? "0.00" : referralStats.pendingEarnings.toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
+                              <Users className="w-5 h-5 text-purple-600" />
+                            </div>
+                            <div>
+                              <p className="text-sm text-purple-600 dark:text-purple-400">Friends Referred</p>
+                              <p className="text-xl font-bold text-purple-700 dark:text-purple-300">
+                                {referralError ? "0" : referralStats.totalReferred}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {referralError && (
+                      <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900/20 border rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <AlertCircle className="w-4 h-4 text-gray-600" />
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Unable to load complete referral data. Some information may be limited.
+                          </p>
+                        </div>
                       </div>
                     )}
                   </CardContent>
