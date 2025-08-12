@@ -606,10 +606,9 @@ export default function Checkout() {
                         <div>
                           <p className="font-medium">Apply Referral Credits</p>
                           <p className="text-sm text-muted-foreground">
-                            Use $
-                            {Math.min(availableCredits, subtotal).toFixed(2)} of
-                            your ${availableCredits.toFixed(2)} available
-                            credits
+                            Use up to $
+                            {Math.min(availableCredits, subtotal - referralDiscount + (subtotal - referralDiscount) * 0.08).toFixed(2)} of
+                            your ${availableCredits.toFixed(2)} available credits
                           </p>
                         </div>
                       </div>
