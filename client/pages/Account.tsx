@@ -376,7 +376,7 @@ export default function Account() {
                     Credit Balance
                   </p>
                   <p className="text-2xl font-bold text-green-600">
-                    ${referralError ? "0.00" : referralStats.credits.balance.toFixed(2)}
+                    ${referralError ? "0.00" : referralStats.creditBalance.toFixed(2)}
                   </p>
                 </div>
                 <Gift className="w-8 h-8 text-green-600/50" />
