@@ -234,26 +234,59 @@ export default function Checkout() {
     setIsProcessing(true);
 
     try {
-      // Create the order with paid status only after successful PayPal payment
-      const orderId = await addOrder({
-        userId: user?.id || "guest",
-        customerEmail: user?.email || guestInfo.email,
-        customerName: user?.username || guestInfo.name,
-        services: cartItems.map((item) => ({
-          id: item.service.id,
-          name: item.service.title,
-          price: item.service.price,
-          quantity: item.quantity,
-        })),
-        status: "pending",
-        totalAmount: total,
-        paymentStatus: "paid", // Only set to paid after successful PayPal payment
-        notes: orderNotes,
-        transactionId: details.id || data.orderID, // Capture PayPal transaction ID
-        referralCode: referralCode || undefined,
-        referralDiscount: referralDiscount || undefined,
-        referralCreditsUsed: referralCreditsApplied || undefined,
-      });
+      // Check if cart contains custom orders
+      const customOrderItems = cartItems.filter(item => item.service.customOrderData);
+      const regularOrderItems = cartItems.filter(item => !item.service.customOrderData);
+
+      let orderId = null;
+
+      // Process regular orders if any
+      if (regularOrderItems.length > 0) {
+        orderId = await addOrder({
+          userId: user?.id || "guest",
+          customerEmail: user?.email || guestInfo.email,
+          customerName: user?.username || guestInfo.name,
+          services: regularOrderItems.map((item) => ({
+            id: item.service.id,
+            name: item.service.title,
+            price: item.service.price,
+            quantity: item.quantity,
+          })),
+          status: "pending",
+          totalAmount: regularOrderItems.reduce((sum, item) => sum + (item.service.price * item.quantity), 0),
+          paymentStatus: "paid", // Only set to paid after successful PayPal payment
+          notes: orderNotes,
+          transactionId: details.id || data.orderID, // Capture PayPal transaction ID
+          referralCode: referralCode || undefined,
+          referralDiscount: referralDiscount || undefined,
+          referralCreditsUsed: referralCreditsApplied || undefined,
+        });
+      }
+
+      // Process custom orders if any
+      if (customOrderItems.length > 0) {
+        for (const cartItem of customOrderItems) {
+          const customOrderData = cartItem.service.customOrderData;
+          await createCustomOrder({
+            items: customOrderData.items.map((item: any) => ({
+              category: item.category,
+              item_name: item.item_name,
+              quantity: item.quantity,
+              price_per_unit: item.price_per_unit,
+              total_price: item.total_price,
+              description: item.description,
+            })),
+            special_instructions: customOrderData.special_instructions || orderNotes,
+            customer_email: user?.email || guestInfo.email,
+            customer_discord: customOrderData.customer_discord,
+          });
+        }
+
+        // If we only had custom orders, use the first custom order's ID
+        if (!orderId && customOrderItems.length > 0) {
+          orderId = `custom-${Date.now()}`;
+        }
+      }
 
       // Clear cart
       clearCart();
