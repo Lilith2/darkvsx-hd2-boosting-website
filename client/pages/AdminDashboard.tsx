@@ -1978,15 +1978,32 @@ export default function AdminDashboard() {
                 <CardContent>
                   <div className="space-y-3">
                     {selectedOrderForResume.services.map((service: any, index: number) => (
-                      <div key={index} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                        <div className="flex-1">
-                          <p className="font-medium">{service.name}</p>
-                          <p className="text-sm text-muted-foreground">Quantity: {service.quantity}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium">${(service.price * service.quantity).toFixed(2)}</p>
-                          <p className="text-sm text-muted-foreground">${service.price} each</p>
-                        </div>
+                      <div key={index} className="p-3 bg-muted/50 rounded-lg">
+                        {service.name.includes("Custom Order:") ? (
+                          // Custom Order Display
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <p className="font-medium text-purple-600">Custom Order</p>
+                              <p className="font-medium">${service.price.toFixed(2)}</p>
+                            </div>
+                            <div className="text-sm">
+                              <p className="font-semibold text-muted-foreground mb-1">Items Ordered:</p>
+                              <p className="whitespace-pre-wrap">{service.name.replace("Custom Order: ", "")}</p>
+                            </div>
+                          </div>
+                        ) : (
+                          // Regular Order Display
+                          <div className="flex justify-between items-center">
+                            <div className="flex-1">
+                              <p className="font-medium">{service.name}</p>
+                              <p className="text-sm text-muted-foreground">Quantity: {service.quantity}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-medium">${(service.price * service.quantity).toFixed(2)}</p>
+                              <p className="text-sm text-muted-foreground">${service.price} each</p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
