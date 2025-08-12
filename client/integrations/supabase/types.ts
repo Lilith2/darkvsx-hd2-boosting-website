@@ -204,25 +204,37 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string | null;
+          credit_balance: number | null;
+          discord_username: string | null;
           email: string | null;
           id: string;
           role: string | null;
+          total_credits_earned: number | null;
+          total_credits_used: number | null;
           updated_at: string | null;
           username: string | null;
         };
         Insert: {
           created_at?: string | null;
+          credit_balance?: number | null;
+          discord_username?: string | null;
           email?: string | null;
           id: string;
           role?: string | null;
+          total_credits_earned?: number | null;
+          total_credits_used?: number | null;
           updated_at?: string | null;
           username?: string | null;
         };
         Update: {
           created_at?: string | null;
+          credit_balance?: number | null;
+          discord_username?: string | null;
           email?: string | null;
           id?: string;
           role?: string | null;
+          total_credits_earned?: number | null;
+          total_credits_used?: number | null;
           updated_at?: string | null;
           username?: string | null;
         };
