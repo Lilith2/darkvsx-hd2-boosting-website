@@ -360,6 +360,72 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Custom Order CTA Section */}
+      <section className="py-24 bg-gradient-to-br from-background via-primary/5 to-background">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center bg-primary/10 text-primary px-6 py-3 rounded-full text-sm font-medium mb-8 border border-primary/20">
+            <Target className="w-4 h-4 mr-2" />
+            Custom Solutions
+          </div>
+
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Need Something{" "}
+            <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
+              Specific?
+            </span>
+          </h2>
+
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Build your perfect custom order with our flexible pricing system. Choose exactly what you need - medals, levels, samples, or super credits.
+          </p>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            <div className="p-6 bg-card/50 rounded-xl border border-border/50">
+              <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Trophy className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold mb-2">Medals</h3>
+              <p className="text-sm text-muted-foreground">Unlock achievements</p>
+            </div>
+
+            <div className="p-6 bg-card/50 rounded-xl border border-border/50">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold mb-2">Levels</h3>
+              <p className="text-sm text-muted-foreground">Character progression</p>
+            </div>
+
+            <div className="p-6 bg-card/50 rounded-xl border border-border/50">
+              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold mb-2">Samples</h3>
+              <p className="text-sm text-muted-foreground">Rare materials</p>
+            </div>
+
+            <div className="p-6 bg-card/50 rounded-xl border border-border/50">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-semibold mb-2">Credits</h3>
+              <p className="text-sm text-muted-foreground">Premium currency</p>
+            </div>
+          </div>
+
+          <Button
+            size="lg"
+            className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 px-8"
+            asChild
+          >
+            <Link to="/custom-order">
+              Build Custom Order
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Link>
+          </Button>
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section className="py-24 bg-gradient-to-r from-primary/10 via-blue-500/10 to-primary/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
