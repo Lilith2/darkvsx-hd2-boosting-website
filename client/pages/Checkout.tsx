@@ -291,13 +291,23 @@ export default function Checkout() {
       // Clear cart
       clearCart();
 
+      const orderMessage = customOrderItems.length > 0 && regularOrderItems.length > 0
+        ? "Your orders have been confirmed"
+        : customOrderItems.length > 0
+          ? "Your custom order has been confirmed"
+          : `Your order #${orderId?.slice(-6)} has been confirmed`;
+
       toast({
         title: "Payment successful!",
-        description: `Your order #${orderId.slice(-6)} has been confirmed. Payment ID: ${details.id}`,
+        description: `${orderMessage}. Payment ID: ${details.id}`,
       });
 
-      // Redirect to order tracking
-      navigate(`/order/${orderId}`);
+      // Redirect to appropriate page
+      if (regularOrderItems.length > 0) {
+        navigate(`/order/${orderId}`);
+      } else {
+        navigate("/account"); // Redirect to account page for custom orders
+      }
     } catch (error) {
       console.error("Error creating order:", error);
       toast({
