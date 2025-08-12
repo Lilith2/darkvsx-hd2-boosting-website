@@ -27,6 +27,9 @@ import {
   Filter,
   ShoppingCart,
   User,
+  Trophy,
+  TrendingUp,
+  DollarSign,
 } from "lucide-react";
 
 type ServiceCategory = 'All' | 'Level Boost' | 'Medals' | 'Samples' | 'Super Credits' | 'Promotions';
