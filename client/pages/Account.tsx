@@ -328,11 +328,6 @@ export default function Account() {
       </div>
 
       <div className="max-w-6xl mx-auto p-6">
-        {/* Debug Information */}
-        <div className="mb-8">
-          <DatabaseStatus />
-        </div>
-
         {/* Quick Stats Dashboard */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
