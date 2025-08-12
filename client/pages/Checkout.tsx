@@ -243,11 +243,7 @@ export default function Checkout() {
     try {
       // Use referral credits if applied
       if (useReferralCredits && referralCreditsApplied > 0) {
-        const success = await useCredits(
-          referralCreditsApplied,
-          undefined, // orderId will be set after order creation
-          'Credits used for checkout'
-        );
+        const success = await useCredits(referralCreditsApplied);
 
         if (!success) {
           throw new Error('Failed to use referral credits');
