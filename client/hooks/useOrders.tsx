@@ -175,10 +175,6 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
-      // Debug: Check current user session
-      const { data: { user } } = await supabase.auth.getUser();
-      console.log("Current user in orders:", user);
-
       // Fetch orders with messages and tracking
       const { data: ordersData, error: ordersError } = await supabase
         .from("orders")

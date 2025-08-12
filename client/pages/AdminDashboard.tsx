@@ -82,15 +82,6 @@ export default function AdminDashboard() {
   } = useCustomOrders();
   const { toast } = useToast();
 
-  // Debug logging
-  useEffect(() => {
-    console.log("AdminDashboard - Orders:", orders);
-    console.log("AdminDashboard - Loading:", loading);
-    console.log("AdminDashboard - Error:", error);
-    console.log("AdminDashboard - Custom Orders:", customOrders);
-    console.log("AdminDashboard - Custom Order Stats:", customOrderStats);
-  }, [orders, loading, error, customOrders, customOrderStats]);
-
   // Fetch custom pricing data
   useEffect(() => {
     const fetchCustomPricing = async () => {
