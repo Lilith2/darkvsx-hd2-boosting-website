@@ -247,7 +247,7 @@ export default function CustomOrder() {
     return orderItems.reduce((sum, item) => sum + item.total_price, 0);
   };
 
-  const addToCartAndNavigate = () => {
+  const addToCartAndNavigate = async () => {
     if (orderItems.length === 0) {
       toast({
         title: "Empty Order",
@@ -257,38 +257,75 @@ export default function CustomOrder() {
       return;
     }
 
-    const customService = {
-      id: `custom-order-${Date.now()}`,
-      name: "Custom Helldivers 2 Order",
-      description: `Custom order with ${orderItems.length} items: ${orderItems
-        .map((item) => `${item.quantity} ${item.item_name}${item.quantity > 1 ? "s" : ""}`)
-        .join(", ")}`,
-      price: getTotalPrice(),
-      category: "Custom Orders",
-      image: "/placeholder.svg",
-      features: orderItems.map(
-        (item) => `${item.quantity} ${item.item_name}${item.quantity > 1 ? "s" : ""} - $${item.total_price.toFixed(2)}`
-      ),
-      duration: "1-7 days",
-      difficulty: "Custom",
-      popular: false,
-      badge: "Custom",
-      active: true,
-      orders: 0,
-      customOrderData: {
-        items: orderItems,
-        notes: orderNotes,
-      },
-    };
+    try {
+      // Create the custom service for the cart
+      const customService = {
+        id: `custom-order-${Date.now()}`,
+        name: "Custom Helldivers 2 Order",
+        description: `Custom order with ${orderItems.length} items: ${orderItems
+          .map((item) => `${item.quantity} ${item.item_name}${item.quantity > 1 ? "s" : ""}`)
+          .join(", ")}`,
+        price: getTotalPrice(),
+        category: "Custom Orders",
+        image: "/placeholder.svg",
+        features: orderItems.map(
+          (item) => `${item.quantity} ${item.item_name}${item.quantity > 1 ? "s" : ""} - $${item.total_price.toFixed(2)}`
+        ),
+        duration: "1-7 days",
+        difficulty: "Custom",
+        popular: false,
+        badge: "Custom",
+        active: true,
+        orders: 0,
+        customOrderData: {
+          items: orderItems,
+          notes: orderNotes,
+        },
+      };
 
-    addToCart({ service: customService, quantity: 1 });
+      // Save to database if user is logged in
+      if (user) {
+        try {
+          await createOrder({
+            items: orderItems.map(item => ({
+              category: item.category,
+              item_name: item.item_name,
+              quantity: item.quantity,
+              price_per_unit: item.price_per_unit,
+              total_price: item.total_price,
+              description: item.description,
+            })),
+            special_instructions: orderNotes || undefined,
+            customer_email: user.email || undefined,
+          });
+        } catch (dbError) {
+          // Continue with cart addition even if database save fails
+          console.error("Failed to save to database:", dbError);
+          toast({
+            title: "Database Warning",
+            description: "Order saved to cart but not tracked in database. This won't affect your order.",
+            variant: "default",
+          });
+        }
+      }
 
-    toast({
-      title: "Added to Cart!",
-      description: "Your custom order has been added to the cart.",
-    });
+      // Add to cart
+      addToCart({ service: customService, quantity: 1 });
 
-    navigate("/cart");
+      toast({
+        title: "Added to Cart!",
+        description: "Your custom order has been added to the cart.",
+      });
+
+      navigate("/cart");
+    } catch (error) {
+      console.error("Error processing order:", error);
+      toast({
+        title: "Error",
+        description: "Failed to process your order. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const groupedPricing = pricing.reduce((acc, item) => {
