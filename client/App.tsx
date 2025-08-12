@@ -31,12 +31,8 @@ const queryClient = new QueryClient({
   },
 });
 
-function App() {
-  useEffect(() => {
-    // Initialize analytics and performance tracking
-    initializeAnalytics();
-  }, []);
-
+// Separate component to ensure all providers are properly initialized
+function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <ErrorBoundary>
       <SecurityProvider>
@@ -50,9 +46,7 @@ function App() {
                     <CartProvider>
                       <OrdersProvider>
                         <ReferralsProvider>
-                          <Toaster />
-                          <Sonner />
-                          <AppContent />
+                          {children}
                         </ReferralsProvider>
                       </OrdersProvider>
                     </CartProvider>
@@ -64,6 +58,21 @@ function App() {
         </AccessibilityWrapper>
       </SecurityProvider>
     </ErrorBoundary>
+  );
+}
+
+function App() {
+  useEffect(() => {
+    // Initialize analytics and performance tracking
+    initializeAnalytics();
+  }, []);
+
+  return (
+    <AppProviders>
+      <Toaster />
+      <Sonner />
+      <AppContent />
+    </AppProviders>
   );
 }
 
