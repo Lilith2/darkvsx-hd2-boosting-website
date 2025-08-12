@@ -117,7 +117,7 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         .eq("id", user.id)
         .single();
 
-      console.log("Credits query result:", { creditsData, creditsError });
+      console.log("Credits query result:", { profileData, creditsError });
 
       // Initialize credits if not found
       let userCredits = {
@@ -189,18 +189,18 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
     if (!user?.id) return 0;
 
     try {
-      const { data: creditsData, error } = await supabase
-        .from("referral_credits")
-        .select("balance")
-        .eq("user_id", user.id)
+      const { data: profileData, error } = await supabase
+        .from("profiles")
+        .select("credit_balance")
+        .eq("id", user.id)
         .single();
 
       if (error) {
-        console.log("No credits record found for user, returning 0");
+        console.log("No profile found for user, returning 0");
         return 0;
       }
 
-      return parseFloat(String(creditsData?.balance || 0));
+      return parseFloat(String(profileData?.credit_balance || 0));
     } catch (err) {
       console.error("Error fetching user credits:", err);
       return 0;
@@ -208,6 +208,7 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
   };
 
   const hasCredits = async (amount: number): Promise<boolean> => {
+    if (!user?.id) return false;
     const balance = await getUserCredits();
     return balance >= amount;
   };
