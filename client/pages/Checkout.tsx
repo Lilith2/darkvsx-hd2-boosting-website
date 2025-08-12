@@ -285,9 +285,9 @@ export default function Checkout() {
             (sum, item) => sum + item.service.price * item.quantity,
             0,
           ),
-          paymentStatus: "paid", // Only set to paid after successful PayPal payment
+          paymentStatus: total <= 0 ? "paid" : "paid", // Set to paid for both credit-only and PayPal payments
           notes: orderNotes,
-          transactionId: details.id || data.orderID, // Capture PayPal transaction ID
+          transactionId: paymentDetails?.id || paymentData?.orderID || `credits-${Date.now()}`,
           referralCode: referralCode || undefined,
           referralDiscount: referralDiscount || undefined,
           referralCreditsUsed: referralCreditsApplied || undefined,
@@ -330,9 +330,13 @@ export default function Checkout() {
             ? "Your custom order has been confirmed"
             : `Your order #${orderId?.slice(-6)} has been confirmed`;
 
+      const paymentMessage = total <= 0
+        ? "Paid with referral credits"
+        : `Payment ID: ${paymentDetails?.id || 'Credits + PayPal'}`;
+
       toast({
-        title: "Payment successful!",
-        description: `${orderMessage}. Payment ID: ${details.id}`,
+        title: total <= 0 ? "Order confirmed!" : "Payment successful!",
+        description: `${orderMessage}. ${paymentMessage}`,
       });
 
       // Redirect to appropriate page
