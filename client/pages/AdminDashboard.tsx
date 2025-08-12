@@ -54,6 +54,7 @@ import {
   X,
   Filter,
 } from "lucide-react";
+import { DatabaseStatus } from "@/components/DatabaseStatus";
 
 export default function AdminDashboard() {
   const {
