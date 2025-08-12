@@ -192,13 +192,14 @@ export default function CustomOrder() {
   };
 
   const addOrderItem = (pricingItem: CustomPricing, quantity: number) => {
+    const maxQty = pricingItem.maximum_quantity || 999999; // Default to large number if null
     if (
       quantity < pricingItem.minimum_quantity ||
-      quantity > pricingItem.maximum_quantity
+      quantity > maxQty
     ) {
       toast({
         title: "Invalid Quantity",
-        description: `Quantity must be between ${pricingItem.minimum_quantity} and ${pricingItem.maximum_quantity}`,
+        description: `Quantity must be between ${pricingItem.minimum_quantity} and ${maxQty}`,
         variant: "destructive",
       });
       return;
