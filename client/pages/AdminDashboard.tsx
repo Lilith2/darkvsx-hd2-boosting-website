@@ -152,7 +152,12 @@ export default function AdminDashboard() {
   ).length;
 
   const activeServices = services.filter((service) => service.active).length;
-  const totalCustomers = new Set(orders.map((order) => order.userId)).size;
+
+  // Combine customers from both regular orders and custom orders
+  const regularOrderCustomers = new Set(orders.map((order) => order.userId));
+  const customOrderCustomers = new Set(customOrders.map((order) => order.user_id));
+  const allCustomers = new Set([...regularOrderCustomers, ...customOrderCustomers]);
+  const totalCustomers = allCustomers.size;
 
   const recentOrders = orders
     .sort(
