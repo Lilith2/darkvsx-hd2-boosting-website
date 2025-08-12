@@ -1929,12 +1929,10 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  {selectedOrderForResume.transactionId && (
-                    <div>
-                      <Label className="text-sm font-medium text-muted-foreground">Transaction ID</Label>
-                      <p className="font-medium font-mono text-sm">{selectedOrderForResume.transactionId}</p>
-                    </div>
-                  )}
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Transaction ID</Label>
+                    <p className="font-medium font-mono text-sm">{selectedOrderForResume.transactionId || "Not recorded"}</p>
+                  </div>
 
                   {selectedOrderForResume.assignedBooster && (
                     <div>
