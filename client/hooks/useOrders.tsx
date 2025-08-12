@@ -356,7 +356,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      const errorMessage = err?.message || err?.error_description || "Failed to add order";
+      const errorMessage = err?.message || err?.error_description || JSON.stringify(err) || "Failed to add order";
       throw new Error(`Database error: ${errorMessage}`);
     }
   };
