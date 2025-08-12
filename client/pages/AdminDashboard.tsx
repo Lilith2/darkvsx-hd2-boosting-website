@@ -783,17 +783,21 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {orders.filter(order => !order.services.some(s => s.id === "support-ticket")).length === 0 ? (
+                  {filteredOrders.length === 0 ? (
                     <div className="text-center py-12">
                       <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                      <h3 className="text-lg font-semibold mb-2">No orders yet</h3>
-                      <p className="text-muted-foreground">When customers place orders, they will appear here.</p>
+                      <h3 className="text-lg font-semibold mb-2">
+                        {orderFilter === "all" ? "No orders yet" : `No ${orderFilter} orders`}
+                      </h3>
+                      <p className="text-muted-foreground">
+                        {orderFilter === "all"
+                          ? "When customers place orders, they will appear here."
+                          : `No orders with ${orderFilter} status found. Try selecting a different filter.`
+                        }
+                      </p>
                     </div>
                   ) : (
-                    orders
-                      .filter(order => !order.services.some(s => s.id === "support-ticket"))
-                      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                      .map((order) => (
+                    filteredOrders.map((order) => (
                         <div
                           key={order.id}
                           className="border border-border/30 rounded-lg p-6 hover:border-primary/30 transition-colors bg-card/50"
