@@ -29,7 +29,7 @@ import {
 } from "@/components/LazyComponents";
 
 export function AppContent() {
-  const { loading } = useAuth();
+  const { loading } = useSafeAuth();
 
   // Show loading only for first 3 seconds, then force render
   const [forceRender, setForceRender] = useState(false);
