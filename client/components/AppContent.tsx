@@ -93,6 +93,7 @@ export function AppContent() {
             />
             <Route path="/faq" element={<LazyFAQ />} />
             <Route path="/bundles" element={<LazyBundles />} />
+            <Route path="/custom-order" element={<LazyCustomOrder />} />
             <Route path="/contact" element={<LazyContact />} />
             {/* Redirect old routes to home */}
             <Route path="/about" element={<Navigate to="/" replace />} />
