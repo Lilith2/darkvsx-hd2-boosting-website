@@ -61,7 +61,6 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getSiteUrl } from "@/lib/config";
-import { DatabaseStatus } from "@/components/DatabaseStatus";
 
 export default function Account() {
   const { user, logout, updateProfile } = useAuth();
