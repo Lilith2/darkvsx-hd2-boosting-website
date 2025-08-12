@@ -288,13 +288,20 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         insertData.referral_credits_used = orderData.referralCreditsUsed;
       }
 
+      console.log("About to insert order data:", insertData);
+
       const { data: orderResult, error: orderError } = await supabase
         .from("orders")
         .insert([insertData])
         .select()
         .single();
 
-      if (orderError) throw orderError;
+      console.log("Insert result:", { orderResult, orderError });
+
+      if (orderError) {
+        console.error("Detailed order error:", orderError);
+        throw orderError;
+      }
 
       // Add initial tracking entry
       await supabase.from("order_tracking").insert([
