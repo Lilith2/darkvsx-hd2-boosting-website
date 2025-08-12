@@ -35,6 +35,7 @@ interface ReferralsContextType {
   refreshStats: () => Promise<void>;
   getUserCredits: () => Promise<number>;
   hasCredits: (amount: number) => Promise<boolean>;
+  useCredits: (amount: number, orderId?: string, description?: string) => Promise<boolean>;
 }
 
 const ReferralsContext = createContext<ReferralsContextType | undefined>(undefined);
