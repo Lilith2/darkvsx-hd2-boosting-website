@@ -127,7 +127,13 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       };
 
       if (creditsError) {
-        console.warn("Error fetching user profile credits:", creditsError);
+        // If credit columns don't exist, use default values
+        if (creditsError.code === 'PGRST116' || creditsError.message?.includes('column') || creditsError.message?.includes('does not exist')) {
+          console.warn("Credit columns do not exist in profiles table. Using default values. Database migration needed.");
+          userCredits = { balance: 0, totalEarned: 0, totalSpent: 0 };
+        } else {
+          console.warn("Error fetching user profile credits:", creditsError);
+        }
       } else if (profileData) {
         userCredits = {
           balance: parseFloat(String(profileData.credit_balance || 0)),
