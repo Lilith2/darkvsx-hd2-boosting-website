@@ -216,7 +216,11 @@ export function useCustomOrders() {
       return orderResult;
     } catch (err: any) {
       console.error("Error creating custom order:", err);
-      const errorMessage = err?.message || err?.error_description || JSON.stringify(err) || "Failed to create custom order";
+      const errorMessage =
+        err?.message ||
+        err?.error_description ||
+        JSON.stringify(err) ||
+        "Failed to create custom order";
       toast({
         title: "Error",
         description: errorMessage,

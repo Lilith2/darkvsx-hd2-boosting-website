@@ -191,10 +191,7 @@ export default function CustomOrder() {
 
   const addOrderItem = (pricingItem: CustomPricing, quantity: number) => {
     const maxQty = pricingItem.maximum_quantity || 999999; // Default to large number if null
-    if (
-      quantity < pricingItem.minimum_quantity ||
-      quantity > maxQty
-    ) {
+    if (quantity < pricingItem.minimum_quantity || quantity > maxQty) {
       toast({
         title: "Invalid Quantity",
         description: `Quantity must be between ${pricingItem.minimum_quantity} and ${maxQty}`,
@@ -308,7 +305,11 @@ export default function CustomOrder() {
       navigate("/cart");
     } catch (error: any) {
       console.error("Error processing order:", error);
-      const errorMessage = error?.message || error?.error_description || JSON.stringify(error) || "Unknown error";
+      const errorMessage =
+        error?.message ||
+        error?.error_description ||
+        JSON.stringify(error) ||
+        "Unknown error";
       toast({
         title: "Error",
         description: `Failed to process your order: ${errorMessage}`,
@@ -634,10 +635,7 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
               const value = parseInt(e.target.value) || item.minimum_quantity;
               const maxQty = item.maximum_quantity || 999999; // Default to large number if null
               setQuantity(
-                Math.max(
-                  item.minimum_quantity,
-                  Math.min(maxQty, value),
-                ),
+                Math.max(item.minimum_quantity, Math.min(maxQty, value)),
               );
             }}
             className="w-12 text-center text-xs h-6"
@@ -669,7 +667,7 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
 
       <div className="text-xs text-muted-foreground mt-1 flex items-center justify-between">
         <span>Min: {item.minimum_quantity}</span>
-        <span>Max: {item.maximum_quantity || '∞'}</span>
+        <span>Max: {item.maximum_quantity || "∞"}</span>
       </div>
     </div>
   );

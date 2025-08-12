@@ -149,8 +149,12 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     transactionId: order.transaction_id || undefined,
     ipAddress: order.ip_address || undefined,
     referralCode: order.referral_code || undefined,
-    referralDiscount: order.referral_discount ? parseFloat(Number(order.referral_discount).toFixed(2)) : undefined,
-    referralCreditsUsed: order.referral_credits_used ? parseFloat(Number(order.referral_credits_used).toFixed(2)) : undefined,
+    referralDiscount: order.referral_discount
+      ? parseFloat(Number(order.referral_discount).toFixed(2))
+      : undefined,
+    referralCreditsUsed: order.referral_credits_used
+      ? parseFloat(Number(order.referral_credits_used).toFixed(2))
+      : undefined,
     referredByUserId: order.referred_by_user_id || undefined,
     messages: messages.map((msg) => ({
       id: msg.id,
@@ -248,7 +252,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     try {
       // Get user's IP address for chargeback protection
       const ipAddress = await getCurrentIPAddress();
-      
+
       // Prepare the base order data
       const baseOrderData = {
         user_id: orderData.userId,
@@ -308,7 +312,10 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
           },
         ]);
       } catch (trackingError) {
-        console.warn("Failed to add order tracking (table might not exist):", trackingError);
+        console.warn(
+          "Failed to add order tracking (table might not exist):",
+          trackingError,
+        );
         // Continue without tracking if table doesn't exist
       }
 
@@ -318,13 +325,16 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       console.error("Error adding order:", err);
 
       // Handle specific database schema errors
-      if (err?.message?.includes("column") && (
-        err?.message?.includes("transaction_id") ||
-        err?.message?.includes("referral_code") ||
-        err?.message?.includes("referral_discount") ||
-        err?.message?.includes("referral_credits_used")
-      )) {
-        console.warn("Database schema missing some expected columns. Retrying with base fields only.");
+      if (
+        err?.message?.includes("column") &&
+        (err?.message?.includes("transaction_id") ||
+          err?.message?.includes("referral_code") ||
+          err?.message?.includes("referral_discount") ||
+          err?.message?.includes("referral_credits_used"))
+      ) {
+        console.warn(
+          "Database schema missing some expected columns. Retrying with base fields only.",
+        );
         // Try again without the optional fields
         try {
           const retryOrderData = {
@@ -352,7 +362,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
             retryOrderData.referral_discount = orderData.referralDiscount;
           }
           if (orderData.referralCreditsUsed) {
-            retryOrderData.referral_credits_used = orderData.referralCreditsUsed;
+            retryOrderData.referral_credits_used =
+              orderData.referralCreditsUsed;
           }
 
           const { data: orderResult, error: orderError } = await supabase
@@ -368,7 +379,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
             {
               order_id: orderResult.id,
               status: "Order Placed",
-              description: "Your order has been received and is being processed",
+              description:
+                "Your order has been received and is being processed",
             },
           ]);
 
@@ -377,12 +389,18 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         } catch (retryErr: any) {
           console.error("Error on retry:", retryErr);
           throw new Error(
-            retryErr?.message || retryErr?.error_description || "Failed to add order after retry",
+            retryErr?.message ||
+              retryErr?.error_description ||
+              "Failed to add order after retry",
           );
         }
       }
 
-      const errorMessage = err?.message || err?.error_description || JSON.stringify(err) || "Failed to add order";
+      const errorMessage =
+        err?.message ||
+        err?.error_description ||
+        JSON.stringify(err) ||
+        "Failed to add order";
       throw new Error(`Database error: ${errorMessage}`);
     }
   };

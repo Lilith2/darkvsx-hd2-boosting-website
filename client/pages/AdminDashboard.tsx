@@ -129,7 +129,9 @@ export default function AdminDashboard() {
     .filter((order) => order.status === "completed")
     .reduce((sum, order) => sum + order.total_amount, 0);
 
-  const totalRevenue = parseFloat((regularOrdersRevenue + customOrdersRevenue).toFixed(2));
+  const totalRevenue = parseFloat(
+    (regularOrdersRevenue + customOrdersRevenue).toFixed(2),
+  );
 
   const regularPendingOrders = orders.filter(
     (order) =>
@@ -155,32 +157,37 @@ export default function AdminDashboard() {
 
   // Combine customers from both regular orders and custom orders
   const regularOrderCustomers = new Set(orders.map((order) => order.userId));
-  const customOrderCustomers = new Set(customOrders.map((order) => order.user_id));
-  const allCustomers = new Set([...regularOrderCustomers, ...customOrderCustomers]);
+  const customOrderCustomers = new Set(
+    customOrders.map((order) => order.user_id),
+  );
+  const allCustomers = new Set([
+    ...regularOrderCustomers,
+    ...customOrderCustomers,
+  ]);
   const totalCustomers = allCustomers.size;
 
   // Combine and sort recent orders from both types
   const allRecentOrders = [
-    ...orders.map(order => ({
+    ...orders.map((order) => ({
       ...order,
-      type: 'regular' as const,
-      createdAt: order.createdAt
+      type: "regular" as const,
+      createdAt: order.createdAt,
     })),
-    ...customOrders.map(order => ({
+    ...customOrders.map((order) => ({
       id: order.id,
-      customerName: order.customer_email || 'Custom Order Customer',
-      customerEmail: order.customer_email || '',
+      customerName: order.customer_email || "Custom Order Customer",
+      customerEmail: order.customer_email || "",
       totalAmount: order.total_amount,
       status: order.status,
       createdAt: order.created_at,
-      type: 'custom' as const,
-      services: order.items.map(item => ({
+      type: "custom" as const,
+      services: order.items.map((item) => ({
         id: item.id,
         name: item.item_name,
         price: item.price_per_unit,
-        quantity: item.quantity
-      }))
-    }))
+        quantity: item.quantity,
+      })),
+    })),
   ];
 
   const recentOrders = allRecentOrders
@@ -215,7 +222,7 @@ export default function AdminDashboard() {
             orders: 0,
             revenue: 0,
             id: service.id,
-            type: 'regular',
+            type: "regular",
           };
           current.orders += service.quantity || 1;
           current.revenue += (service.price || 0) * (service.quantity || 1);
@@ -233,7 +240,7 @@ export default function AdminDashboard() {
           orders: 0,
           revenue: 0,
           id: item.id,
-          type: 'custom',
+          type: "custom",
         };
         current.orders += item.quantity;
         current.revenue += item.total_price;
@@ -501,15 +508,27 @@ export default function AdminDashboard() {
             <h3 className="font-semibold text-red-600 mb-2">
               Database Connection Error
             </h3>
-            {error && <p className="text-sm text-red-600">Regular Orders: {error}</p>}
-            {customOrdersError && <p className="text-sm text-red-600">Custom Orders: {customOrdersError}</p>}
+            {error && (
+              <p className="text-sm text-red-600">Regular Orders: {error}</p>
+            )}
+            {customOrdersError && (
+              <p className="text-sm text-red-600">
+                Custom Orders: {customOrdersError}
+              </p>
+            )}
           </div>
         )}
 
         {(loading || customOrdersLoading) && (
           <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
             <p className="text-blue-600">
-              Loading {loading && customOrdersLoading ? 'all orders' : loading ? 'regular orders' : 'custom orders'}...
+              Loading{" "}
+              {loading && customOrdersLoading
+                ? "all orders"
+                : loading
+                  ? "regular orders"
+                  : "custom orders"}
+              ...
             </p>
           </div>
         )}
@@ -688,10 +707,13 @@ export default function AdminDashboard() {
                           className="flex items-center justify-between p-3 border border-border/30 rounded-lg"
                         >
                           <div className="flex items-center space-x-3">
-                            <div className={`w-2 h-2 rounded-full ${order.type === 'custom' ? 'bg-purple-500' : 'bg-primary'}`}></div>
+                            <div
+                              className={`w-2 h-2 rounded-full ${order.type === "custom" ? "bg-purple-500" : "bg-primary"}`}
+                            ></div>
                             <div>
                               <p className="text-sm font-medium">
-                                {order.type === 'custom' ? 'Custom ' : ''}Order {order.id.slice(0, 8)}...
+                                {order.type === "custom" ? "Custom " : ""}Order{" "}
+                                {order.id.slice(0, 8)}...
                               </p>
                               <p className="text-xs text-muted-foreground">
                                 {order.customerName}
@@ -711,8 +733,11 @@ export default function AdminDashboard() {
                               >
                                 {order.status}
                               </Badge>
-                              {order.type === 'custom' && (
-                                <Badge variant="outline" className="text-xs bg-purple-100 text-purple-700">
+                              {order.type === "custom" && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs bg-purple-100 text-purple-700"
+                                >
                                   Custom
                                 </Badge>
                               )}

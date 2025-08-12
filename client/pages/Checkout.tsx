@@ -112,7 +112,11 @@ export default function Checkout() {
       const userCodeFromId = `HD2BOOST-${user.id.slice(-6)}`;
       const userCodeFromIdUpper = `HD2BOOST-${user.id.slice(-6).toUpperCase()}`;
 
-      if (code === userCodeFromId || code === userCodeFromIdUpper || code.includes(user.id.slice(-6))) {
+      if (
+        code === userCodeFromId ||
+        code === userCodeFromIdUpper ||
+        code.includes(user.id.slice(-6))
+      ) {
         toast({
           title: "Invalid referral code",
           description: "You cannot use your own referral code.",
@@ -165,7 +169,9 @@ export default function Checkout() {
             error.message?.includes("does not exist") ||
             error.message?.includes("referrals")
           ) {
-            console.warn("Referrals table not found, allowing referral to proceed");
+            console.warn(
+              "Referrals table not found, allowing referral to proceed",
+            );
           } else {
             console.error("Error checking existing referrals:", error);
             // Continue anyway for unknown errors
@@ -173,7 +179,8 @@ export default function Checkout() {
         } else if (existingReferrals && existingReferrals.length > 0) {
           toast({
             title: "Already used referral",
-            description: "You have already used a referral code before. Each user can only use one referral code.",
+            description:
+              "You have already used a referral code before. Each user can only use one referral code.",
             variant: "destructive",
           });
           return;
@@ -235,8 +242,12 @@ export default function Checkout() {
 
     try {
       // Check if cart contains custom orders
-      const customOrderItems = cartItems.filter(item => item.service.customOrderData);
-      const regularOrderItems = cartItems.filter(item => !item.service.customOrderData);
+      const customOrderItems = cartItems.filter(
+        (item) => item.service.customOrderData,
+      );
+      const regularOrderItems = cartItems.filter(
+        (item) => !item.service.customOrderData,
+      );
 
       let orderId = null;
 
@@ -253,7 +264,10 @@ export default function Checkout() {
             quantity: item.quantity,
           })),
           status: "pending",
-          totalAmount: regularOrderItems.reduce((sum, item) => sum + (item.service.price * item.quantity), 0),
+          totalAmount: regularOrderItems.reduce(
+            (sum, item) => sum + item.service.price * item.quantity,
+            0,
+          ),
           paymentStatus: "paid", // Only set to paid after successful PayPal payment
           notes: orderNotes,
           transactionId: details.id || data.orderID, // Capture PayPal transaction ID
@@ -276,7 +290,8 @@ export default function Checkout() {
               total_price: item.total_price,
               description: item.description,
             })),
-            special_instructions: customOrderData.special_instructions || orderNotes,
+            special_instructions:
+              customOrderData.special_instructions || orderNotes,
             customer_email: user?.email || guestInfo.email,
             customer_discord: customOrderData.customer_discord,
           });
@@ -291,11 +306,12 @@ export default function Checkout() {
       // Clear cart
       clearCart();
 
-      const orderMessage = customOrderItems.length > 0 && regularOrderItems.length > 0
-        ? "Your orders have been confirmed"
-        : customOrderItems.length > 0
-          ? "Your custom order has been confirmed"
-          : `Your order #${orderId?.slice(-6)} has been confirmed`;
+      const orderMessage =
+        customOrderItems.length > 0 && regularOrderItems.length > 0
+          ? "Your orders have been confirmed"
+          : customOrderItems.length > 0
+            ? "Your custom order has been confirmed"
+            : `Your order #${orderId?.slice(-6)} has been confirmed`;
 
       toast({
         title: "Payment successful!",
@@ -310,7 +326,11 @@ export default function Checkout() {
       }
     } catch (error: any) {
       console.error("Error creating order:", error);
-      const errorMessage = error?.message || error?.error_description || JSON.stringify(error) || "Unknown error";
+      const errorMessage =
+        error?.message ||
+        error?.error_description ||
+        JSON.stringify(error) ||
+        "Unknown error";
       toast({
         title: "Order creation failed",
         description: `Payment was successful but we couldn't create your order: ${errorMessage}. Please contact support.`,
@@ -503,7 +523,9 @@ export default function Checkout() {
                   <div className="flex space-x-2">
                     <Input
                       value={referralCode}
-                      onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                      onChange={(e) =>
+                        setReferralCode(e.target.value.toUpperCase())
+                      }
                       placeholder="HD2BOOST-XXXXXX"
                       className="flex-1"
                     />
@@ -520,7 +542,8 @@ export default function Checkout() {
                       <div className="flex items-center space-x-2">
                         <CheckCircle className="w-4 h-4 text-green-600" />
                         <span className="text-sm text-green-700 dark:text-green-400">
-                          Referral code applied! You saved ${referralDiscount.toFixed(2)}
+                          Referral code applied! You saved $
+                          {referralDiscount.toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -537,7 +560,8 @@ export default function Checkout() {
                       Use Referral Credits
                     </CardTitle>
                     <CardDescription>
-                      You have ${availableCredits.toFixed(2)} in referral credits available
+                      You have ${availableCredits.toFixed(2)} in referral
+                      credits available
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -549,7 +573,10 @@ export default function Checkout() {
                         <div>
                           <p className="font-medium">Apply Referral Credits</p>
                           <p className="text-sm text-muted-foreground">
-                            Use ${Math.min(availableCredits, subtotal).toFixed(2)} of your ${availableCredits.toFixed(2)} available credits
+                            Use $
+                            {Math.min(availableCredits, subtotal).toFixed(2)} of
+                            your ${availableCredits.toFixed(2)} available
+                            credits
                           </p>
                         </div>
                       </div>
@@ -569,7 +596,8 @@ export default function Checkout() {
                         <div className="flex items-center space-x-2">
                           <CheckCircle className="w-4 h-4 text-blue-600" />
                           <span className="text-sm text-blue-700 dark:text-blue-400">
-                            Applied ${referralCreditsApplied.toFixed(2)} in referral credits!
+                            Applied ${referralCreditsApplied.toFixed(2)} in
+                            referral credits!
                           </span>
                         </div>
                       </div>
