@@ -51,19 +51,19 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
 
   const mapBundle = (bundle: Bundle): BundleData => ({
     id: bundle.id,
-    name: bundle.name,
-    description: bundle.description,
-    services: bundle.services,
-    originalPrice: Number(bundle.original_price),
-    discountedPrice: Number(bundle.discounted_price),
-    discount: bundle.discount,
-    duration: bundle.duration,
-    popular: bundle.popular,
+    name: bundle.name || '',
+    description: bundle.description || '',
+    services: bundle.services || [],
+    originalPrice: Number(bundle.original_price) || 0,
+    discountedPrice: Number(bundle.discounted_price) || 0,
+    discount: bundle.discount || 0,
+    duration: bundle.duration || '',
+    popular: bundle.popular || false,
     badge: bundle.badge || undefined,
-    features: bundle.features,
-    active: bundle.active,
-    createdAt: bundle.created_at,
-    orders: bundle.orders_count,
+    features: bundle.features || [],
+    active: bundle.active ?? true,
+    createdAt: bundle.created_at || '',
+    orders: bundle.orders_count || 0,
   });
 
   const refreshBundles = async () => {
