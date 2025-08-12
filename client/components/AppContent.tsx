@@ -17,6 +17,7 @@ import {
   LazyCart,
   LazyCheckout,
   LazyContact,
+  LazyCustomOrder,
   LazyEmailConfirmation,
   LazyFAQ,
   LazyForgotPassword,
