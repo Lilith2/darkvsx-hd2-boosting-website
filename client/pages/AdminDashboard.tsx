@@ -71,6 +71,7 @@ export default function AdminDashboard() {
   const [selectedBundle, setSelectedBundle] = useState<any>(null);
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
   const [ticketReply, setTicketReply] = useState("");
+  const [orderFilter, setOrderFilter] = useState<string>("all"); // all, pending, processing, in-progress, completed
 
   // Analytics calculations
   const totalRevenue = parseFloat(
