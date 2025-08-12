@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => ({
     outDir: "dist/spa",
     sourcemap: mode === "development",
     minify: "terser",
-    target: "esnext",
+    target: "es2020",
     modulePreload: {
       polyfill: false,
     },
