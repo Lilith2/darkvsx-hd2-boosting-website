@@ -4,10 +4,10 @@ import type { Database } from "./types";
 
 const SUPABASE_URL =
   import.meta.env.VITE_SUPABASE_URL ||
-  "https://ahqqptrclqtwqjgmtesv.supabase.co";
+  "https://nxjtpxcnxqhemquvovey.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY =
   import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFocXFwdHJjbHF0d3FqZ210ZXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNDM3NTMsImV4cCI6MjA2OTkxOTc1M30.FRFHf-XvnBLzZvcGseS82HJIORQXs_8OEEVq0RpabN0";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54anRweGNueHFoZW1xdXZvdmV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcwODczMzgsImV4cCI6MjA1MjY2MzMzOH0.Duu_nGUo7SkD6mMx1q1N5RMAA3wHvmQR1mKOjZc93jk";
 
 if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
   console.warn(
