@@ -189,9 +189,13 @@ export type Database = {
           notes?: string | null
           payment_status?: string
           progress?: number | null
+          referral_code?: string | null
+          referral_credits_used?: number | null
+          referral_discount?: number | null
           services?: Json
           status?: string
           total_amount?: number
+          transaction_id?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
