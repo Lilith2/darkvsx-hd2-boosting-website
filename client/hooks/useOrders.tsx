@@ -288,29 +288,27 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         insertData.referral_credits_used = orderData.referralCreditsUsed;
       }
 
-      console.log("About to insert order data:", insertData);
-
       const { data: orderResult, error: orderError } = await supabase
         .from("orders")
         .insert([insertData])
         .select()
         .single();
 
-      console.log("Insert result:", { orderResult, orderError });
+      if (orderError) throw orderError;
 
-      if (orderError) {
-        console.error("Detailed order error:", orderError);
-        throw orderError;
+      // Add initial tracking entry - this might be failing if table doesn't exist
+      try {
+        await supabase.from("order_tracking").insert([
+          {
+            order_id: orderResult.id,
+            status: "Order Placed",
+            description: "Your order has been received and is being processed",
+          },
+        ]);
+      } catch (trackingError) {
+        console.warn("Failed to add order tracking (table might not exist):", trackingError);
+        // Continue without tracking if table doesn't exist
       }
-
-      // Add initial tracking entry
-      await supabase.from("order_tracking").insert([
-        {
-          order_id: orderResult.id,
-          status: "Order Placed",
-          description: "Your order has been received and is being processed",
-        },
-      ]);
 
       await refreshOrders();
       return orderResult.id;
