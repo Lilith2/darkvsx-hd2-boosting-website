@@ -1641,6 +1641,18 @@ export default function AdminDashboard() {
                             >
                               💬 Send Message
                             </Button>
+
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setSelectedOrderForResume(order);
+                                setIsOrderResumeModalOpen(true);
+                              }}
+                              className="text-xs"
+                            >
+                              📋 Order Resume
+                            </Button>
                           </div>
                         </div>
                       </div>
