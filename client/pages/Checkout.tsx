@@ -249,6 +249,11 @@ export default function Checkout() {
         (item) => !item.service.customOrderData,
       );
 
+      // Debug logging
+      console.log("Cart items:", cartItems);
+      console.log("Custom order items:", customOrderItems);
+      console.log("Regular order items:", regularOrderItems);
+
       let orderId = null;
 
       // Process regular orders if any
