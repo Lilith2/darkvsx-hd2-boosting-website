@@ -293,48 +293,8 @@ export default function CustomOrder() {
         },
       };
 
-      // Save to database if user is logged in
-      if (user) {
-        try {
-          console.log("Attempting to save custom order to database...", {
-            userId: user.id,
-            email: user.email,
-            itemCount: orderItems.length,
-            totalAmount: getTotalPrice(),
-          });
-
-          await createOrder({
-            items: orderItems.map((item) => ({
-              category: item.category,
-              item_name: item.item_name,
-              quantity: item.quantity,
-              price_per_unit: item.price_per_unit,
-              total_price: item.total_price,
-              description: item.description,
-            })),
-            special_instructions: orderNotes || undefined,
-            customer_email: user.email || undefined,
-          });
-
-          console.log("Custom order saved to database successfully!");
-        } catch (dbError: any) {
-          // Continue with cart addition even if database save fails
-          console.error("Failed to save to database:", dbError);
-          const errorMessage = dbError?.message || dbError?.error_description || JSON.stringify(dbError) || "Unknown error";
-          toast({
-            title: "Database Warning",
-            description: `Order saved to cart but database save failed: ${errorMessage}`,
-            variant: "default",
-          });
-        }
-      } else {
-        console.log("User not logged in, skipping database save");
-        toast({
-          title: "Note",
-          description: "Order added to cart. Login to enable order tracking.",
-          variant: "default",
-        });
-      }
+      // Store order data in the cart for later processing after payment
+      // Database save will happen in checkout after successful payment
 
       // Add to cart
       addToCart(customService);
