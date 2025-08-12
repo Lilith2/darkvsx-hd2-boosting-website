@@ -1176,11 +1176,43 @@ export default function AdminDashboard() {
                       Order Management ({filteredOrders.length})
                     </CardTitle>
                     <CardDescription>
-                      Manage customer orders and track delivery progress
+                      Manage both regular and custom orders from one place
                     </CardDescription>
                   </div>
 
-                  {/* Filter Section */}
+                  {/* Order Type Filter */}
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Package className="w-4 h-4" />
+                      <span>Order Type:</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant={orderTypeFilter === "regular" ? "default" : "outline"}
+                        onClick={() => {
+                          setOrderTypeFilter("regular");
+                          setOrderFilter("all");
+                        }}
+                        className="text-xs"
+                      >
+                        Regular Orders ({orders.filter(order => !order.services.some(s => s.id === "support-ticket")).length})
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={orderTypeFilter === "custom" ? "default" : "outline"}
+                        onClick={() => {
+                          setOrderTypeFilter("custom");
+                          setOrderFilter("all");
+                        }}
+                        className="text-xs"
+                      >
+                        Custom Orders ({customOrders.length})
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Status Filter Section */}
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Filter className="w-4 h-4" />
