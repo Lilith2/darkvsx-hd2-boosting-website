@@ -15,3 +15,4 @@ export const LazyOrderTracking = lazy(() => import('@/pages/OrderTracking'));
 export const LazyPrivacy = lazy(() => import('@/pages/Privacy'));
 export const LazyRegister = lazy(() => import('@/pages/Register'));
 export const LazyTerms = lazy(() => import('@/pages/Terms'));
+export const LazyCustomOrder = lazy(() => import('@/pages/CustomOrder'));
