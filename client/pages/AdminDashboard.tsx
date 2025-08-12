@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useServices } from "@/hooks/useServices";
 import { useBundles } from "@/hooks/useBundles";
 import { useOrders } from "@/hooks/useOrders";
+import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceModal } from "@/components/ServiceModal";
 import { BundleModal } from "@/components/BundleModal";
@@ -71,6 +72,12 @@ export default function AdminDashboard() {
     loading,
     error,
   } = useOrders();
+  const {
+    orders: customOrders,
+    stats: customOrderStats,
+    loading: customOrdersLoading,
+    error: customOrdersError,
+  } = useCustomOrders();
   const { toast } = useToast();
 
   // Fetch custom pricing data
@@ -108,23 +115,34 @@ export default function AdminDashboard() {
   const [isEditingPricing, setIsEditingPricing] = useState<any>(null);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
 
-  // Analytics calculations
+  // Analytics calculations - combine both regular orders and custom orders
+  const regularOrdersRevenue = orders
+    .filter(
+      (order) =>
+        order.paymentStatus === "paid" &&
+        !order.services.some((s) => s.id === "support-ticket"),
+    )
+    .reduce((sum, order) => sum + order.totalAmount, 0);
+
+  const customOrdersRevenue = customOrders
+    .filter((order) => order.status === "completed")
+    .reduce((sum, order) => sum + order.total_amount, 0);
+
   const totalRevenue = parseFloat(
-    orders
-      .filter(
-        (order) =>
-          order.paymentStatus === "paid" &&
-          !order.services.some((s) => s.id === "support-ticket"),
-      )
-      .reduce((sum, order) => sum + order.totalAmount, 0)
-      .toFixed(2),
+    (regularOrdersRevenue + customOrdersRevenue).toFixed(2),
   );
 
-  const pendingOrders = orders.filter(
+  const regularPendingOrders = orders.filter(
     (order) =>
       order.status === "pending" &&
       !order.services.some((s) => s.id === "support-ticket"),
   ).length;
+
+  const customPendingOrders = customOrders.filter(
+    (order) => order.status === "pending",
+  ).length;
+
+  const pendingOrders = regularPendingOrders + customPendingOrders;
 
   const supportTickets = orders.filter((order) =>
     order.services.some((s) => s.id === "support-ticket"),
@@ -135,9 +153,43 @@ export default function AdminDashboard() {
   ).length;
 
   const activeServices = services.filter((service) => service.active).length;
-  const totalCustomers = new Set(orders.map((order) => order.userId)).size;
 
-  const recentOrders = orders
+  // Combine customers from both regular orders and custom orders
+  const regularOrderCustomers = new Set(orders.map((order) => order.userId));
+  const customOrderCustomers = new Set(
+    customOrders.map((order) => order.user_id),
+  );
+  const allCustomers = new Set([
+    ...regularOrderCustomers,
+    ...customOrderCustomers,
+  ]);
+  const totalCustomers = allCustomers.size;
+
+  // Combine and sort recent orders from both types
+  const allRecentOrders = [
+    ...orders.map((order) => ({
+      ...order,
+      type: "regular" as const,
+      createdAt: order.createdAt,
+    })),
+    ...customOrders.map((order) => ({
+      id: order.id,
+      customerName: order.customer_email || "Custom Order Customer",
+      customerEmail: order.customer_email || "",
+      totalAmount: order.total_amount,
+      status: order.status,
+      createdAt: order.created_at,
+      type: "custom" as const,
+      services: order.items.map((item) => ({
+        id: item.id,
+        name: item.item_name,
+        price: item.price_per_unit,
+        quantity: item.quantity,
+      })),
+    })),
+  ];
+
+  const recentOrders = allRecentOrders
     .sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -156,11 +208,11 @@ export default function AdminDashboard() {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
 
-  // Calculate actual top performing services from real order data
+  // Calculate actual top performing services from both regular and custom orders
   const topServices = (() => {
     const serviceStats = new Map();
 
-    // Count actual orders for each service
+    // Count actual regular orders for each service
     orders.forEach((order) => {
       if (!order.services.some((s) => s.id === "support-ticket")) {
         order.services.forEach((service) => {
@@ -169,12 +221,30 @@ export default function AdminDashboard() {
             orders: 0,
             revenue: 0,
             id: service.id,
+            type: "regular",
           };
           current.orders += service.quantity || 1;
           current.revenue += (service.price || 0) * (service.quantity || 1);
           serviceStats.set(service.name, current);
         });
       }
+    });
+
+    // Count custom orders as "custom order items"
+    customOrders.forEach((order) => {
+      order.items.forEach((item) => {
+        const serviceName = `${item.category}: ${item.item_name}`;
+        const current = serviceStats.get(serviceName) || {
+          name: serviceName,
+          orders: 0,
+          revenue: 0,
+          id: item.id,
+          type: "custom",
+        };
+        current.orders += item.quantity;
+        current.revenue += item.total_price;
+        serviceStats.set(serviceName, current);
+      });
     });
 
     return Array.from(serviceStats.values())
@@ -432,18 +502,33 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Debug Info */}
-        {error && (
+        {(error || customOrdersError) && (
           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
             <h3 className="font-semibold text-red-600 mb-2">
               Database Connection Error
             </h3>
-            <p className="text-sm text-red-600">{error}</p>
+            {error && (
+              <p className="text-sm text-red-600">Regular Orders: {error}</p>
+            )}
+            {customOrdersError && (
+              <p className="text-sm text-red-600">
+                Custom Orders: {customOrdersError}
+              </p>
+            )}
           </div>
         )}
 
-        {loading && (
+        {(loading || customOrdersLoading) && (
           <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-            <p className="text-blue-600">Loading orders...</p>
+            <p className="text-blue-600">
+              Loading{" "}
+              {loading && customOrdersLoading
+                ? "all orders"
+                : loading
+                  ? "regular orders"
+                  : "custom orders"}
+              ...
+            </p>
           </div>
         )}
 
@@ -621,10 +706,13 @@ export default function AdminDashboard() {
                           className="flex items-center justify-between p-3 border border-border/30 rounded-lg"
                         >
                           <div className="flex items-center space-x-3">
-                            <div className="w-2 h-2 bg-primary rounded-full"></div>
+                            <div
+                              className={`w-2 h-2 rounded-full ${order.type === "custom" ? "bg-purple-500" : "bg-primary"}`}
+                            ></div>
                             <div>
                               <p className="text-sm font-medium">
-                                Order {order.id.slice(0, 8)}...
+                                {order.type === "custom" ? "Custom " : ""}Order{" "}
+                                {order.id.slice(0, 8)}...
                               </p>
                               <p className="text-xs text-muted-foreground">
                                 {order.customerName}
@@ -632,18 +720,28 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <Badge
-                              className={
-                                order.status === "pending"
-                                  ? "bg-yellow-500/20 text-yellow-700"
-                                  : order.status === "completed"
-                                    ? "bg-green-500/20 text-green-700"
-                                    : "bg-blue-500/20 text-blue-700"
-                              }
-                            >
-                              {order.status}
-                            </Badge>
-                            <p className="text-sm font-medium mt-1">
+                            <div className="flex items-center gap-1 mb-1">
+                              <Badge
+                                className={
+                                  order.status === "pending"
+                                    ? "bg-yellow-500/20 text-yellow-700"
+                                    : order.status === "completed"
+                                      ? "bg-green-500/20 text-green-700"
+                                      : "bg-blue-500/20 text-blue-700"
+                                }
+                              >
+                                {order.status}
+                              </Badge>
+                              {order.type === "custom" && (
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs bg-purple-100 text-purple-700"
+                                >
+                                  Custom
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm font-medium">
                               ${order.totalAmount}
                             </p>
                           </div>

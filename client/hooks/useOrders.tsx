@@ -56,7 +56,7 @@ export interface OrderTracking {
 // Transformed interfaces for frontend
 export interface OrderData {
   id: string;
-  userId: string;
+  userId: string | null;
   customerEmail: string;
   customerName: string;
   services: {
@@ -149,8 +149,12 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     transactionId: order.transaction_id || undefined,
     ipAddress: order.ip_address || undefined,
     referralCode: order.referral_code || undefined,
-    referralDiscount: order.referral_discount ? parseFloat(Number(order.referral_discount).toFixed(2)) : undefined,
-    referralCreditsUsed: order.referral_credits_used ? parseFloat(Number(order.referral_credits_used).toFixed(2)) : undefined,
+    referralDiscount: order.referral_discount
+      ? parseFloat(Number(order.referral_discount).toFixed(2))
+      : undefined,
+    referralCreditsUsed: order.referral_credits_used
+      ? parseFloat(Number(order.referral_credits_used).toFixed(2))
+      : undefined,
     referredByUserId: order.referred_by_user_id || undefined,
     messages: messages.map((msg) => ({
       id: msg.id,
@@ -248,7 +252,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     try {
       // Get user's IP address for chargeback protection
       const ipAddress = await getCurrentIPAddress();
-      
+
       // Prepare the base order data
       const baseOrderData = {
         user_id: orderData.userId,
@@ -264,18 +268,20 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         notes: orderData.notes,
       };
 
-      // Only add optional fields if they exist and if the columns exist in the schema
+      // Add all optional fields that now exist in the database schema
       const insertData = { ...baseOrderData };
 
-      // Try to add optional fields - if they fail, we'll continue without them
+      // Add transaction ID for PayPal tracking
       if (orderData.transactionId) {
         insertData.transaction_id = orderData.transactionId;
       }
 
+      // Add IP address for security/chargeback protection
       if (ipAddress) {
         insertData.ip_address = ipAddress;
       }
 
+      // Add referral system fields
       if (orderData.referralCode) {
         insertData.referral_code = orderData.referralCode;
       }
@@ -296,14 +302,22 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
       if (orderError) throw orderError;
 
-      // Add initial tracking entry
-      await supabase.from("order_tracking").insert([
-        {
-          order_id: orderResult.id,
-          status: "Order Placed",
-          description: "Your order has been received and is being processed",
-        },
-      ]);
+      // Add initial tracking entry - this might be failing if table doesn't exist
+      try {
+        await supabase.from("order_tracking").insert([
+          {
+            order_id: orderResult.id,
+            status: "Order Placed",
+            description: "Your order has been received and is being processed",
+          },
+        ]);
+      } catch (trackingError) {
+        console.warn(
+          "Failed to add order tracking (table might not exist):",
+          trackingError,
+        );
+        // Continue without tracking if table doesn't exist
+      }
 
       await refreshOrders();
       return orderResult.id;
@@ -311,11 +325,19 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       console.error("Error adding order:", err);
 
       // Handle specific database schema errors
-      if (err?.message?.includes("transaction_id") || err?.message?.includes("ip_address")) {
-        console.warn("Database schema missing transaction_id or ip_address columns. Order created without these fields.");
+      if (
+        err?.message?.includes("column") &&
+        (err?.message?.includes("transaction_id") ||
+          err?.message?.includes("referral_code") ||
+          err?.message?.includes("referral_discount") ||
+          err?.message?.includes("referral_credits_used"))
+      ) {
+        console.warn(
+          "Database schema missing some expected columns. Retrying with base fields only.",
+        );
         // Try again without the optional fields
         try {
-          const baseOrderData = {
+          const retryOrderData = {
             user_id: orderData.userId,
             customer_email: orderData.customerEmail,
             customer_name: orderData.customerName,
@@ -329,9 +351,24 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
             notes: orderData.notes,
           };
 
+          // Add optional fields for retry as well
+          if (orderData.transactionId) {
+            retryOrderData.transaction_id = orderData.transactionId;
+          }
+          if (orderData.referralCode) {
+            retryOrderData.referral_code = orderData.referralCode;
+          }
+          if (orderData.referralDiscount) {
+            retryOrderData.referral_discount = orderData.referralDiscount;
+          }
+          if (orderData.referralCreditsUsed) {
+            retryOrderData.referral_credits_used =
+              orderData.referralCreditsUsed;
+          }
+
           const { data: orderResult, error: orderError } = await supabase
             .from("orders")
-            .insert([baseOrderData])
+            .insert([retryOrderData])
             .select()
             .single();
 
@@ -342,7 +379,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
             {
               order_id: orderResult.id,
               status: "Order Placed",
-              description: "Your order has been received and is being processed",
+              description:
+                "Your order has been received and is being processed",
             },
           ]);
 
@@ -351,12 +389,18 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         } catch (retryErr: any) {
           console.error("Error on retry:", retryErr);
           throw new Error(
-            retryErr?.message || retryErr?.error_description || "Failed to add order after retry",
+            retryErr?.message ||
+              retryErr?.error_description ||
+              "Failed to add order after retry",
           );
         }
       }
 
-      const errorMessage = err?.message || err?.error_description || "Failed to add order";
+      const errorMessage =
+        err?.message ||
+        err?.error_description ||
+        JSON.stringify(err) ||
+        "Failed to add order";
       throw new Error(`Database error: ${errorMessage}`);
     }
   };

@@ -91,7 +91,7 @@ export default function Cart() {
               <CardContent>
                 <div className="space-y-6">
                   {cartItems.map((item, index) => (
-                    <div key={item.id}>
+                    <div key={item.service.id}>
                       <div className="flex items-center space-x-4">
                         <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
                           <ShoppingCart className="w-6 h-6 text-muted-foreground" />

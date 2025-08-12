@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/hooks/useCart";
 import { useOrders } from "@/hooks/useOrders";
+import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useAuth } from "@/hooks/useAuth";
 import { useReferrals } from "@/hooks/useReferrals";
 import { useToast } from "@/hooks/use-toast";
@@ -46,6 +47,7 @@ const PAYPAL_CLIENT_ID =
 export default function Checkout() {
   const { cartItems, getCartTotal, clearCart } = useCart();
   const { addOrder } = useOrders();
+  const { createOrder: createCustomOrder } = useCustomOrders();
   const { user, isAuthenticated } = useAuth();
   const { getUserCredits } = useReferrals();
   const { toast } = useToast();
@@ -110,7 +112,11 @@ export default function Checkout() {
       const userCodeFromId = `HD2BOOST-${user.id.slice(-6)}`;
       const userCodeFromIdUpper = `HD2BOOST-${user.id.slice(-6).toUpperCase()}`;
 
-      if (code === userCodeFromId || code === userCodeFromIdUpper || code.includes(user.id.slice(-6))) {
+      if (
+        code === userCodeFromId ||
+        code === userCodeFromIdUpper ||
+        code.includes(user.id.slice(-6))
+      ) {
         toast({
           title: "Invalid referral code",
           description: "You cannot use your own referral code.",
@@ -163,7 +169,9 @@ export default function Checkout() {
             error.message?.includes("does not exist") ||
             error.message?.includes("referrals")
           ) {
-            console.warn("Referrals table not found, allowing referral to proceed");
+            console.warn(
+              "Referrals table not found, allowing referral to proceed",
+            );
           } else {
             console.error("Error checking existing referrals:", error);
             // Continue anyway for unknown errors
@@ -171,7 +179,8 @@ export default function Checkout() {
         } else if (existingReferrals && existingReferrals.length > 0) {
           toast({
             title: "Already used referral",
-            description: "You have already used a referral code before. Each user can only use one referral code.",
+            description:
+              "You have already used a referral code before. Each user can only use one referral code.",
             variant: "destructive",
           });
           return;
@@ -232,43 +241,99 @@ export default function Checkout() {
     setIsProcessing(true);
 
     try {
-      // Create the order with paid status only after successful PayPal payment
-      const orderId = await addOrder({
-        userId: user?.id || "guest",
-        customerEmail: user?.email || guestInfo.email,
-        customerName: user?.username || guestInfo.name,
-        services: cartItems.map((item) => ({
-          id: item.service.id,
-          name: item.service.title,
-          price: item.service.price,
-          quantity: item.quantity,
-        })),
-        status: "pending",
-        totalAmount: total,
-        paymentStatus: "paid", // Only set to paid after successful PayPal payment
-        notes: orderNotes,
-        transactionId: details.id || data.orderID, // Capture PayPal transaction ID
-        referralCode: referralCode || undefined,
-        referralDiscount: referralDiscount || undefined,
-        referralCreditsUsed: referralCreditsApplied || undefined,
-      });
+      // Check if cart contains custom orders
+      const customOrderItems = cartItems.filter(
+        (item) => item.service.customOrderData,
+      );
+      const regularOrderItems = cartItems.filter(
+        (item) => !item.service.customOrderData,
+      );
+
+      let orderId = null;
+
+      // Process regular orders if any
+      if (regularOrderItems.length > 0) {
+        orderId = await addOrder({
+          userId: user?.id || null,
+          customerEmail: user?.email || guestInfo.email,
+          customerName: user?.username || guestInfo.name,
+          services: regularOrderItems.map((item) => ({
+            id: item.service.id,
+            name: item.service.title,
+            price: item.service.price,
+            quantity: item.quantity,
+          })),
+          status: "pending",
+          totalAmount: regularOrderItems.reduce(
+            (sum, item) => sum + item.service.price * item.quantity,
+            0,
+          ),
+          paymentStatus: "paid", // Only set to paid after successful PayPal payment
+          notes: orderNotes,
+          transactionId: details.id || data.orderID, // Capture PayPal transaction ID
+          referralCode: referralCode || undefined,
+          referralDiscount: referralDiscount || undefined,
+          referralCreditsUsed: referralCreditsApplied || undefined,
+        });
+      }
+
+      // Process custom orders if any
+      if (customOrderItems.length > 0) {
+        for (const cartItem of customOrderItems) {
+          const customOrderData = cartItem.service.customOrderData;
+          await createCustomOrder({
+            items: customOrderData.items.map((item: any) => ({
+              category: item.category,
+              item_name: item.item_name,
+              quantity: item.quantity,
+              price_per_unit: item.price_per_unit,
+              total_price: item.total_price,
+              description: item.description,
+            })),
+            special_instructions:
+              customOrderData.special_instructions || orderNotes,
+            customer_email: user?.email || guestInfo.email,
+            customer_discord: customOrderData.customer_discord,
+          });
+        }
+
+        // If we only had custom orders, use the first custom order's ID
+        if (!orderId && customOrderItems.length > 0) {
+          orderId = `custom-${Date.now()}`;
+        }
+      }
 
       // Clear cart
       clearCart();
 
+      const orderMessage =
+        customOrderItems.length > 0 && regularOrderItems.length > 0
+          ? "Your orders have been confirmed"
+          : customOrderItems.length > 0
+            ? "Your custom order has been confirmed"
+            : `Your order #${orderId?.slice(-6)} has been confirmed`;
+
       toast({
         title: "Payment successful!",
-        description: `Your order #${orderId.slice(-6)} has been confirmed. Payment ID: ${details.id}`,
+        description: `${orderMessage}. Payment ID: ${details.id}`,
       });
 
-      // Redirect to order tracking
-      navigate(`/order/${orderId}`);
-    } catch (error) {
+      // Redirect to appropriate page
+      if (regularOrderItems.length > 0) {
+        navigate(`/order/${orderId}`);
+      } else {
+        navigate("/account"); // Redirect to account page for custom orders
+      }
+    } catch (error: any) {
       console.error("Error creating order:", error);
+      const errorMessage =
+        error?.message ||
+        error?.error_description ||
+        JSON.stringify(error) ||
+        "Unknown error";
       toast({
         title: "Order creation failed",
-        description:
-          "Payment was successful but we couldn't create your order. Please contact support.",
+        description: `Payment was successful but we couldn't create your order: ${errorMessage}. Please contact support.`,
         variant: "destructive",
       });
     } finally {
@@ -458,7 +523,9 @@ export default function Checkout() {
                   <div className="flex space-x-2">
                     <Input
                       value={referralCode}
-                      onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                      onChange={(e) =>
+                        setReferralCode(e.target.value.toUpperCase())
+                      }
                       placeholder="HD2BOOST-XXXXXX"
                       className="flex-1"
                     />
@@ -475,7 +542,8 @@ export default function Checkout() {
                       <div className="flex items-center space-x-2">
                         <CheckCircle className="w-4 h-4 text-green-600" />
                         <span className="text-sm text-green-700 dark:text-green-400">
-                          Referral code applied! You saved ${referralDiscount.toFixed(2)}
+                          Referral code applied! You saved $
+                          {referralDiscount.toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -492,7 +560,8 @@ export default function Checkout() {
                       Use Referral Credits
                     </CardTitle>
                     <CardDescription>
-                      You have ${availableCredits.toFixed(2)} in referral credits available
+                      You have ${availableCredits.toFixed(2)} in referral
+                      credits available
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -504,7 +573,10 @@ export default function Checkout() {
                         <div>
                           <p className="font-medium">Apply Referral Credits</p>
                           <p className="text-sm text-muted-foreground">
-                            Use ${Math.min(availableCredits, subtotal).toFixed(2)} of your ${availableCredits.toFixed(2)} available credits
+                            Use $
+                            {Math.min(availableCredits, subtotal).toFixed(2)} of
+                            your ${availableCredits.toFixed(2)} available
+                            credits
                           </p>
                         </div>
                       </div>
@@ -524,7 +596,8 @@ export default function Checkout() {
                         <div className="flex items-center space-x-2">
                           <CheckCircle className="w-4 h-4 text-blue-600" />
                           <span className="text-sm text-blue-700 dark:text-blue-400">
-                            Applied ${referralCreditsApplied.toFixed(2)} in referral credits!
+                            Applied ${referralCreditsApplied.toFixed(2)} in
+                            referral credits!
                           </span>
                         </div>
                       </div>

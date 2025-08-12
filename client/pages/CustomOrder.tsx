@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
-import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,7 +59,6 @@ export default function CustomOrder() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { toast } = useToast();
-  const { createOrder } = useCustomOrders();
   const { user } = useAuth();
 
   const [pricing, setPricing] = useState<CustomPricing[]>([]);
@@ -192,13 +190,11 @@ export default function CustomOrder() {
   };
 
   const addOrderItem = (pricingItem: CustomPricing, quantity: number) => {
-    if (
-      quantity < pricingItem.minimum_quantity ||
-      quantity > pricingItem.maximum_quantity
-    ) {
+    const maxQty = pricingItem.maximum_quantity || 999999; // Default to large number if null
+    if (quantity < pricingItem.minimum_quantity || quantity > maxQty) {
       toast({
         title: "Invalid Quantity",
-        description: `Quantity must be between ${pricingItem.minimum_quantity} and ${pricingItem.maximum_quantity}`,
+        description: `Quantity must be between ${pricingItem.minimum_quantity} and ${maxQty}`,
         variant: "destructive",
       });
       return;
@@ -266,7 +262,7 @@ export default function CustomOrder() {
       // Create the custom service for the cart
       const customService = {
         id: `custom-order-${Date.now()}`,
-        name: "Custom Helldivers 2 Order",
+        title: "Custom Helldivers 2 Order",
         description: `Custom order with ${orderItems.length} items: ${orderItems
           .map(
             (item) =>
@@ -289,53 +285,17 @@ export default function CustomOrder() {
         customOrderData: {
           items: orderItems,
           notes: orderNotes,
+          customer_email: user?.email,
+          customer_discord: null, // Could be added to user profile later
+          special_instructions: orderNotes,
         },
       };
 
-      // Save to database if user is logged in
-      if (user) {
-        try {
-          console.log("Attempting to save custom order to database...", {
-            userId: user.id,
-            email: user.email,
-            itemCount: orderItems.length,
-            totalAmount: getTotalPrice(),
-          });
-
-          await createOrder({
-            items: orderItems.map((item) => ({
-              category: item.category,
-              item_name: item.item_name,
-              quantity: item.quantity,
-              price_per_unit: item.price_per_unit,
-              total_price: item.total_price,
-              description: item.description,
-            })),
-            special_instructions: orderNotes || undefined,
-            customer_email: user.email || undefined,
-          });
-
-          console.log("Custom order saved to database successfully!");
-        } catch (dbError: any) {
-          // Continue with cart addition even if database save fails
-          console.error("Failed to save to database:", dbError);
-          toast({
-            title: "Database Warning",
-            description: `Order saved to cart but database save failed: ${dbError.message || "Unknown error"}`,
-            variant: "default",
-          });
-        }
-      } else {
-        console.log("User not logged in, skipping database save");
-        toast({
-          title: "Note",
-          description: "Order added to cart. Login to enable order tracking.",
-          variant: "default",
-        });
-      }
+      // Store order data in the cart for later processing after payment
+      // Database save will happen in checkout after successful payment
 
       // Add to cart
-      addToCart({ service: customService, quantity: 1 });
+      addToCart(customService);
 
       toast({
         title: "Added to Cart!",
@@ -343,11 +303,16 @@ export default function CustomOrder() {
       });
 
       navigate("/cart");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error processing order:", error);
+      const errorMessage =
+        error?.message ||
+        error?.error_description ||
+        JSON.stringify(error) ||
+        "Unknown error";
       toast({
         title: "Error",
-        description: "Failed to process your order. Please try again.",
+        description: `Failed to process your order: ${errorMessage}`,
         variant: "destructive",
       });
     }
@@ -612,7 +577,7 @@ interface ItemCardProps {
 
 function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
   const [quantity, setQuantity] = useState(
-    currentQuantity || item.minimum_quantity,
+    currentQuantity || Math.max(1, item.minimum_quantity || 1),
   );
 
   useEffect(() => {
@@ -622,9 +587,10 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
   }, [currentQuantity]);
 
   const adjustQuantity = (delta: number) => {
+    const maxQty = item.maximum_quantity || 999999; // Default to large number if null
     const newQuantity = Math.max(
       item.minimum_quantity,
-      Math.min(item.maximum_quantity, quantity + delta),
+      Math.min(maxQty, quantity + delta),
     );
     setQuantity(newQuantity);
   };
@@ -667,22 +633,20 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
             value={quantity}
             onChange={(e) => {
               const value = parseInt(e.target.value) || item.minimum_quantity;
+              const maxQty = item.maximum_quantity || 999999; // Default to large number if null
               setQuantity(
-                Math.max(
-                  item.minimum_quantity,
-                  Math.min(item.maximum_quantity, value),
-                ),
+                Math.max(item.minimum_quantity, Math.min(maxQty, value)),
               );
             }}
             className="w-12 text-center text-xs h-6"
             min={item.minimum_quantity}
-            max={item.maximum_quantity}
+            max={item.maximum_quantity || 999999}
           />
           <Button
             size="sm"
             variant="outline"
             onClick={() => adjustQuantity(1)}
-            disabled={quantity >= item.maximum_quantity}
+            disabled={quantity >= (item.maximum_quantity || 999999)}
             className="h-6 w-6 p-0"
           >
             <Plus className="w-3 h-3" />
@@ -703,7 +667,7 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
 
       <div className="text-xs text-muted-foreground mt-1 flex items-center justify-between">
         <span>Min: {item.minimum_quantity}</span>
-        <span>Max: {item.maximum_quantity}</span>
+        <span>Max: {item.maximum_quantity || "∞"}</span>
       </div>
     </div>
   );
