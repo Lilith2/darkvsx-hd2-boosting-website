@@ -15,7 +15,6 @@ import { AppContent } from "@/components/AppContent";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AccessibilityWrapper } from "@/components/AccessibilityWrapper";
 import { SEOHead } from "@/components/SEOHead";
-import { PerformanceMonitor, useWebVitals } from "@/components/PerformanceMonitor";
 import { SecurityProvider } from "@/components/SecurityProvider";
 import { initializeAnalytics } from "@/lib/analytics";
 
@@ -33,8 +32,6 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  useWebVitals(); // Monitor Core Web Vitals
-
   useEffect(() => {
     // Initialize analytics and performance tracking
     initializeAnalytics();
@@ -56,7 +53,6 @@ function App() {
                           <Toaster />
                           <Sonner />
                           <AppContent />
-                          <PerformanceMonitor />
                         </ReferralsProvider>
                       </OrdersProvider>
                     </CartProvider>
