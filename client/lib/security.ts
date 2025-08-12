@@ -130,7 +130,7 @@ export function detectSuspiciousActivity(input: string): boolean {
     
     // Path traversal
     /\.\.\//,
-    /\.\.\\\/,
+    /\.\.\\\\/,
     
     // Common attack vectors
     /eval\s*\(/i,
