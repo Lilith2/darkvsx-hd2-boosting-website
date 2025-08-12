@@ -243,7 +243,7 @@ export default function Checkout() {
       // Process regular orders if any
       if (regularOrderItems.length > 0) {
         orderId = await addOrder({
-          userId: user?.id || "guest",
+          userId: user?.id || null,
           customerEmail: user?.email || guestInfo.email,
           customerName: user?.username || guestInfo.name,
           services: regularOrderItems.map((item) => ({
