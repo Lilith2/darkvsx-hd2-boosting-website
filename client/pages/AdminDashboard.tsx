@@ -1443,11 +1443,9 @@ export default function AdminDashboard() {
                                   <p className="font-medium text-primary text-xl">
                                     ${order.totalAmount.toFixed(2)}
                                   </p>
-                                  {order.transactionId && (
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                      TX: {order.transactionId}
-                                    </p>
-                                  )}
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    TX: {order.transactionId || "Not recorded"}
+                                  </p>
                                 </div>
                                 <div>
                                   <p className="text-muted-foreground">
