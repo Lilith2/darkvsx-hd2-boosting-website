@@ -272,6 +272,122 @@ export default function AdminDashboard() {
     }
   };
 
+  // Custom pricing management functions
+  const handleEditPricing = (pricing: any) => {
+    setIsEditingPricing(pricing);
+    setIsPricingModalOpen(true);
+  };
+
+  const handleAddPricing = () => {
+    setIsEditingPricing(null);
+    setIsPricingModalOpen(true);
+  };
+
+  const handleSavePricing = async (pricingData: any) => {
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+
+      if (isEditingPricing) {
+        const { error } = await supabase
+          .from("custom_pricing")
+          .update(pricingData)
+          .eq("id", isEditingPricing.id);
+
+        if (error) throw error;
+
+        setCustomPricing(prev => prev.map(p =>
+          p.id === isEditingPricing.id ? { ...p, ...pricingData } : p
+        ));
+
+        toast({
+          title: "Pricing Updated",
+          description: "Custom pricing has been updated successfully.",
+        });
+      } else {
+        const { data, error } = await supabase
+          .from("custom_pricing")
+          .insert([pricingData])
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        setCustomPricing(prev => [...prev, data]);
+
+        toast({
+          title: "Pricing Added",
+          description: "New custom pricing has been added successfully.",
+        });
+      }
+
+      setIsPricingModalOpen(false);
+      setIsEditingPricing(null);
+    } catch (error) {
+      console.error("Error saving pricing:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save pricing. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeletePricing = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this pricing item?")) return;
+
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error } = await supabase
+        .from("custom_pricing")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      setCustomPricing(prev => prev.filter(p => p.id !== id));
+
+      toast({
+        title: "Pricing Deleted",
+        description: "Custom pricing has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Error deleting pricing:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete pricing. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const togglePricingStatus = async (id: string, currentStatus: boolean) => {
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      const { error } = await supabase
+        .from("custom_pricing")
+        .update({ is_active: !currentStatus })
+        .eq("id", id);
+
+      if (error) throw error;
+
+      setCustomPricing(prev => prev.map(p =>
+        p.id === id ? { ...p, is_active: !currentStatus } : p
+      ));
+
+      toast({
+        title: "Status Updated",
+        description: `Pricing item ${!currentStatus ? "activated" : "deactivated"} successfully.`,
+      });
+    } catch (error) {
+      console.error("Error updating pricing status:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update pricing status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
