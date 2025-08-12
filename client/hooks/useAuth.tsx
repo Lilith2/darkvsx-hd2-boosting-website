@@ -99,11 +99,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } else if (newProfile) {
             console.log("Profile created successfully:", newProfile);
             setUser({
-              id: newProfile.id,
-              username: newProfile.username || "User",
-              email: newProfile.email || "",
-              role: newProfile.role,
-            });
+            id: newProfile.id,
+            username: newProfile.username || "User",
+            email: newProfile.email || "",
+            role: (newProfile.role as "user" | "admin") || "user",
+          });
           }
         }
       } else if (profile) {
@@ -112,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           id: profile.id,
           username: profile.username || "User",
           email: profile.email || "",
-          role: profile.role,
+          role: (profile.role as "user" | "admin") || "user",
         });
       }
     } catch (error) {
