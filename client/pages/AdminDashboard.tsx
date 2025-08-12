@@ -114,6 +114,8 @@ export default function AdminDashboard() {
   const [customPricing, setCustomPricing] = useState<any[]>([]);
   const [isEditingPricing, setIsEditingPricing] = useState<any>(null);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
+  const [selectedOrderForResume, setSelectedOrderForResume] = useState<any>(null);
+  const [isOrderResumeModalOpen, setIsOrderResumeModalOpen] = useState(false);
 
   // Analytics calculations - combine both regular orders and custom orders
   const regularOrdersRevenue = orders
