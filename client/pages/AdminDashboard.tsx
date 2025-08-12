@@ -117,7 +117,8 @@ export default function AdminDashboard() {
   const [customPricing, setCustomPricing] = useState<any[]>([]);
   const [isEditingPricing, setIsEditingPricing] = useState<any>(null);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
-  const [selectedOrderForResume, setSelectedOrderForResume] = useState<any>(null);
+  const [selectedOrderForResume, setSelectedOrderForResume] =
+    useState<any>(null);
   const [isOrderResumeModalOpen, setIsOrderResumeModalOpen] = useState(false);
 
   // Analytics calculations - combine both regular orders and custom orders
@@ -204,16 +205,20 @@ export default function AdminDashboard() {
   // Filter orders based on selected filter and type
   const getFilteredOrders = () => {
     if (orderTypeFilter === "custom") {
-      return customOrders.filter((order) => {
-        if (orderFilter === "all") return true;
-        return order.status === orderFilter;
-      }).sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-      );
+      return customOrders
+        .filter((order) => {
+          if (orderFilter === "all") return true;
+          return order.status === orderFilter;
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        );
     } else {
       return orders
-        .filter((order) => !order.services.some((s) => s.id === "support-ticket"))
+        .filter(
+          (order) => !order.services.some((s) => s.id === "support-ticket"),
+        )
         .filter((order) => {
           if (orderFilter === "all") return true;
           return order.status === orderFilter;
@@ -1189,18 +1194,31 @@ export default function AdminDashboard() {
                     <div className="flex gap-2">
                       <Button
                         size="sm"
-                        variant={orderTypeFilter === "regular" ? "default" : "outline"}
+                        variant={
+                          orderTypeFilter === "regular" ? "default" : "outline"
+                        }
                         onClick={() => {
                           setOrderTypeFilter("regular");
                           setOrderFilter("all");
                         }}
                         className="text-xs"
                       >
-                        Regular Orders ({orders.filter(order => !order.services.some(s => s.id === "support-ticket")).length})
+                        Regular Orders (
+                        {
+                          orders.filter(
+                            (order) =>
+                              !order.services.some(
+                                (s) => s.id === "support-ticket",
+                              ),
+                          ).length
+                        }
+                        )
                       </Button>
                       <Button
                         size="sm"
-                        variant={orderTypeFilter === "custom" ? "default" : "outline"}
+                        variant={
+                          orderTypeFilter === "custom" ? "default" : "outline"
+                        }
                         onClick={() => {
                           setOrderTypeFilter("custom");
                           setOrderFilter("all");
@@ -1350,7 +1368,12 @@ export default function AdminDashboard() {
                             <div className="flex-1">
                               <div className="flex items-center space-x-3 mb-2">
                                 <h3 className="font-semibold text-lg">
-                                  {order.services.some(s => s.name.includes("Custom Order:")) ? "Custom " : ""}Order #{order.id.slice(-6)}
+                                  {order.services.some((s) =>
+                                    s.name.includes("Custom Order:"),
+                                  )
+                                    ? "Custom "
+                                    : ""}
+                                  Order #{order.id.slice(-6)}
                                 </h3>
                                 <Badge
                                   className={
@@ -1383,7 +1406,9 @@ export default function AdminDashboard() {
                                     ? "Paid"
                                     : "Payment " + order.paymentStatus}
                                 </Badge>
-                                {order.services.some(s => s.name.includes("Custom Order:")) && (
+                                {order.services.some((s) =>
+                                  s.name.includes("Custom Order:"),
+                                ) && (
                                   <Badge className="bg-purple-500/20 text-purple-700">
                                     Custom Order
                                   </Badge>
@@ -1429,16 +1454,26 @@ export default function AdminDashboard() {
                                         {/* Show full custom order details if it's a custom order */}
                                         {s.name.includes("Custom Order:") ? (
                                           <div className="text-sm">
-                                            <div className="font-semibold text-purple-600 mb-1">Custom Order Items:</div>
-                                            <div className="text-muted-foreground">{s.name.replace("Custom Order: ", "")}</div>
+                                            <div className="font-semibold text-purple-600 mb-1">
+                                              Custom Order Items:
+                                            </div>
+                                            <div className="text-muted-foreground">
+                                              {s.name.replace(
+                                                "Custom Order: ",
+                                                "",
+                                              )}
+                                            </div>
                                           </div>
                                         ) : (
                                           <>
                                             {s.name}
-                                            {s.quantity > 1 && ` (x${s.quantity})`}
+                                            {s.quantity > 1 &&
+                                              ` (x${s.quantity})`}
                                           </>
                                         )}
-                                        {idx < order.services.length - 1 && !s.name.includes("Custom Order:") && ", "}
+                                        {idx < order.services.length - 1 &&
+                                          !s.name.includes("Custom Order:") &&
+                                          ", "}
                                       </span>
                                     ))}
                                   </div>
@@ -1723,7 +1758,6 @@ export default function AdminDashboard() {
             </Card>
           </TabsContent>
 
-
           {/* Support Tickets Tab */}
           <TabsContent value="tickets" className="space-y-6">
             <Card className="border border-border/50">
@@ -1852,7 +1886,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* Order Resume Modal */}
-      <Dialog open={isOrderResumeModalOpen} onOpenChange={setIsOrderResumeModalOpen}>
+      <Dialog
+        open={isOrderResumeModalOpen}
+        onOpenChange={setIsOrderResumeModalOpen}
+      >
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -1876,20 +1913,36 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">Name</Label>
-                    <p className="font-medium">{selectedOrderForResume.customerName}</p>
+                    <Label className="text-sm font-medium text-muted-foreground">
+                      Name
+                    </Label>
+                    <p className="font-medium">
+                      {selectedOrderForResume.customerName}
+                    </p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">Email</Label>
-                    <p className="font-medium">{selectedOrderForResume.customerEmail}</p>
+                    <Label className="text-sm font-medium text-muted-foreground">
+                      Email
+                    </Label>
+                    <p className="font-medium">
+                      {selectedOrderForResume.customerEmail}
+                    </p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">IP Address</Label>
-                    <p className="font-medium font-mono text-sm">{selectedOrderForResume.ipAddress || "Not recorded"}</p>
+                    <Label className="text-sm font-medium text-muted-foreground">
+                      IP Address
+                    </Label>
+                    <p className="font-medium font-mono text-sm">
+                      {selectedOrderForResume.ipAddress || "Not recorded"}
+                    </p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">User ID</Label>
-                    <p className="font-medium font-mono text-sm">{selectedOrderForResume.userId || "Guest"}</p>
+                    <Label className="text-sm font-medium text-muted-foreground">
+                      User ID
+                    </Label>
+                    <p className="font-medium font-mono text-sm">
+                      {selectedOrderForResume.userId || "Guest"}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -1905,28 +1958,47 @@ export default function AdminDashboard() {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">Order ID</Label>
-                      <p className="font-medium font-mono">{selectedOrderForResume.id}</p>
+                      <Label className="text-sm font-medium text-muted-foreground">
+                        Order ID
+                      </Label>
+                      <p className="font-medium font-mono">
+                        {selectedOrderForResume.id}
+                      </p>
                     </div>
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">Status</Label>
-                      <Badge className={
-                        selectedOrderForResume.status === "pending" ? "bg-yellow-500/20 text-yellow-700" :
-                        selectedOrderForResume.status === "processing" ? "bg-blue-500/20 text-blue-700" :
-                        selectedOrderForResume.status === "in-progress" ? "bg-purple-500/20 text-purple-700" :
-                        selectedOrderForResume.status === "completed" ? "bg-green-500/20 text-green-700" :
-                        "bg-red-500/20 text-red-700"
-                      }>
+                      <Label className="text-sm font-medium text-muted-foreground">
+                        Status
+                      </Label>
+                      <Badge
+                        className={
+                          selectedOrderForResume.status === "pending"
+                            ? "bg-yellow-500/20 text-yellow-700"
+                            : selectedOrderForResume.status === "processing"
+                              ? "bg-blue-500/20 text-blue-700"
+                              : selectedOrderForResume.status === "in-progress"
+                                ? "bg-purple-500/20 text-purple-700"
+                                : selectedOrderForResume.status === "completed"
+                                  ? "bg-green-500/20 text-green-700"
+                                  : "bg-red-500/20 text-red-700"
+                        }
+                      >
                         {selectedOrderForResume.status}
                       </Badge>
                     </div>
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">Payment Status</Label>
-                      <Badge variant="outline" className={
-                        selectedOrderForResume.paymentStatus === "paid" ? "border-green-500/50 text-green-600" :
-                        selectedOrderForResume.paymentStatus === "pending" ? "border-yellow-500/50 text-yellow-600" :
-                        "border-red-500/50 text-red-600"
-                      }>
+                      <Label className="text-sm font-medium text-muted-foreground">
+                        Payment Status
+                      </Label>
+                      <Badge
+                        variant="outline"
+                        className={
+                          selectedOrderForResume.paymentStatus === "paid"
+                            ? "border-green-500/50 text-green-600"
+                            : selectedOrderForResume.paymentStatus === "pending"
+                              ? "border-yellow-500/50 text-yellow-600"
+                              : "border-red-500/50 text-red-600"
+                        }
+                      >
                         {selectedOrderForResume.paymentStatus}
                       </Badge>
                     </div>
@@ -1934,38 +2006,64 @@ export default function AdminDashboard() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">Created At</Label>
-                      <p className="font-medium">{new Date(selectedOrderForResume.createdAt).toLocaleString()}</p>
+                      <Label className="text-sm font-medium text-muted-foreground">
+                        Created At
+                      </Label>
+                      <p className="font-medium">
+                        {new Date(
+                          selectedOrderForResume.createdAt,
+                        ).toLocaleString()}
+                      </p>
                     </div>
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">Last Updated</Label>
-                      <p className="font-medium">{new Date(selectedOrderForResume.updatedAt).toLocaleString()}</p>
+                      <Label className="text-sm font-medium text-muted-foreground">
+                        Last Updated
+                      </Label>
+                      <p className="font-medium">
+                        {new Date(
+                          selectedOrderForResume.updatedAt,
+                        ).toLocaleString()}
+                      </p>
                     </div>
                   </div>
 
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">Transaction ID</Label>
-                    <p className="font-medium font-mono text-sm">{selectedOrderForResume.transactionId || "Not recorded"}</p>
+                    <Label className="text-sm font-medium text-muted-foreground">
+                      Transaction ID
+                    </Label>
+                    <p className="font-medium font-mono text-sm">
+                      {selectedOrderForResume.transactionId || "Not recorded"}
+                    </p>
                   </div>
 
                   {selectedOrderForResume.assignedBooster && (
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">Assigned Booster</Label>
-                      <p className="font-medium">{selectedOrderForResume.assignedBooster}</p>
+                      <Label className="text-sm font-medium text-muted-foreground">
+                        Assigned Booster
+                      </Label>
+                      <p className="font-medium">
+                        {selectedOrderForResume.assignedBooster}
+                      </p>
                     </div>
                   )}
 
                   {selectedOrderForResume.progress && (
                     <div>
-                      <Label className="text-sm font-medium text-muted-foreground">Progress</Label>
+                      <Label className="text-sm font-medium text-muted-foreground">
+                        Progress
+                      </Label>
                       <div className="flex items-center gap-2">
                         <div className="w-full bg-muted rounded-full h-2">
                           <div
                             className="bg-primary h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${selectedOrderForResume.progress}%` }}
+                            style={{
+                              width: `${selectedOrderForResume.progress}%`,
+                            }}
                           />
                         </div>
-                        <span className="text-sm font-medium">{selectedOrderForResume.progress}%</span>
+                        <span className="text-sm font-medium">
+                          {selectedOrderForResume.progress}%
+                        </span>
                       </div>
                     </div>
                   )}
@@ -1982,35 +2080,54 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {selectedOrderForResume.services.map((service: any, index: number) => (
-                      <div key={index} className="p-3 bg-muted/50 rounded-lg">
-                        {service.name.includes("Custom Order:") ? (
-                          // Custom Order Display
-                          <div className="space-y-2">
+                    {selectedOrderForResume.services.map(
+                      (service: any, index: number) => (
+                        <div key={index} className="p-3 bg-muted/50 rounded-lg">
+                          {service.name.includes("Custom Order:") ? (
+                            // Custom Order Display
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <p className="font-medium text-purple-600">
+                                  Custom Order
+                                </p>
+                                <p className="font-medium">
+                                  ${service.price.toFixed(2)}
+                                </p>
+                              </div>
+                              <div className="text-sm">
+                                <p className="font-semibold text-muted-foreground mb-1">
+                                  Items Ordered:
+                                </p>
+                                <p className="whitespace-pre-wrap">
+                                  {service.name.replace("Custom Order: ", "")}
+                                </p>
+                              </div>
+                            </div>
+                          ) : (
+                            // Regular Order Display
                             <div className="flex justify-between items-center">
-                              <p className="font-medium text-purple-600">Custom Order</p>
-                              <p className="font-medium">${service.price.toFixed(2)}</p>
+                              <div className="flex-1">
+                                <p className="font-medium">{service.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  Quantity: {service.quantity}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-medium">
+                                  $
+                                  {(service.price * service.quantity).toFixed(
+                                    2,
+                                  )}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  ${service.price} each
+                                </p>
+                              </div>
                             </div>
-                            <div className="text-sm">
-                              <p className="font-semibold text-muted-foreground mb-1">Items Ordered:</p>
-                              <p className="whitespace-pre-wrap">{service.name.replace("Custom Order: ", "")}</p>
-                            </div>
-                          </div>
-                        ) : (
-                          // Regular Order Display
-                          <div className="flex justify-between items-center">
-                            <div className="flex-1">
-                              <p className="font-medium">{service.name}</p>
-                              <p className="text-sm text-muted-foreground">Quantity: {service.quantity}</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-medium">${(service.price * service.quantity).toFixed(2)}</p>
-                              <p className="text-sm text-muted-foreground">${service.price} each</p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                          )}
+                        </div>
+                      ),
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -2027,34 +2144,53 @@ export default function AdminDashboard() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span>Subtotal</span>
-                      <span className="font-medium">${selectedOrderForResume.services.reduce((sum: number, service: any) => sum + (service.price * service.quantity), 0).toFixed(2)}</span>
+                      <span className="font-medium">
+                        $
+                        {selectedOrderForResume.services
+                          .reduce(
+                            (sum: number, service: any) =>
+                              sum + service.price * service.quantity,
+                            0,
+                          )
+                          .toFixed(2)}
+                      </span>
                     </div>
 
                     {selectedOrderForResume.referralDiscount > 0 && (
                       <div className="flex justify-between items-center text-green-600">
                         <span>Referral Discount</span>
-                        <span className="font-medium">-${selectedOrderForResume.referralDiscount.toFixed(2)}</span>
+                        <span className="font-medium">
+                          -${selectedOrderForResume.referralDiscount.toFixed(2)}
+                        </span>
                       </div>
                     )}
 
                     {selectedOrderForResume.referralCreditsUsed > 0 && (
                       <div className="flex justify-between items-center text-blue-600">
                         <span>Referral Credits Used</span>
-                        <span className="font-medium">-${selectedOrderForResume.referralCreditsUsed.toFixed(2)}</span>
+                        <span className="font-medium">
+                          -$
+                          {selectedOrderForResume.referralCreditsUsed.toFixed(
+                            2,
+                          )}
+                        </span>
                       </div>
                     )}
 
                     <Separator />
                     <div className="flex justify-between items-center text-lg font-bold">
                       <span>Total Amount</span>
-                      <span className="text-primary">${selectedOrderForResume.totalAmount.toFixed(2)}</span>
+                      <span className="text-primary">
+                        ${selectedOrderForResume.totalAmount.toFixed(2)}
+                      </span>
                     </div>
                   </div>
 
                   {selectedOrderForResume.referralCode && (
                     <div className="mt-4 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
                       <p className="text-sm text-green-700 dark:text-green-400">
-                        <strong>Referral Code Used:</strong> {selectedOrderForResume.referralCode}
+                        <strong>Referral Code Used:</strong>{" "}
+                        {selectedOrderForResume.referralCode}
                       </p>
                     </div>
                   )}
@@ -2072,47 +2208,57 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="bg-muted/50 p-4 rounded-lg">
-                      <p className="whitespace-pre-wrap">{selectedOrderForResume.notes}</p>
+                      <p className="whitespace-pre-wrap">
+                        {selectedOrderForResume.notes}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
               )}
 
               {/* Messages History */}
-              {selectedOrderForResume.messages && selectedOrderForResume.messages.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <MessageSquare className="w-4 h-4" />
-                      Messages History ({selectedOrderForResume.messages.length})
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3 max-h-60 overflow-y-auto">
-                      {selectedOrderForResume.messages.map((message: any, idx: number) => (
-                        <div
-                          key={idx}
-                          className={`p-3 rounded-lg ${
-                            message.from === "admin"
-                              ? "bg-primary/10 ml-4"
-                              : "bg-muted/70 mr-4"
-                          }`}
-                        >
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="font-medium text-sm capitalize">
-                              {message.from === "admin" ? "You" : message.from}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(message.timestamp).toLocaleString()}
-                            </span>
-                          </div>
-                          <p className="text-sm whitespace-pre-wrap">{message.message}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+              {selectedOrderForResume.messages &&
+                selectedOrderForResume.messages.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4" />
+                        Messages History (
+                        {selectedOrderForResume.messages.length})
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3 max-h-60 overflow-y-auto">
+                        {selectedOrderForResume.messages.map(
+                          (message: any, idx: number) => (
+                            <div
+                              key={idx}
+                              className={`p-3 rounded-lg ${
+                                message.from === "admin"
+                                  ? "bg-primary/10 ml-4"
+                                  : "bg-muted/70 mr-4"
+                              }`}
+                            >
+                              <div className="flex justify-between items-center mb-1">
+                                <span className="font-medium text-sm capitalize">
+                                  {message.from === "admin"
+                                    ? "You"
+                                    : message.from}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(message.timestamp).toLocaleString()}
+                                </span>
+                              </div>
+                              <p className="text-sm whitespace-pre-wrap">
+                                {message.message}
+                              </p>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
             </div>
           )}
 
