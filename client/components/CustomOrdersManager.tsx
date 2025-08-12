@@ -95,7 +95,8 @@ export default function CustomOrdersManager() {
 
   const filteredOrders = orders.filter((order) => {
     const statusMatch = statusFilter === "all" || order.status === statusFilter;
-    const deliveryMatch = deliveryFilter === "all" || order.delivery_status === deliveryFilter;
+    const deliveryMatch =
+      deliveryFilter === "all" || order.delivery_status === deliveryFilter;
     return statusMatch && deliveryMatch;
   });
 
@@ -112,14 +113,16 @@ export default function CustomOrdersManager() {
     }
   };
 
-  const handleStatusChange = async (status: CustomOrder['status']) => {
+  const handleStatusChange = async (status: CustomOrder["status"]) => {
     if (selectedOrder) {
       await updateOrderStatus(selectedOrder.id, status);
       setSelectedOrder({ ...selectedOrder, status });
     }
   };
 
-  const handleDeliveryStatusChange = async (deliveryStatus: CustomOrder['delivery_status']) => {
+  const handleDeliveryStatusChange = async (
+    deliveryStatus: CustomOrder["delivery_status"],
+  ) => {
     if (selectedOrder) {
       await updateDeliveryStatus(selectedOrder.id, deliveryStatus);
       setSelectedOrder({ ...selectedOrder, delivery_status: deliveryStatus });
@@ -144,7 +147,9 @@ export default function CustomOrdersManager() {
           <CardContent className="pt-6">
             <div className="text-center py-8">
               <XCircle className="w-12 h-12 mx-auto mb-4 text-red-500" />
-              <h3 className="text-lg font-semibold mb-2 text-red-700">Error Loading Orders</h3>
+              <h3 className="text-lg font-semibold mb-2 text-red-700">
+                Error Loading Orders
+              </h3>
               <p className="text-red-600">{error}</p>
             </div>
           </CardContent>
@@ -160,7 +165,9 @@ export default function CustomOrdersManager() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total Orders
+              </CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -169,20 +176,28 @@ export default function CustomOrdersManager() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total Revenue
+              </CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${stats.total_revenue?.toFixed(2) || '0.00'}</div>
+              <div className="text-2xl font-bold">
+                ${stats.total_revenue?.toFixed(2) || "0.00"}
+              </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Order Value</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Avg Order Value
+              </CardTitle>
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${stats.avg_order_value?.toFixed(2) || '0.00'}</div>
+              <div className="text-2xl font-bold">
+                ${stats.avg_order_value?.toFixed(2) || "0.00"}
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -246,7 +261,8 @@ export default function CustomOrdersManager() {
               <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
               <h3 className="text-lg font-semibold mb-2">No Custom Orders</h3>
               <p className="text-muted-foreground">
-                Custom orders will appear here when created through the order builder.
+                Custom orders will appear here when created through the order
+                builder.
               </p>
             </div>
           ) : (
@@ -259,18 +275,26 @@ export default function CustomOrdersManager() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
-                        <h4 className="font-medium">Order #{order.order_number}</h4>
+                        <h4 className="font-medium">
+                          Order #{order.order_number}
+                        </h4>
                         <Badge className={getStatusColor(order.status)}>
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                          {order.status.charAt(0).toUpperCase() +
+                            order.status.slice(1)}
                         </Badge>
-                        <Badge variant="outline" className={getDeliveryStatusColor(order.delivery_status)}>
-                          {order.delivery_status.replace('_', ' ')}
+                        <Badge
+                          variant="outline"
+                          className={getDeliveryStatusColor(
+                            order.delivery_status,
+                          )}
+                        >
+                          {order.delivery_status.replace("_", " ")}
                         </Badge>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center">
-                          <DollarSign className="w-4 h-4 mr-1" />
-                          ${order.total_amount.toFixed(2)}
+                          <DollarSign className="w-4 h-4 mr-1" />$
+                          {order.total_amount.toFixed(2)}
                         </div>
                         <div className="flex items-center">
                           <Package className="w-4 h-4 mr-1" />
@@ -282,12 +306,13 @@ export default function CustomOrdersManager() {
                         </div>
                         <div className="flex items-center">
                           <User className="w-4 h-4 mr-1" />
-                          {order.customer_email || 'Unknown'}
+                          {order.customer_email || "Unknown"}
                         </div>
                       </div>
                       {order.special_instructions && (
                         <div className="mt-2 p-2 bg-muted/50 rounded text-sm">
-                          <strong>Instructions:</strong> {order.special_instructions}
+                          <strong>Instructions:</strong>{" "}
+                          {order.special_instructions}
                         </div>
                       )}
                     </div>
@@ -318,7 +343,10 @@ export default function CustomOrdersManager() {
               Order #{selectedOrder?.order_number}
             </DialogTitle>
             <DialogDescription>
-              Created on {selectedOrder ? new Date(selectedOrder.created_at).toLocaleDateString() : ''}
+              Created on{" "}
+              {selectedOrder
+                ? new Date(selectedOrder.created_at).toLocaleDateString()
+                : ""}
             </DialogDescription>
           </DialogHeader>
 
@@ -329,9 +357,18 @@ export default function CustomOrdersManager() {
                 <div>
                   <h4 className="font-medium mb-2">Customer Information</h4>
                   <div className="space-y-1 text-sm">
-                    <p><strong>Email:</strong> {selectedOrder.customer_email || 'Not provided'}</p>
-                    <p><strong>Discord:</strong> {selectedOrder.customer_discord || 'Not provided'}</p>
-                    <p><strong>Total Amount:</strong> ${selectedOrder.total_amount.toFixed(2)}</p>
+                    <p>
+                      <strong>Email:</strong>{" "}
+                      {selectedOrder.customer_email || "Not provided"}
+                    </p>
+                    <p>
+                      <strong>Discord:</strong>{" "}
+                      {selectedOrder.customer_discord || "Not provided"}
+                    </p>
+                    <p>
+                      <strong>Total Amount:</strong> $
+                      {selectedOrder.total_amount.toFixed(2)}
+                    </p>
                   </div>
                 </div>
                 <div>
@@ -382,12 +419,20 @@ export default function CustomOrdersManager() {
                         <p className="font-medium">
                           {item.quantity}x {item.item_name}
                         </p>
-                        <p className="text-sm text-muted-foreground">{item.description}</p>
-                        <p className="text-xs text-muted-foreground capitalize">{item.category}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.description}
+                        </p>
+                        <p className="text-xs text-muted-foreground capitalize">
+                          {item.category}
+                        </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium">${item.total_price.toFixed(2)}</p>
-                        <p className="text-xs text-muted-foreground">${item.price_per_unit} each</p>
+                        <p className="font-medium">
+                          ${item.total_price.toFixed(2)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          ${item.price_per_unit} each
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -413,11 +458,7 @@ export default function CustomOrdersManager() {
                   onChange={(e) => setAdminNotes(e.target.value)}
                   rows={4}
                 />
-                <Button
-                  onClick={handleSaveNotes}
-                  className="mt-2"
-                  size="sm"
-                >
+                <Button onClick={handleSaveNotes} className="mt-2" size="sm">
                   Save Notes
                 </Button>
               </div>

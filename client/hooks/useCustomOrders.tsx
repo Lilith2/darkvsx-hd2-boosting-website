@@ -16,7 +16,7 @@ export interface CustomOrder {
   id: string;
   user_id: string;
   order_number: string;
-  status: 'pending' | 'processing' | 'completed' | 'cancelled';
+  status: "pending" | "processing" | "completed" | "cancelled";
   total_amount: number;
   currency: string;
   items: CustomOrderItem[];
@@ -24,7 +24,7 @@ export interface CustomOrder {
   customer_email?: string;
   customer_discord?: string;
   payment_intent_id?: string;
-  delivery_status: 'not_started' | 'in_progress' | 'completed' | 'failed';
+  delivery_status: "not_started" | "in_progress" | "completed" | "failed";
   delivery_notes?: string;
   admin_notes?: string;
   created_at: string;
@@ -56,7 +56,8 @@ export function useCustomOrders() {
 
       const { data, error: fetchError } = await supabase
         .from("custom_orders")
-        .select(`
+        .select(
+          `
           *,
           custom_order_items (
             id,
@@ -67,7 +68,8 @@ export function useCustomOrders() {
             total_price,
             description
           )
-        `)
+        `,
+        )
         .order("created_at", { ascending: false });
 
       if (fetchError) {
@@ -75,9 +77,9 @@ export function useCustomOrders() {
       }
 
       // Transform the data to match our interface
-      const transformedOrders: CustomOrder[] = (data || []).map(order => ({
+      const transformedOrders: CustomOrder[] = (data || []).map((order) => ({
         ...order,
-        items: order.custom_order_items || []
+        items: order.custom_order_items || [],
       }));
 
       setOrders(transformedOrders);
@@ -93,8 +95,9 @@ export function useCustomOrders() {
   const fetchStats = async () => {
     try {
       // Try using the stored function first
-      const { data, error: statsError } = await supabase
-        .rpc("get_custom_order_stats");
+      const { data, error: statsError } = await supabase.rpc(
+        "get_custom_order_stats",
+      );
 
       if (statsError) {
         // If function doesn't exist, calculate stats manually
@@ -128,10 +131,21 @@ export function useCustomOrders() {
       const orders = allOrders || [];
       const stats: CustomOrderStats = {
         total_orders: orders.length,
-        total_revenue: orders.reduce((sum, order) => sum + (order.total_amount || 0), 0),
-        avg_order_value: orders.length > 0 ? orders.reduce((sum, order) => sum + (order.total_amount || 0), 0) / orders.length : 0,
-        pending_orders: orders.filter(order => order.status === 'pending').length,
-        completed_orders: orders.filter(order => order.status === 'completed').length,
+        total_revenue: orders.reduce(
+          (sum, order) => sum + (order.total_amount || 0),
+          0,
+        ),
+        avg_order_value:
+          orders.length > 0
+            ? orders.reduce(
+                (sum, order) => sum + (order.total_amount || 0),
+                0,
+              ) / orders.length
+            : 0,
+        pending_orders: orders.filter((order) => order.status === "pending")
+          .length,
+        completed_orders: orders.filter((order) => order.status === "completed")
+          .length,
       };
 
       setStats(stats);
@@ -155,7 +169,10 @@ export function useCustomOrders() {
     customer_discord?: string;
   }) => {
     try {
-      const totalAmount = orderData.items.reduce((sum, item) => sum + item.total_price, 0);
+      const totalAmount = orderData.items.reduce(
+        (sum, item) => sum + item.total_price,
+        0,
+      );
 
       // Create the main order
       const { data: orderResult, error: orderError } = await supabase
@@ -174,9 +191,9 @@ export function useCustomOrders() {
       }
 
       // Create order items
-      const orderItems = orderData.items.map(item => ({
+      const orderItems = orderData.items.map((item) => ({
         order_id: orderResult.id,
-        ...item
+        ...item,
       }));
 
       const { error: itemsError } = await supabase
@@ -209,7 +226,10 @@ export function useCustomOrders() {
   };
 
   // Update order status
-  const updateOrderStatus = async (orderId: string, status: CustomOrder['status']) => {
+  const updateOrderStatus = async (
+    orderId: string,
+    status: CustomOrder["status"],
+  ) => {
     try {
       const { error } = await supabase
         .from("custom_orders")
@@ -239,7 +259,11 @@ export function useCustomOrders() {
   };
 
   // Update delivery status
-  const updateDeliveryStatus = async (orderId: string, deliveryStatus: CustomOrder['delivery_status'], notes?: string) => {
+  const updateDeliveryStatus = async (
+    orderId: string,
+    deliveryStatus: CustomOrder["delivery_status"],
+    notes?: string,
+  ) => {
     try {
       const updates: any = { delivery_status: deliveryStatus };
       if (notes !== undefined) {
@@ -257,7 +281,7 @@ export function useCustomOrders() {
 
       toast({
         title: "Delivery Status Updated",
-        description: `Delivery status has been updated to ${deliveryStatus.replace('_', ' ')}.`,
+        description: `Delivery status has been updated to ${deliveryStatus.replace("_", " ")}.`,
       });
 
       // Refresh orders
@@ -352,7 +376,7 @@ export function useCustomOrders() {
         () => {
           fetchOrders();
           fetchStats();
-        }
+        },
       )
       .subscribe();
 

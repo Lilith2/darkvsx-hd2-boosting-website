@@ -192,7 +192,10 @@ export default function CustomOrder() {
   };
 
   const addOrderItem = (pricingItem: CustomPricing, quantity: number) => {
-    if (quantity < pricingItem.minimum_quantity || quantity > pricingItem.maximum_quantity) {
+    if (
+      quantity < pricingItem.minimum_quantity ||
+      quantity > pricingItem.maximum_quantity
+    ) {
       toast({
         title: "Invalid Quantity",
         description: `Quantity must be between ${pricingItem.minimum_quantity} and ${pricingItem.maximum_quantity}`,
@@ -203,7 +206,9 @@ export default function CustomOrder() {
 
     const totalPrice = pricingItem.price_per_unit * quantity;
     const existingIndex = orderItems.findIndex(
-      (item) => item.category === pricingItem.category && item.item_name === pricingItem.item_name
+      (item) =>
+        item.category === pricingItem.category &&
+        item.item_name === pricingItem.item_name,
     );
 
     if (existingIndex >= 0) {
@@ -263,13 +268,17 @@ export default function CustomOrder() {
         id: `custom-order-${Date.now()}`,
         name: "Custom Helldivers 2 Order",
         description: `Custom order with ${orderItems.length} items: ${orderItems
-          .map((item) => `${item.quantity} ${item.item_name}${item.quantity > 1 ? "s" : ""}`)
+          .map(
+            (item) =>
+              `${item.quantity} ${item.item_name}${item.quantity > 1 ? "s" : ""}`,
+          )
           .join(", ")}`,
         price: getTotalPrice(),
         category: "Custom Orders",
         image: "/placeholder.svg",
         features: orderItems.map(
-          (item) => `${item.quantity} ${item.item_name}${item.quantity > 1 ? "s" : ""} - $${item.total_price.toFixed(2)}`
+          (item) =>
+            `${item.quantity} ${item.item_name}${item.quantity > 1 ? "s" : ""} - $${item.total_price.toFixed(2)}`,
         ),
         duration: "1-7 days",
         difficulty: "Custom",
@@ -290,11 +299,11 @@ export default function CustomOrder() {
             userId: user.id,
             email: user.email,
             itemCount: orderItems.length,
-            totalAmount: getTotalPrice()
+            totalAmount: getTotalPrice(),
           });
 
           await createOrder({
-            items: orderItems.map(item => ({
+            items: orderItems.map((item) => ({
               category: item.category,
               item_name: item.item_name,
               quantity: item.quantity,
@@ -312,7 +321,7 @@ export default function CustomOrder() {
           console.error("Failed to save to database:", dbError);
           toast({
             title: "Database Warning",
-            description: `Order saved to cart but database save failed: ${dbError.message || 'Unknown error'}`,
+            description: `Order saved to cart but database save failed: ${dbError.message || "Unknown error"}`,
             variant: "default",
           });
         }
@@ -344,13 +353,16 @@ export default function CustomOrder() {
     }
   };
 
-  const groupedPricing = pricing.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<string, CustomPricing[]>);
+  const groupedPricing = pricing.reduce(
+    (acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = [];
+      }
+      acc[item.category].push(item);
+      return acc;
+    },
+    {} as Record<string, CustomPricing[]>,
+  );
 
   const categories = Object.keys(groupedPricing);
 
@@ -399,7 +411,9 @@ export default function CustomOrder() {
                   return (
                     <button
                       key={category}
-                      onClick={() => setSelectedCategory(isSelected ? null : category)}
+                      onClick={() =>
+                        setSelectedCategory(isSelected ? null : category)
+                      }
                       className={`w-full p-3 rounded-lg border transition-all text-left ${
                         isSelected
                           ? `bg-gradient-to-r ${getCategoryColor(category)} border-current`
@@ -409,7 +423,9 @@ export default function CustomOrder() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           {getCategoryIcon(category)}
-                          <span className="font-medium text-sm">{getCategoryTitle(category)}</span>
+                          <span className="font-medium text-sm">
+                            {getCategoryTitle(category)}
+                          </span>
                         </div>
                         <Badge variant="secondary" className="text-xs">
                           ${items[0]?.price_per_unit}
@@ -426,7 +442,10 @@ export default function CustomOrder() {
           <div className="xl:col-span-2">
             <div className="space-y-4">
               {categories
-                .filter((category) => !selectedCategory || selectedCategory === category)
+                .filter(
+                  (category) =>
+                    !selectedCategory || selectedCategory === category,
+                )
                 .map((category) => {
                   const items = groupedPricing[category];
                   return (
@@ -434,13 +453,18 @@ export default function CustomOrder() {
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
-                            <div className={`p-2 rounded-lg bg-gradient-to-r ${getCategoryColor(category)}`}>
+                            <div
+                              className={`p-2 rounded-lg bg-gradient-to-r ${getCategoryColor(category)}`}
+                            >
                               {getCategoryIcon(category)}
                             </div>
                             <div>
-                              <CardTitle className="text-lg">{getCategoryTitle(category)}</CardTitle>
+                              <CardTitle className="text-lg">
+                                {getCategoryTitle(category)}
+                              </CardTitle>
                               <CardDescription className="text-xs">
-                                Starting at ${items[0]?.price_per_unit} per {items[0]?.item_name.toLowerCase()}
+                                Starting at ${items[0]?.price_per_unit} per{" "}
+                                {items[0]?.item_name.toLowerCase()}
                               </CardDescription>
                             </div>
                           </div>
@@ -458,7 +482,7 @@ export default function CustomOrder() {
                                 orderItems.find(
                                   (orderItem) =>
                                     orderItem.category === item.category &&
-                                    orderItem.item_name === item.item_name
+                                    orderItem.item_name === item.item_name,
                                 )?.quantity || 0
                               }
                             />
@@ -472,7 +496,9 @@ export default function CustomOrder() {
               {/* Order Notes */}
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Special Instructions</CardTitle>
+                  <CardTitle className="text-base">
+                    Special Instructions
+                  </CardTitle>
                   <CardDescription className="text-xs">
                     Add account details or specific requirements
                   </CardDescription>
@@ -585,7 +611,9 @@ interface ItemCardProps {
 }
 
 function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
-  const [quantity, setQuantity] = useState(currentQuantity || item.minimum_quantity);
+  const [quantity, setQuantity] = useState(
+    currentQuantity || item.minimum_quantity,
+  );
 
   useEffect(() => {
     if (currentQuantity > 0) {
@@ -596,7 +624,7 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
   const adjustQuantity = (delta: number) => {
     const newQuantity = Math.max(
       item.minimum_quantity,
-      Math.min(item.maximum_quantity, quantity + delta)
+      Math.min(item.maximum_quantity, quantity + delta),
     );
     setQuantity(newQuantity);
   };
@@ -617,7 +645,9 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
               ${item.price_per_unit}
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground leading-tight">{item.description}</p>
+          <p className="text-xs text-muted-foreground leading-tight">
+            {item.description}
+          </p>
         </div>
       </div>
 
@@ -638,7 +668,10 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
             onChange={(e) => {
               const value = parseInt(e.target.value) || item.minimum_quantity;
               setQuantity(
-                Math.max(item.minimum_quantity, Math.min(item.maximum_quantity, value))
+                Math.max(
+                  item.minimum_quantity,
+                  Math.min(item.maximum_quantity, value),
+                ),
               );
             }}
             className="w-12 text-center text-xs h-6"
@@ -658,7 +691,9 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
 
         <div className="flex items-center space-x-2">
           <div className="text-right">
-            <p className="text-sm font-bold text-primary">${totalPrice.toFixed(2)}</p>
+            <p className="text-sm font-bold text-primary">
+              ${totalPrice.toFixed(2)}
+            </p>
           </div>
           <Button onClick={handleAdd} size="sm" className="h-6 text-xs px-2">
             {currentQuantity > 0 ? "Update" : "Add"}

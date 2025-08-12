@@ -23,19 +23,21 @@ export default function DatabaseTest() {
           .from("custom_orders")
           .select("count", { count: "exact" })
           .limit(0);
-        
+
         testResults.push({
           test: "Custom Orders Table",
           status: error ? "error" : "success",
-          message: error ? error.message : `Table exists (${data?.length || 0} records)`,
-          details: error || data
+          message: error
+            ? error.message
+            : `Table exists (${data?.length || 0} records)`,
+          details: error || data,
         });
       } catch (err: any) {
         testResults.push({
           test: "Custom Orders Table",
           status: "error",
           message: err.message,
-          details: err
+          details: err,
         });
       }
 
@@ -45,19 +47,21 @@ export default function DatabaseTest() {
           .from("custom_order_items")
           .select("count", { count: "exact" })
           .limit(0);
-        
+
         testResults.push({
           test: "Custom Order Items Table",
           status: error ? "error" : "success",
-          message: error ? error.message : `Table exists (${data?.length || 0} records)`,
-          details: error || data
+          message: error
+            ? error.message
+            : `Table exists (${data?.length || 0} records)`,
+          details: error || data,
         });
       } catch (err: any) {
         testResults.push({
           test: "Custom Order Items Table",
           status: "error",
           message: err.message,
-          details: err
+          details: err,
         });
       }
 
@@ -67,28 +71,32 @@ export default function DatabaseTest() {
           .from("custom_pricing")
           .select("*")
           .limit(5);
-        
+
         testResults.push({
           test: "Custom Pricing Table",
           status: error ? "error" : "success",
-          message: error ? error.message : `Found ${data?.length || 0} pricing items`,
-          details: error || data
+          message: error
+            ? error.message
+            : `Found ${data?.length || 0} pricing items`,
+          details: error || data,
         });
       } catch (err: any) {
         testResults.push({
           test: "Custom Pricing Table",
           status: "error",
           message: err.message,
-          details: err
+          details: err,
         });
       }
 
       // Test 4: Test order creation (if logged in)
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user) {
           const testOrder = {
-            total_amount: 25.50,
+            total_amount: 25.5,
             special_instructions: "Database test order",
             customer_email: user.email || "test@example.com",
           };
@@ -101,23 +109,20 @@ export default function DatabaseTest() {
 
           if (!error && data) {
             // Clean up - delete the test order
-            await supabase
-              .from("custom_orders")
-              .delete()
-              .eq("id", data.id);
+            await supabase.from("custom_orders").delete().eq("id", data.id);
 
             testResults.push({
               test: "Order Creation",
               status: "success",
               message: `Successfully created and deleted test order ${data.order_number}`,
-              details: data
+              details: data,
             });
           } else {
             testResults.push({
               test: "Order Creation",
               status: "error",
               message: error?.message || "Unknown error",
-              details: error
+              details: error,
             });
           }
         } else {
@@ -125,7 +130,7 @@ export default function DatabaseTest() {
             test: "Order Creation",
             status: "warning",
             message: "Not logged in - skipping order creation test",
-            details: null
+            details: null,
           });
         }
       } catch (err: any) {
@@ -133,36 +138,37 @@ export default function DatabaseTest() {
           test: "Order Creation",
           status: "error",
           message: err.message,
-          details: err
+          details: err,
         });
       }
 
       // Test 5: Check permissions
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        const isAdmin = user?.user_metadata?.is_admin === 'true';
-        
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        const isAdmin = user?.user_metadata?.is_admin === "true";
+
         testResults.push({
           test: "User Permissions",
           status: "info",
-          message: `User: ${user?.email || 'Not logged in'}, Admin: ${isAdmin ? 'Yes' : 'No'}`,
-          details: { user: user?.email, isAdmin, userId: user?.id }
+          message: `User: ${user?.email || "Not logged in"}, Admin: ${isAdmin ? "Yes" : "No"}`,
+          details: { user: user?.email, isAdmin, userId: user?.id },
         });
       } catch (err: any) {
         testResults.push({
           test: "User Permissions",
           status: "error",
           message: err.message,
-          details: err
+          details: err,
         });
       }
-
     } catch (globalErr: any) {
       testResults.push({
         test: "Global Test",
         status: "error",
         message: globalErr.message,
-        details: globalErr
+        details: globalErr,
       });
     }
 
@@ -170,13 +176,15 @@ export default function DatabaseTest() {
     setTesting(false);
 
     // Show summary toast
-    const successCount = testResults.filter(r => r.status === "success").length;
-    const errorCount = testResults.filter(r => r.status === "error").length;
-    
+    const successCount = testResults.filter(
+      (r) => r.status === "success",
+    ).length;
+    const errorCount = testResults.filter((r) => r.status === "error").length;
+
     toast({
       title: "Database Tests Complete",
       description: `${successCount} passed, ${errorCount} failed`,
-      variant: errorCount > 0 ? "destructive" : "default"
+      variant: errorCount > 0 ? "destructive" : "default",
     });
   };
 
@@ -215,11 +223,7 @@ export default function DatabaseTest() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button 
-          onClick={runTests} 
-          disabled={testing}
-          className="w-full"
-        >
+        <Button onClick={runTests} disabled={testing} className="w-full">
           {testing ? "Running Tests..." : "Run Database Tests"}
         </Button>
 

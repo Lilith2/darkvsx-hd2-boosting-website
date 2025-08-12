@@ -10,7 +10,10 @@ import { PricingModal } from "@/components/PricingModal";
 import CustomOrdersManager from "@/components/CustomOrdersManager";
 import DatabaseTest from "@/components/DatabaseTest";
 import { Button } from "@/components/ui/button";
-import { sendTicketReplyEmail, generateTicketSubject } from "@/lib/emailService";
+import {
+  sendTicketReplyEmail,
+  generateTicketSubject,
+} from "@/lib/emailService";
 import {
   Card,
   CardContent,
@@ -58,14 +61,17 @@ export default function AdminDashboard() {
     deleteService,
     toggleServiceStatus,
   } = useServices();
+  const { bundles, addBundle, updateBundle, deleteBundle, toggleBundleStatus } =
+    useBundles();
   const {
-    bundles,
-    addBundle,
-    updateBundle,
-    deleteBundle,
-    toggleBundleStatus,
-  } = useBundles();
-  const { orders, updateOrderStatus, addOrderMessage, assignBooster, updateOrderProgress, loading, error } = useOrders();
+    orders,
+    updateOrderStatus,
+    addOrderMessage,
+    assignBooster,
+    updateOrderProgress,
+    loading,
+    error,
+  } = useOrders();
   const { toast } = useToast();
 
   // Fetch custom pricing data
@@ -90,7 +96,7 @@ export default function AdminDashboard() {
 
     fetchCustomPricing();
   }, []);
-  
+
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
@@ -106,21 +112,27 @@ export default function AdminDashboard() {
   // Analytics calculations
   const totalRevenue = parseFloat(
     orders
-      .filter((order) => order.paymentStatus === "paid" && !order.services.some(s => s.id === "support-ticket"))
+      .filter(
+        (order) =>
+          order.paymentStatus === "paid" &&
+          !order.services.some((s) => s.id === "support-ticket"),
+      )
       .reduce((sum, order) => sum + order.totalAmount, 0)
-      .toFixed(2)
+      .toFixed(2),
   );
 
   const pendingOrders = orders.filter(
-    (order) => order.status === "pending" && !order.services.some(s => s.id === "support-ticket"),
+    (order) =>
+      order.status === "pending" &&
+      !order.services.some((s) => s.id === "support-ticket"),
   ).length;
 
-  const supportTickets = orders.filter(
-    (order) => order.services.some(s => s.id === "support-ticket")
+  const supportTickets = orders.filter((order) =>
+    order.services.some((s) => s.id === "support-ticket"),
   );
 
   const pendingTickets = supportTickets.filter(
-    (ticket) => ticket.status === "pending"
+    (ticket) => ticket.status === "pending",
   ).length;
 
   const activeServices = services.filter((service) => service.active).length;
@@ -135,26 +147,29 @@ export default function AdminDashboard() {
 
   // Filter orders based on selected filter
   const filteredOrders = orders
-    .filter(order => !order.services.some(s => s.id === "support-ticket"))
-    .filter(order => {
+    .filter((order) => !order.services.some((s) => s.id === "support-ticket"))
+    .filter((order) => {
       if (orderFilter === "all") return true;
       return order.status === orderFilter;
     })
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
 
   // Calculate actual top performing services from real order data
   const topServices = (() => {
     const serviceStats = new Map();
 
     // Count actual orders for each service
-    orders.forEach(order => {
-      if (!order.services.some(s => s.id === "support-ticket")) {
-        order.services.forEach(service => {
+    orders.forEach((order) => {
+      if (!order.services.some((s) => s.id === "support-ticket")) {
+        order.services.forEach((service) => {
           const current = serviceStats.get(service.name) || {
             name: service.name,
             orders: 0,
             revenue: 0,
-            id: service.id
+            id: service.id,
           };
           current.orders += service.quantity || 1;
           current.revenue += (service.price || 0) * (service.quantity || 1);
@@ -231,19 +246,21 @@ export default function AdminDashboard() {
       // Add message to database
       await addOrderMessage(selectedTicket.id, {
         from: "admin",
-        message: ticketReply
+        message: ticketReply,
       });
 
       // Send email notification to customer
       try {
-        const subject = generateTicketSubject(selectedTicket.services[0]?.name || 'Support Request');
+        const subject = generateTicketSubject(
+          selectedTicket.services[0]?.name || "Support Request",
+        );
 
         await sendTicketReplyEmail({
           to: selectedTicket.customerEmail,
           subject: subject,
           message: ticketReply,
           ticketId: selectedTicket.id,
-          customerName: selectedTicket.customerName
+          customerName: selectedTicket.customerName,
         });
 
         toast({
@@ -254,7 +271,8 @@ export default function AdminDashboard() {
         console.error("Error sending email:", emailError);
         toast({
           title: "Reply saved but email failed",
-          description: "The reply was saved to the ticket but email notification failed to send.",
+          description:
+            "The reply was saved to the ticket but email notification failed to send.",
           variant: "destructive",
         });
       }
@@ -262,8 +280,8 @@ export default function AdminDashboard() {
       setTicketReply("");
 
       // Update ticket status to in-progress if it's still pending
-      if (selectedTicket.status === 'pending') {
-        await updateOrderStatus(selectedTicket.id, 'in-progress' as any);
+      if (selectedTicket.status === "pending") {
+        await updateOrderStatus(selectedTicket.id, "in-progress" as any);
       }
     } catch (error) {
       console.error("Error sending reply:", error);
@@ -298,9 +316,11 @@ export default function AdminDashboard() {
 
         if (error) throw error;
 
-        setCustomPricing(prev => prev.map(p =>
-          p.id === isEditingPricing.id ? { ...p, ...pricingData } : p
-        ));
+        setCustomPricing((prev) =>
+          prev.map((p) =>
+            p.id === isEditingPricing.id ? { ...p, ...pricingData } : p,
+          ),
+        );
 
         toast({
           title: "Pricing Updated",
@@ -315,7 +335,7 @@ export default function AdminDashboard() {
 
         if (error) throw error;
 
-        setCustomPricing(prev => [...prev, data]);
+        setCustomPricing((prev) => [...prev, data]);
 
         toast({
           title: "Pricing Added",
@@ -347,7 +367,7 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      setCustomPricing(prev => prev.filter(p => p.id !== id));
+      setCustomPricing((prev) => prev.filter((p) => p.id !== id));
 
       toast({
         title: "Pricing Deleted",
@@ -373,9 +393,11 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      setCustomPricing(prev => prev.map(p =>
-        p.id === id ? { ...p, is_active: !currentStatus } : p
-      ));
+      setCustomPricing((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, is_active: !currentStatus } : p,
+        ),
+      );
 
       toast({
         title: "Status Updated",
@@ -413,7 +435,9 @@ export default function AdminDashboard() {
         {/* Debug Info */}
         {error && (
           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-            <h3 className="font-semibold text-red-600 mb-2">Database Connection Error</h3>
+            <h3 className="font-semibold text-red-600 mb-2">
+              Database Connection Error
+            </h3>
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
@@ -609,11 +633,15 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <Badge className={
-                              order.status === 'pending' ? 'bg-yellow-500/20 text-yellow-700' :
-                              order.status === 'completed' ? 'bg-green-500/20 text-green-700' :
-                              'bg-blue-500/20 text-blue-700'
-                            }>
+                            <Badge
+                              className={
+                                order.status === "pending"
+                                  ? "bg-yellow-500/20 text-yellow-700"
+                                  : order.status === "completed"
+                                    ? "bg-green-500/20 text-green-700"
+                                    : "bg-blue-500/20 text-blue-700"
+                              }
+                            >
                               {order.status}
                             </Badge>
                             <p className="text-sm font-medium mt-1">
@@ -782,7 +810,8 @@ export default function AdminDashboard() {
                       No bundles yet
                     </h3>
                     <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                      Create your first service bundle to offer discounted packages to customers.
+                      Create your first service bundle to offer discounted
+                      packages to customers.
                     </p>
                     <Button
                       onClick={handleAddBundle}
@@ -806,12 +835,15 @@ export default function AdminDashboard() {
                                 {bundle.name}
                               </CardTitle>
                               <p className="text-sm text-muted-foreground mt-1">
-                                {bundle.orders} orders • {bundle.discount}% discount
+                                {bundle.orders} orders • {bundle.discount}%
+                                discount
                               </p>
                             </div>
                             <div className="flex flex-col items-end space-y-1">
                               <Badge
-                                variant={bundle.active ? "default" : "secondary"}
+                                variant={
+                                  bundle.active ? "default" : "secondary"
+                                }
                                 className="cursor-pointer"
                                 onClick={() => toggleBundleStatus(bundle.id)}
                               >
@@ -823,7 +855,10 @@ export default function AdminDashboard() {
                                 </Badge>
                               )}
                               {bundle.badge && (
-                                <Badge variant="outline" className="text-xs bg-primary/10">
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs bg-primary/10"
+                                >
                                   {bundle.badge}
                                 </Badge>
                               )}
@@ -894,7 +929,8 @@ export default function AdminDashboard() {
                     Custom Pricing Management ({customPricing.length})
                   </CardTitle>
                   <CardDescription>
-                    Manage dynamic pricing for custom orders (medals, levels, samples, super credits)
+                    Manage dynamic pricing for custom orders (medals, levels,
+                    samples, super credits)
                   </CardDescription>
                 </div>
                 <Button
@@ -913,7 +949,8 @@ export default function AdminDashboard() {
                       No custom pricing yet
                     </h3>
                     <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                      Add pricing for custom order items to enable the custom order system.
+                      Add pricing for custom order items to enable the custom
+                      order system.
                     </p>
                     <Button
                       onClick={handleAddPricing}
@@ -937,14 +974,21 @@ export default function AdminDashboard() {
                                 {pricing.item_name}
                               </CardTitle>
                               <p className="text-sm text-muted-foreground mt-1">
-                                {pricing.category.replace('_', ' ')}
+                                {pricing.category.replace("_", " ")}
                               </p>
                             </div>
                             <div className="flex flex-col items-end space-y-1">
                               <Badge
-                                variant={pricing.is_active ? "default" : "secondary"}
+                                variant={
+                                  pricing.is_active ? "default" : "secondary"
+                                }
                                 className="cursor-pointer"
-                                onClick={() => togglePricingStatus(pricing.id, pricing.is_active)}
+                                onClick={() =>
+                                  togglePricingStatus(
+                                    pricing.id,
+                                    pricing.is_active,
+                                  )
+                                }
                               >
                                 {pricing.is_active ? "Active" : "Inactive"}
                               </Badge>
@@ -968,10 +1012,12 @@ export default function AdminDashboard() {
 
                             <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                               <div>
-                                <span className="font-medium">Min:</span> {pricing.minimum_quantity}
+                                <span className="font-medium">Min:</span>{" "}
+                                {pricing.minimum_quantity}
                               </div>
                               <div>
-                                <span className="font-medium">Max:</span> {pricing.maximum_quantity}
+                                <span className="font-medium">Max:</span>{" "}
+                                {pricing.maximum_quantity}
                               </div>
                             </div>
 
@@ -1027,25 +1073,81 @@ export default function AdminDashboard() {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {[
-                        { value: "all", label: "All Orders", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket")).length, color: "default" },
-                        { value: "pending", label: "Pending", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "pending").length, color: "yellow" },
-                        { value: "processing", label: "Processing", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "processing").length, color: "blue" },
-                        { value: "in-progress", label: "In Progress", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "in-progress").length, color: "purple" },
-                        { value: "completed", label: "Completed", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "completed").length, color: "green" }
+                        {
+                          value: "all",
+                          label: "All Orders",
+                          count: orders.filter(
+                            (order) =>
+                              !order.services.some(
+                                (s) => s.id === "support-ticket",
+                              ),
+                          ).length,
+                          color: "default",
+                        },
+                        {
+                          value: "pending",
+                          label: "Pending",
+                          count: orders.filter(
+                            (order) =>
+                              !order.services.some(
+                                (s) => s.id === "support-ticket",
+                              ) && order.status === "pending",
+                          ).length,
+                          color: "yellow",
+                        },
+                        {
+                          value: "processing",
+                          label: "Processing",
+                          count: orders.filter(
+                            (order) =>
+                              !order.services.some(
+                                (s) => s.id === "support-ticket",
+                              ) && order.status === "processing",
+                          ).length,
+                          color: "blue",
+                        },
+                        {
+                          value: "in-progress",
+                          label: "In Progress",
+                          count: orders.filter(
+                            (order) =>
+                              !order.services.some(
+                                (s) => s.id === "support-ticket",
+                              ) && order.status === "in-progress",
+                          ).length,
+                          color: "purple",
+                        },
+                        {
+                          value: "completed",
+                          label: "Completed",
+                          count: orders.filter(
+                            (order) =>
+                              !order.services.some(
+                                (s) => s.id === "support-ticket",
+                              ) && order.status === "completed",
+                          ).length,
+                          color: "green",
+                        },
                       ].map((filter) => (
                         <Button
                           key={filter.value}
                           size="sm"
-                          variant={orderFilter === filter.value ? "default" : "outline"}
+                          variant={
+                            orderFilter === filter.value ? "default" : "outline"
+                          }
                           onClick={() => setOrderFilter(filter.value)}
                           className={`text-xs ${
                             orderFilter === filter.value
                               ? ""
-                              : filter.color === "yellow" ? "hover:bg-yellow-50 hover:border-yellow-300" :
-                                filter.color === "blue" ? "hover:bg-blue-50 hover:border-blue-300" :
-                                filter.color === "purple" ? "hover:bg-purple-50 hover:border-purple-300" :
-                                filter.color === "green" ? "hover:bg-green-50 hover:border-green-300" :
-                                ""
+                              : filter.color === "yellow"
+                                ? "hover:bg-yellow-50 hover:border-yellow-300"
+                                : filter.color === "blue"
+                                  ? "hover:bg-blue-50 hover:border-blue-300"
+                                  : filter.color === "purple"
+                                    ? "hover:bg-purple-50 hover:border-purple-300"
+                                    : filter.color === "green"
+                                      ? "hover:bg-green-50 hover:border-green-300"
+                                      : ""
                           }`}
                         >
                           {filter.label}
@@ -1053,11 +1155,15 @@ export default function AdminDashboard() {
                             <Badge
                               variant="secondary"
                               className={`ml-2 h-4 px-1 text-xs ${
-                                filter.color === "yellow" ? "bg-yellow-100 text-yellow-700" :
-                                filter.color === "blue" ? "bg-blue-100 text-blue-700" :
-                                filter.color === "purple" ? "bg-purple-100 text-purple-700" :
-                                filter.color === "green" ? "bg-green-100 text-green-700" :
-                                ""
+                                filter.color === "yellow"
+                                  ? "bg-yellow-100 text-yellow-700"
+                                  : filter.color === "blue"
+                                    ? "bg-blue-100 text-blue-700"
+                                    : filter.color === "purple"
+                                      ? "bg-purple-100 text-purple-700"
+                                      : filter.color === "green"
+                                        ? "bg-green-100 text-green-700"
+                                        : ""
                               }`}
                             >
                               {filter.count}
@@ -1075,270 +1181,373 @@ export default function AdminDashboard() {
                     <div className="text-center py-12">
                       <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
                       <h3 className="text-lg font-semibold mb-2">
-                        {orderFilter === "all" ? "No orders yet" : `No ${orderFilter} orders`}
+                        {orderFilter === "all"
+                          ? "No orders yet"
+                          : `No ${orderFilter} orders`}
                       </h3>
                       <p className="text-muted-foreground">
                         {orderFilter === "all"
                           ? "When customers place orders, they will appear here."
-                          : `No orders with ${orderFilter} status found. Try selecting a different filter.`
-                        }
+                          : `No orders with ${orderFilter} status found. Try selecting a different filter.`}
                       </p>
                     </div>
                   ) : (
                     filteredOrders.map((order) => (
-                        <div
-                          key={order.id}
-                          className="border border-border/30 rounded-lg p-6 hover:border-primary/30 transition-colors bg-card/50"
-                        >
-                          <div className="space-y-4">
-                            {/* Order Header */}
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center space-x-3 mb-2">
-                                  <h3 className="font-semibold text-lg">Order #{order.id.slice(-6)}</h3>
-                                  <Badge className={
-                                    order.status === 'pending' ? 'bg-yellow-500/20 text-yellow-700' :
-                                    order.status === 'processing' ? 'bg-blue-500/20 text-blue-700' :
-                                    order.status === 'in-progress' ? 'bg-purple-500/20 text-purple-700' :
-                                    order.status === 'completed' ? 'bg-green-500/20 text-green-700' :
-                                    'bg-red-500/20 text-red-700'
-                                  }>
-                                    <span className="capitalize">{order.status}</span>
-                                  </Badge>
-                                  <Badge variant="outline" className={
-                                    order.paymentStatus === 'paid' ? 'border-green-500/50 text-green-600' :
-                                    order.paymentStatus === 'pending' ? 'border-yellow-500/50 text-yellow-600' :
-                                    'border-red-500/50 text-red-600'
-                                  }>
-                                    {order.paymentStatus === 'paid' ? 'Paid' : 'Payment ' + order.paymentStatus}
-                                  </Badge>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                                  <div>
-                                    <p className="text-muted-foreground">Customer</p>
-                                    <p className="font-medium">{order.customerName}</p>
-                                    <p className="text-xs text-muted-foreground">{order.customerEmail}</p>
-                                    {order.ipAddress && (
-                                      <p className="text-xs text-muted-foreground mt-1">
-                                        IP: {order.ipAddress}
-                                      </p>
-                                    )}
-                                    {order.referralCode && (
-                                      <p className="text-xs text-green-600 mt-1">
-                                        Referral: {order.referralCode} (-${order.referralDiscount?.toFixed(2) || '0.00'})
-                                      </p>
-                                    )}
-                                    {order.referralCreditsUsed && order.referralCreditsUsed > 0 && (
-                                      <p className="text-xs text-blue-600 mt-1">
-                                        Credits Used: -${order.referralCreditsUsed.toFixed(2)}
-                                      </p>
-                                    )}
-                                  </div>
-                                  <div>
-                                    <p className="text-muted-foreground">Services</p>
-                                    <p className="font-medium">
-                                      {order.services.map((s, idx) => (
-                                        <span key={s.id}>
-                                          {s.name}
-                                          {s.quantity > 1 && ` (x${s.quantity})`}
-                                          {idx < order.services.length - 1 && ', '}
-                                        </span>
-                                      ))}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                      {order.services.reduce((sum, s) => sum + s.quantity, 0)} item(s)
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-muted-foreground">Payment</p>
-                                    <p className="font-medium text-primary text-xl">${order.totalAmount.toFixed(2)}</p>
-                                    {order.transactionId && (
-                                      <p className="text-xs text-muted-foreground mt-1">
-                                        TX: {order.transactionId}
-                                      </p>
-                                    )}
-                                  </div>
-                                  <div>
-                                    <p className="text-muted-foreground">Created</p>
-                                    <p className="text-xs text-muted-foreground">
-                                      {new Date(order.createdAt).toLocaleString()}
-                                    </p>
+                      <div
+                        key={order.id}
+                        className="border border-border/30 rounded-lg p-6 hover:border-primary/30 transition-colors bg-card/50"
+                      >
+                        <div className="space-y-4">
+                          {/* Order Header */}
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3 mb-2">
+                                <h3 className="font-semibold text-lg">
+                                  Order #{order.id.slice(-6)}
+                                </h3>
+                                <Badge
+                                  className={
+                                    order.status === "pending"
+                                      ? "bg-yellow-500/20 text-yellow-700"
+                                      : order.status === "processing"
+                                        ? "bg-blue-500/20 text-blue-700"
+                                        : order.status === "in-progress"
+                                          ? "bg-purple-500/20 text-purple-700"
+                                          : order.status === "completed"
+                                            ? "bg-green-500/20 text-green-700"
+                                            : "bg-red-500/20 text-red-700"
+                                  }
+                                >
+                                  <span className="capitalize">
+                                    {order.status}
+                                  </span>
+                                </Badge>
+                                <Badge
+                                  variant="outline"
+                                  className={
+                                    order.paymentStatus === "paid"
+                                      ? "border-green-500/50 text-green-600"
+                                      : order.paymentStatus === "pending"
+                                        ? "border-yellow-500/50 text-yellow-600"
+                                        : "border-red-500/50 text-red-600"
+                                  }
+                                >
+                                  {order.paymentStatus === "paid"
+                                    ? "Paid"
+                                    : "Payment " + order.paymentStatus}
+                                </Badge>
+                              </div>
+                              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                                <div>
+                                  <p className="text-muted-foreground">
+                                    Customer
+                                  </p>
+                                  <p className="font-medium">
+                                    {order.customerName}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {order.customerEmail}
+                                  </p>
+                                  {order.ipAddress && (
                                     <p className="text-xs text-muted-foreground mt-1">
-                                      Updated: {new Date(order.updatedAt).toLocaleString()}
+                                      IP: {order.ipAddress}
                                     </p>
-                                  </div>
+                                  )}
+                                  {order.referralCode && (
+                                    <p className="text-xs text-green-600 mt-1">
+                                      Referral: {order.referralCode} (-$
+                                      {order.referralDiscount?.toFixed(2) ||
+                                        "0.00"}
+                                      )
+                                    </p>
+                                  )}
+                                  {order.referralCreditsUsed &&
+                                    order.referralCreditsUsed > 0 && (
+                                      <p className="text-xs text-blue-600 mt-1">
+                                        Credits Used: -$
+                                        {order.referralCreditsUsed.toFixed(2)}
+                                      </p>
+                                    )}
+                                </div>
+                                <div>
+                                  <p className="text-muted-foreground">
+                                    Services
+                                  </p>
+                                  <p className="font-medium">
+                                    {order.services.map((s, idx) => (
+                                      <span key={s.id}>
+                                        {s.name}
+                                        {s.quantity > 1 && ` (x${s.quantity})`}
+                                        {idx < order.services.length - 1 &&
+                                          ", "}
+                                      </span>
+                                    ))}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {order.services.reduce(
+                                      (sum, s) => sum + s.quantity,
+                                      0,
+                                    )}{" "}
+                                    item(s)
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-muted-foreground">
+                                    Payment
+                                  </p>
+                                  <p className="font-medium text-primary text-xl">
+                                    ${order.totalAmount.toFixed(2)}
+                                  </p>
+                                  {order.transactionId && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      TX: {order.transactionId}
+                                    </p>
+                                  )}
+                                </div>
+                                <div>
+                                  <p className="text-muted-foreground">
+                                    Created
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {new Date(order.createdAt).toLocaleString()}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    Updated:{" "}
+                                    {new Date(order.updatedAt).toLocaleString()}
+                                  </p>
                                 </div>
                               </div>
                             </div>
+                          </div>
 
-                            {/* Progress Bar (if in progress) */}
-                            {order.status === 'in-progress' && (
-                              <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
-                                  <span>Progress</span>
-                                  <span>{order.progress || 0}%</span>
-                                </div>
-                                <div className="w-full bg-muted rounded-full h-2">
-                                  <div
-                                    className="bg-primary h-2 rounded-full transition-all duration-300"
-                                    style={{ width: `${order.progress || 0}%` }}
-                                  ></div>
-                                </div>
+                          {/* Progress Bar (if in progress) */}
+                          {order.status === "in-progress" && (
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span>Progress</span>
+                                <span>{order.progress || 0}%</span>
                               </div>
-                            )}
-
-                            {/* Assigned Booster */}
-                            {order.assignedBooster && (
-                              <div className="flex items-center space-x-2 text-sm">
-                                <User className="w-4 h-4 text-muted-foreground" />
-                                <span className="text-muted-foreground">Assigned to:</span>
-                                <span className="font-medium">{order.assignedBooster}</span>
+                              <div className="w-full bg-muted rounded-full h-2">
+                                <div
+                                  className="bg-primary h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${order.progress || 0}%` }}
+                                ></div>
                               </div>
-                            )}
+                            </div>
+                          )}
 
-                            {/* Notes */}
-                            {order.notes && (
-                              <div className="bg-muted/50 p-3 rounded-md">
-                                <p className="text-sm text-muted-foreground mb-1">Order Notes</p>
-                                <p className="text-sm whitespace-pre-wrap">{order.notes}</p>
-                              </div>
-                            )}
+                          {/* Assigned Booster */}
+                          {order.assignedBooster && (
+                            <div className="flex items-center space-x-2 text-sm">
+                              <User className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-muted-foreground">
+                                Assigned to:
+                              </span>
+                              <span className="font-medium">
+                                {order.assignedBooster}
+                              </span>
+                            </div>
+                          )}
 
-                            {/* Recent Messages */}
-                            {order.messages && order.messages.length > 0 && (
-                              <div className="space-y-2">
-                                <p className="text-sm font-medium flex items-center gap-2">
-                                  <MessageSquare className="w-4 h-4" />
-                                  Messages ({order.messages.length})
-                                  {order.messages.filter(m => !m.isRead && m.from === 'customer').length > 0 && (
-                                    <Badge className="bg-red-500/20 text-red-700 text-xs">
-                                      {order.messages.filter(m => !m.isRead && m.from === 'customer').length} new
-                                    </Badge>
-                                  )}
-                                </p>
-                                <div className="max-h-40 overflow-y-auto space-y-2">
-                                  {order.messages.slice(-3).map((message, idx) => (
-                                    <div key={idx} className={`text-xs p-2 rounded ${
-                                      message.from === 'admin' ? 'bg-primary/10 ml-4' : 'bg-muted/70 mr-4'
-                                    }`}>
+                          {/* Notes */}
+                          {order.notes && (
+                            <div className="bg-muted/50 p-3 rounded-md">
+                              <p className="text-sm text-muted-foreground mb-1">
+                                Order Notes
+                              </p>
+                              <p className="text-sm whitespace-pre-wrap">
+                                {order.notes}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Recent Messages */}
+                          {order.messages && order.messages.length > 0 && (
+                            <div className="space-y-2">
+                              <p className="text-sm font-medium flex items-center gap-2">
+                                <MessageSquare className="w-4 h-4" />
+                                Messages ({order.messages.length})
+                                {order.messages.filter(
+                                  (m) => !m.isRead && m.from === "customer",
+                                ).length > 0 && (
+                                  <Badge className="bg-red-500/20 text-red-700 text-xs">
+                                    {
+                                      order.messages.filter(
+                                        (m) =>
+                                          !m.isRead && m.from === "customer",
+                                      ).length
+                                    }{" "}
+                                    new
+                                  </Badge>
+                                )}
+                              </p>
+                              <div className="max-h-40 overflow-y-auto space-y-2">
+                                {order.messages
+                                  .slice(-3)
+                                  .map((message, idx) => (
+                                    <div
+                                      key={idx}
+                                      className={`text-xs p-2 rounded ${
+                                        message.from === "admin"
+                                          ? "bg-primary/10 ml-4"
+                                          : "bg-muted/70 mr-4"
+                                      }`}
+                                    >
                                       <div className="flex justify-between items-center mb-1">
                                         <span className="font-medium capitalize">
-                                          {message.from === 'admin' ? 'You' : message.from}
+                                          {message.from === "admin"
+                                            ? "You"
+                                            : message.from}
                                         </span>
                                         <span className="text-muted-foreground">
-                                          {new Date(message.timestamp).toLocaleString()}
+                                          {new Date(
+                                            message.timestamp,
+                                          ).toLocaleString()}
                                         </span>
                                       </div>
-                                      <p className="whitespace-pre-wrap">{message.message}</p>
+                                      <p className="whitespace-pre-wrap">
+                                        {message.message}
+                                      </p>
                                     </div>
                                   ))}
-                                </div>
                               </div>
-                            )}
+                            </div>
+                          )}
 
-                            {/* Action Buttons */}
-                            <div className="flex flex-wrap gap-2 pt-2 border-t border-border/50">
+                          {/* Action Buttons */}
+                          <div className="flex flex-wrap gap-2 pt-2 border-t border-border/50">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                const newStatus =
+                                  order.status === "pending"
+                                    ? "processing"
+                                    : order.status === "processing"
+                                      ? "in-progress"
+                                      : order.status === "in-progress"
+                                        ? "completed"
+                                        : "pending";
+                                updateOrderStatus(order.id, newStatus as any);
+                              }}
+                              className="text-xs"
+                            >
+                              {order.status === "pending" &&
+                                "▶️ Start Processing"}
+                              {order.status === "processing" && "🚀 Begin Work"}
+                              {order.status === "in-progress" &&
+                                "✅ Mark Complete"}
+                              {order.status === "completed" && "🔄 Reopen"}
+                            </Button>
+
+                            {order.status !== "completed" && (
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => {
-                                  const newStatus =
-                                    order.status === 'pending' ? 'processing' :
-                                    order.status === 'processing' ? 'in-progress' :
-                                    order.status === 'in-progress' ? 'completed' :
-                                    'pending';
-                                  updateOrderStatus(order.id, newStatus as any);
-                                }}
-                                className="text-xs"
-                              >
-                                {order.status === 'pending' && '▶️ Start Processing'}
-                                {order.status === 'processing' && '🚀 Begin Work'}
-                                {order.status === 'in-progress' && '✅ Mark Complete'}
-                                {order.status === 'completed' && '🔄 Reopen'}
-                              </Button>
-
-                              {order.status !== 'completed' && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => {
-                                    const booster = prompt('Assign booster:', order.assignedBooster || '');
-                                    if (booster !== null) {
-                                      assignBooster(order.id, booster);
-                                    }
-                                  }}
-                                  className="text-xs"
-                                >
-                                  👤 {order.assignedBooster ? 'Change' : 'Assign'} Booster
-                                </Button>
-                              )}
-
-                              {order.status === 'in-progress' && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => {
-                                    const progress = prompt('Update progress (0-100):', String(order.progress || 0));
-                                    if (progress !== null && !isNaN(Number(progress))) {
-                                      updateOrderProgress(order.id, Math.min(100, Math.max(0, Number(progress))));
-                                    }
-                                  }}
-                                  className="text-xs"
-                                >
-                                  📊 Update Progress
-                                </Button>
-                              )}
-
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={async () => {
-                                  const message = prompt('Send message to customer:');
-                                  if (message) {
-                                    try {
-                                      // Add message to database
-                                      await addOrderMessage(order.id, { from: 'admin', message });
-
-                                      // Send email notification
-                                      try {
-                                        await sendTicketReplyEmail({
-                                          to: order.customerEmail,
-                                          subject: `Order Update #${order.id.slice(-6)}`,
-                                          message: message,
-                                          ticketId: order.id,
-                                          customerName: order.customerName
-                                        });
-
-                                        toast({
-                                          title: "Message sent!",
-                                          description: `Update sent to ${order.customerEmail}`,
-                                        });
-                                      } catch (emailError) {
-                                        console.error("Email error:", emailError);
-                                        toast({
-                                          title: "Message saved but email failed",
-                                          description: "Message was saved but email notification failed.",
-                                          variant: "destructive",
-                                        });
-                                      }
-                                    } catch (error) {
-                                      console.error("Error sending message:", error);
-                                      toast({
-                                        title: "Error sending message",
-                                        description: "Failed to send message. Please try again.",
-                                        variant: "destructive",
-                                      });
-                                    }
+                                  const booster = prompt(
+                                    "Assign booster:",
+                                    order.assignedBooster || "",
+                                  );
+                                  if (booster !== null) {
+                                    assignBooster(order.id, booster);
                                   }
                                 }}
                                 className="text-xs"
                               >
-                                💬 Send Message
+                                👤 {order.assignedBooster ? "Change" : "Assign"}{" "}
+                                Booster
                               </Button>
-                            </div>
+                            )}
+
+                            {order.status === "in-progress" && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const progress = prompt(
+                                    "Update progress (0-100):",
+                                    String(order.progress || 0),
+                                  );
+                                  if (
+                                    progress !== null &&
+                                    !isNaN(Number(progress))
+                                  ) {
+                                    updateOrderProgress(
+                                      order.id,
+                                      Math.min(
+                                        100,
+                                        Math.max(0, Number(progress)),
+                                      ),
+                                    );
+                                  }
+                                }}
+                                className="text-xs"
+                              >
+                                📊 Update Progress
+                              </Button>
+                            )}
+
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={async () => {
+                                const message = prompt(
+                                  "Send message to customer:",
+                                );
+                                if (message) {
+                                  try {
+                                    // Add message to database
+                                    await addOrderMessage(order.id, {
+                                      from: "admin",
+                                      message,
+                                    });
+
+                                    // Send email notification
+                                    try {
+                                      await sendTicketReplyEmail({
+                                        to: order.customerEmail,
+                                        subject: `Order Update #${order.id.slice(-6)}`,
+                                        message: message,
+                                        ticketId: order.id,
+                                        customerName: order.customerName,
+                                      });
+
+                                      toast({
+                                        title: "Message sent!",
+                                        description: `Update sent to ${order.customerEmail}`,
+                                      });
+                                    } catch (emailError) {
+                                      console.error("Email error:", emailError);
+                                      toast({
+                                        title: "Message saved but email failed",
+                                        description:
+                                          "Message was saved but email notification failed.",
+                                        variant: "destructive",
+                                      });
+                                    }
+                                  } catch (error) {
+                                    console.error(
+                                      "Error sending message:",
+                                      error,
+                                    );
+                                    toast({
+                                      title: "Error sending message",
+                                      description:
+                                        "Failed to send message. Please try again.",
+                                      variant: "destructive",
+                                    });
+                                  }
+                                }
+                              }}
+                              className="text-xs"
+                            >
+                              💬 Send Message
+                            </Button>
                           </div>
                         </div>
-                      ))
+                      </div>
+                    ))
                   )}
                 </div>
               </CardContent>
@@ -1368,9 +1577,12 @@ export default function AdminDashboard() {
                   {supportTickets.length === 0 ? (
                     <div className="text-center py-12">
                       <HelpCircle className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                      <h3 className="text-lg font-semibold mb-2">No support tickets</h3>
+                      <h3 className="text-lg font-semibold mb-2">
+                        No support tickets
+                      </h3>
                       <p className="text-muted-foreground">
-                        Customer support requests will appear here when submitted through the contact form.
+                        Customer support requests will appear here when
+                        submitted through the contact form.
                       </p>
                     </div>
                   ) : (
@@ -1383,32 +1595,56 @@ export default function AdminDashboard() {
                           <div className="flex-1">
                             <div className="flex items-center space-x-3 mb-2">
                               <h4 className="font-medium">
-                                {ticket.services[0]?.name || 'Support Request'}
+                                {ticket.services[0]?.name || "Support Request"}
                               </h4>
-                              <Badge className={
-                                ticket.status === 'pending' ? 'bg-orange-500/20 text-orange-700' :
-                                ticket.status === 'in-progress' ? 'bg-blue-500/20 text-blue-700' :
-                                ticket.status === 'completed' ? 'bg-green-500/20 text-green-700' :
-                                'bg-gray-500/20 text-gray-700'
-                              }>
-                                {ticket.status === 'pending' && 'New'}
-                                {ticket.status === 'in-progress' && 'In Progress'}
-                                {ticket.status === 'completed' && 'Resolved'}
-                                {ticket.status === 'cancelled' && 'Closed'}
+                              <Badge
+                                className={
+                                  ticket.status === "pending"
+                                    ? "bg-orange-500/20 text-orange-700"
+                                    : ticket.status === "in-progress"
+                                      ? "bg-blue-500/20 text-blue-700"
+                                      : ticket.status === "completed"
+                                        ? "bg-green-500/20 text-green-700"
+                                        : "bg-gray-500/20 text-gray-700"
+                                }
+                              >
+                                {ticket.status === "pending" && "New"}
+                                {ticket.status === "in-progress" &&
+                                  "In Progress"}
+                                {ticket.status === "completed" && "Resolved"}
+                                {ticket.status === "cancelled" && "Closed"}
                               </Badge>
-                              {ticket.messages && ticket.messages.filter((m: any) => !m.isRead && m.from === 'customer').length > 0 && (
-                                <Badge className="bg-red-500/20 text-red-700 text-xs">
-                                  {ticket.messages.filter((m: any) => !m.isRead && m.from === 'customer').length} new
-                                </Badge>
-                              )}
+                              {ticket.messages &&
+                                ticket.messages.filter(
+                                  (m: any) =>
+                                    !m.isRead && m.from === "customer",
+                                ).length > 0 && (
+                                  <Badge className="bg-red-500/20 text-red-700 text-xs">
+                                    {
+                                      ticket.messages.filter(
+                                        (m: any) =>
+                                          !m.isRead && m.from === "customer",
+                                      ).length
+                                    }{" "}
+                                    new
+                                  </Badge>
+                                )}
                             </div>
                             <div className="text-sm text-muted-foreground mb-2">
-                              <p><strong>From:</strong> {ticket.customerName} ({ticket.customerEmail})</p>
-                              <p><strong>Created:</strong> {new Date(ticket.createdAt).toLocaleString()}</p>
+                              <p>
+                                <strong>From:</strong> {ticket.customerName} (
+                                {ticket.customerEmail})
+                              </p>
+                              <p>
+                                <strong>Created:</strong>{" "}
+                                {new Date(ticket.createdAt).toLocaleString()}
+                              </p>
                             </div>
                             {ticket.notes && (
                               <div className="bg-muted/50 p-3 rounded-md text-sm">
-                                <div className="whitespace-pre-wrap">{ticket.notes}</div>
+                                <div className="whitespace-pre-wrap">
+                                  {ticket.notes}
+                                </div>
                               </div>
                             )}
                           </div>
@@ -1417,14 +1653,19 @@ export default function AdminDashboard() {
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                const newStatus = ticket.status === 'pending' ? 'in-progress' :
-                                                ticket.status === 'in-progress' ? 'completed' : 'pending';
+                                const newStatus =
+                                  ticket.status === "pending"
+                                    ? "in-progress"
+                                    : ticket.status === "in-progress"
+                                      ? "completed"
+                                      : "pending";
                                 updateOrderStatus(ticket.id, newStatus as any);
                               }}
                             >
-                              {ticket.status === 'pending' && 'Start Working'}
-                              {ticket.status === 'in-progress' && 'Mark Resolved'}
-                              {ticket.status === 'completed' && 'Reopen'}
+                              {ticket.status === "pending" && "Start Working"}
+                              {ticket.status === "in-progress" &&
+                                "Mark Resolved"}
+                              {ticket.status === "completed" && "Reopen"}
                             </Button>
                             <Button
                               size="sm"
@@ -1476,7 +1717,8 @@ export default function AdminDashboard() {
               Support Ticket Details
             </DialogTitle>
             <DialogDescription>
-              Ticket #{selectedTicket?.id?.slice(-6)} - {selectedTicket?.services[0]?.name}
+              Ticket #{selectedTicket?.id?.slice(-6)} -{" "}
+              {selectedTicket?.services[0]?.name}
             </DialogDescription>
           </DialogHeader>
 
@@ -1487,38 +1729,58 @@ export default function AdminDashboard() {
                 <div>
                   <h4 className="font-medium mb-2">Customer Information</h4>
                   <div className="space-y-1 text-sm">
-                    <p><strong>Name:</strong> {selectedTicket.customerName}</p>
-                    <p><strong>Email:</strong> {selectedTicket.customerEmail}</p>
-                    <p><strong>Created:</strong> {new Date(selectedTicket.createdAt).toLocaleString()}</p>
+                    <p>
+                      <strong>Name:</strong> {selectedTicket.customerName}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {selectedTicket.customerEmail}
+                    </p>
+                    <p>
+                      <strong>Created:</strong>{" "}
+                      {new Date(selectedTicket.createdAt).toLocaleString()}
+                    </p>
                   </div>
                 </div>
                 <div>
                   <h4 className="font-medium mb-2">Ticket Status</h4>
                   <div className="space-y-2">
-                    <Badge className={
-                      selectedTicket.status === 'pending' ? 'bg-orange-500/20 text-orange-700' :
-                      selectedTicket.status === 'in-progress' ? 'bg-blue-500/20 text-blue-700' :
-                      selectedTicket.status === 'completed' ? 'bg-green-500/20 text-green-700' :
-                      'bg-gray-500/20 text-gray-700'
-                    }>
-                      {selectedTicket.status === 'pending' && 'New'}
-                      {selectedTicket.status === 'in-progress' && 'In Progress'}
-                      {selectedTicket.status === 'completed' && 'Resolved'}
-                      {selectedTicket.status === 'cancelled' && 'Closed'}
+                    <Badge
+                      className={
+                        selectedTicket.status === "pending"
+                          ? "bg-orange-500/20 text-orange-700"
+                          : selectedTicket.status === "in-progress"
+                            ? "bg-blue-500/20 text-blue-700"
+                            : selectedTicket.status === "completed"
+                              ? "bg-green-500/20 text-green-700"
+                              : "bg-gray-500/20 text-gray-700"
+                      }
+                    >
+                      {selectedTicket.status === "pending" && "New"}
+                      {selectedTicket.status === "in-progress" && "In Progress"}
+                      {selectedTicket.status === "completed" && "Resolved"}
+                      {selectedTicket.status === "cancelled" && "Closed"}
                     </Badge>
                     <div className="flex gap-2">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          const newStatus = selectedTicket.status === 'pending' ? 'in-progress' :
-                                          selectedTicket.status === 'in-progress' ? 'completed' : 'pending';
-                          updateOrderStatus(selectedTicket.id, newStatus as any);
+                          const newStatus =
+                            selectedTicket.status === "pending"
+                              ? "in-progress"
+                              : selectedTicket.status === "in-progress"
+                                ? "completed"
+                                : "pending";
+                          updateOrderStatus(
+                            selectedTicket.id,
+                            newStatus as any,
+                          );
                         }}
                       >
-                        {selectedTicket.status === 'pending' && 'Start Working'}
-                        {selectedTicket.status === 'in-progress' && 'Mark Resolved'}
-                        {selectedTicket.status === 'completed' && 'Reopen'}
+                        {selectedTicket.status === "pending" && "Start Working"}
+                        {selectedTicket.status === "in-progress" &&
+                          "Mark Resolved"}
+                        {selectedTicket.status === "completed" && "Reopen"}
                       </Button>
                     </div>
                   </div>
@@ -1532,7 +1794,9 @@ export default function AdminDashboard() {
                   Original Message
                 </h4>
                 <div className="bg-muted/50 p-4 rounded-lg">
-                  <div className="whitespace-pre-wrap text-sm">{selectedTicket.notes}</div>
+                  <div className="whitespace-pre-wrap text-sm">
+                    {selectedTicket.notes}
+                  </div>
                 </div>
               </div>
 
@@ -1543,28 +1807,35 @@ export default function AdminDashboard() {
                   Conversation ({selectedTicket.messages?.length || 0} messages)
                 </h4>
                 <div className="space-y-3 max-h-60 overflow-y-auto">
-                  {selectedTicket.messages && selectedTicket.messages.length > 0 ? (
-                    selectedTicket.messages.map((message: any, index: number) => (
-                      <div
-                        key={index}
-                        className={`p-3 rounded-lg ${
-                          message.from === 'admin'
-                            ? "bg-primary/10 ml-8 border-l-2 border-primary"
-                            : "bg-muted/70 mr-8 border-l-2 border-muted-foreground"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-medium capitalize">
-                            {message.from === 'admin' ? 'You (Admin)' : 'Customer'}
-                          </span>
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {new Date(message.timestamp).toLocaleString()}
-                          </span>
+                  {selectedTicket.messages &&
+                  selectedTicket.messages.length > 0 ? (
+                    selectedTicket.messages.map(
+                      (message: any, index: number) => (
+                        <div
+                          key={index}
+                          className={`p-3 rounded-lg ${
+                            message.from === "admin"
+                              ? "bg-primary/10 ml-8 border-l-2 border-primary"
+                              : "bg-muted/70 mr-8 border-l-2 border-muted-foreground"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-medium capitalize">
+                              {message.from === "admin"
+                                ? "You (Admin)"
+                                : "Customer"}
+                            </span>
+                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {new Date(message.timestamp).toLocaleString()}
+                            </span>
+                          </div>
+                          <p className="text-sm whitespace-pre-wrap">
+                            {message.message}
+                          </p>
                         </div>
-                        <p className="text-sm whitespace-pre-wrap">{message.message}</p>
-                      </div>
-                    ))
+                      ),
+                    )
                   ) : (
                     <p className="text-sm text-muted-foreground text-center py-4">
                       No messages yet. Send the first reply below.
