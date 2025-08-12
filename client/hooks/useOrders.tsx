@@ -327,7 +327,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         console.warn("Database schema missing some expected columns. Retrying with base fields only.");
         // Try again without the optional fields
         try {
-          const baseOrderData = {
+          const retryOrderData = {
             user_id: orderData.userId,
             customer_email: orderData.customerEmail,
             customer_name: orderData.customerName,
@@ -340,6 +340,20 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
             estimated_completion: orderData.estimatedCompletion,
             notes: orderData.notes,
           };
+
+          // Add optional fields for retry as well
+          if (orderData.transactionId) {
+            retryOrderData.transaction_id = orderData.transactionId;
+          }
+          if (orderData.referralCode) {
+            retryOrderData.referral_code = orderData.referralCode;
+          }
+          if (orderData.referralDiscount) {
+            retryOrderData.referral_discount = orderData.referralDiscount;
+          }
+          if (orderData.referralCreditsUsed) {
+            retryOrderData.referral_credits_used = orderData.referralCreditsUsed;
+          }
 
           const { data: orderResult, error: orderError } = await supabase
             .from("orders")
