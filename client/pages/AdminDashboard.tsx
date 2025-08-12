@@ -1869,12 +1869,10 @@ export default function AdminDashboard() {
                     <Label className="text-sm font-medium text-muted-foreground">Email</Label>
                     <p className="font-medium">{selectedOrderForResume.customerEmail}</p>
                   </div>
-                  {selectedOrderForResume.ipAddress && (
-                    <div>
-                      <Label className="text-sm font-medium text-muted-foreground">IP Address</Label>
-                      <p className="font-medium font-mono text-sm">{selectedOrderForResume.ipAddress}</p>
-                    </div>
-                  )}
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">IP Address</Label>
+                    <p className="font-medium font-mono text-sm">{selectedOrderForResume.ipAddress || "Not recorded"}</p>
+                  </div>
                   <div>
                     <Label className="text-sm font-medium text-muted-foreground">User ID</Label>
                     <p className="font-medium font-mono text-sm">{selectedOrderForResume.userId || "Guest"}</p>
