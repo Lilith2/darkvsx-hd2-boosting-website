@@ -1347,6 +1347,7 @@ export default function AdminDashboard() {
 
           {/* Custom Orders Tab */}
           <TabsContent value="custom-orders" className="space-y-6">
+            <DatabaseTest />
             <CustomOrdersManager />
           </TabsContent>
 
