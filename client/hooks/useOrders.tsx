@@ -357,7 +357,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
           const { data: orderResult, error: orderError } = await supabase
             .from("orders")
-            .insert([baseOrderData])
+            .insert([retryOrderData])
             .select()
             .single();
 
