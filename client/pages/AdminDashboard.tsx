@@ -1493,7 +1493,9 @@ export default function AdminDashboard() {
                                     ${order.totalAmount.toFixed(2)}
                                   </p>
                                   <p className="text-xs text-muted-foreground mt-1">
-                                    TX: {order.transactionId || "Not recorded"}
+                                    {order.transactionId?.startsWith('credits-')
+                                      ? 'Credits TX:'
+                                      : 'PayPal TX:'} {order.transactionId || "Not recorded"}
                                   </p>
                                 </div>
                                 <div>
@@ -2029,7 +2031,9 @@ export default function AdminDashboard() {
 
                   <div>
                     <Label className="text-sm font-medium text-muted-foreground">
-                      Transaction ID
+                      {selectedOrderForResume.transactionId?.startsWith('credits-')
+                        ? 'Credits Transaction ID'
+                        : 'PayPal Transaction ID'}
                     </Label>
                     <p className="font-medium font-mono text-sm">
                       {selectedOrderForResume.transactionId || "Not recorded"}
