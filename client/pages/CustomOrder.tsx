@@ -613,7 +613,7 @@ interface ItemCardProps {
 
 function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
   const [quantity, setQuantity] = useState(
-    currentQuantity || item.minimum_quantity,
+    currentQuantity || Math.max(1, item.minimum_quantity || 1),
   );
 
   useEffect(() => {
