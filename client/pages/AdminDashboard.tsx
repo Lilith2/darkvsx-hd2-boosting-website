@@ -7,6 +7,7 @@ import { ServiceModal } from "@/components/ServiceModal";
 import { BundleModal } from "@/components/BundleModal";
 import { TicketSystem } from "@/components/TicketSystem";
 import { PricingModal } from "@/components/PricingModal";
+import CustomOrdersManager from "@/components/CustomOrdersManager";
 import { Button } from "@/components/ui/button";
 import { sendTicketReplyEmail, generateTicketSubject } from "@/lib/emailService";
 import {
