@@ -73,6 +73,12 @@ export default function AdminDashboard() {
     loading,
     error,
   } = useOrders();
+  const {
+    orders: customOrders,
+    stats: customOrderStats,
+    loading: customOrdersLoading,
+    error: customOrdersError,
+  } = useCustomOrders();
   const { toast } = useToast();
 
   // Fetch custom pricing data
