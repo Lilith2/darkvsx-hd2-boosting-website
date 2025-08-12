@@ -28,6 +28,7 @@ interface AuthContextType {
   ) => Promise<boolean>;
   logout: () => Promise<void>;
   resendConfirmation: (email: string) => Promise<boolean>;
+  updateProfile: (updates: Partial<{ username: string; discord_username: string }>) => Promise<boolean>;
   isAuthenticated: boolean;
   isAdmin: boolean;
 }
