@@ -679,7 +679,7 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
             }}
             className="w-12 text-center text-xs h-6"
             min={item.minimum_quantity}
-            max={item.maximum_quantity}
+            max={item.maximum_quantity || 999999}
           />
           <Button
             size="sm"
