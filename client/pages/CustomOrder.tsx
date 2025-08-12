@@ -345,11 +345,12 @@ export default function CustomOrder() {
       });
 
       navigate("/cart");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error processing order:", error);
+      const errorMessage = error?.message || error?.error_description || JSON.stringify(error) || "Unknown error";
       toast({
         title: "Error",
-        description: "Failed to process your order. Please try again.",
+        description: `Failed to process your order: ${errorMessage}`,
         variant: "destructive",
       });
     }
