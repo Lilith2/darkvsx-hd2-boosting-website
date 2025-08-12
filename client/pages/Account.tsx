@@ -63,7 +63,7 @@ import { Link } from "react-router-dom";
 import { getSiteUrl } from "@/lib/config";
 
 export default function Account() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
   const { getUserOrders } = useOrders();
   const { stats: referralStats, loading: referralLoading, error: referralError, refreshStats } = useReferrals();
   const { toast } = useToast();
