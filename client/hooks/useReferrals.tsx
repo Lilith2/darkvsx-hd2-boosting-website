@@ -109,11 +109,11 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       const referralData = referrals || [];
       console.log("Processing referral data:", referralData);
 
-      // Fetch user's referral credits
-      const { data: creditsData, error: creditsError } = await supabase
-        .from("referral_credits")
-        .select("*")
-        .eq("user_id", user.id)
+      // Fetch user's credit balance from profile
+      const { data: profileData, error: creditsError } = await supabase
+        .from("profiles")
+        .select("credit_balance, total_credits_earned, total_credits_used")
+        .eq("id", user.id)
         .single();
 
       console.log("Credits query result:", { creditsData, creditsError });
@@ -126,19 +126,12 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       };
 
       if (creditsError) {
-        if (creditsError.code === "PGRST116" ||
-            creditsError.message?.includes("referral_credits") ||
-            creditsError.message?.includes("does not exist")) {
-          console.warn("Referral credits table not found - using default values");
-        } else if (creditsError.code !== "PGRST116") {
-          // If user doesn't have a credits record yet, that's normal
-          console.log("User credits record not found, will be created on first use");
-        }
-      } else if (creditsData) {
+        console.warn("Error fetching user profile credits:", creditsError);
+      } else if (profileData) {
         userCredits = {
-          balance: parseFloat(String(creditsData.balance || 0)),
-          totalEarned: parseFloat(String(creditsData.total_earned || 0)),
-          totalSpent: parseFloat(String(creditsData.total_spent || 0)),
+          balance: parseFloat(String(profileData.credit_balance || 0)),
+          totalEarned: parseFloat(String(profileData.total_credits_earned || 0)),
+          totalSpent: parseFloat(String(profileData.total_credits_used || 0)),
         };
       }
 
