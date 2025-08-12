@@ -21,16 +21,68 @@ export default defineConfig(({ mode }) => ({
     target: 'esnext',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-toast', '@radix-ui/react-tabs'],
-          'vendor-supabase': ['@supabase/supabase-js'],
-          'vendor-paypal': ['@paypal/react-paypal-js'],
-          'vendor-query': ['@tanstack/react-query'],
+        manualChunks: (id) => {
+          // Core React libraries
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'vendor-react';
+          }
+          // Router
+          if (id.includes('react-router')) {
+            return 'vendor-router';
+          }
+          // UI libraries (Radix UI)
+          if (id.includes('@radix-ui')) {
+            return 'vendor-ui';
+          }
+          // Lucide icons
+          if (id.includes('lucide-react')) {
+            return 'vendor-icons';
+          }
+          // Supabase
+          if (id.includes('@supabase') || id.includes('supabase')) {
+            return 'vendor-supabase';
+          }
+          // PayPal
+          if (id.includes('@paypal')) {
+            return 'vendor-paypal';
+          }
+          // React Query
+          if (id.includes('@tanstack/react-query')) {
+            return 'vendor-query';
+          }
+          // Framer Motion
+          if (id.includes('framer-motion')) {
+            return 'vendor-animation';
+          }
+          // Three.js (if used)
+          if (id.includes('three') || id.includes('@react-three')) {
+            return 'vendor-3d';
+          }
+          // Other vendor libraries
+          if (id.includes('node_modules')) {
+            return 'vendor-misc';
+          }
         },
+        // Optimize chunk naming for better caching
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId;
+          if (facadeModuleId) {
+            const fileName = facadeModuleId.split('/').pop()?.replace('.tsx', '').replace('.ts', '');
+            return `chunks/${fileName}-[hash].js`;
+          }
+          return `chunks/[name]-[hash].js`;
+        },
+        entryFileNames: `assets/[name]-[hash].js`,
+        assetFileNames: `assets/[name]-[hash].[ext]`,
       },
     },
     chunkSizeWarningLimit: 1000,
+    terserOptions: {
+      compress: {
+        drop_console: mode === 'production',
+        drop_debugger: mode === 'production',
+      },
+    },
   },
   optimizeDeps: {
     include: [
@@ -40,6 +92,19 @@ export default defineConfig(({ mode }) => ({
       '@supabase/supabase-js',
       '@tanstack/react-query',
       'lucide-react',
+      '@paypal/react-paypal-js',
+      'framer-motion',
+      'react-hook-form',
+      '@hookform/resolvers/zod',
+      'zod',
+      'date-fns',
+      'clsx',
+      'tailwind-merge',
+    ],
+    exclude: [
+      // Exclude large libraries that should be lazy loaded
+      '@react-three/fiber',
+      '@react-three/drei',
     ],
   },
   plugins: [react(), mode === 'development' && componentTagger(), expressPlugin()].filter(Boolean),
