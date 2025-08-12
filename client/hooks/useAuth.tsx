@@ -207,7 +207,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Update local user state
-      setUser(prev => prev ? { ...prev, username: updates.username || prev.username } : null);
+      setUser(prev => prev ? {
+        ...prev,
+        username: updates.username || prev.username,
+        discord_username: updates.discord_username !== undefined ? updates.discord_username : prev.discord_username
+      } : null);
       return true;
     } catch (error) {
       console.error("Profile update error:", error);
