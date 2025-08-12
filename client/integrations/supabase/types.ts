@@ -209,8 +209,6 @@ export type Database = {
           email: string | null;
           id: string;
           role: string | null;
-          total_credits_earned: number | null;
-          total_credits_used: number | null;
           updated_at: string | null;
           username: string | null;
         };
@@ -221,8 +219,6 @@ export type Database = {
           email?: string | null;
           id: string;
           role?: string | null;
-          total_credits_earned?: number | null;
-          total_credits_used?: number | null;
           updated_at?: string | null;
           username?: string | null;
         };
@@ -233,8 +229,6 @@ export type Database = {
           email?: string | null;
           id?: string;
           role?: string | null;
-          total_credits_earned?: number | null;
-          total_credits_used?: number | null;
           updated_at?: string | null;
           username?: string | null;
         };
