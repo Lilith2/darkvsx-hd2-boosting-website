@@ -320,9 +320,10 @@ export default function CustomOrder() {
         } catch (dbError: any) {
           // Continue with cart addition even if database save fails
           console.error("Failed to save to database:", dbError);
+          const errorMessage = dbError?.message || dbError?.error_description || JSON.stringify(dbError) || "Unknown error";
           toast({
             title: "Database Warning",
-            description: `Order saved to cart but database save failed: ${dbError.message || "Unknown error"}`,
+            description: `Order saved to cart but database save failed: ${errorMessage}`,
             variant: "default",
           });
         }
