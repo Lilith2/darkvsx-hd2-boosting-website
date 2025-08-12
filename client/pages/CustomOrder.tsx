@@ -623,9 +623,10 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
   }, [currentQuantity]);
 
   const adjustQuantity = (delta: number) => {
+    const maxQty = item.maximum_quantity || 999999; // Default to large number if null
     const newQuantity = Math.max(
       item.minimum_quantity,
-      Math.min(item.maximum_quantity, quantity + delta),
+      Math.min(maxQty, quantity + delta),
     );
     setQuantity(newQuantity);
   };
