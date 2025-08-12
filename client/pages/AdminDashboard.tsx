@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useServices } from "@/hooks/useServices";
 import { useBundles } from "@/hooks/useBundles";
 import { useOrders } from "@/hooks/useOrders";
+import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceModal } from "@/components/ServiceModal";
 import { BundleModal } from "@/components/BundleModal";
