@@ -706,7 +706,7 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
 
       <div className="text-xs text-muted-foreground mt-1 flex items-center justify-between">
         <span>Min: {item.minimum_quantity}</span>
-        <span>Max: {item.maximum_quantity}</span>
+        <span>Max: {item.maximum_quantity || '∞'}</span>
       </div>
     </div>
   );
