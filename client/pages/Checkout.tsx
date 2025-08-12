@@ -354,12 +354,24 @@ export default function Checkout() {
         "Unknown error";
       toast({
         title: "Order creation failed",
-        description: `Payment was successful but we couldn't create your order: ${errorMessage}. Please contact support.`,
+        description: total <= 0
+          ? `We couldn't create your order: ${errorMessage}. Please contact support.`
+          : `Payment was successful but we couldn't create your order: ${errorMessage}. Please contact support.`,
         variant: "destructive",
       });
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handlePayPalSuccess = async (details: any, data: any) => {
+    console.log("PayPal payment successful:", { details, data });
+    await processOrder(details, data);
+  };
+
+  const handleCreditOnlyPayment = async () => {
+    console.log("Processing credit-only payment");
+    await processOrder();
   };
 
   const handlePayPalError = (error: any) => {
