@@ -59,7 +59,6 @@ export default function CustomOrder() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { toast } = useToast();
-  const { createOrder } = useCustomOrders();
   const { user } = useAuth();
 
   const [pricing, setPricing] = useState<CustomPricing[]>([]);
