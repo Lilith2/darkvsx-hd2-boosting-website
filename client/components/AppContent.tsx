@@ -3,7 +3,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useSafeAuth } from "@/hooks/useSafeAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Layout } from "@/components/Layout";
-import { LoadingFallback, OptimizedSpinner } from "@/components/LoadingFallback";
+import {
+  LoadingFallback,
+  OptimizedSpinner,
+} from "@/components/LoadingFallback";
 
 // Keep critical pages non-lazy for immediate loading
 import Index from "../pages/Index";
