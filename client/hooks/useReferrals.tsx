@@ -217,6 +217,7 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
     if (!user?.id) return false;
 
     try {
+      // First try the database function
       const { data, error } = await supabase.rpc('use_referral_credits', {
         p_user_id: user.id,
         p_amount: amount,
@@ -224,11 +225,58 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         p_description: description || 'Credits used for order'
       });
 
-      if (error) throw error;
+      if (!error) {
+        // Refresh stats after using credits
+        await refreshStats();
+        return data;
+      }
 
-      // Refresh stats after using credits
-      await refreshStats();
-      return data;
+      // If function doesn't exist, use fallback direct update
+      if (error.code === 'PGRST202' || error.message?.includes('function') || error.message?.includes('does not exist')) {
+        console.log('Database function not found, using fallback implementation');
+
+        // Get current balance first
+        const { data: profileData, error: fetchError } = await supabase
+          .from('profiles')
+          .select('credit_balance, total_credits_used')
+          .eq('id', user.id)
+          .single();
+
+        if (fetchError) {
+          console.error('Error fetching profile:', fetchError);
+          return false;
+        }
+
+        const currentBalance = parseFloat(String(profileData?.credit_balance || 0));
+        const currentUsed = parseFloat(String(profileData?.total_credits_used || 0));
+
+        // Check if user has sufficient credits
+        if (currentBalance < amount) {
+          console.error(`Insufficient credits. Available: ${currentBalance}, Requested: ${amount}`);
+          return false;
+        }
+
+        // Update profile with new balance
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            credit_balance: currentBalance - amount,
+            total_credits_used: currentUsed + amount,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user.id);
+
+        if (updateError) {
+          console.error('Error updating profile:', updateError);
+          return false;
+        }
+
+        // Refresh stats after using credits
+        await refreshStats();
+        return true;
+      }
+
+      throw error;
     } catch (error) {
       console.error("Error using credits:", error);
       return false;
