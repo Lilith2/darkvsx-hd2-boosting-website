@@ -1329,13 +1329,13 @@ export default function AdminDashboard() {
                       <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
                       <h3 className="text-lg font-semibold mb-2">
                         {orderFilter === "all"
-                          ? "No orders yet"
-                          : `No ${orderFilter} orders`}
+                          ? `No ${orderTypeFilter} orders yet`
+                          : `No ${orderFilter} ${orderTypeFilter} orders`}
                       </h3>
                       <p className="text-muted-foreground">
                         {orderFilter === "all"
-                          ? "When customers place orders, they will appear here."
-                          : `No orders with ${orderFilter} status found. Try selecting a different filter.`}
+                          ? `When customers place ${orderTypeFilter} orders, they will appear here.`
+                          : `No ${orderTypeFilter} orders with ${orderFilter} status found. Try selecting a different filter.`}
                       </p>
                     </div>
                   ) : (
