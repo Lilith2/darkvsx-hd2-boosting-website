@@ -131,11 +131,17 @@ export default function AdminDashboard() {
 
   const totalRevenue = parseFloat((regularOrdersRevenue + customOrdersRevenue).toFixed(2));
 
-  const pendingOrders = orders.filter(
+  const regularPendingOrders = orders.filter(
     (order) =>
       order.status === "pending" &&
       !order.services.some((s) => s.id === "support-ticket"),
   ).length;
+
+  const customPendingOrders = customOrders.filter(
+    (order) => order.status === "pending",
+  ).length;
+
+  const pendingOrders = regularPendingOrders + customPendingOrders;
 
   const supportTickets = orders.filter((order) =>
     order.services.some((s) => s.id === "support-ticket"),
