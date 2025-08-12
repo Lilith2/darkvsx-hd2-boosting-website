@@ -116,17 +116,20 @@ export default function AdminDashboard() {
   const [isEditingPricing, setIsEditingPricing] = useState<any>(null);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
 
-  // Analytics calculations
-  const totalRevenue = parseFloat(
-    orders
-      .filter(
-        (order) =>
-          order.paymentStatus === "paid" &&
-          !order.services.some((s) => s.id === "support-ticket"),
-      )
-      .reduce((sum, order) => sum + order.totalAmount, 0)
-      .toFixed(2),
-  );
+  // Analytics calculations - combine both regular orders and custom orders
+  const regularOrdersRevenue = orders
+    .filter(
+      (order) =>
+        order.paymentStatus === "paid" &&
+        !order.services.some((s) => s.id === "support-ticket"),
+    )
+    .reduce((sum, order) => sum + order.totalAmount, 0);
+
+  const customOrdersRevenue = customOrders
+    .filter((order) => order.status === "completed")
+    .reduce((sum, order) => sum + order.total_amount, 0);
+
+  const totalRevenue = parseFloat((regularOrdersRevenue + customOrdersRevenue).toFixed(2));
 
   const pendingOrders = orders.filter(
     (order) =>
