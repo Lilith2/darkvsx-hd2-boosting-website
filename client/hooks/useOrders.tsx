@@ -56,7 +56,7 @@ export interface OrderTracking {
 // Transformed interfaces for frontend
 export interface OrderData {
   id: string;
-  userId: string;
+  userId: string | null;
   customerEmail: string;
   customerName: string;
   services: {
