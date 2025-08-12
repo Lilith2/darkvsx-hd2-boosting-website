@@ -29,16 +29,7 @@ import {
 } from "@/components/LazyComponents";
 
 export function AppContent() {
-  // Add error handling for useAuth hook
-  let loading = false;
-  try {
-    const auth = useAuth();
-    loading = auth.loading;
-  } catch (error) {
-    console.error("Error accessing auth context:", error);
-    // If auth context is not available, don't show loading state
-    loading = false;
-  }
+  const { loading } = useAuth();
 
   // Show loading only for first 3 seconds, then force render
   const [forceRender, setForceRender] = useState(false);
