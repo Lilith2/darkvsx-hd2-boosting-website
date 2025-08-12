@@ -408,7 +408,7 @@ export default function AdminDashboard() {
                               </span>
                             </div>
                             <div>
-                              <p className="font-medium">{service.title}</p>
+                              <p className="font-medium">{service.name}</p>
                               <p className="text-sm text-muted-foreground">
                                 {service.orders} orders
                               </p>
@@ -416,11 +416,11 @@ export default function AdminDashboard() {
                           </div>
                           <div className="text-right">
                             <p className="font-bold text-primary">
-                              ${service.price}
+                              ${service.revenue.toFixed(2)}
                             </p>
-                            <Badge variant="outline" className="text-xs">
-                              {service.active ? "Active" : "Inactive"}
-                            </Badge>
+                            <p className="text-xs text-muted-foreground">
+                              Total Revenue
+                            </p>
                           </div>
                         </div>
                       ))
