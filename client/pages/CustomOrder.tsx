@@ -11,10 +11,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Trophy,
   TrendingUp,
@@ -26,8 +26,10 @@ import {
   Coins,
   Check,
   ArrowRight,
-  Info,
   X,
+  Package,
+  Sparkles,
+  Star,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -61,6 +63,7 @@ export default function CustomOrder() {
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [orderNotes, setOrderNotes] = useState("");
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // Fetch custom pricing from database
   useEffect(() => {
@@ -142,30 +145,30 @@ export default function CustomOrder() {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case "medals":
-        return <Trophy className="w-5 h-5" />;
+        return <Trophy className="w-4 h-4" />;
       case "levels":
-        return <TrendingUp className="w-5 h-5" />;
+        return <TrendingUp className="w-4 h-4" />;
       case "samples":
-        return <Zap className="w-5 h-5" />;
+        return <Zap className="w-4 h-4" />;
       case "super_credits":
-        return <Coins className="w-5 h-5" />;
+        return <Coins className="w-4 h-4" />;
       default:
-        return <DollarSign className="w-5 h-5" />;
+        return <Package className="w-4 h-4" />;
     }
   };
 
   const getCategoryColor = (category: string) => {
     switch (category) {
       case "medals":
-        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+        return "from-yellow-500/20 to-orange-500/20 border-yellow-500/30 text-yellow-600";
       case "levels":
-        return "text-blue-600 bg-blue-50 border-blue-200";
+        return "from-blue-500/20 to-cyan-500/20 border-blue-500/30 text-blue-600";
       case "samples":
-        return "text-green-600 bg-green-50 border-green-200";
+        return "from-green-500/20 to-emerald-500/20 border-green-500/30 text-green-600";
       case "super_credits":
-        return "text-purple-600 bg-purple-50 border-purple-200";
+        return "from-purple-500/20 to-pink-500/20 border-purple-500/30 text-purple-600";
       default:
-        return "text-gray-600 bg-gray-50 border-gray-200";
+        return "from-gray-500/20 to-slate-500/20 border-gray-500/30 text-gray-600";
     }
   };
 
@@ -220,14 +223,20 @@ export default function CustomOrder() {
     }
 
     toast({
-      title: "Item Updated",
-      description: `${quantity} ${pricingItem.item_name}${quantity > 1 ? "s" : ""} added to your order`,
+      title: "Added to Order",
+      description: `${quantity} ${pricingItem.item_name}${quantity > 1 ? "s" : ""} updated`,
+      duration: 2000,
     });
   };
 
   const removeOrderItem = (index: number) => {
     const updatedItems = orderItems.filter((_, i) => i !== index);
     setOrderItems(updatedItems);
+    toast({
+      title: "Item Removed",
+      description: "Item removed from your order",
+      duration: 1500,
+    });
   };
 
   const getTotalPrice = () => {
@@ -286,6 +295,8 @@ export default function CustomOrder() {
     return acc;
   }, {} as Record<string, CustomPricing[]>);
 
+  const categories = Object.keys(groupedPricing);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -298,135 +309,188 @@ export default function CustomOrder() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Compact Header */}
-      <div className="bg-gradient-to-r from-primary/10 to-blue-500/10 border-b">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="text-center">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">
-              Build Your <span className="text-primary">Custom Order</span>
-            </h1>
-            <p className="text-muted-foreground">
-              Choose exactly what you need for your Helldivers 2 progression
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Sparkles className="w-6 h-6 text-primary" />
+              <h1 className="text-2xl font-bold">
+                Custom <span className="text-primary">Order Builder</span>
+              </h1>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Craft your perfect Helldivers 2 progression package
             </p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Order Builder */}
-          <div className="lg:col-span-2 space-y-6">
-            {Object.entries(groupedPricing).map(([category, items]) => (
-              <Card key={category} className="border border-border">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-10 h-10 rounded-lg ${getCategoryColor(category)} flex items-center justify-center`}>
-                      {getCategoryIcon(category)}
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">{getCategoryTitle(category)}</CardTitle>
-                      <CardDescription className="text-sm">
-                        ${items[0]?.price_per_unit} per {items[0]?.item_name.toLowerCase()}
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {items.map((item) => (
-                    <CustomOrderItem
-                      key={item.id}
-                      item={item}
-                      onAdd={addOrderItem}
-                      currentQuantity={
-                        orderItems.find(
-                          (orderItem) =>
-                            orderItem.category === item.category &&
-                            orderItem.item_name === item.item_name
-                        )?.quantity || 0
-                      }
-                    />
-                  ))}
-                </CardContent>
-              </Card>
-            ))}
-
-            {/* Order Notes */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Special Instructions</CardTitle>
-                <CardDescription>
-                  Add any specific requirements or account details
-                </CardDescription>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+          {/* Category Sidebar */}
+          <div className="xl:col-span-1">
+            <Card className="sticky top-6">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Categories</CardTitle>
               </CardHeader>
-              <CardContent>
-                <Textarea
-                  placeholder="Enter any special instructions, account details, preferred gaming hours, etc..."
-                  value={orderNotes}
-                  onChange={(e) => setOrderNotes(e.target.value)}
-                  rows={3}
-                  className="resize-none"
-                />
+              <CardContent className="space-y-2 pt-0">
+                {categories.map((category) => {
+                  const items = groupedPricing[category];
+                  const isSelected = selectedCategory === category;
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => setSelectedCategory(isSelected ? null : category)}
+                      className={`w-full p-3 rounded-lg border transition-all text-left ${
+                        isSelected
+                          ? `bg-gradient-to-r ${getCategoryColor(category)} border-current`
+                          : "border-border hover:border-primary/30 hover:bg-accent/50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          {getCategoryIcon(category)}
+                          <span className="font-medium text-sm">{getCategoryTitle(category)}</span>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">
+                          ${items[0]?.price_per_unit}
+                        </Badge>
+                      </div>
+                    </button>
+                  );
+                })}
               </CardContent>
             </Card>
           </div>
 
+          {/* Items Grid */}
+          <div className="xl:col-span-2">
+            <div className="space-y-4">
+              {categories
+                .filter((category) => !selectedCategory || selectedCategory === category)
+                .map((category) => {
+                  const items = groupedPricing[category];
+                  return (
+                    <Card key={category} className="overflow-hidden">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <div className={`p-2 rounded-lg bg-gradient-to-r ${getCategoryColor(category)}`}>
+                              {getCategoryIcon(category)}
+                            </div>
+                            <div>
+                              <CardTitle className="text-lg">{getCategoryTitle(category)}</CardTitle>
+                              <CardDescription className="text-xs">
+                                Starting at ${items[0]?.price_per_unit} per {items[0]?.item_name.toLowerCase()}
+                              </CardDescription>
+                            </div>
+                          </div>
+                          <Star className="w-4 h-4 text-yellow-500" />
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="space-y-3">
+                          {items.map((item) => (
+                            <ItemCard
+                              key={item.id}
+                              item={item}
+                              onAdd={addOrderItem}
+                              currentQuantity={
+                                orderItems.find(
+                                  (orderItem) =>
+                                    orderItem.category === item.category &&
+                                    orderItem.item_name === item.item_name
+                                )?.quantity || 0
+                              }
+                            />
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+
+              {/* Order Notes */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Special Instructions</CardTitle>
+                  <CardDescription className="text-xs">
+                    Add account details or specific requirements
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Textarea
+                    placeholder="Account details, preferred gaming hours, special requirements..."
+                    value={orderNotes}
+                    onChange={(e) => setOrderNotes(e.target.value)}
+                    rows={3}
+                    className="resize-none text-sm"
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
           {/* Order Summary */}
-          <div className="lg:col-span-1">
+          <div className="xl:col-span-1">
             <Card className="sticky top-6">
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <ShoppingCart className="w-5 h-5 mr-2" />
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center text-base">
+                  <ShoppingCart className="w-4 h-4 mr-2" />
                   Order Summary
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-0">
                 {orderItems.length === 0 ? (
-                  <div className="text-center py-8">
-                    <ShoppingCart className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                    <p className="text-muted-foreground text-sm">
-                      Add items to see your order summary
+                  <div className="text-center py-6">
+                    <ShoppingCart className="w-8 h-8 mx-auto mb-3 text-muted-foreground opacity-50" />
+                    <p className="text-xs text-muted-foreground">
+                      Select items to build your order
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="space-y-3">
-                      {orderItems.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
-                        >
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">
-                              {item.quantity} {item.item_name}
-                              {item.quantity > 1 ? "s" : ""}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              ${item.price_per_unit} each
-                            </p>
+                    <ScrollArea className="max-h-64">
+                      <div className="space-y-2 pr-2">
+                        {orderItems.map((item, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-2 bg-accent/30 rounded-md"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-xs truncate">
+                                {item.quantity} {item.item_name}
+                                {item.quantity > 1 ? "s" : ""}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                ${item.price_per_unit} each
+                              </p>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <p className="font-bold text-xs text-primary">
+                                ${item.total_price.toFixed(2)}
+                              </p>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => removeOrderItem(index)}
+                                className="h-5 w-5 p-0 text-muted-foreground hover:text-destructive"
+                              >
+                                <X className="w-3 h-3" />
+                              </Button>
+                            </div>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <p className="font-bold text-primary">
-                              ${item.total_price.toFixed(2)}
-                            </p>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => removeOrderItem(index)}
-                              className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                            >
-                              <X className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
 
                     <Separator />
 
                     <div className="flex justify-between items-center">
-                      <span className="font-semibold">Total:</span>
-                      <span className="text-xl font-bold text-primary">
+                      <span className="font-semibold text-sm">Total:</span>
+                      <span className="text-lg font-bold text-primary">
                         ${getTotalPrice().toFixed(2)}
                       </span>
                     </div>
@@ -434,16 +498,16 @@ export default function CustomOrder() {
                     <Button
                       onClick={addToCartAndNavigate}
                       className="w-full"
-                      size="lg"
+                      size="sm"
                     >
-                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      <ShoppingCart className="w-3 h-3 mr-2" />
                       Add to Cart
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      <ArrowRight className="w-3 h-3 ml-2" />
                     </Button>
 
                     <div className="flex items-center justify-center space-x-1 text-xs text-muted-foreground">
                       <Check className="w-3 h-3 text-green-500" />
-                      <span>Review before payment</span>
+                      <span>Review in cart</span>
                     </div>
                   </div>
                 )}
@@ -456,14 +520,14 @@ export default function CustomOrder() {
   );
 }
 
-// Compact Custom Order Item Component
-interface CustomOrderItemProps {
+// Compact Item Component
+interface ItemCardProps {
   item: CustomPricing;
   onAdd: (item: CustomPricing, quantity: number) => void;
   currentQuantity: number;
 }
 
-function CustomOrderItem({ item, onAdd, currentQuantity }: CustomOrderItemProps) {
+function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
   const [quantity, setQuantity] = useState(currentQuantity || item.minimum_quantity);
 
   useEffect(() => {
@@ -487,27 +551,27 @@ function CustomOrderItem({ item, onAdd, currentQuantity }: CustomOrderItemProps)
   const totalPrice = item.price_per_unit * quantity;
 
   return (
-    <div className="border border-border/30 rounded-lg p-4 hover:border-primary/30 transition-colors">
-      <div className="flex items-center justify-between mb-3">
+    <div className="border border-border/50 rounded-lg p-3 hover:border-primary/30 transition-all hover:shadow-sm bg-background/50">
+      <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
           <div className="flex items-center space-x-2 mb-1">
-            <h4 className="font-medium">{item.item_name}</h4>
-            <Badge variant="outline" className="text-xs">
+            <h4 className="font-medium text-sm">{item.item_name}</h4>
+            <Badge variant="outline" className="text-xs h-5">
               ${item.price_per_unit}
             </Badge>
           </div>
-          <p className="text-sm text-muted-foreground">{item.description}</p>
+          <p className="text-xs text-muted-foreground leading-tight">{item.description}</p>
         </div>
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           <Button
             size="sm"
             variant="outline"
             onClick={() => adjustQuantity(-1)}
             disabled={quantity <= item.minimum_quantity}
-            className="h-8 w-8 p-0"
+            className="h-6 w-6 p-0"
           >
             <Minus className="w-3 h-3" />
           </Button>
@@ -520,7 +584,7 @@ function CustomOrderItem({ item, onAdd, currentQuantity }: CustomOrderItemProps)
                 Math.max(item.minimum_quantity, Math.min(item.maximum_quantity, value))
               );
             }}
-            className="w-16 text-center text-sm"
+            className="w-12 text-center text-xs h-6"
             min={item.minimum_quantity}
             max={item.maximum_quantity}
           />
@@ -529,23 +593,23 @@ function CustomOrderItem({ item, onAdd, currentQuantity }: CustomOrderItemProps)
             variant="outline"
             onClick={() => adjustQuantity(1)}
             disabled={quantity >= item.maximum_quantity}
-            className="h-8 w-8 p-0"
+            className="h-6 w-6 p-0"
           >
             <Plus className="w-3 h-3" />
           </Button>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2">
           <div className="text-right">
             <p className="text-sm font-bold text-primary">${totalPrice.toFixed(2)}</p>
           </div>
-          <Button onClick={handleAdd} size="sm">
+          <Button onClick={handleAdd} size="sm" className="h-6 text-xs px-2">
             {currentQuantity > 0 ? "Update" : "Add"}
           </Button>
         </div>
       </div>
 
-      <div className="text-xs text-muted-foreground mt-2 flex items-center space-x-4">
+      <div className="text-xs text-muted-foreground mt-1 flex items-center justify-between">
         <span>Min: {item.minimum_quantity}</span>
         <span>Max: {item.maximum_quantity}</span>
       </div>
