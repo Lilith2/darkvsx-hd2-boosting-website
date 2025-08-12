@@ -19,6 +19,9 @@ export default defineConfig(({ mode }) => ({
     sourcemap: mode === "development",
     minify: "terser",
     target: "esnext",
+    modulePreload: {
+      polyfill: false
+    },
     rollupOptions: {
       output: {
         manualChunks: (id) => {
