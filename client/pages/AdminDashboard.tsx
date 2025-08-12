@@ -1346,55 +1346,7 @@ export default function AdminDashboard() {
 
           {/* Custom Orders Tab */}
           <TabsContent value="custom-orders" className="space-y-6">
-            <Card className="border border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Package className="w-5 h-5 mr-2" />
-                    Custom Orders
-                  </div>
-                  <Badge variant="secondary">
-                    Coming Soon
-                  </Badge>
-                </CardTitle>
-                <CardDescription>
-                  Monitor and manage custom order requests from the order builder
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                  <h3 className="text-lg font-semibold mb-2">Custom Orders Dashboard</h3>
-                  <p className="text-muted-foreground mb-4">
-                    This section will show custom orders created through the order builder.
-                    Features include order tracking, status updates, and delivery management.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
-                    <div className="p-4 border border-border/30 rounded-lg">
-                      <BarChart3 className="w-8 h-8 mx-auto mb-2 text-blue-500" />
-                      <h4 className="font-medium mb-1">Order Analytics</h4>
-                      <p className="text-xs text-muted-foreground">
-                        Track popular items and revenue
-                      </p>
-                    </div>
-                    <div className="p-4 border border-border/30 rounded-lg">
-                      <Activity className="w-8 h-8 mx-auto mb-2 text-green-500" />
-                      <h4 className="font-medium mb-1">Status Management</h4>
-                      <p className="text-xs text-muted-foreground">
-                        Update order progress and delivery
-                      </p>
-                    </div>
-                    <div className="p-4 border border-border/30 rounded-lg">
-                      <Users className="w-8 h-8 mx-auto mb-2 text-purple-500" />
-                      <h4 className="font-medium mb-1">Customer Details</h4>
-                      <p className="text-xs text-muted-foreground">
-                        Access customer info and notes
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <CustomOrdersManager />
           </TabsContent>
 
           {/* Support Tickets Tab */}
