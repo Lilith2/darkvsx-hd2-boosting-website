@@ -715,37 +715,76 @@ export default function Checkout() {
                       </div>
                     )}
 
-                  {/* PayPal Payment Button */}
+                  {/* Payment Options */}
                   {agreeToTerms &&
                   (isAuthenticated || (guestInfo.name && guestInfo.email)) ? (
                     <div className="space-y-4">
-                      <div className="bg-muted/50 border border-border p-4 rounded-lg">
-                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                          <Shield className="w-4 h-4" />
-                          <span>
-                            Secured by PayPal • 256-bit SSL encryption
-                          </span>
+                      {total <= 0 ? (
+                        // Credit-only payment
+                        <div className="space-y-4">
+                          <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 p-4 rounded-lg">
+                            <div className="flex items-center space-x-2 text-sm">
+                              <CheckCircle className="w-4 h-4 text-green-600" />
+                              <span className="text-green-700 dark:text-green-400 font-medium">
+                                Order total covered by referral credits!
+                              </span>
+                            </div>
+                            <p className="text-xs text-green-600 dark:text-green-500 mt-1">
+                              No payment required. Click below to confirm your order.
+                            </p>
+                          </div>
+
+                          <Button
+                            onClick={handleCreditOnlyPayment}
+                            disabled={isProcessing}
+                            className="w-full bg-green-600 hover:bg-green-700 text-white"
+                            size="lg"
+                          >
+                            {isProcessing ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                                Processing Order...
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Confirm Order (Paid with Credits)
+                              </>
+                            )}
+                          </Button>
                         </div>
-                      </div>
+                      ) : (
+                        // PayPal payment
+                        <div className="space-y-4">
+                          <div className="bg-muted/50 border border-border p-4 rounded-lg">
+                            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                              <Shield className="w-4 h-4" />
+                              <span>
+                                Secured by PayPal • 256-bit SSL encryption
+                              </span>
+                            </div>
+                          </div>
 
-                      <PayPalButtons
-                        style={{
-                          layout: "vertical",
-                          color: "blue",
-                          shape: "rect",
-                          label: "paypal",
-                        }}
-                        createOrder={createPayPalOrder}
-                        onApprove={async (data, actions) => {
-                          const details = await actions.order.capture();
-                          handlePayPalSuccess(details, data);
-                        }}
-                        onError={handlePayPalError}
-                        onCancel={handlePayPalCancel}
-                        disabled={isProcessing}
-                      />
+                          <PayPalButtons
+                            style={{
+                              layout: "vertical",
+                              color: "blue",
+                              shape: "rect",
+                              label: "paypal",
+                            }}
+                            createOrder={createPayPalOrder}
+                            onApprove={async (data, actions) => {
+                              const details = await actions.order.capture();
+                              handlePayPalSuccess(details, data);
+                            }}
+                            onError={handlePayPalError}
+                            onCancel={handlePayPalCancel}
+                            disabled={isProcessing}
+                          />
+                        </div>
+                      )}
 
-                      {isProcessing && (
+                      {isProcessing && total > 0 && (
                         <div className="text-center py-4">
                           <div className="inline-flex items-center space-x-2 text-sm text-muted-foreground">
                             <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
