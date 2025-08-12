@@ -496,18 +496,21 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Debug Info */}
-        {error && (
+        {(error || customOrdersError) && (
           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
             <h3 className="font-semibold text-red-600 mb-2">
               Database Connection Error
             </h3>
-            <p className="text-sm text-red-600">{error}</p>
+            {error && <p className="text-sm text-red-600">Regular Orders: {error}</p>}
+            {customOrdersError && <p className="text-sm text-red-600">Custom Orders: {customOrdersError}</p>}
           </div>
         )}
 
-        {loading && (
+        {(loading || customOrdersLoading) && (
           <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-            <p className="text-blue-600">Loading orders...</p>
+            <p className="text-blue-600">
+              Loading {loading && customOrdersLoading ? 'all orders' : loading ? 'regular orders' : 'custom orders'}...
+            </p>
           </div>
         )}
 
