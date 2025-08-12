@@ -1451,6 +1451,13 @@ export default function AdminDashboard() {
         bundle={selectedBundle}
       />
 
+      <PricingModal
+        isOpen={isPricingModalOpen}
+        onClose={() => setIsPricingModalOpen(false)}
+        onSave={handleSavePricing}
+        pricing={isEditingPricing}
+      />
+
       {/* Ticket Details Modal */}
       <Dialog open={isTicketModalOpen} onOpenChange={setIsTicketModalOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
