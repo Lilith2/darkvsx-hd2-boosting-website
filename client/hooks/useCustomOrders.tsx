@@ -92,11 +92,15 @@ export function useCustomOrders() {
   // Fetch order statistics
   const fetchStats = async () => {
     try {
+      // Try using the stored function first
       const { data, error: statsError } = await supabase
         .rpc("get_custom_order_stats");
 
       if (statsError) {
-        throw statsError;
+        // If function doesn't exist, calculate stats manually
+        console.log("Stats function not available, calculating manually...");
+        await calculateStatsManually();
+        return;
       }
 
       if (data && data.length > 0) {
@@ -104,7 +108,35 @@ export function useCustomOrders() {
       }
     } catch (err: any) {
       console.error("Error fetching order stats:", err);
-      // Don't set error state for stats, as this is non-critical
+      // Try manual calculation as fallback
+      await calculateStatsManually();
+    }
+  };
+
+  // Manual stats calculation as fallback
+  const calculateStatsManually = async () => {
+    try {
+      const { data: allOrders, error } = await supabase
+        .from("custom_orders")
+        .select("*");
+
+      if (error) {
+        console.error("Error in manual stats calculation:", error);
+        return;
+      }
+
+      const orders = allOrders || [];
+      const stats: CustomOrderStats = {
+        total_orders: orders.length,
+        total_revenue: orders.reduce((sum, order) => sum + (order.total_amount || 0), 0),
+        avg_order_value: orders.length > 0 ? orders.reduce((sum, order) => sum + (order.total_amount || 0), 0) / orders.length : 0,
+        pending_orders: orders.filter(order => order.status === 'pending').length,
+        completed_orders: orders.filter(order => order.status === 'completed').length,
+      };
+
+      setStats(stats);
+    } catch (err: any) {
+      console.error("Error in manual stats calculation:", err);
     }
   };
 
