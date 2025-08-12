@@ -320,6 +320,33 @@ export default function Checkout() {
         }
       }
 
+      // Process referral reward if referral code was used
+      if (referralCode && orderId && regularOrderItems.length > 0) {
+        try {
+          const { supabase } = await import("@/integrations/supabase/client");
+          const orderAmount = regularOrderItems.reduce(
+            (sum, item) => sum + item.service.price * item.quantity,
+            0,
+          );
+
+          const { error: rewardError } = await supabase.rpc('process_referral_reward', {
+            p_order_id: orderId,
+            p_referral_code: referralCode,
+            p_order_amount: orderAmount
+          });
+
+          if (rewardError) {
+            console.warn('Failed to process referral reward:', rewardError);
+            // Don't fail the order, just log the issue
+          } else {
+            console.log('Referral reward processed successfully');
+          }
+        } catch (err) {
+          console.warn('Error processing referral reward:', err);
+          // Don't fail the order, just log the issue
+        }
+      }
+
       // Clear cart
       clearCart();
 
