@@ -740,13 +740,46 @@ export default function AdminDashboard() {
           <TabsContent value="orders" className="space-y-6">
             <Card className="border border-border/50">
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Package className="w-5 h-5 mr-2" />
-                  Order Management ({orders.filter(order => !order.services.some(s => s.id === "support-ticket")).length})
-                </CardTitle>
-                <CardDescription>
-                  Manage customer orders and track delivery progress
-                </CardDescription>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <CardTitle className="flex items-center">
+                      <Package className="w-5 h-5 mr-2" />
+                      Order Management ({filteredOrders.length})
+                    </CardTitle>
+                    <CardDescription>
+                      Manage customer orders and track delivery progress
+                    </CardDescription>
+                  </div>
+
+                  {/* Filter Buttons */}
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { value: "all", label: "All Orders", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket")).length },
+                      { value: "pending", label: "Pending", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "pending").length },
+                      { value: "processing", label: "Processing", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "processing").length },
+                      { value: "in-progress", label: "In Progress", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "in-progress").length },
+                      { value: "completed", label: "Completed", count: orders.filter(order => !order.services.some(s => s.id === "support-ticket") && order.status === "completed").length }
+                    ].map((filter) => (
+                      <Button
+                        key={filter.value}
+                        size="sm"
+                        variant={orderFilter === filter.value ? "default" : "outline"}
+                        onClick={() => setOrderFilter(filter.value)}
+                        className="text-xs"
+                      >
+                        {filter.label}
+                        {filter.count > 0 && (
+                          <Badge
+                            variant="secondary"
+                            className="ml-2 h-4 px-1 text-xs"
+                          >
+                            {filter.count}
+                          </Badge>
+                        )}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
