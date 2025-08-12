@@ -955,7 +955,7 @@ export default function AdminDashboard() {
                                 {bundle.name}
                               </CardTitle>
                               <p className="text-sm text-muted-foreground mt-1">
-                                {bundle.orders} orders • {bundle.discount}%
+                                {bundle.orders || 0} orders • {bundle.discount || 0}%
                                 discount
                               </p>
                             </div>
@@ -990,14 +990,14 @@ export default function AdminDashboard() {
                             <div className="flex justify-between items-center">
                               <div className="flex items-baseline gap-2">
                                 <span className="text-2xl font-bold text-primary">
-                                  ${bundle.discountedPrice}
+                                  ${bundle.discountedPrice?.toFixed(2) || '0.00'}
                                 </span>
                                 <span className="text-sm text-muted-foreground line-through">
-                                  ${bundle.originalPrice}
+                                  ${bundle.originalPrice?.toFixed(2) || '0.00'}
                                 </span>
                               </div>
                               <span className="text-sm text-muted-foreground">
-                                {bundle.duration}
+                                {bundle.duration || 'N/A'}
                               </span>
                             </div>
 
@@ -1006,8 +1006,8 @@ export default function AdminDashboard() {
                             </p>
 
                             <div className="flex justify-between text-xs text-muted-foreground">
-                              <span>{bundle.services.length} services</span>
-                              <span>{bundle.features.length} features</span>
+                              <span>{bundle.services?.length || 0} services</span>
+                              <span>{bundle.features?.length || 0} features</span>
                             </div>
 
                             <div className="flex space-x-2">
