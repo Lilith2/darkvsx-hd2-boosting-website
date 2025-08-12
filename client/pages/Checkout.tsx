@@ -47,6 +47,7 @@ const PAYPAL_CLIENT_ID =
 export default function Checkout() {
   const { cartItems, getCartTotal, clearCart } = useCart();
   const { addOrder } = useOrders();
+  const { createOrder: createCustomOrder } = useCustomOrders();
   const { user, isAuthenticated } = useAuth();
   const { getUserCredits } = useReferrals();
   const { toast } = useToast();
