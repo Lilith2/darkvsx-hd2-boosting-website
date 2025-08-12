@@ -669,10 +669,11 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
             value={quantity}
             onChange={(e) => {
               const value = parseInt(e.target.value) || item.minimum_quantity;
+              const maxQty = item.maximum_quantity || 999999; // Default to large number if null
               setQuantity(
                 Math.max(
                   item.minimum_quantity,
-                  Math.min(item.maximum_quantity, value),
+                  Math.min(maxQty, value),
                 ),
               );
             }}
