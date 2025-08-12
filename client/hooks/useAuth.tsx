@@ -185,6 +185,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateProfile = async (updates: Partial<{ username: string; discord_username: string }>): Promise<boolean> => {
+    if (!user) return false;
+
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", user.id);
+
+      if (error) {
+        console.error("Profile update error:", error);
+        return false;
+      }
+
+      // Update local user state
+      setUser(prev => prev ? { ...prev, username: updates.username || prev.username } : null);
+      return true;
+    } catch (error) {
+      console.error("Profile update error:", error);
+      return false;
+    }
+  };
+
   const logout = async () => {
     await supabase.auth.signOut();
   };
@@ -201,6 +227,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         register,
         logout,
         resendConfirmation,
+        updateProfile,
         isAuthenticated,
         isAdmin,
       }}
