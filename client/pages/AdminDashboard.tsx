@@ -1421,10 +1421,19 @@ export default function AdminDashboard() {
                                   <p className="font-medium">
                                     {order.services.map((s, idx) => (
                                       <span key={s.id}>
-                                        {s.name}
-                                        {s.quantity > 1 && ` (x${s.quantity})`}
-                                        {idx < order.services.length - 1 &&
-                                          ", "}
+                                        {/* Show full custom order details if it's a custom order */}
+                                        {s.name.includes("Custom Order:") ? (
+                                          <div className="text-sm">
+                                            <div className="font-semibold text-purple-600 mb-1">Custom Order Items:</div>
+                                            <div className="text-muted-foreground">{s.name.replace("Custom Order: ", "")}</div>
+                                          </div>
+                                        ) : (
+                                          <>
+                                            {s.name}
+                                            {s.quantity > 1 && ` (x${s.quantity})`}
+                                          </>
+                                        )}
+                                        {idx < order.services.length - 1 && !s.name.includes("Custom Order:") && ", "}
                                       </span>
                                     ))}
                                   </p>
