@@ -1507,7 +1507,7 @@ export default function AdminDashboard() {
                           {/* Recent Messages */}
                           {order.messages && order.messages.length > 0 && (
                             <div className="space-y-2">
-                              <p className="text-sm font-medium flex items-center gap-2">
+                              <div className="text-sm font-medium flex items-center gap-2">
                                 <MessageSquare className="w-4 h-4" />
                                 Messages ({order.messages.length})
                                 {order.messages.filter(
@@ -1523,7 +1523,7 @@ export default function AdminDashboard() {
                                     new
                                   </Badge>
                                 )}
-                              </p>
+                              </div>
                               <div className="max-h-40 overflow-y-auto space-y-2">
                                 {order.messages
                                   .slice(-3)
