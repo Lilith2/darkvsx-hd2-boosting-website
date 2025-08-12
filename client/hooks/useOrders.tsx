@@ -264,29 +264,16 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         notes: orderData.notes,
       };
 
-      // Only add optional fields if they exist and if the columns exist in the schema
+      // Only add optional fields that actually exist in the database schema
       const insertData = { ...baseOrderData };
 
-      // Try to add optional fields - if they fail, we'll continue without them
-      if (orderData.transactionId) {
-        insertData.transaction_id = orderData.transactionId;
-      }
-
+      // Add IP address (this field exists in the database)
       if (ipAddress) {
         insertData.ip_address = ipAddress;
       }
 
-      if (orderData.referralCode) {
-        insertData.referral_code = orderData.referralCode;
-      }
-
-      if (orderData.referralDiscount) {
-        insertData.referral_discount = orderData.referralDiscount;
-      }
-
-      if (orderData.referralCreditsUsed) {
-        insertData.referral_credits_used = orderData.referralCreditsUsed;
-      }
+      // Note: transaction_id, referral_code, referral_discount, referral_credits_used
+      // fields don't exist in the current database schema, so we skip them
 
       // First check if we can access the orders table at all
       const { data: testData, error: testError } = await supabase
