@@ -201,17 +201,31 @@ export default function AdminDashboard() {
     )
     .slice(0, 5);
 
-  // Filter orders based on selected filter
-  const filteredOrders = orders
-    .filter((order) => !order.services.some((s) => s.id === "support-ticket"))
-    .filter((order) => {
-      if (orderFilter === "all") return true;
-      return order.status === orderFilter;
-    })
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
+  // Filter orders based on selected filter and type
+  const getFilteredOrders = () => {
+    if (orderTypeFilter === "custom") {
+      return customOrders.filter((order) => {
+        if (orderFilter === "all") return true;
+        return order.status === orderFilter;
+      }).sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+    } else {
+      return orders
+        .filter((order) => !order.services.some((s) => s.id === "support-ticket"))
+        .filter((order) => {
+          if (orderFilter === "all") return true;
+          return order.status === orderFilter;
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        );
+    }
+  };
+
+  const filteredOrders = getFilteredOrders();
 
   // Calculate actual top performing services from both regular and custom orders
   const topServices = (() => {
