@@ -196,6 +196,11 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (error) {
+        // If credit columns don't exist, return 0
+        if (error.code === 'PGRST116' || error.message?.includes('column') || error.message?.includes('does not exist')) {
+          console.warn("Credit columns do not exist in profiles table. Database migration needed.");
+          return 0;
+        }
         console.log("No profile found for user, returning 0");
         return 0;
       }
