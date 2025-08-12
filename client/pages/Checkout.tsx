@@ -370,6 +370,18 @@ export default function Checkout() {
 
   const handlePayPalSuccess = async (details: any, data: any) => {
     console.log("PayPal payment successful:", { details, data });
+    console.log("PayPal details structure:", JSON.stringify(details, null, 2));
+    console.log("PayPal data structure:", JSON.stringify(data, null, 2));
+
+    // Look for transaction/capture ID in the details
+    const captureId = details?.purchase_units?.[0]?.payments?.captures?.[0]?.id;
+    const transactionId = details?.id; // This is the order ID
+    console.log("PayPal IDs found:", {
+      orderId: transactionId,
+      captureId: captureId,
+      fullCaptureDetails: details?.purchase_units?.[0]?.payments?.captures?.[0]
+    });
+
     await processOrder(details, data);
   };
 
