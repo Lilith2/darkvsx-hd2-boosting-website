@@ -99,6 +99,29 @@ export default function Account() {
     confirmPassword: "",
   });
 
+  // Load Discord username from profile when component mounts
+  useEffect(() => {
+    const loadDiscordUsername = async () => {
+      if (user?.id) {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("discord_username")
+          .eq("id", user.id)
+          .single();
+
+        if (data && !error) {
+          setAccountData(prev => ({
+            ...prev,
+            discord: data.discord_username || ""
+          }));
+        }
+      }
+    };
+
+    loadDiscordUsername();
+  }, [user?.id]);
+
 
   // Generate recent activity from actual orders
   const recentActivity = userOrders.slice(0, 4).map(order => ({
@@ -168,12 +191,35 @@ export default function Account() {
   };
 
 
-  const handleAccountUpdate = (e: React.FormEvent) => {
+  const handleAccountUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Account Updated",
-      description: "Your account information has been updated successfully.",
-    });
+
+    try {
+      const success = await updateProfile({
+        username: accountData.username,
+        discord_username: accountData.discord,
+      });
+
+      if (success) {
+        toast({
+          title: "Account Updated",
+          description: "Your account information has been updated successfully.",
+        });
+      } else {
+        toast({
+          title: "Update Failed",
+          description: "Failed to update account information. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Profile update error:", error);
+      toast({
+        title: "Update Failed",
+        description: "An error occurred while updating your profile.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handlePasswordChange = (e: React.FormEvent) => {
