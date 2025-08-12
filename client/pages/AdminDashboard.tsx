@@ -159,7 +159,31 @@ export default function AdminDashboard() {
   const allCustomers = new Set([...regularOrderCustomers, ...customOrderCustomers]);
   const totalCustomers = allCustomers.size;
 
-  const recentOrders = orders
+  // Combine and sort recent orders from both types
+  const allRecentOrders = [
+    ...orders.map(order => ({
+      ...order,
+      type: 'regular' as const,
+      createdAt: order.createdAt
+    })),
+    ...customOrders.map(order => ({
+      id: order.id,
+      customerName: order.customer_email || 'Custom Order Customer',
+      customerEmail: order.customer_email || '',
+      totalAmount: order.total_amount,
+      status: order.status,
+      createdAt: order.created_at,
+      type: 'custom' as const,
+      services: order.items.map(item => ({
+        id: item.id,
+        name: item.item_name,
+        price: item.price_per_unit,
+        quantity: item.quantity
+      }))
+    }))
+  ];
+
+  const recentOrders = allRecentOrders
     .sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
