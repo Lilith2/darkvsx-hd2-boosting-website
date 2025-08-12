@@ -1713,25 +1713,6 @@ export default function AdminDashboard() {
             </Card>
           </TabsContent>
 
-          {/* Custom Orders Tab */}
-          <TabsContent value="custom-orders" className="space-y-6">
-            <Card className="border border-border/50">
-              <CardHeader>
-                <div>
-                  <CardTitle className="flex items-center">
-                    <Package className="w-5 h-5 mr-2" />
-                    Custom Orders Management
-                  </CardTitle>
-                  <CardDescription>
-                    Manage custom order requests and track their progress
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <SimpleCustomOrders />
-              </CardContent>
-            </Card>
-          </TabsContent>
 
           {/* Support Tickets Tab */}
           <TabsContent value="tickets" className="space-y-6">
