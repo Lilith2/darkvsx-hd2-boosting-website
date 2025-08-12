@@ -49,7 +49,7 @@ export default function Checkout() {
   const { addOrder } = useOrders();
   const { createOrder: createCustomOrder } = useCustomOrders();
   const { user, isAuthenticated } = useAuth();
-  const { getUserCredits } = useReferrals();
+  const { getUserCredits, useCredits } = useReferrals();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -69,7 +69,7 @@ export default function Checkout() {
   const subtotal = getCartTotal();
   const discount = referralDiscount + referralCreditsApplied;
   const tax = (subtotal - discount) * 0.08; // 8% tax on discounted amount
-  const total = subtotal - discount + tax;
+  const total = Math.max(0, subtotal - discount + tax); // Ensure total is never negative
 
   // Fetch user's available referral credits
   useEffect(() => {
@@ -203,8 +203,9 @@ export default function Checkout() {
   const handleReferralCreditsToggle = (checked: boolean) => {
     setUseReferralCredits(checked);
     if (checked && availableCredits > 0) {
-      // Apply up to the subtotal amount or available credits, whichever is smaller
-      const creditsToApply = Math.min(availableCredits, subtotal);
+      // Apply up to the subtotal + tax amount or available credits, whichever is smaller
+      const maxApplicable = subtotal - referralDiscount + (subtotal - referralDiscount) * 0.08;
+      const creditsToApply = Math.min(availableCredits, maxApplicable);
       setReferralCreditsApplied(creditsToApply);
 
       toast({
@@ -236,11 +237,22 @@ export default function Checkout() {
     );
   }
 
-  const handlePayPalSuccess = async (details: any, data: any) => {
-    console.log("PayPal payment successful:", { details, data });
+  const processOrder = async (paymentDetails?: any, paymentData?: any) => {
     setIsProcessing(true);
 
     try {
+      // Use referral credits if applied
+      if (useReferralCredits && referralCreditsApplied > 0) {
+        const success = await useCredits(
+          referralCreditsApplied,
+          undefined, // orderId will be set after order creation
+          'Credits used for checkout'
+        );
+
+        if (!success) {
+          throw new Error('Failed to use referral credits');
+        }
+      }
       // Check if cart contains custom orders
       const customOrderItems = cartItems.filter(
         (item) => item.service.customOrderData,
