@@ -288,6 +288,17 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         insertData.referral_credits_used = orderData.referralCreditsUsed;
       }
 
+      // First check if we can access the orders table at all
+      const { data: testData, error: testError } = await supabase
+        .from("orders")
+        .select("id")
+        .limit(1);
+
+      if (testError) {
+        console.error("Cannot access orders table:", testError);
+        throw new Error(`Orders table not accessible: ${testError.message}`);
+      }
+
       const { data: orderResult, error: orderError } = await supabase
         .from("orders")
         .insert([insertData])
