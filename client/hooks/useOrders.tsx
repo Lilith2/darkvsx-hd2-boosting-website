@@ -264,16 +264,31 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         notes: orderData.notes,
       };
 
-      // Only add optional fields that actually exist in the database schema
+      // Add all optional fields that now exist in the database schema
       const insertData = { ...baseOrderData };
 
-      // Add IP address (this field exists in the database)
+      // Add transaction ID for PayPal tracking
+      if (orderData.transactionId) {
+        insertData.transaction_id = orderData.transactionId;
+      }
+
+      // Add IP address for security/chargeback protection
       if (ipAddress) {
         insertData.ip_address = ipAddress;
       }
 
-      // Note: transaction_id, referral_code, referral_discount, referral_credits_used
-      // fields don't exist in the current database schema, so we skip them
+      // Add referral system fields
+      if (orderData.referralCode) {
+        insertData.referral_code = orderData.referralCode;
+      }
+
+      if (orderData.referralDiscount) {
+        insertData.referral_discount = orderData.referralDiscount;
+      }
+
+      if (orderData.referralCreditsUsed) {
+        insertData.referral_credits_used = orderData.referralCreditsUsed;
+      }
 
       const { data: orderResult, error: orderError } = await supabase
         .from("orders")
