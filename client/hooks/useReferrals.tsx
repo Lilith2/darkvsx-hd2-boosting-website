@@ -18,7 +18,6 @@ export interface ReferralStats {
   totalReferred: number;
   totalEarned: number;
   pendingEarnings: number;
-  referrals: Referral[];
   creditBalance: number;
 }
 
@@ -39,7 +38,6 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
     totalReferred: 0,
     totalEarned: 0,
     pendingEarnings: 0,
-    referrals: [],
     creditBalance: 0,
   });
   const [loading, setLoading] = useState(true);
@@ -51,7 +49,6 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         totalReferred: 0,
         totalEarned: 0,
         pendingEarnings: 0,
-        referrals: [],
         creditBalance: 0,
       });
       setLoading(false);
@@ -62,13 +59,6 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
-      // Fetch user's referrals
-      const { data: referrals, error: referralsError } = await supabase
-        .from("referrals")
-        .select("*")
-        .eq("referrer_user_id", user.id)
-        .order("created_at", { ascending: false });
-
       // Fetch user's credit balance
       const { data: profileData, error: creditsError } = await supabase
         .from("profiles")
@@ -76,41 +66,47 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         .eq("id", user.id)
         .single();
 
-      const referralData = referrals || [];
+      // Fetch orders that used referral codes (simple tracking)
+      const { data: ordersData, error: ordersError } = await supabase
+        .from("orders")
+        .select("referral_code, referral_credits_used, total_amount, status")
+        .not("referral_code", "is", null);
+
       const creditBalance = profileData?.credit_balance || 0;
 
-      // Handle referrals table not existing
-      if (referralsError && 
-          (referralsError.code === "PGRST116" || 
-           referralsError.message?.includes("relation") || 
-           referralsError.message?.includes("does not exist"))) {
-        console.warn("Referrals table not found - using default data");
-      } else if (referralsError) {
-        throw referralsError;
-      }
-
       // Handle credit_balance column not existing
-      if (creditsError && 
-          (creditsError.code === 'PGRST116' || 
-           creditsError.message?.includes('column') || 
+      if (creditsError &&
+          (creditsError.code === 'PGRST116' ||
+           creditsError.message?.includes('column') ||
            creditsError.message?.includes('does not exist'))) {
         console.warn("Credit balance column not found - using 0");
       }
 
-      // Calculate stats
-      const totalReferred = referralData.length;
-      const totalEarned = referralData
-        .filter(r => r?.status === "completed")
-        .reduce((sum, r) => sum + (parseFloat(String(r.commission_amount)) || 0), 0);
-      const pendingEarnings = referralData
-        .filter(r => r?.status === "pending")
-        .reduce((sum, r) => sum + (parseFloat(String(r.commission_amount)) || 0), 0);
+      // Calculate referral stats from orders with referral codes
+      const userReferralCode = `HD2BOOST-${user.id.slice(-6)}`;
+      const referralOrders = ordersData?.filter(order =>
+        order.referral_code === userReferralCode
+      ) || [];
+
+      const totalReferred = referralOrders.length;
+      const totalEarned = referralOrders
+        .filter(order => order.status === "completed")
+        .reduce((sum, order) => {
+          // Calculate 5% commission from order total
+          const commission = order.total_amount * 0.05;
+          return sum + commission;
+        }, 0);
+      const pendingEarnings = referralOrders
+        .filter(order => order.status === "pending" || order.status === "processing")
+        .reduce((sum, order) => {
+          const commission = order.total_amount * 0.05;
+          return sum + commission;
+        }, 0);
 
       setStats({
         totalReferred,
         totalEarned,
         pendingEarnings,
-        referrals: referralData,
         creditBalance: parseFloat(String(creditBalance)) || 0,
       });
 
