@@ -25,14 +25,18 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Core React libraries - keep React and ReactDOM together
+          // Core React libraries - MUST be first and most specific
           if (
+            id.includes("node_modules/react/index.js") ||
+            id.includes("node_modules/react-dom/") ||
             id.includes("node_modules/react/") ||
-            id.includes("node_modules/react-dom/")
+            id.includes("node_modules/scheduler/") ||
+            id.includes("react/jsx-runtime") ||
+            id.includes("react-dom/client")
           ) {
             return "vendor-react";
           }
-          // Router
+          // Router (after React check)
           if (id.includes("react-router")) {
             return "vendor-router";
           }
@@ -64,7 +68,7 @@ export default defineConfig(({ mode }) => ({
           if (id.includes("three") || id.includes("@react-three")) {
             return "vendor-3d";
           }
-          // Other vendor libraries
+          // Other vendor libraries (this should be last)
           if (id.includes("node_modules")) {
             return "vendor-misc";
           }
