@@ -73,6 +73,9 @@ export default function AdminDashboard() {
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
   const [ticketReply, setTicketReply] = useState("");
   const [orderFilter, setOrderFilter] = useState<string>("all"); // all, pending, processing, in-progress, completed
+  const [customPricing, setCustomPricing] = useState<any[]>([]);
+  const [isEditingPricing, setIsEditingPricing] = useState<any>(null);
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
 
   // Analytics calculations
   const totalRevenue = parseFloat(
