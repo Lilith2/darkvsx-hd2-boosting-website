@@ -337,7 +337,7 @@ export default function CustomOrder() {
       }
 
       // Add to cart
-      addToCart({ service: customService, quantity: 1 });
+      addToCart(customService);
 
       toast({
         title: "Added to Cart!",
