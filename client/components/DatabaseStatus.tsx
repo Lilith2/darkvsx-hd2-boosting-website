@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CheckCircle, Database, RefreshCw } from "lucide-react";
@@ -18,8 +24,8 @@ export function DatabaseStatus() {
     tablesExist: false,
     userCanRead: false,
     error: null,
-    environment: 'unknown',
-    url: ''
+    environment: "unknown",
+    url: "",
   });
   const [loading, setLoading] = useState(true);
 
@@ -27,29 +33,40 @@ export function DatabaseStatus() {
     setLoading(true);
     try {
       // Check environment variables
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://ahqqptrclqtwqjgmtesv.supabase.co";
-      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFocXFwdHJjbHF0d3FqZ210ZXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNDM3NTMsImV4cCI6MjA2OTkxOTc1M30.FRFHf-XvnBLzZvcGseS82HJIORQXs_8OEEVq0RpabN0";
-      
-      const environment = import.meta.env.MODE || 'unknown';
+      const supabaseUrl =
+        import.meta.env.VITE_SUPABASE_URL ||
+        "https://ahqqptrclqtwqjgmtesv.supabase.co";
+      const supabaseKey =
+        import.meta.env.VITE_SUPABASE_ANON_KEY ||
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFocXFwdHJjbHF0d3FqZ210ZXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNDM3NTMsImV4cCI6MjA2OTkxOTc1M30.FRFHf-XvnBLzZvcGseS82HJIORQXs_8OEEVq0RpabN0";
 
-      console.log('Environment:', environment);
-      console.log('Supabase URL:', supabaseUrl);
-      console.log('Supabase Key (first 20 chars):', supabaseKey.substring(0, 20) + '...');
+      const environment = import.meta.env.MODE || "unknown";
+
+      console.log("Environment:", environment);
+      console.log("Supabase URL:", supabaseUrl);
+      console.log(
+        "Supabase Key (first 20 chars):",
+        supabaseKey.substring(0, 20) + "...",
+      );
 
       // Test basic connection
       const { data: connectionTest, error: connectionError } = await supabase
-        .from('profiles')
-        .select('count', { count: 'exact', head: true });
+        .from("profiles")
+        .select("count", { count: "exact", head: true });
 
       if (connectionError) {
-        if (connectionError.code === 'PGRST116' || connectionError.message?.includes('relation') || connectionError.message?.includes('does not exist')) {
+        if (
+          connectionError.code === "PGRST116" ||
+          connectionError.message?.includes("relation") ||
+          connectionError.message?.includes("does not exist")
+        ) {
           setStatus({
             connected: true,
             tablesExist: false,
             userCanRead: false,
-            error: 'Tables do not exist. Database needs to be set up.',
+            error: "Tables do not exist. Database needs to be set up.",
             environment,
-            url: supabaseUrl
+            url: supabaseUrl,
           });
           return;
         }
@@ -58,8 +75,8 @@ export function DatabaseStatus() {
 
       // Test if we can read from profiles table
       const { data: profilesTest, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id')
+        .from("profiles")
+        .select("id")
         .limit(1);
 
       if (profilesError) {
@@ -68,28 +85,31 @@ export function DatabaseStatus() {
 
       // Test if we can read from orders table
       const { data: ordersTest, error: ordersError } = await supabase
-        .from('orders')
-        .select('id')
+        .from("orders")
+        .select("id")
         .limit(1);
 
       setStatus({
         connected: true,
         tablesExist: true,
         userCanRead: !ordersError,
-        error: ordersError ? `Orders table error: ${ordersError.message}` : null,
+        error: ordersError
+          ? `Orders table error: ${ordersError.message}`
+          : null,
         environment,
-        url: supabaseUrl
+        url: supabaseUrl,
       });
-
     } catch (error: any) {
-      console.error('Database status check error:', error);
+      console.error("Database status check error:", error);
       setStatus({
         connected: false,
         tablesExist: false,
         userCanRead: false,
-        error: error.message || 'Unknown database error',
-        environment: import.meta.env.MODE || 'unknown',
-        url: import.meta.env.VITE_SUPABASE_URL || "https://ahqqptrclqtwqjgmtesv.supabase.co"
+        error: error.message || "Unknown database error",
+        environment: import.meta.env.MODE || "unknown",
+        url:
+          import.meta.env.VITE_SUPABASE_URL ||
+          "https://ahqqptrclqtwqjgmtesv.supabase.co",
       });
     } finally {
       setLoading(false);
@@ -157,7 +177,9 @@ export function DatabaseStatus() {
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Supabase URL:</span>
-            <span className="font-mono text-xs">{status.url.substring(0, 30)}...</span>
+            <span className="font-mono text-xs">
+              {status.url.substring(0, 30)}...
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Connection:</span>
@@ -181,15 +203,19 @@ export function DatabaseStatus() {
 
         {status.error && (
           <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md">
-            <p className="text-sm text-destructive font-medium">Error Details:</p>
-            <p className="text-xs text-destructive/80 mt-1 font-mono">{status.error}</p>
+            <p className="text-sm text-destructive font-medium">
+              Error Details:
+            </p>
+            <p className="text-xs text-destructive/80 mt-1 font-mono">
+              {status.error}
+            </p>
           </div>
         )}
 
         <div className="pt-2">
-          <Button 
-            onClick={checkDatabaseStatus} 
-            size="sm" 
+          <Button
+            onClick={checkDatabaseStatus}
+            size="sm"
             variant="outline"
             disabled={loading}
             className="w-full"
