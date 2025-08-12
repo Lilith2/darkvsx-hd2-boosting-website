@@ -3,22 +3,26 @@
 ## ✅ Pre-Deployment Verification
 
 ### 1. **Node.js 22.x Configuration** ✅
+
 - [x] `vercel.json` specifies `nodejs22.x` runtime
 - [x] `package.json` engines specify Node.js >=22.0.0
 - [x] `vite.config.server.ts` targets `node22`
 
 ### 2. **Build Configuration** ✅
+
 - [x] Frontend builds to `dist/spa/` directory
 - [x] Serverless function at `api/index.ts` ready
 - [x] Build process tested and working
 - [x] Code splitting optimized for performance
 
 ### 3. **Environment Variables** ✅
+
 - [x] `.env.example` created with all required variables
 - [x] Client variables use `VITE_` prefix
 - [x] Server variables properly isolated
 
 ### 4. **Security Configuration** ✅
+
 - [x] Security headers configured
 - [x] CORS properly set up
 - [x] Rate limiting on email endpoint
@@ -27,20 +31,24 @@
 ## 🛠️ Deployment Steps
 
 ### Step 1: Prepare Environment Variables
+
 Set these in your Vercel dashboard (Settings > Environment Variables):
 
 **Required:**
+
 - `VITE_SUPABASE_URL` - Your Supabase project URL
 - `VITE_SUPABASE_ANON_KEY` - Your Supabase anon key
 - `VITE_APP_URL` - Will be your Vercel domain after deployment
 - `VITE_SITE_URL` - Same as VITE_APP_URL
 
 **Optional:**
+
 - `VITE_PAYPAL_CLIENT_ID` - For PayPal payments
 - `VITE_PUBLIC_BUILDER_KEY` - For Builder.io integration
 - `PING_MESSAGE` - Custom ping response
 
 ### Step 2: Deploy to Vercel
+
 ```bash
 # Option 1: Use Vercel CLI
 npx vercel --prod
@@ -50,12 +58,15 @@ npx vercel --prod
 ```
 
 ### Step 3: Post-Deployment Configuration
+
 1. Note your Vercel deployment URL
 2. Update `VITE_APP_URL` and `VITE_SITE_URL` environment variables
 3. Redeploy to apply URL changes
 
 ### Step 4: Verify Deployment
+
 Test these endpoints:
+
 - `https://your-app.vercel.app/` - Frontend loads
 - `https://your-app.vercel.app/api/ping` - Returns pong
 - `https://your-app.vercel.app/api/demo` - Returns demo data
@@ -72,18 +83,21 @@ dist/spa/             # Built frontend (auto-generated)
 ## 🔧 Vercel Configuration Details
 
 ### Runtime & Performance
+
 - **Runtime**: Node.js 22.x
 - **Build**: Vite with optimized chunks
 - **Output**: Static SPA + Serverless functions
 - **Caching**: Aggressive for static assets, proper cache-busting
 
 ### Security Features
+
 - Security headers for production
 - CORS configured for production
 - Rate limiting on sensitive endpoints
 - Content Security Policy optimized
 
 ### Routing
+
 - All `/api/*` routes → Serverless function
 - All other routes → React SPA
 - Clean URLs enabled
@@ -92,18 +106,22 @@ dist/spa/             # Built frontend (auto-generated)
 ## 🚨 Common Issues & Solutions
 
 ### Build Failures
+
 - **Issue**: TypeScript errors
 - **Solution**: Run `npm run typecheck` locally first
 
 ### API Routes Not Working
+
 - **Issue**: 404 on `/api/ping`
 - **Solution**: Verify `api/index.ts` is properly configured
 
 ### Environment Variables
+
 - **Issue**: Variables not available
 - **Solution**: Ensure all `VITE_` variables are set in Vercel dashboard
 
 ### Supabase Connection
+
 - **Issue**: Database not connecting
 - **Solution**: Verify `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
 
@@ -133,6 +151,7 @@ Serverless Function:
 ## ✅ Final Checklist
 
 Before going live:
+
 - [ ] All environment variables set in Vercel
 - [ ] Test deployment with staging URL
 - [ ] Verify all API endpoints work
