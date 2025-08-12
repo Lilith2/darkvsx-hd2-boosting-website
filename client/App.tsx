@@ -15,6 +15,8 @@ import { AppContent } from "@/components/AppContent";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AccessibilityWrapper } from "@/components/AccessibilityWrapper";
 import { SEOHead } from "@/components/SEOHead";
+import { PerformanceMonitor, useWebVitals } from "@/components/PerformanceMonitor";
+import { SecurityProvider } from "@/components/SecurityProvider";
 import { initializeAnalytics } from "@/lib/analytics";
 
 const queryClient = new QueryClient({
@@ -31,6 +33,8 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  useWebVitals(); // Monitor Core Web Vitals
+
   useEffect(() => {
     // Initialize analytics and performance tracking
     initializeAnalytics();
@@ -38,28 +42,31 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <AccessibilityWrapper>
-        <SEOHead />
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <AuthProvider>
-              <ServicesProvider>
-                <BundlesProvider>
-                  <CartProvider>
-                    <OrdersProvider>
-                      <ReferralsProvider>
-                        <Toaster />
-                        <Sonner />
-                        <AppContent />
-                      </ReferralsProvider>
-                    </OrdersProvider>
-                  </CartProvider>
-                </BundlesProvider>
-              </ServicesProvider>
-            </AuthProvider>
-          </TooltipProvider>
-        </QueryClientProvider>
-      </AccessibilityWrapper>
+      <SecurityProvider>
+        <AccessibilityWrapper>
+          <SEOHead />
+          <QueryClientProvider client={queryClient}>
+            <TooltipProvider>
+              <AuthProvider>
+                <ServicesProvider>
+                  <BundlesProvider>
+                    <CartProvider>
+                      <OrdersProvider>
+                        <ReferralsProvider>
+                          <Toaster />
+                          <Sonner />
+                          <AppContent />
+                          <PerformanceMonitor />
+                        </ReferralsProvider>
+                      </OrdersProvider>
+                    </CartProvider>
+                  </BundlesProvider>
+                </ServicesProvider>
+              </AuthProvider>
+            </TooltipProvider>
+          </QueryClientProvider>
+        </AccessibilityWrapper>
+      </SecurityProvider>
     </ErrorBoundary>
   );
 }
