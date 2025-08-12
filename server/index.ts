@@ -7,21 +7,21 @@ import { handleSendEmail } from "./routes/email";
 export function createServer() {
   const app = express();
 
-  // Security middleware
+  // Security middleware - relaxed for development
   app.use(cors({
-    origin: process.env.NODE_ENV === 'production'
-      ? ['https://yourdomain.com'] // Replace with your actual domain
-      : true,
+    origin: true, // Allow all origins in development
     credentials: true
   }));
 
-  // Security headers
+  // Security headers - relaxed for development preview
   app.use((req, res, next) => {
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'DENY');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    res.setHeader('Content-Security-Policy', "default-src 'self'");
+    if (process.env.NODE_ENV === 'production') {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('X-Frame-Options', 'SAMEORIGIN'); // Changed from DENY to SAMEORIGIN for preview
+      res.setHeader('X-XSS-Protection', '1; mode=block');
+      res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+      res.setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:"); // Relaxed CSP
+    }
     next();
   });
 
