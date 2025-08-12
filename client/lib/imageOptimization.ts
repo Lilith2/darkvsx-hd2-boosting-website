@@ -86,64 +86,29 @@ export class LazyImageObserver {
 // Global lazy image observer instance
 export const lazyImageObserver = new LazyImageObserver();
 
-// React hook for lazy images
-import { useEffect, useRef } from 'react';
-
-export function useLazyImage() {
-  const imgRef = useRef<HTMLImageElement>(null);
-
-  useEffect(() => {
-    const img = imgRef.current;
-    if (img) {
-      lazyImageObserver.observe(img);
-      return () => lazyImageObserver.unobserve(img);
-    }
-  }, []);
-
-  return imgRef;
-}
-
-// Optimized Image component
-interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-  src: string;
-  alt: string;
-  lazy?: boolean;
-  fallback?: string;
-  optimization?: ImageOptimizationOptions;
-}
-
-export function OptimizedImage({
-  src,
-  alt,
-  lazy = true,
-  fallback = '/placeholder.svg',
-  optimization = {},
-  className = '',
-  ...props
-}: OptimizedImageProps) {
-  const imgRef = useLazyImage();
-  const optimizedSrc = getOptimizedImageUrl(src, optimization);
-
-  if (lazy) {
-    return (
-      <img
-        ref={imgRef}
-        data-src={optimizedSrc}
-        src={fallback}
-        alt={alt}
-        className={`lazy transition-opacity duration-300 ${className}`}
-        loading="lazy"
-        {...props}
-      />
-    );
+// Performance monitoring for images
+export function trackImagePerformance(src: string, startTime: number) {
+  const duration = performance.now() - startTime;
+  
+  if (import.meta.env.DEV) {
+    console.log(`Image loaded: ${src} in ${duration.toFixed(2)}ms`);
   }
+  
+  // Could send to analytics service
+  return duration;
+}
 
-  return (
-    <img
-      src={optimizedSrc}
-      alt={alt}
-      className={className}
-      {...props}
-    />
-  );
+// Utility to get image dimensions without loading
+export function getImageDimensions(src: string): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      resolve({
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+      });
+    };
+    img.onerror = reject;
+    img.src = src;
+  });
 }
