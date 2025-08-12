@@ -175,6 +175,10 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
+      console.log("Refreshing orders...");
+      console.log("Supabase URL:", import.meta.env.VITE_SUPABASE_URL || "using fallback");
+      console.log("Environment:", import.meta.env.MODE);
+
       // Fetch orders with messages and tracking
       const { data: ordersData, error: ordersError } = await supabase
         .from("orders")
