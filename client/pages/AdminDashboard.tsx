@@ -1812,6 +1812,269 @@ export default function AdminDashboard() {
         </Tabs>
       </div>
 
+      {/* Order Resume Modal */}
+      <Dialog open={isOrderResumeModalOpen} onOpenChange={setIsOrderResumeModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Package className="w-5 h-5" />
+              Order Resume - #{selectedOrderForResume?.id?.slice(-6)}
+            </DialogTitle>
+            <DialogDescription>
+              Complete order summary for {selectedOrderForResume?.customerName}
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedOrderForResume && (
+            <div className="space-y-6">
+              {/* Customer Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Customer Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Name</Label>
+                    <p className="font-medium">{selectedOrderForResume.customerName}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">Email</Label>
+                    <p className="font-medium">{selectedOrderForResume.customerEmail}</p>
+                  </div>
+                  {selectedOrderForResume.ipAddress && (
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">IP Address</Label>
+                      <p className="font-medium font-mono text-sm">{selectedOrderForResume.ipAddress}</p>
+                    </div>
+                  )}
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">User ID</Label>
+                    <p className="font-medium font-mono text-sm">{selectedOrderForResume.userId || "Guest"}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Order Details */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Package className="w-4 h-4" />
+                    Order Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Order ID</Label>
+                      <p className="font-medium font-mono">{selectedOrderForResume.id}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Status</Label>
+                      <Badge className={
+                        selectedOrderForResume.status === "pending" ? "bg-yellow-500/20 text-yellow-700" :
+                        selectedOrderForResume.status === "processing" ? "bg-blue-500/20 text-blue-700" :
+                        selectedOrderForResume.status === "in-progress" ? "bg-purple-500/20 text-purple-700" :
+                        selectedOrderForResume.status === "completed" ? "bg-green-500/20 text-green-700" :
+                        "bg-red-500/20 text-red-700"
+                      }>
+                        {selectedOrderForResume.status}
+                      </Badge>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Payment Status</Label>
+                      <Badge variant="outline" className={
+                        selectedOrderForResume.paymentStatus === "paid" ? "border-green-500/50 text-green-600" :
+                        selectedOrderForResume.paymentStatus === "pending" ? "border-yellow-500/50 text-yellow-600" :
+                        "border-red-500/50 text-red-600"
+                      }>
+                        {selectedOrderForResume.paymentStatus}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Created At</Label>
+                      <p className="font-medium">{new Date(selectedOrderForResume.createdAt).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Last Updated</Label>
+                      <p className="font-medium">{new Date(selectedOrderForResume.updatedAt).toLocaleString()}</p>
+                    </div>
+                  </div>
+
+                  {selectedOrderForResume.transactionId && (
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Transaction ID</Label>
+                      <p className="font-medium font-mono text-sm">{selectedOrderForResume.transactionId}</p>
+                    </div>
+                  )}
+
+                  {selectedOrderForResume.assignedBooster && (
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Assigned Booster</Label>
+                      <p className="font-medium">{selectedOrderForResume.assignedBooster}</p>
+                    </div>
+                  )}
+
+                  {selectedOrderForResume.progress && (
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">Progress</Label>
+                      <div className="flex items-center gap-2">
+                        <div className="w-full bg-muted rounded-full h-2">
+                          <div
+                            className="bg-primary h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${selectedOrderForResume.progress}%` }}
+                          />
+                        </div>
+                        <span className="text-sm font-medium">{selectedOrderForResume.progress}%</span>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Services Purchased */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Package className="w-4 h-4" />
+                    Services Purchased
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {selectedOrderForResume.services.map((service: any, index: number) => (
+                      <div key={index} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                        <div className="flex-1">
+                          <p className="font-medium">{service.name}</p>
+                          <p className="text-sm text-muted-foreground">Quantity: {service.quantity}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">${(service.price * service.quantity).toFixed(2)}</p>
+                          <p className="text-sm text-muted-foreground">${service.price} each</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Financial Summary */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <DollarSign className="w-4 h-4" />
+                    Financial Summary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span>Subtotal</span>
+                      <span className="font-medium">${selectedOrderForResume.services.reduce((sum: number, service: any) => sum + (service.price * service.quantity), 0).toFixed(2)}</span>
+                    </div>
+
+                    {selectedOrderForResume.referralDiscount > 0 && (
+                      <div className="flex justify-between items-center text-green-600">
+                        <span>Referral Discount</span>
+                        <span className="font-medium">-${selectedOrderForResume.referralDiscount.toFixed(2)}</span>
+                      </div>
+                    )}
+
+                    {selectedOrderForResume.referralCreditsUsed > 0 && (
+                      <div className="flex justify-between items-center text-blue-600">
+                        <span>Referral Credits Used</span>
+                        <span className="font-medium">-${selectedOrderForResume.referralCreditsUsed.toFixed(2)}</span>
+                      </div>
+                    )}
+
+                    <Separator />
+                    <div className="flex justify-between items-center text-lg font-bold">
+                      <span>Total Amount</span>
+                      <span className="text-primary">${selectedOrderForResume.totalAmount.toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  {selectedOrderForResume.referralCode && (
+                    <div className="mt-4 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                      <p className="text-sm text-green-700 dark:text-green-400">
+                        <strong>Referral Code Used:</strong> {selectedOrderForResume.referralCode}
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Order Notes */}
+              {selectedOrderForResume.notes && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4" />
+                      Order Notes
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <p className="whitespace-pre-wrap">{selectedOrderForResume.notes}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Messages History */}
+              {selectedOrderForResume.messages && selectedOrderForResume.messages.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4" />
+                      Messages History ({selectedOrderForResume.messages.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3 max-h-60 overflow-y-auto">
+                      {selectedOrderForResume.messages.map((message: any, idx: number) => (
+                        <div
+                          key={idx}
+                          className={`p-3 rounded-lg ${
+                            message.from === "admin"
+                              ? "bg-primary/10 ml-4"
+                              : "bg-muted/70 mr-4"
+                          }`}
+                        >
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="font-medium text-sm capitalize">
+                              {message.from === "admin" ? "You" : message.from}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(message.timestamp).toLocaleString()}
+                            </span>
+                          </div>
+                          <p className="text-sm whitespace-pre-wrap">{message.message}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsOrderResumeModalOpen(false)}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <ServiceModal
         isOpen={isServiceModalOpen}
         onClose={() => setIsServiceModalOpen(false)}
