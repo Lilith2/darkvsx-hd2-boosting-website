@@ -685,7 +685,7 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
             size="sm"
             variant="outline"
             onClick={() => adjustQuantity(1)}
-            disabled={quantity >= item.maximum_quantity}
+            disabled={quantity >= (item.maximum_quantity || 999999)}
             className="h-6 w-6 p-0"
           >
             <Plus className="w-3 h-3" />
