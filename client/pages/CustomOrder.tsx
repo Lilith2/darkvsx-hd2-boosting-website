@@ -262,7 +262,7 @@ export default function CustomOrder() {
       // Create the custom service for the cart
       const customService = {
         id: `custom-order-${Date.now()}`,
-        title: "Custom Helldivers 2 Order",
+        title: `Custom Order: ${orderItems.map(item => `${item.quantity}x ${item.item_name}`).join(", ")}`,
         description: `Custom order with ${orderItems.length} items: ${orderItems
           .map(
             (item) =>
