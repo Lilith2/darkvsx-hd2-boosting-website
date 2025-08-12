@@ -8,30 +8,35 @@ export function createServer() {
   const app = express();
 
   // Security middleware - relaxed for development
-  app.use(cors({
-    origin: true, // Allow all origins in development
-    credentials: true
-  }));
+  app.use(
+    cors({
+      origin: true, // Allow all origins in development
+      credentials: true,
+    }),
+  );
 
   // Security headers - relaxed for development preview
   app.use((req, res, next) => {
-    if (process.env.NODE_ENV === 'production') {
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-      res.setHeader('X-Frame-Options', 'SAMEORIGIN'); // Changed from DENY to SAMEORIGIN for preview
-      res.setHeader('X-XSS-Protection', '1; mode=block');
-      res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-      res.setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:"); // Relaxed CSP
+    if (process.env.NODE_ENV === "production") {
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      res.setHeader("X-Frame-Options", "SAMEORIGIN"); // Changed from DENY to SAMEORIGIN for preview
+      res.setHeader("X-XSS-Protection", "1; mode=block");
+      res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+      res.setHeader(
+        "Content-Security-Policy",
+        "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:",
+      ); // Relaxed CSP
     }
     next();
   });
 
   // Body parsing with size limits
-  app.use(express.json({ limit: '10mb' }));
-  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  app.use(express.json({ limit: "10mb" }));
+  app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
   // Basic rate limiting for email endpoint
   const emailRequests = new Map();
-  app.use('/api/send-email', (req, res, next) => {
+  app.use("/api/send-email", (req, res, next) => {
     const ip = req.ip || req.connection.remoteAddress;
     const now = Date.now();
     const windowMs = 15 * 60 * 1000; // 15 minutes
@@ -41,11 +46,13 @@ export function createServer() {
       emailRequests.set(ip, []);
     }
 
-    const requests = emailRequests.get(ip).filter((time: number) => now - time < windowMs);
+    const requests = emailRequests
+      .get(ip)
+      .filter((time: number) => now - time < windowMs);
 
     if (requests.length >= maxRequests) {
       return res.status(429).json({
-        error: 'Too many email requests. Please try again later.'
+        error: "Too many email requests. Please try again later.",
       });
     }
 

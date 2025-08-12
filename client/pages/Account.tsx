@@ -65,7 +65,12 @@ import { getSiteUrl } from "@/lib/config";
 export default function Account() {
   const { user, logout, updateProfile } = useAuth();
   const { getUserOrders } = useOrders();
-  const { stats: referralStats, loading: referralLoading, error: referralError, refreshStats } = useReferrals();
+  const {
+    stats: referralStats,
+    loading: referralLoading,
+    error: referralError,
+    refreshStats,
+  } = useReferrals();
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -111,9 +116,9 @@ export default function Account() {
           .single();
 
         if (data && !error) {
-          setAccountData(prev => ({
+          setAccountData((prev) => ({
             ...prev,
-            discord: data.discord_username || ""
+            discord: data.discord_username || "",
           }));
         }
       }
@@ -122,11 +127,10 @@ export default function Account() {
     loadDiscordUsername();
   }, [user?.id]);
 
-
   // Generate recent activity from actual orders
-  const recentActivity = userOrders.slice(0, 4).map(order => ({
+  const recentActivity = userOrders.slice(0, 4).map((order) => ({
     action: order.status === "completed" ? "Order completed" : "Order placed",
-    details: order.services.map(s => s.name).join(", "),
+    details: order.services.map((s) => s.name).join(", "),
     time: new Date(order.createdAt).toLocaleDateString(),
     icon: order.status === "completed" ? CheckCircle : Package,
   }));
@@ -134,25 +138,32 @@ export default function Account() {
   // Generate favorite services from completed orders
   const favoriteServices = (() => {
     const completedOrderServices = userOrders
-      .filter(order => order.status === "completed")
-      .flatMap(order => order.services);
+      .filter((order) => order.status === "completed")
+      .flatMap((order) => order.services);
 
-    const serviceCount = completedOrderServices.reduce((acc, service) => {
-      acc[service.name] = (acc[service.name] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const serviceCount = completedOrderServices.reduce(
+      (acc, service) => {
+        acc[service.name] = (acc[service.name] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     return Object.entries(serviceCount)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 3)
       .map(([name, count]) => ({
         name,
         category: "Boosting Service",
-        lastUsed: userOrders
-          .filter(order => order.services.some(s => s.name === name))
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
-          ?.createdAt || new Date().toISOString(),
-        count
+        lastUsed:
+          userOrders
+            .filter((order) => order.services.some((s) => s.name === name))
+            .sort(
+              (a, b) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime(),
+            )[0]?.createdAt || new Date().toISOString(),
+        count,
       }));
   })();
 
@@ -190,7 +201,6 @@ export default function Account() {
     }
   };
 
-
   const handleAccountUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -203,12 +213,14 @@ export default function Account() {
       if (success) {
         toast({
           title: "Account Updated",
-          description: "Your account information has been updated successfully.",
+          description:
+            "Your account information has been updated successfully.",
         });
       } else {
         toast({
           title: "Update Failed",
-          description: "Failed to update account information. Please try again.",
+          description:
+            "Failed to update account information. Please try again.",
           variant: "destructive",
         });
       }
@@ -256,7 +268,6 @@ export default function Account() {
     }));
   };
 
-
   const copyReferralCode = async () => {
     try {
       await navigator.clipboard.writeText(referralCode);
@@ -268,11 +279,11 @@ export default function Account() {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       // Fallback for older browsers or if clipboard API fails
-      const textArea = document.createElement('textarea');
+      const textArea = document.createElement("textarea");
       textArea.value = referralCode;
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand('copy');
+      document.execCommand("copy");
       document.body.removeChild(textArea);
       setCopied(true);
       toast({
@@ -282,7 +293,6 @@ export default function Account() {
       setTimeout(() => setCopied(false), 2000);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -376,7 +386,10 @@ export default function Account() {
                     Credit Balance
                   </p>
                   <p className="text-2xl font-bold text-green-600">
-                    ${referralError ? "0.00" : referralStats.creditBalance.toFixed(2)}
+                    $
+                    {referralError
+                      ? "0.00"
+                      : referralStats.creditBalance.toFixed(2)}
                   </p>
                 </div>
                 <Gift className="w-8 h-8 text-green-600/50" />
@@ -475,9 +488,12 @@ export default function Account() {
                           className="flex items-center justify-between p-3 border border-border/30 rounded-lg"
                         >
                           <div>
-                            <p className="font-medium text-sm">{service.name}</p>
+                            <p className="font-medium text-sm">
+                              {service.name}
+                            </p>
                             <p className="text-xs text-muted-foreground">
-                              Used {service.count} time{service.count !== 1 ? 's' : ''}
+                              Used {service.count} time
+                              {service.count !== 1 ? "s" : ""}
                             </p>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -513,23 +529,45 @@ export default function Account() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="text-center p-4 bg-primary/5 rounded-lg">
                     <Users className="w-6 h-6 text-primary mx-auto mb-2" />
-                    <p className="text-xl font-bold">{referralError ? "0" : referralStats.totalReferred}</p>
+                    <p className="text-xl font-bold">
+                      {referralError ? "0" : referralStats.totalReferred}
+                    </p>
                     <p className="text-sm text-muted-foreground">Referred</p>
                   </div>
                   <div className="text-center p-4 bg-green-500/5 rounded-lg">
                     <DollarSign className="w-6 h-6 text-green-600 mx-auto mb-2" />
-                    <p className="text-xl font-bold">${referralError ? "0.00" : referralStats.totalEarned.toFixed(2)}</p>
+                    <p className="text-xl font-bold">
+                      $
+                      {referralError
+                        ? "0.00"
+                        : referralStats.totalEarned.toFixed(2)}
+                    </p>
                     <p className="text-sm text-muted-foreground">Earned</p>
                   </div>
                   <div className="text-center p-4 bg-blue-500/5 rounded-lg">
                     <Share2 className="w-6 h-6 text-blue-600 mx-auto mb-2" />
                     <div className="flex items-center justify-center space-x-1">
-                      <Input value={referralCode} readOnly className="text-xs h-6 text-center" />
-                      <Button onClick={copyReferralCode} size="sm" variant="ghost" className="h-6 w-6 p-0">
-                        {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                      <Input
+                        value={referralCode}
+                        readOnly
+                        className="text-xs h-6 text-center"
+                      />
+                      <Button
+                        onClick={copyReferralCode}
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 w-6 p-0"
+                      >
+                        {copied ? (
+                          <Check className="w-3 h-3" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
                       </Button>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">Your Code</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Your Code
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -712,7 +750,6 @@ export default function Account() {
             </Card>
           </TabsContent>
 
-
           {/* Referrals Tab */}
           <TabsContent value="referrals" className="space-y-6">
             {/* Main Referral Card */}
@@ -723,14 +760,17 @@ export default function Account() {
                   Referral Program
                 </CardTitle>
                 <CardDescription>
-                  Earn 5% commission when friends use your code! They get 10% off.
+                  Earn 5% commission when friends use your code! They get 10%
+                  off.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Referral Code Section */}
                 <div className="bg-gradient-to-r from-primary/10 to-blue-500/10 p-6 rounded-lg border border-primary/20">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-lg">Your Referral Code</h3>
+                    <h3 className="font-semibold text-lg">
+                      Your Referral Code
+                    </h3>
                     <Badge className="bg-green-500/20 text-green-700">
                       Active
                     </Badge>
@@ -741,7 +781,11 @@ export default function Account() {
                       readOnly
                       className="flex-1 font-mono text-center bg-background/50"
                     />
-                    <Button onClick={copyReferralCode} variant="outline" className="px-4">
+                    <Button
+                      onClick={copyReferralCode}
+                      variant="outline"
+                      className="px-4"
+                    >
                       {copied ? (
                         <>
                           <Check className="w-4 h-4 mr-2" />
@@ -763,16 +807,24 @@ export default function Account() {
                         const text = `🎮 Get boosted in Helldivers 2! Use my code "${referralCode}" for 10% off your first order: ${getSiteUrl()}`;
                         try {
                           await navigator.clipboard.writeText(text);
-                          toast({ title: "Message copied!", description: "Ready to share on Discord or social media" });
+                          toast({
+                            title: "Message copied!",
+                            description:
+                              "Ready to share on Discord or social media",
+                          });
                         } catch (err) {
                           // Fallback
-                          const textArea = document.createElement('textarea');
+                          const textArea = document.createElement("textarea");
                           textArea.value = text;
                           document.body.appendChild(textArea);
                           textArea.select();
-                          document.execCommand('copy');
+                          document.execCommand("copy");
                           document.body.removeChild(textArea);
-                          toast({ title: "Message copied!", description: "Ready to share on Discord or social media" });
+                          toast({
+                            title: "Message copied!",
+                            description:
+                              "Ready to share on Discord or social media",
+                          });
                         }
                       }}
                     >
@@ -782,7 +834,11 @@ export default function Account() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Get boosted in Helldivers 2! Use code "${referralCode}" for 10% off: ${getSiteUrl()}`)}`)}
+                      onClick={() =>
+                        window.open(
+                          `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Get boosted in Helldivers 2! Use code "${referralCode}" for 10% off: ${getSiteUrl()}`)}`,
+                        )
+                      }
                     >
                       <ExternalLink className="w-3 h-3 mr-1" />
                       Share on Twitter
@@ -795,25 +851,47 @@ export default function Account() {
                   <Card className="border border-border/50">
                     <CardContent className="p-6 text-center">
                       <Users className="w-10 h-10 text-primary mx-auto mb-3" />
-                      <p className="text-3xl font-bold">{referralError ? "0" : referralStats.totalReferred}</p>
-                      <p className="text-sm text-muted-foreground">Friends Referred</p>
-                      <p className="text-xs text-muted-foreground mt-1">All time</p>
+                      <p className="text-3xl font-bold">
+                        {referralError ? "0" : referralStats.totalReferred}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Friends Referred
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        All time
+                      </p>
                     </CardContent>
                   </Card>
                   <Card className="border border-border/50">
                     <CardContent className="p-6 text-center">
                       <DollarSign className="w-10 h-10 text-green-600 mx-auto mb-3" />
-                      <p className="text-3xl font-bold text-green-600">${referralError ? "0.00" : referralStats.totalEarned.toFixed(2)}</p>
-                      <p className="text-sm text-muted-foreground">Total Earned</p>
-                      <p className="text-xs text-muted-foreground mt-1">Available to spend</p>
+                      <p className="text-3xl font-bold text-green-600">
+                        $
+                        {referralError
+                          ? "0.00"
+                          : referralStats.totalEarned.toFixed(2)}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Total Earned
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Available to spend
+                      </p>
                     </CardContent>
                   </Card>
                   <Card className="border border-border/50">
                     <CardContent className="p-6 text-center">
                       <Clock className="w-10 h-10 text-blue-600 mx-auto mb-3" />
-                      <p className="text-3xl font-bold text-blue-600">${referralError ? "0.00" : referralStats.pendingEarnings.toFixed(2)}</p>
+                      <p className="text-3xl font-bold text-blue-600">
+                        $
+                        {referralError
+                          ? "0.00"
+                          : referralStats.pendingEarnings.toFixed(2)}
+                      </p>
                       <p className="text-sm text-muted-foreground">Pending</p>
-                      <p className="text-xs text-muted-foreground mt-1">Processing orders</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Processing orders
+                      </p>
                     </CardContent>
                   </Card>
                 </div>
@@ -821,47 +899,65 @@ export default function Account() {
                 {/* How it Works */}
                 <Card className="border border-border/50">
                   <CardHeader>
-                    <CardTitle className="text-lg">How Referrals Work</CardTitle>
+                    <CardTitle className="text-lg">
+                      How Referrals Work
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
                         <div className="flex items-start space-x-3">
                           <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-sm font-bold text-primary">1</span>
+                            <span className="text-sm font-bold text-primary">
+                              1
+                            </span>
                           </div>
                           <div>
                             <h4 className="font-medium">Share Your Code</h4>
-                            <p className="text-sm text-muted-foreground">Send your unique referral code to friends</p>
+                            <p className="text-sm text-muted-foreground">
+                              Send your unique referral code to friends
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-start space-x-3">
                           <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-sm font-bold text-primary">2</span>
+                            <span className="text-sm font-bold text-primary">
+                              2
+                            </span>
                           </div>
                           <div>
                             <h4 className="font-medium">Friend Places Order</h4>
-                            <p className="text-sm text-muted-foreground">They use your code and get 10% discount</p>
+                            <p className="text-sm text-muted-foreground">
+                              They use your code and get 10% discount
+                            </p>
                           </div>
                         </div>
                       </div>
                       <div className="space-y-4">
                         <div className="flex items-start space-x-3">
                           <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-sm font-bold text-green-600">3</span>
+                            <span className="text-sm font-bold text-green-600">
+                              3
+                            </span>
                           </div>
                           <div>
                             <h4 className="font-medium">Earn Commission</h4>
-                            <p className="text-sm text-muted-foreground">Get 5% of their order value as credit</p>
+                            <p className="text-sm text-muted-foreground">
+                              Get 5% of their order value as credit
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-start space-x-3">
                           <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-sm font-bold text-green-600">4</span>
+                            <span className="text-sm font-bold text-green-600">
+                              4
+                            </span>
                           </div>
                           <div>
                             <h4 className="font-medium">Use Your Credits</h4>
-                            <p className="text-sm text-muted-foreground">Apply earnings to future orders</p>
+                            <p className="text-sm text-muted-foreground">
+                              Apply earnings to future orders
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -872,8 +968,12 @@ export default function Account() {
                 {/* Current Balance & Summary */}
                 <Card className="border border-border/50">
                   <CardHeader>
-                    <CardTitle className="text-lg">Your Earnings Summary</CardTitle>
-                    <CardDescription>Track your referral earnings and current credit balance</CardDescription>
+                    <CardTitle className="text-lg">
+                      Your Earnings Summary
+                    </CardTitle>
+                    <CardDescription>
+                      Track your referral earnings and current credit balance
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -884,9 +984,14 @@ export default function Account() {
                               <DollarSign className="w-5 h-5 text-green-600" />
                             </div>
                             <div>
-                              <p className="text-sm text-green-600 dark:text-green-400">Current Credit Balance</p>
+                              <p className="text-sm text-green-600 dark:text-green-400">
+                                Current Credit Balance
+                              </p>
                               <p className="text-2xl font-bold text-green-700 dark:text-green-300">
-                                ${referralError ? "0.00" : referralStats.creditBalance.toFixed(2)}
+                                $
+                                {referralError
+                                  ? "0.00"
+                                  : referralStats.creditBalance.toFixed(2)}
                               </p>
                             </div>
                           </div>
@@ -898,9 +1003,14 @@ export default function Account() {
                               <TrendingUp className="w-5 h-5 text-blue-600" />
                             </div>
                             <div>
-                              <p className="text-sm text-blue-600 dark:text-blue-400">Total Earned</p>
+                              <p className="text-sm text-blue-600 dark:text-blue-400">
+                                Total Earned
+                              </p>
                               <p className="text-xl font-bold text-blue-700 dark:text-blue-300">
-                                ${referralError ? "0.00" : referralStats.totalEarned.toFixed(2)}
+                                $
+                                {referralError
+                                  ? "0.00"
+                                  : referralStats.totalEarned.toFixed(2)}
                               </p>
                             </div>
                           </div>
@@ -914,9 +1024,14 @@ export default function Account() {
                               <Clock className="w-5 h-5 text-yellow-600" />
                             </div>
                             <div>
-                              <p className="text-sm text-yellow-600 dark:text-yellow-400">Pending Earnings</p>
+                              <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                                Pending Earnings
+                              </p>
                               <p className="text-xl font-bold text-yellow-700 dark:text-yellow-300">
-                                ${referralError ? "0.00" : referralStats.pendingEarnings.toFixed(2)}
+                                $
+                                {referralError
+                                  ? "0.00"
+                                  : referralStats.pendingEarnings.toFixed(2)}
                               </p>
                             </div>
                           </div>
@@ -928,9 +1043,13 @@ export default function Account() {
                               <Users className="w-5 h-5 text-purple-600" />
                             </div>
                             <div>
-                              <p className="text-sm text-purple-600 dark:text-purple-400">Friends Referred</p>
+                              <p className="text-sm text-purple-600 dark:text-purple-400">
+                                Friends Referred
+                              </p>
                               <p className="text-xl font-bold text-purple-700 dark:text-purple-300">
-                                {referralError ? "0" : referralStats.totalReferred}
+                                {referralError
+                                  ? "0"
+                                  : referralStats.totalReferred}
                               </p>
                             </div>
                           </div>
@@ -943,7 +1062,8 @@ export default function Account() {
                         <div className="flex items-center space-x-2">
                           <AlertCircle className="w-4 h-4 text-gray-600" />
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Unable to load complete referral data. Some information may be limited.
+                            Unable to load complete referral data. Some
+                            information may be limited.
                           </p>
                         </div>
                       </div>

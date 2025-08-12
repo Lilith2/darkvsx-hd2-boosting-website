@@ -1,9 +1,9 @@
 import { RequestHandler } from "express";
-import DOMPurify from 'dompurify';
-import { JSDOM } from 'jsdom';
+import DOMPurify from "dompurify";
+import { JSDOM } from "jsdom";
 
 // Create a JSDOM instance for server-side DOMPurify
-const window = new JSDOM('').window;
+const window = new JSDOM("").window;
 const purify = DOMPurify(window as any);
 
 interface SendEmailRequest {
@@ -16,7 +16,7 @@ interface SendEmailRequest {
 
 // Sanitize and validate email input
 function sanitizeEmailInput(input: string): string {
-  if (!input || typeof input !== 'string') return '';
+  if (!input || typeof input !== "string") return "";
   return purify.sanitize(input.trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
 }
 
@@ -28,19 +28,20 @@ function isValidEmail(email: string): boolean {
 
 export const handleSendEmail: RequestHandler = async (req, res) => {
   try {
-    const { to, subject, message, ticketId, customerName }: SendEmailRequest = req.body;
+    const { to, subject, message, ticketId, customerName }: SendEmailRequest =
+      req.body;
 
     // Validate required fields
     if (!to || !subject || !message || !ticketId) {
       return res.status(400).json({
-        error: "Missing required fields: to, subject, message, ticketId"
+        error: "Missing required fields: to, subject, message, ticketId",
       });
     }
 
     // Validate email format
     if (!isValidEmail(to)) {
       return res.status(400).json({
-        error: "Invalid email format"
+        error: "Invalid email format",
       });
     }
 
@@ -57,7 +58,7 @@ export const handleSendEmail: RequestHandler = async (req, res) => {
     // - AWS SES
     // - Mailgun
     // - Nodemailer with SMTP
-    
+
     console.log("📧 Sending support ticket reply email:");
     console.log(`To: ${sanitizedTo}`);
     console.log(`Subject: ${sanitizedSubject}`);
@@ -68,15 +69,15 @@ export const handleSendEmail: RequestHandler = async (req, res) => {
     const emailContent = {
       to: sanitizedTo,
       from: "support@helldivers-boost.com",
-      subject: sanitizedSubject.includes('Ticket')
-        ? `Re: Support Ticket #${sanitizedTicketId.slice(-6)} - ${sanitizedSubject.replace('Support:', '').trim()}`
+      subject: sanitizedSubject.includes("Ticket")
+        ? `Re: Support Ticket #${sanitizedTicketId.slice(-6)} - ${sanitizedSubject.replace("Support:", "").trim()}`
         : `Re: Order Update #${sanitizedTicketId.slice(-6)} - ${sanitizedSubject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0;">
           <div style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; padding: 20px; text-align: center;">
             <h1 style="margin: 0; font-size: 24px;">⚡ HelldiversBoost</h1>
             <p style="margin: 5px 0 0 0; opacity: 0.9;">
-              ${sanitizedSubject.includes('Support') ? 'Support Team Response' : 'Order Update'}
+              ${sanitizedSubject.includes("Support") ? "Support Team Response" : "Order Update"}
             </p>
           </div>
 
@@ -84,16 +85,17 @@ export const handleSendEmail: RequestHandler = async (req, res) => {
             <h2 style="color: #1e3a8a; margin-top: 0;">Hi ${sanitizedCustomerName}! 👋</h2>
 
             <p style="color: #374151; line-height: 1.6;">
-              ${sanitizedSubject.includes('Support')
-                ? "Thank you for contacting our support team. Here's our response to your inquiry:"
-                : "We have an update regarding your order:"
+              ${
+                sanitizedSubject.includes("Support")
+                  ? "Thank you for contacting our support team. Here's our response to your inquiry:"
+                  : "We have an update regarding your order:"
               }
             </p>
 
             <div style="background: #f8fafc; padding: 20px; border-left: 4px solid #3b82f6; margin: 25px 0; border-radius: 4px;">
               <div style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">
-                <strong>${sanitizedSubject.includes('Support') ? '🎫 Ticket' : '📦 Order'} #${sanitizedTicketId.slice(-6)}</strong>
-                ${sanitizedSubject.includes('Support') ? '' : ` | ${sanitizedSubject}`}
+                <strong>${sanitizedSubject.includes("Support") ? "🎫 Ticket" : "📦 Order"} #${sanitizedTicketId.slice(-6)}</strong>
+                ${sanitizedSubject.includes("Support") ? "" : ` | ${sanitizedSubject}`}
               </div>
               <div style="color: #111827; white-space: pre-wrap; line-height: 1.6;">${sanitizedMessage}</div>
             </div>
@@ -118,7 +120,7 @@ export const handleSendEmail: RequestHandler = async (req, res) => {
             <p style="margin: 0;">🕒 Sent on ${new Date().toLocaleString()}</p>
           </div>
         </div>
-      `
+      `,
     };
 
     // TODO: Replace this with actual email service integration
@@ -151,15 +153,14 @@ export const handleSendEmail: RequestHandler = async (req, res) => {
       emailData: {
         to: emailContent.to,
         subject: emailContent.subject,
-        sentAt: new Date().toISOString()
-      }
+        sentAt: new Date().toISOString(),
+      },
     });
-
   } catch (error: any) {
     console.error("Error sending email:", error);
     res.status(500).json({
       error: "Failed to send email",
-      details: error.message
+      details: error.message,
     });
   }
 };

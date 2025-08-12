@@ -204,7 +204,8 @@ export default function Checkout() {
     setUseReferralCredits(checked);
     if (checked && availableCredits > 0) {
       // Apply up to the subtotal + tax amount or available credits, whichever is smaller
-      const maxApplicable = subtotal - referralDiscount + (subtotal - referralDiscount) * 0.08;
+      const maxApplicable =
+        subtotal - referralDiscount + (subtotal - referralDiscount) * 0.08;
       const creditsToApply = Math.min(availableCredits, maxApplicable);
       setReferralCreditsApplied(creditsToApply);
 
@@ -246,7 +247,7 @@ export default function Checkout() {
         const success = await useCredits(referralCreditsApplied);
 
         if (!success) {
-          throw new Error('Failed to use referral credits');
+          throw new Error("Failed to use referral credits");
         }
       }
       // Check if cart contains custom orders
@@ -283,7 +284,10 @@ export default function Checkout() {
           ),
           paymentStatus: total <= 0 ? "paid" : "paid", // Set to paid for both credit-only and PayPal payments
           notes: orderNotes,
-          transactionId: paymentDetails?.id || paymentData?.orderID || `credits-${Date.now()}`,
+          transactionId:
+            paymentDetails?.id ||
+            paymentData?.orderID ||
+            `credits-${Date.now()}`,
           referralCode: referralCode || undefined,
           referralDiscount: referralDiscount || undefined,
           referralCreditsUsed: referralCreditsApplied || undefined,
@@ -328,9 +332,10 @@ export default function Checkout() {
             ? "Your custom order has been confirmed"
             : `Your order #${orderId?.slice(-6)} has been confirmed`;
 
-      const paymentMessage = total <= 0
-        ? "Paid with referral credits"
-        : `Payment ID: ${paymentDetails?.id || 'Credits + PayPal'}`;
+      const paymentMessage =
+        total <= 0
+          ? "Paid with referral credits"
+          : `Payment ID: ${paymentDetails?.id || "Credits + PayPal"}`;
 
       toast({
         title: total <= 0 ? "Order confirmed!" : "Payment successful!",
@@ -352,9 +357,10 @@ export default function Checkout() {
         "Unknown error";
       toast({
         title: "Order creation failed",
-        description: total <= 0
-          ? `We couldn't create your order: ${errorMessage}. Please contact support.`
-          : `Payment was successful but we couldn't create your order: ${errorMessage}. Please contact support.`,
+        description:
+          total <= 0
+            ? `We couldn't create your order: ${errorMessage}. Please contact support.`
+            : `Payment was successful but we couldn't create your order: ${errorMessage}. Please contact support.`,
         variant: "destructive",
       });
     } finally {
@@ -605,8 +611,14 @@ export default function Checkout() {
                           <p className="font-medium">Apply Referral Credits</p>
                           <p className="text-sm text-muted-foreground">
                             Use up to $
-                            {Math.min(availableCredits, subtotal - referralDiscount + (subtotal - referralDiscount) * 0.08).toFixed(2)} of
-                            your ${availableCredits.toFixed(2)} available credits
+                            {Math.min(
+                              availableCredits,
+                              subtotal -
+                                referralDiscount +
+                                (subtotal - referralDiscount) * 0.08,
+                            ).toFixed(2)}{" "}
+                            of your ${availableCredits.toFixed(2)} available
+                            credits
                           </p>
                         </div>
                       </div>
@@ -727,7 +739,8 @@ export default function Checkout() {
                               </span>
                             </div>
                             <p className="text-xs text-green-600 dark:text-green-500 mt-1">
-                              No payment required. Click below to confirm your order.
+                              No payment required. Click below to confirm your
+                              order.
                             </p>
                           </div>
 

@@ -1,4 +1,10 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from "react";
+import {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  ReactNode,
+} from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
@@ -30,7 +36,9 @@ interface ReferralsContextType {
   useCredits: (amount: number) => Promise<boolean>;
 }
 
-const ReferralsContext = createContext<ReferralsContextType | undefined>(undefined);
+const ReferralsContext = createContext<ReferralsContextType | undefined>(
+  undefined,
+);
 
 export function ReferralsProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -75,29 +83,35 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       const creditBalance = profileData?.credit_balance || 0;
 
       // Handle credit_balance column not existing
-      if (creditsError &&
-          (creditsError.code === 'PGRST116' ||
-           creditsError.message?.includes('column') ||
-           creditsError.message?.includes('does not exist'))) {
+      if (
+        creditsError &&
+        (creditsError.code === "PGRST116" ||
+          creditsError.message?.includes("column") ||
+          creditsError.message?.includes("does not exist"))
+      ) {
         console.warn("Credit balance column not found - using 0");
       }
 
       // Calculate referral stats from orders with referral codes
       const userReferralCode = `HD2BOOST-${user.id.slice(-6)}`;
-      const referralOrders = ordersData?.filter(order =>
-        order.referral_code === userReferralCode
-      ) || [];
+      const referralOrders =
+        ordersData?.filter(
+          (order) => order.referral_code === userReferralCode,
+        ) || [];
 
       const totalReferred = referralOrders.length;
       const totalEarned = referralOrders
-        .filter(order => order.status === "completed")
+        .filter((order) => order.status === "completed")
         .reduce((sum, order) => {
           // Calculate 5% commission from order total
           const commission = order.total_amount * 0.05;
           return sum + commission;
         }, 0);
       const pendingEarnings = referralOrders
-        .filter(order => order.status === "pending" || order.status === "processing")
+        .filter(
+          (order) =>
+            order.status === "pending" || order.status === "processing",
+        )
         .reduce((sum, order) => {
           const commission = order.total_amount * 0.05;
           return sum + commission;
@@ -109,7 +123,6 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         pendingEarnings,
         creditBalance: parseFloat(String(creditBalance)) || 0,
       });
-
     } catch (err: any) {
       console.error("Error fetching referral stats:", err);
       setError(`Failed to load referral data: ${err?.message || String(err)}`);
@@ -129,7 +142,11 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (error) {
-        if (error.code === 'PGRST116' || error.message?.includes('column') || error.message?.includes('does not exist')) {
+        if (
+          error.code === "PGRST116" ||
+          error.message?.includes("column") ||
+          error.message?.includes("does not exist")
+        ) {
           return 0; // Column doesn't exist yet
         }
         throw error;
@@ -148,24 +165,32 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
     try {
       // Get current balance
       const currentBalance = await getUserCredits();
-      
+
       if (currentBalance < amount) {
-        console.error(`Insufficient credits. Available: ${currentBalance}, Requested: ${amount}`);
+        console.error(
+          `Insufficient credits. Available: ${currentBalance}, Requested: ${amount}`,
+        );
         return false;
       }
 
       // Deduct credits
       const { error } = await supabase
-        .from('profiles')
+        .from("profiles")
         .update({
           credit_balance: currentBalance - amount,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
-        .eq('id', user.id);
+        .eq("id", user.id);
 
       if (error) {
-        if (error.code === 'PGRST116' || error.message?.includes('column') || error.message?.includes('does not exist')) {
-          console.warn('Credit balance column does not exist. Database migration needed.');
+        if (
+          error.code === "PGRST116" ||
+          error.message?.includes("column") ||
+          error.message?.includes("does not exist")
+        ) {
+          console.warn(
+            "Credit balance column does not exist. Database migration needed.",
+          );
           return true; // Simulate success to avoid blocking checkout
         }
         throw error;

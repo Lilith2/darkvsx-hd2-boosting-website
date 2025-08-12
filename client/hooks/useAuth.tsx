@@ -29,7 +29,9 @@ interface AuthContextType {
   ) => Promise<boolean>;
   logout: () => Promise<void>;
   resendConfirmation: (email: string) => Promise<boolean>;
-  updateProfile: (updates: Partial<{ username: string; discord_username: string }>) => Promise<boolean>;
+  updateProfile: (
+    updates: Partial<{ username: string; discord_username: string }>,
+  ) => Promise<boolean>;
   isAuthenticated: boolean;
   isAdmin: boolean;
 }
@@ -101,12 +103,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           } else if (newProfile) {
             console.log("Profile created successfully:", newProfile);
             setUser({
-            id: newProfile.id,
-            username: newProfile.username || "User",
-            email: newProfile.email || "",
-            role: (newProfile.role as "user" | "admin") || "user",
-            discord_username: newProfile.discord_username || undefined,
-          });
+              id: newProfile.id,
+              username: newProfile.username || "User",
+              email: newProfile.email || "",
+              role: (newProfile.role as "user" | "admin") || "user",
+              discord_username: newProfile.discord_username || undefined,
+            });
           }
         }
       } else if (profile) {
@@ -189,7 +191,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateProfile = async (updates: Partial<{ username: string; discord_username: string }>): Promise<boolean> => {
+  const updateProfile = async (
+    updates: Partial<{ username: string; discord_username: string }>,
+  ): Promise<boolean> => {
     if (!user) return false;
 
     try {
@@ -207,11 +211,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Update local user state
-      setUser(prev => prev ? {
-        ...prev,
-        username: updates.username || prev.username,
-        discord_username: updates.discord_username !== undefined ? updates.discord_username : prev.discord_username
-      } : null);
+      setUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              username: updates.username || prev.username,
+              discord_username:
+                updates.discord_username !== undefined
+                  ? updates.discord_username
+                  : prev.discord_username,
+            }
+          : null,
+      );
       return true;
     } catch (error) {
       console.error("Profile update error:", error);
