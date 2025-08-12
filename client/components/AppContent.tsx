@@ -29,23 +29,7 @@ import {
 } from "@/components/LazyComponents";
 
 export function AppContent() {
-  // Add defensive programming for auth context
-  const [authContextReady, setAuthContextReady] = useState(false);
-  const [authData, setAuthData] = useState<{ loading: boolean }>({ loading: true });
-
-  // Try to access auth context safely
-  useEffect(() => {
-    try {
-      const auth = useAuth();
-      setAuthData(auth);
-      setAuthContextReady(true);
-    } catch (error) {
-      console.error("Auth context not ready:", error);
-      // Set a fallback state
-      setAuthData({ loading: false });
-      setAuthContextReady(true);
-    }
-  }, []);
+  const { loading } = useAuth();
 
   // Show loading only for first 3 seconds, then force render
   const [forceRender, setForceRender] = useState(false);
@@ -58,21 +42,7 @@ export function AppContent() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Wait for auth context to be ready
-  if (!authContextReady) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
-        <div className="text-center">
-          <OptimizedSpinner size="lg" />
-          <p className="text-lg font-medium text-foreground mt-4">
-            Initializing HelldiversBoost...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (authData.loading && !forceRender) {
+  if (loading && !forceRender) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
         <div className="text-center">
