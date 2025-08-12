@@ -70,8 +70,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadUserProfile = async (userId: string) => {
     try {
       console.log("Loading profile for user:", userId);
-      console.log("Supabase URL:", import.meta.env.VITE_SUPABASE_URL || "using fallback");
-      console.log("Environment:", import.meta.env.MODE);
 
       const { data: profile, error } = await supabase
         .from("profiles")
