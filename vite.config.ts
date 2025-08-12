@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
     minify: "terser",
     target: "esnext",
     modulePreload: {
-      polyfill: false
+      polyfill: false,
     },
     rollupOptions: {
       output: {
