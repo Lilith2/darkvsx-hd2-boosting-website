@@ -1,4 +1,10 @@
 import { RequestHandler } from "express";
+import DOMPurify from 'dompurify';
+import { JSDOM } from 'jsdom';
+
+// Create a JSDOM instance for server-side DOMPurify
+const window = new JSDOM('').window;
+const purify = DOMPurify(window as any);
 
 interface SendEmailRequest {
   to: string;
@@ -6,6 +12,18 @@ interface SendEmailRequest {
   message: string;
   ticketId: string;
   customerName: string;
+}
+
+// Sanitize and validate email input
+function sanitizeEmailInput(input: string): string {
+  if (!input || typeof input !== 'string') return '';
+  return purify.sanitize(input.trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+}
+
+// Validate email format
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }
 
 export const handleSendEmail: RequestHandler = async (req, res) => {
@@ -18,6 +36,20 @@ export const handleSendEmail: RequestHandler = async (req, res) => {
         error: "Missing required fields: to, subject, message, ticketId"
       });
     }
+
+    // Validate email format
+    if (!isValidEmail(to)) {
+      return res.status(400).json({
+        error: "Invalid email format"
+      });
+    }
+
+    // Sanitize all input fields to prevent XSS
+    const sanitizedTo = sanitizeEmailInput(to);
+    const sanitizedSubject = sanitizeEmailInput(subject);
+    const sanitizedMessage = sanitizeEmailInput(message);
+    const sanitizedTicketId = sanitizeEmailInput(ticketId);
+    const sanitizedCustomerName = sanitizeEmailInput(customerName);
 
     // For now, we'll log the email content and return success
     // In production, you would integrate with an email service like:
