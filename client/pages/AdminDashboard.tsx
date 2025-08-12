@@ -1383,6 +1383,11 @@ export default function AdminDashboard() {
                                     ? "Paid"
                                     : "Payment " + order.paymentStatus}
                                 </Badge>
+                                {order.services.some(s => s.name.includes("Custom Order:")) && (
+                                  <Badge className="bg-purple-500/20 text-purple-700">
+                                    Custom Order
+                                  </Badge>
+                                )}
                               </div>
                               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                                 <div>
