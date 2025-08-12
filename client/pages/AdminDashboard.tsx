@@ -102,7 +102,31 @@ export default function AdminDashboard() {
     )
     .slice(0, 5);
 
-  const topServices = services.sort((a, b) => b.orders - a.orders).slice(0, 5);
+  // Calculate actual top performing services from real order data
+  const topServices = (() => {
+    const serviceStats = new Map();
+
+    // Count actual orders for each service
+    orders.forEach(order => {
+      if (!order.services.some(s => s.id === "support-ticket")) {
+        order.services.forEach(service => {
+          const current = serviceStats.get(service.name) || {
+            name: service.name,
+            orders: 0,
+            revenue: 0,
+            id: service.id
+          };
+          current.orders += service.quantity || 1;
+          current.revenue += (service.price || 0) * (service.quantity || 1);
+          serviceStats.set(service.name, current);
+        });
+      }
+    });
+
+    return Array.from(serviceStats.values())
+      .sort((a, b) => b.orders - a.orders)
+      .slice(0, 5);
+  })();
 
   // Service management functions
   const handleAddService = () => {
