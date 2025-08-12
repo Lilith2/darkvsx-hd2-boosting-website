@@ -137,19 +137,30 @@ export function PerformanceMonitor() {
   );
 }
 
-// Web Vitals monitoring hook
+// Web Vitals monitoring hook (simplified version)
 export function useWebVitals() {
   useEffect(() => {
     if (import.meta.env.DEV) {
-      import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-        getCLS(console.log);
-        getFID(console.log);
-        getFCP(console.log);
-        getLCP(console.log);
-        getTTFB(console.log);
-      }).catch(() => {
-        // web-vitals not available, skip
-      });
+      // Monitor basic performance metrics without external dependency
+      const measureWebVitals = () => {
+        // Measure First Contentful Paint
+        const observer = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          entries.forEach((entry) => {
+            if (entry.entryType === 'paint' && entry.name === 'first-contentful-paint') {
+              console.log('FCP:', entry.startTime);
+            }
+          });
+        });
+
+        try {
+          observer.observe({ entryTypes: ['paint'] });
+        } catch (e) {
+          // Performance Observer not supported
+        }
+      };
+
+      measureWebVitals();
     }
   }, []);
 }
