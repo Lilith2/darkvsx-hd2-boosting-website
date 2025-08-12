@@ -5,13 +5,16 @@ import type { Order, OrderMessage, OrderTracking } from "./useOrders";
 
 // Query keys for better cache management
 export const orderKeys = {
-  all: ['orders'] as const,
-  lists: () => [...orderKeys.all, 'list'] as const,
-  list: (filters: Record<string, any>) => [...orderKeys.lists(), { filters }] as const,
-  details: () => [...orderKeys.all, 'detail'] as const,
+  all: ["orders"] as const,
+  lists: () => [...orderKeys.all, "list"] as const,
+  list: (filters: Record<string, any>) =>
+    [...orderKeys.lists(), { filters }] as const,
+  details: () => [...orderKeys.all, "detail"] as const,
   detail: (id: string) => [...orderKeys.details(), id] as const,
-  messages: (orderId: string) => [...orderKeys.all, 'messages', orderId] as const,
-  tracking: (orderId: string) => [...orderKeys.all, 'tracking', orderId] as const,
+  messages: (orderId: string) =>
+    [...orderKeys.all, "messages", orderId] as const,
+  tracking: (orderId: string) =>
+    [...orderKeys.all, "tracking", orderId] as const,
 };
 
 // Optimized orders hook with React Query
@@ -44,9 +47,11 @@ export function useOptimizedOrders() {
 
   // Add order mutation
   const addOrderMutation = useMutation({
-    mutationFn: async (orderData: Omit<Order, 'id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (
+      orderData: Omit<Order, "id" | "created_at" | "updated_at">,
+    ) => {
       const ipAddress = await getCurrentIPAddress();
-      
+
       const { data, error } = await supabase
         .from("orders")
         .insert([{ ...orderData, ip_address: ipAddress }])
@@ -57,15 +62,21 @@ export function useOptimizedOrders() {
       return mapOrderFromSupabase(data);
     },
     onSuccess: (newOrder) => {
-      queryClient.setQueryData<Order[]>(orderKeys.lists(), (old) => 
-        old ? [newOrder, ...old] : [newOrder]
+      queryClient.setQueryData<Order[]>(orderKeys.lists(), (old) =>
+        old ? [newOrder, ...old] : [newOrder],
       );
     },
   });
 
   // Update order status mutation
   const updateOrderStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: Order['status'] }) => {
+    mutationFn: async ({
+      id,
+      status,
+    }: {
+      id: string;
+      status: Order["status"];
+    }) => {
       const { data, error } = await supabase
         .from("orders")
         .update({ status, updated_at: new Date().toISOString() })
@@ -77,8 +88,12 @@ export function useOptimizedOrders() {
       return mapOrderFromSupabase(data);
     },
     onSuccess: (updatedOrder) => {
-      queryClient.setQueryData<Order[]>(orderKeys.lists(), (old) =>
-        old?.map((order) => order.id === updatedOrder.id ? updatedOrder : order) || []
+      queryClient.setQueryData<Order[]>(
+        orderKeys.lists(),
+        (old) =>
+          old?.map((order) =>
+            order.id === updatedOrder.id ? updatedOrder : order,
+          ) || [],
       );
     },
   });
@@ -110,7 +125,8 @@ export function useOptimizedOrders() {
     updateOrderStatus: updateOrderStatusMutation.mutateAsync,
     useOrderMessages,
     // Expose query client for advanced cache management
-    invalidateOrders: () => queryClient.invalidateQueries({ queryKey: orderKeys.all }),
+    invalidateOrders: () =>
+      queryClient.invalidateQueries({ queryKey: orderKeys.all }),
   };
 }
 

@@ -4,16 +4,16 @@ export interface ImageOptimizationOptions {
   width?: number;
   height?: number;
   quality?: number;
-  format?: 'webp' | 'avif' | 'png' | 'jpg';
+  format?: "webp" | "avif" | "png" | "jpg";
   lazy?: boolean;
 }
 
 export function getOptimizedImageUrl(
   src: string,
-  options: ImageOptimizationOptions = {}
+  options: ImageOptimizationOptions = {},
 ): string {
   // If it's a local image, return as-is (Vite will handle optimization)
-  if (src.startsWith('/') || src.startsWith('./')) {
+  if (src.startsWith("/") || src.startsWith("./")) {
     return src;
   }
 
@@ -51,9 +51,9 @@ export class LazyImageObserver {
         });
       },
       {
-        rootMargin: '50px 0px',
+        rootMargin: "50px 0px",
         threshold: 0.01,
-      }
+      },
     );
   }
 
@@ -71,8 +71,8 @@ export class LazyImageObserver {
     const src = img.dataset.src;
     if (src) {
       img.src = src;
-      img.classList.remove('lazy');
-      img.classList.add('loaded');
+      img.classList.remove("lazy");
+      img.classList.add("loaded");
       this.observer.unobserve(img);
     }
   }
@@ -89,17 +89,19 @@ export const lazyImageObserver = new LazyImageObserver();
 // Performance monitoring for images
 export function trackImagePerformance(src: string, startTime: number) {
   const duration = performance.now() - startTime;
-  
+
   if (import.meta.env.DEV) {
     console.log(`Image loaded: ${src} in ${duration.toFixed(2)}ms`);
   }
-  
+
   // Could send to analytics service
   return duration;
 }
 
 // Utility to get image dimensions without loading
-export function getImageDimensions(src: string): Promise<{ width: number; height: number }> {
+export function getImageDimensions(
+  src: string,
+): Promise<{ width: number; height: number }> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {

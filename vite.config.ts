@@ -16,58 +16,65 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist/spa",
-    sourcemap: mode === 'development',
-    minify: 'terser',
-    target: 'esnext',
+    sourcemap: mode === "development",
+    minify: "terser",
+    target: "esnext",
     rollupOptions: {
       output: {
         manualChunks: (id) => {
           // Core React libraries
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'vendor-react';
+          if (
+            id.includes("node_modules/react") ||
+            id.includes("node_modules/react-dom")
+          ) {
+            return "vendor-react";
           }
           // Router
-          if (id.includes('react-router')) {
-            return 'vendor-router';
+          if (id.includes("react-router")) {
+            return "vendor-router";
           }
           // UI libraries (Radix UI)
-          if (id.includes('@radix-ui')) {
-            return 'vendor-ui';
+          if (id.includes("@radix-ui")) {
+            return "vendor-ui";
           }
           // Lucide icons
-          if (id.includes('lucide-react')) {
-            return 'vendor-icons';
+          if (id.includes("lucide-react")) {
+            return "vendor-icons";
           }
           // Supabase
-          if (id.includes('@supabase') || id.includes('supabase')) {
-            return 'vendor-supabase';
+          if (id.includes("@supabase") || id.includes("supabase")) {
+            return "vendor-supabase";
           }
           // PayPal
-          if (id.includes('@paypal')) {
-            return 'vendor-paypal';
+          if (id.includes("@paypal")) {
+            return "vendor-paypal";
           }
           // React Query
-          if (id.includes('@tanstack/react-query')) {
-            return 'vendor-query';
+          if (id.includes("@tanstack/react-query")) {
+            return "vendor-query";
           }
           // Framer Motion
-          if (id.includes('framer-motion')) {
-            return 'vendor-animation';
+          if (id.includes("framer-motion")) {
+            return "vendor-animation";
           }
           // Three.js (if used)
-          if (id.includes('three') || id.includes('@react-three')) {
-            return 'vendor-3d';
+          if (id.includes("three") || id.includes("@react-three")) {
+            return "vendor-3d";
           }
           // Other vendor libraries
-          if (id.includes('node_modules')) {
-            return 'vendor-misc';
+          if (id.includes("node_modules")) {
+            return "vendor-misc";
           }
         },
         // Optimize chunk naming for better caching
         chunkFileNames: (chunkInfo) => {
           const facadeModuleId = chunkInfo.facadeModuleId;
           if (facadeModuleId) {
-            const fileName = facadeModuleId.split('/').pop()?.replace('.tsx', '').replace('.ts', '');
+            const fileName = facadeModuleId
+              .split("/")
+              .pop()
+              ?.replace(".tsx", "")
+              .replace(".ts", "");
             return `chunks/${fileName}-[hash].js`;
           }
           return `chunks/[name]-[hash].js`;
@@ -79,35 +86,39 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1000,
     terserOptions: {
       compress: {
-        drop_console: mode === 'production',
-        drop_debugger: mode === 'production',
+        drop_console: mode === "production",
+        drop_debugger: mode === "production",
       },
     },
   },
   optimizeDeps: {
     include: [
-      'react',
-      'react-dom',
-      'react-router-dom',
-      '@supabase/supabase-js',
-      '@tanstack/react-query',
-      'lucide-react',
-      '@paypal/react-paypal-js',
-      'framer-motion',
-      'react-hook-form',
-      '@hookform/resolvers/zod',
-      'zod',
-      'date-fns',
-      'clsx',
-      'tailwind-merge',
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "@supabase/supabase-js",
+      "@tanstack/react-query",
+      "lucide-react",
+      "@paypal/react-paypal-js",
+      "framer-motion",
+      "react-hook-form",
+      "@hookform/resolvers/zod",
+      "zod",
+      "date-fns",
+      "clsx",
+      "tailwind-merge",
     ],
     exclude: [
       // Exclude large libraries that should be lazy loaded
-      '@react-three/fiber',
-      '@react-three/drei',
+      "@react-three/fiber",
+      "@react-three/drei",
     ],
   },
-  plugins: [react(), mode === 'development' && componentTagger(), expressPlugin()].filter(Boolean),
+  plugins: [
+    react(),
+    mode === "development" && componentTagger(),
+    expressPlugin(),
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client"),

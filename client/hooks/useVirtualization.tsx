@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from "react";
 
 interface UseVirtualizationProps {
   items: any[];
@@ -16,20 +16,25 @@ export function useVirtualization({
   const [scrollTop, setScrollTop] = useState(0);
 
   const visibleRange = useMemo(() => {
-    const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
+    const startIndex = Math.max(
+      0,
+      Math.floor(scrollTop / itemHeight) - overscan,
+    );
     const endIndex = Math.min(
       items.length - 1,
-      Math.ceil((scrollTop + containerHeight) / itemHeight) + overscan
+      Math.ceil((scrollTop + containerHeight) / itemHeight) + overscan,
     );
 
     return { startIndex, endIndex };
   }, [scrollTop, itemHeight, containerHeight, items.length, overscan]);
 
   const visibleItems = useMemo(() => {
-    return items.slice(visibleRange.startIndex, visibleRange.endIndex + 1).map((item, index) => ({
-      item,
-      index: visibleRange.startIndex + index,
-    }));
+    return items
+      .slice(visibleRange.startIndex, visibleRange.endIndex + 1)
+      .map((item, index) => ({
+        item,
+        index: visibleRange.startIndex + index,
+      }));
   }, [items, visibleRange]);
 
   const totalHeight = items.length * itemHeight;
@@ -61,13 +66,14 @@ export function VirtualList({
   itemHeight,
   height,
   renderItem,
-  className = '',
+  className = "",
 }: VirtualListProps) {
-  const { visibleItems, totalHeight, handleScroll, offsetY } = useVirtualization({
-    items,
-    itemHeight,
-    containerHeight: height,
-  });
+  const { visibleItems, totalHeight, handleScroll, offsetY } =
+    useVirtualization({
+      items,
+      itemHeight,
+      containerHeight: height,
+    });
 
   return (
     <div
@@ -75,11 +81,11 @@ export function VirtualList({
       style={{ height }}
       onScroll={handleScroll}
     >
-      <div style={{ height: totalHeight, position: 'relative' }}>
+      <div style={{ height: totalHeight, position: "relative" }}>
         <div
           style={{
             transform: `translateY(${offsetY}px)`,
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             right: 0,

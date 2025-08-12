@@ -955,8 +955,8 @@ export default function AdminDashboard() {
                                 {bundle.name}
                               </CardTitle>
                               <p className="text-sm text-muted-foreground mt-1">
-                                {bundle.orders || 0} orders • {bundle.discount || 0}%
-                                discount
+                                {bundle.orders || 0} orders •{" "}
+                                {bundle.discount || 0}% discount
                               </p>
                             </div>
                             <div className="flex flex-col items-end space-y-1">
@@ -990,14 +990,15 @@ export default function AdminDashboard() {
                             <div className="flex justify-between items-center">
                               <div className="flex items-baseline gap-2">
                                 <span className="text-2xl font-bold text-primary">
-                                  ${bundle.discountedPrice?.toFixed(2) || '0.00'}
+                                  $
+                                  {bundle.discountedPrice?.toFixed(2) || "0.00"}
                                 </span>
                                 <span className="text-sm text-muted-foreground line-through">
-                                  ${bundle.originalPrice?.toFixed(2) || '0.00'}
+                                  ${bundle.originalPrice?.toFixed(2) || "0.00"}
                                 </span>
                               </div>
                               <span className="text-sm text-muted-foreground">
-                                {bundle.duration || 'N/A'}
+                                {bundle.duration || "N/A"}
                               </span>
                             </div>
 
@@ -1006,8 +1007,12 @@ export default function AdminDashboard() {
                             </p>
 
                             <div className="flex justify-between text-xs text-muted-foreground">
-                              <span>{bundle.services?.length || 0} services</span>
-                              <span>{bundle.features?.length || 0} features</span>
+                              <span>
+                                {bundle.services?.length || 0} services
+                              </span>
+                              <span>
+                                {bundle.features?.length || 0} features
+                              </span>
                             </div>
 
                             <div className="flex space-x-2">
@@ -1493,9 +1498,10 @@ export default function AdminDashboard() {
                                     ${order.totalAmount.toFixed(2)}
                                   </p>
                                   <p className="text-xs text-muted-foreground mt-1">
-                                    {order.transactionId?.startsWith('credits-')
-                                      ? 'Credits TX:'
-                                      : 'PayPal TX:'} {order.transactionId || "Not recorded"}
+                                    {order.transactionId?.startsWith("credits-")
+                                      ? "Credits TX:"
+                                      : "PayPal TX:"}{" "}
+                                    {order.transactionId || "Not recorded"}
                                   </p>
                                 </div>
                                 <div>
@@ -2031,9 +2037,11 @@ export default function AdminDashboard() {
 
                   <div>
                     <Label className="text-sm font-medium text-muted-foreground">
-                      {selectedOrderForResume.transactionId?.startsWith('credits-')
-                        ? 'Credits Transaction ID'
-                        : 'PayPal Transaction ID'}
+                      {selectedOrderForResume.transactionId?.startsWith(
+                        "credits-",
+                      )
+                        ? "Credits Transaction ID"
+                        : "PayPal Transaction ID"}
                     </Label>
                     <p className="font-medium font-mono text-sm">
                       {selectedOrderForResume.transactionId || "Not recorded"}

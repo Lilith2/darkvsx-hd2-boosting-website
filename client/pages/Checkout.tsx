@@ -380,7 +380,7 @@ export default function Checkout() {
     console.log("PayPal IDs found:", {
       orderId: transactionId,
       captureId: captureId,
-      fullCaptureDetails: details?.purchase_units?.[0]?.payments?.captures?.[0]
+      fullCaptureDetails: details?.purchase_units?.[0]?.payments?.captures?.[0],
     });
 
     await processOrder(details, data);

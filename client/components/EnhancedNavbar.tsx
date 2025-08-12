@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import React, { useState, useEffect, useCallback } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,14 +9,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
+} from "@/components/ui/sheet";
 import {
   Menu,
   ShoppingCart,
@@ -29,11 +29,11 @@ import {
   Search,
   Moon,
   Sun,
-} from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { useCart } from '@/hooks/useCart';
-import { useTheme } from 'next-themes';
-import { cn } from '@/lib/utils';
+} from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 interface NavigationItem {
   name: string;
@@ -44,11 +44,11 @@ interface NavigationItem {
 }
 
 const navigation: NavigationItem[] = [
-  { name: 'Services', href: '/', icon: Crown },
-  { name: 'Bundles', href: '/bundles', icon: Package, badge: 'Popular' },
-  { name: 'Custom Order', href: '/custom-order', icon: Settings, isNew: true },
-  { name: 'FAQ', href: '/faq' },
-  { name: 'Contact', href: '/contact' },
+  { name: "Services", href: "/", icon: Crown },
+  { name: "Bundles", href: "/bundles", icon: Package, badge: "Popular" },
+  { name: "Custom Order", href: "/custom-order", icon: Settings, isNew: true },
+  { name: "FAQ", href: "/faq" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export function EnhancedNavbar() {
@@ -58,7 +58,7 @@ export function EnhancedNavbar() {
   const { cartItems } = useCart();
   const { theme, setTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
 
   // Handle scroll effect
@@ -67,8 +67,8 @@ export function EnhancedNavbar() {
       setIsScrolled(window.scrollY > 0);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -76,40 +76,48 @@ export function EnhancedNavbar() {
   const handleLogout = useCallback(async () => {
     try {
       await logout();
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   }, [logout, navigate]);
 
-  const handleSearch = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/?search=${encodeURIComponent(searchQuery)}`);
-      setShowSearch(false);
-      setSearchQuery('');
-    }
-  }, [searchQuery, navigate]);
+  const handleSearch = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (searchQuery.trim()) {
+        navigate(`/?search=${encodeURIComponent(searchQuery)}`);
+        setShowSearch(false);
+        setSearchQuery("");
+      }
+    },
+    [searchQuery, navigate],
+  );
 
-  const isActivePath = useCallback((path: string) => {
-    if (path === '/' && location.pathname !== '/') return false;
-    return location.pathname === path || location.pathname.startsWith(path + '/');
-  }, [location.pathname]);
+  const isActivePath = useCallback(
+    (path: string) => {
+      if (path === "/" && location.pathname !== "/") return false;
+      return (
+        location.pathname === path || location.pathname.startsWith(path + "/")
+      );
+    },
+    [location.pathname],
+  );
 
   return (
     <nav
       className={cn(
-        'sticky top-0 z-50 w-full border-b transition-all duration-200',
+        "sticky top-0 z-50 w-full border-b transition-all duration-200",
         isScrolled
-          ? 'bg-background/95 backdrop-blur-md border-border/50 shadow-sm'
-          : 'bg-background border-border'
+          ? "bg-background/95 backdrop-blur-md border-border/50 shadow-sm"
+          : "bg-background border-border",
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="flex items-center space-x-2 group transition-transform hover:scale-105"
           >
             <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center">
@@ -129,10 +137,10 @@ export function EnhancedNavbar() {
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    'relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2',
+                    "relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2",
                     isActive
-                      ? 'text-primary bg-primary/10'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
                   )}
                 >
                   {item.icon && <item.icon className="w-4 h-4" />}
@@ -171,9 +179,9 @@ export function EnhancedNavbar() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
-              {theme === 'dark' ? (
+              {theme === "dark" ? (
                 <Sun className="w-4 h-4" />
               ) : (
                 <Moon className="w-4 h-4" />
@@ -181,19 +189,12 @@ export function EnhancedNavbar() {
             </Button>
 
             {/* Cart */}
-            <Button
-              variant="ghost"
-              size="icon"
-              asChild
-              className="relative"
-            >
+            <Button variant="ghost" size="icon" asChild className="relative">
               <Link to="/cart">
                 <ShoppingCart className="w-4 h-4" />
                 {cartItemCount > 0 && (
-                  <Badge
-                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary"
-                  >
-                    {cartItemCount > 99 ? '99+' : cartItemCount}
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary">
+                    {cartItemCount > 99 ? "99+" : cartItemCount}
                   </Badge>
                 )}
               </Link>
@@ -229,7 +230,7 @@ export function EnhancedNavbar() {
                       Orders
                     </Link>
                   </DropdownMenuItem>
-                  {user?.role === 'admin' && (
+                  {user?.role === "admin" && (
                     <DropdownMenuItem asChild>
                       <Link to="/admin" className="flex items-center">
                         <Settings className="w-4 h-4 mr-2" />
@@ -272,10 +273,10 @@ export function EnhancedNavbar() {
                       key={item.name}
                       to={item.href}
                       className={cn(
-                        'flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                        "flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                         isActivePath(item.href)
-                          ? 'text-primary bg-primary/10'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                          ? "text-primary bg-primary/10"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
                       )}
                     >
                       {item.icon && <item.icon className="w-4 h-4" />}

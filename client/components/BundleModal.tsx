@@ -19,7 +19,7 @@ import { Bundle } from "@/hooks/useBundles";
 interface BundleModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (bundle: Omit<Bundle, 'id' | 'created_at' | 'updated_at'>) => void;
+  onSave: (bundle: Omit<Bundle, "id" | "created_at" | "updated_at">) => void;
   bundle?: Bundle | null;
 }
 
@@ -37,7 +37,12 @@ interface FormData {
   badge: string;
 }
 
-export function BundleModal({ isOpen, onClose, onSave, bundle }: BundleModalProps) {
+export function BundleModal({
+  isOpen,
+  onClose,
+  onSave,
+  bundle,
+}: BundleModalProps) {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     description: "",
@@ -89,8 +94,10 @@ export function BundleModal({ isOpen, onClose, onSave, bundle }: BundleModalProp
     const original = parseFloat(formData.originalPrice);
     const discounted = parseFloat(formData.discountedPrice);
     if (original > 0 && discounted > 0 && discounted < original) {
-      const calculatedDiscount = Math.round(((original - discounted) / original) * 100);
-      setFormData(prev => ({ ...prev, discount: calculatedDiscount }));
+      const calculatedDiscount = Math.round(
+        ((original - discounted) / original) * 100,
+      );
+      setFormData((prev) => ({ ...prev, discount: calculatedDiscount }));
     }
   }, [formData.originalPrice, formData.discountedPrice]);
 
@@ -127,7 +134,7 @@ export function BundleModal({ isOpen, onClose, onSave, bundle }: BundleModalProp
     setFormData((prev) => ({
       ...prev,
       services: prev.services.map((service, i) =>
-        i === index ? value : service
+        i === index ? value : service,
       ),
     }));
   };
@@ -150,7 +157,7 @@ export function BundleModal({ isOpen, onClose, onSave, bundle }: BundleModalProp
     setFormData((prev) => ({
       ...prev,
       features: prev.features.map((feature, i) =>
-        i === index ? value : feature
+        i === index ? value : feature,
       ),
     }));
   };
@@ -209,7 +216,10 @@ export function BundleModal({ isOpen, onClose, onSave, bundle }: BundleModalProp
               id="description"
               value={formData.description}
               onChange={(e) =>
-                setFormData((prev) => ({ ...prev, description: e.target.value }))
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
               }
               required
             />
@@ -224,7 +234,10 @@ export function BundleModal({ isOpen, onClose, onSave, bundle }: BundleModalProp
                 step="0.01"
                 value={formData.originalPrice}
                 onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, originalPrice: e.target.value }))
+                  setFormData((prev) => ({
+                    ...prev,
+                    originalPrice: e.target.value,
+                  }))
                 }
                 required
               />
@@ -237,7 +250,10 @@ export function BundleModal({ isOpen, onClose, onSave, bundle }: BundleModalProp
                 step="0.01"
                 value={formData.discountedPrice}
                 onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, discountedPrice: e.target.value }))
+                  setFormData((prev) => ({
+                    ...prev,
+                    discountedPrice: e.target.value,
+                  }))
                 }
                 required
               />
@@ -366,7 +382,10 @@ export function BundleModal({ isOpen, onClose, onSave, bundle }: BundleModalProp
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" className="bg-gradient-to-r from-primary to-blue-600">
+            <Button
+              type="submit"
+              className="bg-gradient-to-r from-primary to-blue-600"
+            >
               {bundle ? "Update Bundle" : "Create Bundle"}
             </Button>
           </DialogFooter>
