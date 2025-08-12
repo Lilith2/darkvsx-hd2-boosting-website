@@ -1350,7 +1350,7 @@ export default function AdminDashboard() {
                             <div className="flex-1">
                               <div className="flex items-center space-x-3 mb-2">
                                 <h3 className="font-semibold text-lg">
-                                  Order #{order.id.slice(-6)}
+                                  {order.services.some(s => s.name.includes("Custom Order:")) ? "Custom " : ""}Order #{order.id.slice(-6)}
                                 </h3>
                                 <Badge
                                   className={
