@@ -25,10 +25,10 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Core React libraries
+          // Core React libraries - keep React and ReactDOM together
           if (
-            id.includes("node_modules/react") ||
-            id.includes("node_modules/react-dom")
+            id.includes("node_modules/react/") ||
+            id.includes("node_modules/react-dom/")
           ) {
             return "vendor-react";
           }
