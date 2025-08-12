@@ -285,7 +285,8 @@ export default function Checkout() {
           paymentStatus: total <= 0 ? "paid" : "paid", // Set to paid for both credit-only and PayPal payments
           notes: orderNotes,
           transactionId:
-            paymentDetails?.id ||
+            paymentDetails?.purchase_units?.[0]?.payments?.captures?.[0]?.id || // PayPal capture ID (actual transaction ID)
+            paymentDetails?.id || // Fallback to order ID
             paymentData?.orderID ||
             `credits-${Date.now()}`,
           referralCode: referralCode || undefined,
