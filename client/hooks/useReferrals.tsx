@@ -212,6 +212,28 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
     return balance >= amount;
   };
 
+  const useCredits = async (amount: number, orderId?: string, description?: string): Promise<boolean> => {
+    if (!user?.id) return false;
+
+    try {
+      const { data, error } = await supabase.rpc('use_referral_credits', {
+        p_user_id: user.id,
+        p_amount: amount,
+        p_order_id: orderId,
+        p_description: description || 'Credits used for order'
+      });
+
+      if (error) throw error;
+
+      // Refresh stats after using credits
+      await refreshStats();
+      return data;
+    } catch (error) {
+      console.error("Error using credits:", error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     refreshStats();
   }, [user?.id]);
@@ -225,6 +247,7 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         refreshStats,
         getUserCredits,
         hasCredits,
+        useCredits,
       }}
     >
       {children}
