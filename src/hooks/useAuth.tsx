@@ -5,7 +5,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { supabase } from "@/integrations/supabase/client";
+// Dynamic import to avoid webpack issues
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
