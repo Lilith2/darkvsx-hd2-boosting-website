@@ -68,8 +68,8 @@ export function BundleModal({
         discount: bundle.discount,
         duration: bundle.duration,
         features: bundle.features && bundle.features.length > 0 ? bundle.features : [""],
-        active: bundle.active,
-        popular: bundle.popular,
+        active: bundle.active ?? true,
+        popular: bundle.popular ?? false,
         badge: bundle.badge || "",
       });
     } else {
