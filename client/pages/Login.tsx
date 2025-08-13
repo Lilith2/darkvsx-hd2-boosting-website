@@ -143,7 +143,7 @@ export default function Login() {
                   <span>Remember me</span>
                 </label>
                 <Link
-                  to="/forgot-password"
+                  href="/forgot-password"
                   className="text-sm text-primary hover:text-primary/80 hover:underline"
                 >
                   Forgot password?
@@ -174,7 +174,7 @@ export default function Login() {
               <div className="text-center text-sm text-muted-foreground">
                 Don't have an account?{" "}
                 <Link
-                  to="/register"
+                  href="/register"
                   className="text-primary hover:text-primary/80 font-medium hover:underline"
                 >
                   Create account
