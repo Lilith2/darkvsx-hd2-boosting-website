@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useBundles } from "@/hooks/useBundles";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
@@ -76,7 +76,7 @@ export default function Bundles() {
       <div className="bg-gradient-to-r from-card to-card/80 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center mb-6">
-            <Link to="/">
+            <Link href="/">
               <Button variant="ghost" size="sm" className="hover:bg-primary/10">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Home
@@ -294,14 +294,14 @@ export default function Bundles() {
                   className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
                   asChild
                 >
-                  <Link to="/contact">Request Custom Bundle</Link>
+                  <Link href="/contact">Request Custom Bundle</Link>
                 </Button>
                 <Button
                   variant="outline"
                   className="border-primary/20 hover:bg-primary/10"
                   asChild
                 >
-                  <Link to="/contact">Contact Support</Link>
+                  <Link href="/contact">Contact Support</Link>
                 </Button>
                 <Button
                   variant="outline"
