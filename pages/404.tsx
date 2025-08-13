@@ -164,7 +164,38 @@ export default function Custom404() {
         .animate-fade-in {
           animation: fade-in 0.5s ease-out;
         }
+        @keyframes matrix-rain {
+          0% { transform: translateY(-100vh); opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { transform: translateY(100vh); opacity: 0; }
+        }
+        .matrix-char {
+          position: absolute;
+          color: #00ff00;
+          font-family: 'Courier New', monospace;
+          font-size: 14px;
+          animation: matrix-rain 3s linear infinite;
+          pointer-events: none;
+        }
       `}</style>
+
+      {/* Matrix rain effect */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            className="matrix-char"
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${3 + Math.random() * 2}s`
+            }}
+          >
+            {Math.random() > 0.5 ? '01001' : '11010'}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
