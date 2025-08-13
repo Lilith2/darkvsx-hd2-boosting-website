@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/router";
 import { useCart } from "@/hooks/useCart";
 import { useOrders } from "@/hooks/useOrders";
 import { useCustomOrders } from "@/hooks/useCustomOrders";
@@ -35,13 +35,13 @@ import {
   Gift,
   DollarSign,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { REFERRAL_CONFIG } from "@/lib/config";
 import { useEffect } from "react";
 
 const PAYPAL_CLIENT_ID =
-  import.meta.env.VITE_PAYPAL_CLIENT_ID ||
+  process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ||
   "AefD8SednJLcqfFDsiO9AetjGEsCMVPYSCp-gX-UmUyJsQvSUHgbhnl39ZJCB14Tq-eXM3kG2Q6aizB8";
 
 export default function Checkout() {
@@ -51,7 +51,7 @@ export default function Checkout() {
   const { user, isAuthenticated } = useAuth();
   const { getUserCredits, useCredits } = useReferrals();
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
@@ -228,7 +228,7 @@ export default function Checkout() {
             Add some services to your cart before proceeding to checkout.
           </p>
           <Button asChild>
-            <Link to="/">
+            <Link href="/">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Continue Shopping
             </Link>
@@ -345,9 +345,9 @@ export default function Checkout() {
 
       // Redirect to appropriate page
       if (regularOrderItems.length > 0) {
-        navigate(`/order/${orderId}`);
+        router.push(`/order/${orderId}`);
       } else {
-        navigate("/account"); // Redirect to account page for custom orders
+        router.push("/account"); // Redirect to account page for custom orders
       }
     } catch (error: any) {
       console.error("Error creating order:", error);
@@ -441,7 +441,7 @@ export default function Checkout() {
           <div className="mb-8">
             <div className="flex items-center space-x-2 mb-4">
               <Link
-                to="/cart"
+                href="/cart"
                 className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />
@@ -710,14 +710,14 @@ export default function Checkout() {
                       <label htmlFor="terms" className="cursor-pointer">
                         I agree to the{" "}
                         <Link
-                          to="/terms"
+                          href="/terms"
                           className="text-primary hover:underline"
                         >
                           Terms of Service
                         </Link>{" "}
                         and{" "}
                         <Link
-                          to="/privacy"
+                          href="/privacy"
                           className="text-primary hover:underline"
                         >
                           Privacy Policy
