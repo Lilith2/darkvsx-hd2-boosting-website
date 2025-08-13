@@ -14,10 +14,10 @@ export const UI_CONSTANTS = {
 
 // Referral System Constants
 export const REFERRAL_CONSTANTS = {
-  CUSTOMER_DISCOUNT: 0.10, // 10%
+  CUSTOMER_DISCOUNT: 0.1, // 10%
   REFERRER_COMMISSION: 0.05, // 5%
   CODE_FORMAT: /^HD2BOOST-[A-Z0-9]{6}$/,
-  CODE_PREFIX: 'HD2BOOST-',
+  CODE_PREFIX: "HD2BOOST-",
 } as const;
 
 // Payment and Tax Constants
@@ -30,48 +30,49 @@ export const PAYMENT_CONSTANTS = {
 
 // Order Status Types
 export const ORDER_STATUSES = {
-  PENDING: 'pending',
-  PROCESSING: 'processing',
-  IN_PROGRESS: 'in-progress',
-  COMPLETED: 'completed',
-  CANCELLED: 'cancelled',
+  PENDING: "pending",
+  PROCESSING: "processing",
+  IN_PROGRESS: "in-progress",
+  COMPLETED: "completed",
+  CANCELLED: "cancelled",
 } as const;
 
-export type OrderStatus = typeof ORDER_STATUSES[keyof typeof ORDER_STATUSES];
+export type OrderStatus = (typeof ORDER_STATUSES)[keyof typeof ORDER_STATUSES];
 
 // Payment Status Types
 export const PAYMENT_STATUSES = {
-  PENDING: 'pending',
-  PAID: 'paid',
-  FAILED: 'failed',
-  REFUNDED: 'refunded',
+  PENDING: "pending",
+  PAID: "paid",
+  FAILED: "failed",
+  REFUNDED: "refunded",
 } as const;
 
-export type PaymentStatus = typeof PAYMENT_STATUSES[keyof typeof PAYMENT_STATUSES];
+export type PaymentStatus =
+  (typeof PAYMENT_STATUSES)[keyof typeof PAYMENT_STATUSES];
 
 // Service Categories
 export const SERVICE_CATEGORIES = {
-  LEVEL_BOOST: 'Level Boost',
-  WEAPONS: 'Weapons',
-  CURRENCY: 'Currency',
-  MISSIONS: 'Missions',
-  ACHIEVEMENTS: 'Achievements',
+  LEVEL_BOOST: "Level Boost",
+  WEAPONS: "Weapons",
+  CURRENCY: "Currency",
+  MISSIONS: "Missions",
+  ACHIEVEMENTS: "Achievements",
 } as const;
 
 // Error Messages
 export const ERROR_MESSAGES = {
-  NETWORK_ERROR: 'Network error. Please check your connection.',
-  AUTH_ERROR: 'Authentication failed. Please try logging in again.',
-  PERMISSION_ERROR: 'You do not have permission to perform this action.',
-  NOT_FOUND: 'The requested resource was not found.',
-  VALIDATION_ERROR: 'Please check your input and try again.',
-  GENERIC_ERROR: 'An unexpected error occurred. Please try again.',
+  NETWORK_ERROR: "Network error. Please check your connection.",
+  AUTH_ERROR: "Authentication failed. Please try logging in again.",
+  PERMISSION_ERROR: "You do not have permission to perform this action.",
+  NOT_FOUND: "The requested resource was not found.",
+  VALIDATION_ERROR: "Please check your input and try again.",
+  GENERIC_ERROR: "An unexpected error occurred. Please try again.",
 } as const;
 
 // Success Messages
 export const SUCCESS_MESSAGES = {
-  ORDER_PLACED: 'Order placed successfully!',
-  PROFILE_UPDATED: 'Profile updated successfully!',
-  PASSWORD_CHANGED: 'Password changed successfully!',
-  REFERRAL_COPIED: 'Referral code copied to clipboard!',
+  ORDER_PLACED: "Order placed successfully!",
+  PROFILE_UPDATED: "Profile updated successfully!",
+  PASSWORD_CHANGED: "Password changed successfully!",
+  REFERRAL_COPIED: "Referral code copied to clipboard!",
 } as const;

@@ -361,8 +361,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
             retryOrderData.referral_discount = orderData.referralDiscount;
           }
           if (orderData.referralCreditsUsed) {
-            retryOrderData.credits_used =
-              orderData.referralCreditsUsed;
+            retryOrderData.credits_used = orderData.referralCreditsUsed;
           }
 
           const { data: orderResult, error: orderError } = await supabase
@@ -468,7 +467,6 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       );
     }
   };
-
 
   const updateOrderProgress = async (orderId: string, progress: number) => {
     try {

@@ -53,7 +53,9 @@ function AppProviders({ children }: { children: React.ReactNode }) {
                           <ServicesProvider>
                             <OrdersProvider>
                               <CartProvider>
-                                <ReferralsProvider>{children}</ReferralsProvider>
+                                <ReferralsProvider>
+                                  {children}
+                                </ReferralsProvider>
                               </CartProvider>
                             </OrdersProvider>
                           </ServicesProvider>

@@ -1,6 +1,12 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useUnifiedOrders } from './useUnifiedOrders';
-import { getCurrentIPAddress } from './useIPAddress';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { useUnifiedOrders } from "./useUnifiedOrders";
+import { getCurrentIPAddress } from "./useIPAddress";
 
 export interface Order {
   id: string;
@@ -92,11 +98,22 @@ interface OrdersContextType {
   orders: OrderData[];
   loading: boolean;
   error: string | null;
-  addOrder: (order: Omit<OrderData, "id" | "createdAt" | "updatedAt" | "messages" | "tracking">) => Promise<string>;
+  addOrder: (
+    order: Omit<
+      OrderData,
+      "id" | "createdAt" | "updatedAt" | "messages" | "tracking"
+    >,
+  ) => Promise<string>;
   getUserOrders: (userId: string) => OrderData[];
   getOrder: (orderId: string) => OrderData | undefined;
-  updateOrderStatus: (orderId: string, status: OrderData["status"]) => Promise<void>;
-  addOrderMessage: (orderId: string, message: { from: "customer" | "admin" | "booster"; message: string }) => Promise<void>;
+  updateOrderStatus: (
+    orderId: string,
+    status: OrderData["status"],
+  ) => Promise<void>;
+  addOrderMessage: (
+    orderId: string,
+    message: { from: "customer" | "admin" | "booster"; message: string },
+  ) => Promise<void>;
   updateOrderProgress: (orderId: string, progress: number) => Promise<void>;
   refreshOrders: () => Promise<void>;
 }
@@ -113,23 +130,25 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     updateOrderStatus: updateUnifiedOrderStatus,
     addOrderNote,
     getOrdersByUser,
-    refreshOrders: refreshUnifiedOrders
+    refreshOrders: refreshUnifiedOrders,
   } = useUnifiedOrders();
-  
+
   const [orders, setOrders] = useState<OrderData[]>([]);
 
   // Transform unified orders to legacy format
   const transformUnifiedToLegacy = (unifiedOrder: any): OrderData => ({
     id: unifiedOrder.id,
     userId: unifiedOrder.customer_id,
-    customerEmail: unifiedOrder.customer_email || '',
-    customerName: unifiedOrder.customer_name || '',
-    services: Array.isArray(unifiedOrder.items) ? unifiedOrder.items.map((item: any) => ({
-      id: item.product_id || item.id || '',
-      name: item.product_name || item.name || '',
-      price: item.price || 0,
-      quantity: item.quantity || 1,
-    })) : [],
+    customerEmail: unifiedOrder.customer_email || "",
+    customerName: unifiedOrder.customer_name || "",
+    services: Array.isArray(unifiedOrder.items)
+      ? unifiedOrder.items.map((item: any) => ({
+          id: item.product_id || item.id || "",
+          name: item.product_name || item.name || "",
+          price: item.price || 0,
+          quantity: item.quantity || 1,
+        }))
+      : [],
     status: unifiedOrder.status,
     totalAmount: unifiedOrder.total_amount || 0,
     paymentStatus: unifiedOrder.payment_status,
@@ -150,14 +169,19 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   });
 
   // Transform legacy to unified format
-  const transformLegacyToUnified = (legacyOrder: Omit<OrderData, "id" | "createdAt" | "updatedAt" | "messages" | "tracking">) => ({
+  const transformLegacyToUnified = (
+    legacyOrder: Omit<
+      OrderData,
+      "id" | "createdAt" | "updatedAt" | "messages" | "tracking"
+    >,
+  ) => ({
     customer_id: legacyOrder.userId,
     customer_email: legacyOrder.customerEmail,
     customer_name: legacyOrder.customerName,
     status: legacyOrder.status,
     payment_status: legacyOrder.paymentStatus,
     total_amount: legacyOrder.totalAmount,
-    items: legacyOrder.services.map(service => ({
+    items: legacyOrder.services.map((service) => ({
       product_id: service.id,
       product_name: service.name,
       quantity: service.quantity,
@@ -184,15 +208,20 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       const transformedOrders = unifiedOrders.map(transformUnifiedToLegacy);
       setOrders(transformedOrders);
     } catch (error) {
-      console.error('Error refreshing orders:', error);
+      console.error("Error refreshing orders:", error);
     }
   };
 
-  const addOrder = async (orderData: Omit<OrderData, "id" | "createdAt" | "updatedAt" | "messages" | "tracking">): Promise<string> => {
+  const addOrder = async (
+    orderData: Omit<
+      OrderData,
+      "id" | "createdAt" | "updatedAt" | "messages" | "tracking"
+    >,
+  ): Promise<string> => {
     try {
       // Get IP address for security
       const ipAddress = await getCurrentIPAddress();
-      
+
       const unifiedOrderData = {
         ...transformLegacyToUnified(orderData),
         metadata: {
@@ -205,35 +234,41 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       await refreshOrders();
       return orderId;
     } catch (error) {
-      console.error('Error adding order:', error);
+      console.error("Error adding order:", error);
       throw error;
     }
   };
 
   const getUserOrders = (userId: string): OrderData[] => {
-    return orders.filter(order => order.userId === userId);
+    return orders.filter((order) => order.userId === userId);
   };
 
   const getOrder = (orderId: string): OrderData | undefined => {
-    return orders.find(order => order.id === orderId);
+    return orders.find((order) => order.id === orderId);
   };
 
-  const updateOrderStatus = async (orderId: string, status: OrderData["status"]) => {
+  const updateOrderStatus = async (
+    orderId: string,
+    status: OrderData["status"],
+  ) => {
     try {
       await updateUnifiedOrderStatus(orderId, status);
       await refreshOrders();
     } catch (error) {
-      console.error('Error updating order status:', error);
+      console.error("Error updating order status:", error);
       throw error;
     }
   };
 
-  const addOrderMessage = async (orderId: string, messageData: { from: "customer" | "admin" | "booster"; message: string }) => {
+  const addOrderMessage = async (
+    orderId: string,
+    messageData: { from: "customer" | "admin" | "booster"; message: string },
+  ) => {
     try {
       await addOrderNote(orderId, messageData.message);
       await refreshOrders();
     } catch (error) {
-      console.error('Error adding order message:', error);
+      console.error("Error adding order message:", error);
       throw error;
     }
   };
@@ -243,7 +278,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       await updateOrder(orderId, { progress });
       await refreshOrders();
     } catch (error) {
-      console.error('Error updating order progress:', error);
+      console.error("Error updating order progress:", error);
       throw error;
     }
   };

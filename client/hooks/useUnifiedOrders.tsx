@@ -1,4 +1,10 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from "react";
+import {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  ReactNode,
+} from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -6,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 export interface UnifiedOrder {
   id: string;
   order_number: string;
-  order_type: 'standard' | 'custom' | 'bundle';
+  order_type: "standard" | "custom" | "bundle";
   user_id?: string;
   customer_email: string;
   customer_name: string;
@@ -18,9 +24,16 @@ export interface UnifiedOrder {
   credits_used: number;
   total_amount: number;
   currency: string;
-  status: 'pending' | 'confirmed' | 'processing' | 'in_progress' | 'completed' | 'cancelled' | 'refunded';
-  payment_status: 'pending' | 'paid' | 'failed' | 'refunded' | 'partial';
-  fulfillment_status: 'unfulfilled' | 'partial' | 'fulfilled';
+  status:
+    | "pending"
+    | "confirmed"
+    | "processing"
+    | "in_progress"
+    | "completed"
+    | "cancelled"
+    | "refunded";
+  payment_status: "pending" | "paid" | "failed" | "refunded" | "partial";
+  fulfillment_status: "unfulfilled" | "partial" | "fulfilled";
   progress: number;
   estimated_completion_hours?: number;
   actual_completion_time?: string;
@@ -58,15 +71,27 @@ interface UnifiedOrdersContextType {
   error: string | null;
   refreshOrders: () => Promise<void>;
   createOrder: (orderData: Partial<UnifiedOrder>) => Promise<string>;
-  updateOrder: (orderId: string, updates: Partial<UnifiedOrder>) => Promise<void>;
-  updateOrderStatus: (orderId: string, status: UnifiedOrder['status']) => Promise<void>;
-  addOrderNote: (orderId: string, note: string, isAdmin?: boolean) => Promise<void>;
+  updateOrder: (
+    orderId: string,
+    updates: Partial<UnifiedOrder>,
+  ) => Promise<void>;
+  updateOrderStatus: (
+    orderId: string,
+    status: UnifiedOrder["status"],
+  ) => Promise<void>;
+  addOrderNote: (
+    orderId: string,
+    note: string,
+    isAdmin?: boolean,
+  ) => Promise<void>;
   deleteOrder: (orderId: string) => Promise<void>;
   getOrderById: (orderId: string) => Promise<UnifiedOrder | null>;
   getOrdersByUser: (userId: string) => Promise<UnifiedOrder[]>;
 }
 
-const UnifiedOrdersContext = createContext<UnifiedOrdersContextType | undefined>(undefined);
+const UnifiedOrdersContext = createContext<
+  UnifiedOrdersContextType | undefined
+>(undefined);
 
 export function UnifiedOrdersProvider({ children }: { children: ReactNode }) {
   const [orders, setOrders] = useState<UnifiedOrder[]>([]);
@@ -98,13 +123,15 @@ export function UnifiedOrdersProvider({ children }: { children: ReactNode }) {
         throw fetchError;
       }
 
-      const transformedOrders: UnifiedOrder[] = (data || []).map((order: any) => ({
-        ...order,
-        items: order.items || [],
-        metadata: order.metadata || {},
-        tags: order.tags || [],
-        status_history: order.status_history || [],
-      }));
+      const transformedOrders: UnifiedOrder[] = (data || []).map(
+        (order: any) => ({
+          ...order,
+          items: order.items || [],
+          metadata: order.metadata || {},
+          tags: order.tags || [],
+          status_history: order.status_history || [],
+        }),
+      );
 
       setOrders(transformedOrders);
     } catch (err: any) {
@@ -128,11 +155,15 @@ export function UnifiedOrdersProvider({ children }: { children: ReactNode }) {
       }
 
       const totalOrders = data?.length || 0;
-      const pendingOrders = data?.filter(o => o.status === 'pending').length || 0;
-      const completedOrders = data?.filter(o => o.status === 'completed').length || 0;
-      const totalRevenue = data?.reduce((sum, o) => sum + (o.total_amount || 0), 0) || 0;
+      const pendingOrders =
+        data?.filter((o) => o.status === "pending").length || 0;
+      const completedOrders =
+        data?.filter((o) => o.status === "completed").length || 0;
+      const totalRevenue =
+        data?.reduce((sum, o) => sum + (o.total_amount || 0), 0) || 0;
       const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-      const fulfillmentRate = totalOrders > 0 ? (completedOrders / totalOrders) * 100 : 0;
+      const fulfillmentRate =
+        totalOrders > 0 ? (completedOrders / totalOrders) * 100 : 0;
 
       setStats({
         total_orders: totalOrders,
@@ -148,32 +179,38 @@ export function UnifiedOrdersProvider({ children }: { children: ReactNode }) {
   };
 
   // Create a new order
-  const createOrder = async (orderData: Partial<UnifiedOrder>): Promise<string> => {
+  const createOrder = async (
+    orderData: Partial<UnifiedOrder>,
+  ): Promise<string> => {
     try {
       const { data, error } = await supabase
         .from("unified_orders")
-        .insert([{
-          ...orderData,
-          status: orderData.status || 'pending',
-          payment_status: orderData.payment_status || 'pending',
-          fulfillment_status: orderData.fulfillment_status || 'unfulfilled',
-          subtotal_amount: orderData.subtotal_amount || 0,
-          tax_amount: orderData.tax_amount || 0,
-          discount_amount: orderData.discount_amount || 0,
-          credits_used: orderData.credits_used || 0,
-          total_amount: orderData.total_amount || 0,
-          currency: orderData.currency || 'USD',
-          progress: orderData.progress || 0,
-          referral_discount: orderData.referral_discount || 0,
-          items: orderData.items || [],
-          metadata: orderData.metadata || {},
-          tags: orderData.tags || [],
-          status_history: [{
-            status: orderData.status || 'pending',
-            timestamp: new Date().toISOString(),
-            note: 'Order created'
-          }],
-        }])
+        .insert([
+          {
+            ...orderData,
+            status: orderData.status || "pending",
+            payment_status: orderData.payment_status || "pending",
+            fulfillment_status: orderData.fulfillment_status || "unfulfilled",
+            subtotal_amount: orderData.subtotal_amount || 0,
+            tax_amount: orderData.tax_amount || 0,
+            discount_amount: orderData.discount_amount || 0,
+            credits_used: orderData.credits_used || 0,
+            total_amount: orderData.total_amount || 0,
+            currency: orderData.currency || "USD",
+            progress: orderData.progress || 0,
+            referral_discount: orderData.referral_discount || 0,
+            items: orderData.items || [],
+            metadata: orderData.metadata || {},
+            tags: orderData.tags || [],
+            status_history: [
+              {
+                status: orderData.status || "pending",
+                timestamp: new Date().toISOString(),
+                note: "Order created",
+              },
+            ],
+          },
+        ])
         .select()
         .single();
 
@@ -188,7 +225,10 @@ export function UnifiedOrdersProvider({ children }: { children: ReactNode }) {
   };
 
   // Update an existing order
-  const updateOrder = async (orderId: string, updates: Partial<UnifiedOrder>) => {
+  const updateOrder = async (
+    orderId: string,
+    updates: Partial<UnifiedOrder>,
+  ) => {
     try {
       const { error } = await supabase
         .from("unified_orders")
@@ -208,7 +248,10 @@ export function UnifiedOrdersProvider({ children }: { children: ReactNode }) {
   };
 
   // Update order status with history tracking
-  const updateOrderStatus = async (orderId: string, status: UnifiedOrder['status']) => {
+  const updateOrderStatus = async (
+    orderId: string,
+    status: UnifiedOrder["status"],
+  ) => {
     try {
       // Get current order to update status history
       const { data: currentOrder, error: fetchError } = await supabase
@@ -233,9 +276,9 @@ export function UnifiedOrdersProvider({ children }: { children: ReactNode }) {
       };
 
       // Set completion timestamp for completed orders
-      if (status === 'completed') {
+      if (status === "completed") {
         updates.completed_at = new Date().toISOString();
-        updates.fulfillment_status = 'fulfilled';
+        updates.fulfillment_status = "fulfilled";
         updates.progress = 100;
       }
 
@@ -254,10 +297,14 @@ export function UnifiedOrdersProvider({ children }: { children: ReactNode }) {
   };
 
   // Add a note to an order
-  const addOrderNote = async (orderId: string, note: string, isAdmin = false) => {
+  const addOrderNote = async (
+    orderId: string,
+    note: string,
+    isAdmin = false,
+  ) => {
     try {
-      const field = isAdmin ? 'admin_notes' : 'notes';
-      
+      const field = isAdmin ? "admin_notes" : "notes";
+
       const { error } = await supabase
         .from("unified_orders")
         .update({
@@ -296,7 +343,9 @@ export function UnifiedOrdersProvider({ children }: { children: ReactNode }) {
   };
 
   // Get a specific order by ID
-  const getOrderById = async (orderId: string): Promise<UnifiedOrder | null> => {
+  const getOrderById = async (
+    orderId: string,
+  ): Promise<UnifiedOrder | null> => {
     try {
       const { data, error } = await supabase
         .from("unified_orders")
@@ -306,7 +355,7 @@ export function UnifiedOrdersProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (error) {
-        if (error.code === 'PGRST116') return null; // Not found
+        if (error.code === "PGRST116") return null; // Not found
         throw error;
       }
 
@@ -383,7 +432,9 @@ export function UnifiedOrdersProvider({ children }: { children: ReactNode }) {
 export function useUnifiedOrders() {
   const context = useContext(UnifiedOrdersContext);
   if (context === undefined) {
-    throw new Error("useUnifiedOrders must be used within a UnifiedOrdersProvider");
+    throw new Error(
+      "useUnifiedOrders must be used within a UnifiedOrdersProvider",
+    );
   }
   return context;
 }

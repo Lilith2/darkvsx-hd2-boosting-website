@@ -64,10 +64,12 @@ export function useCustomOrders() {
       }
 
       // Transform the data to match our interface
-      const transformedOrders: CustomOrder[] = (data || []).map((order: any) => ({
-        ...order,
-        items: order.items || [], // Use items from the jsonb column
-      }));
+      const transformedOrders: CustomOrder[] = (data || []).map(
+        (order: any) => ({
+          ...order,
+          items: order.items || [], // Use items from the jsonb column
+        }),
+      );
 
       setOrders(transformedOrders);
     } catch (err: any) {
@@ -129,10 +131,12 @@ export function useCustomOrders() {
                 0,
               ) / orders.length
             : 0,
-        pending_orders: orders.filter((order: any) => order.status === "pending")
-          .length,
-        completed_orders: orders.filter((order: any) => order.status === "completed")
-          .length,
+        pending_orders: orders.filter(
+          (order: any) => order.status === "pending",
+        ).length,
+        completed_orders: orders.filter(
+          (order: any) => order.status === "completed",
+        ).length,
       };
 
       setStats(stats);
@@ -358,7 +362,7 @@ export function useCustomOrders() {
   useEffect(() => {
     const subscription = supabase
       .channel("custom_orders_changes")
-        .on(
+      .on(
         "postgres_changes",
         {
           event: "*",

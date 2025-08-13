@@ -206,8 +206,12 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         supabase.from("order_tracking").select("*").in("order_id", orderIds),
       ]);
 
-      const messages = (messagesResult.data || []).map(mapOrderMessageFromSupabase);
-      const tracking = (trackingResult.data || []).map(mapOrderTrackingFromSupabase);
+      const messages = (messagesResult.data || []).map(
+        mapOrderMessageFromSupabase,
+      );
+      const tracking = (trackingResult.data || []).map(
+        mapOrderTrackingFromSupabase,
+      );
 
       // Transform and combine data
       const transformedOrders =
@@ -362,8 +366,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
             retryOrderData.referral_discount = orderData.referralDiscount;
           }
           if (orderData.referralCreditsUsed) {
-            retryOrderData.credits_used =
-              orderData.referralCreditsUsed;
+            retryOrderData.credits_used = orderData.referralCreditsUsed;
           }
 
           const { data: orderResult, error: orderError } = await supabase

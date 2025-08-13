@@ -1,10 +1,26 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { supabase } from '../integrations/supabase/client';
+import {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  ReactNode,
+} from "react";
+import { supabase } from "../integrations/supabase/client";
 
 export interface UserActivity {
   id: string;
   user_id: string;
-  activity_type: 'login' | 'logout' | 'order_created' | 'order_updated' | 'payment_completed' | 'profile_updated' | 'password_changed' | 'email_verified' | 'page_view' | 'custom';
+  activity_type:
+    | "login"
+    | "logout"
+    | "order_created"
+    | "order_updated"
+    | "payment_completed"
+    | "profile_updated"
+    | "password_changed"
+    | "email_verified"
+    | "page_view"
+    | "custom";
   description: string | null;
   metadata: Record<string, any> | null;
   ip_address: string | null;
@@ -42,7 +58,7 @@ export interface DailyAnalytics {
 export interface AnalyticsFilters {
   startDate?: string;
   endDate?: string;
-  granularity?: 'daily' | 'weekly' | 'monthly';
+  granularity?: "daily" | "weekly" | "monthly";
 }
 
 interface UserActivitiesContextType {
@@ -50,21 +66,47 @@ interface UserActivitiesContextType {
   analytics: DailyAnalytics[];
   loading: boolean;
   error: string | null;
-  
+
   // Activity Logging
   logActivity: (activityData: Partial<UserActivity>) => Promise<void>;
-  logUserLogin: (userId: string, metadata?: Record<string, any>) => Promise<void>;
+  logUserLogin: (
+    userId: string,
+    metadata?: Record<string, any>,
+  ) => Promise<void>;
   logUserLogout: (userId: string, sessionId?: string) => Promise<void>;
-  logOrderActivity: (userId: string, orderId: string, type: 'created' | 'updated', metadata?: Record<string, any>) => Promise<void>;
-  logPaymentActivity: (userId: string, orderId: string, metadata?: Record<string, any>) => Promise<void>;
-  logPageView: (userId: string, page: string, metadata?: Record<string, any>) => Promise<void>;
-  
+  logOrderActivity: (
+    userId: string,
+    orderId: string,
+    type: "created" | "updated",
+    metadata?: Record<string, any>,
+  ) => Promise<void>;
+  logPaymentActivity: (
+    userId: string,
+    orderId: string,
+    metadata?: Record<string, any>,
+  ) => Promise<void>;
+  logPageView: (
+    userId: string,
+    page: string,
+    metadata?: Record<string, any>,
+  ) => Promise<void>;
+
   // Activity Fetching
-  getUserActivities: (userId: string, filters?: ActivityFilters) => Promise<UserActivity[]>;
+  getUserActivities: (
+    userId: string,
+    filters?: ActivityFilters,
+  ) => Promise<UserActivity[]>;
   getRecentActivities: (limit?: number) => Promise<UserActivity[]>;
-  getActivitiesByType: (activityType: string, filters?: ActivityFilters) => Promise<UserActivity[]>;
-  getActivitiesByDateRange: (startDate: string, endDate: string, userId?: string) => Promise<UserActivity[]>;
-  
+  getActivitiesByType: (
+    activityType: string,
+    filters?: ActivityFilters,
+  ) => Promise<UserActivity[]>;
+  getActivitiesByDateRange: (
+    startDate: string,
+    endDate: string,
+    userId?: string,
+  ) => Promise<UserActivity[]>;
+
   // Analytics
   getDailyAnalytics: (filters?: AnalyticsFilters) => Promise<DailyAnalytics[]>;
   getUserStats: (userId: string) => Promise<{
@@ -81,19 +123,23 @@ interface UserActivitiesContextType {
     total_revenue: number;
     avg_order_value: number;
   }>;
-  
+
   // Utility
   refreshActivities: () => Promise<void>;
   refreshAnalytics: () => Promise<void>;
   clearError: () => void;
 }
 
-const UserActivitiesContext = createContext<UserActivitiesContextType | undefined>(undefined);
+const UserActivitiesContext = createContext<
+  UserActivitiesContextType | undefined
+>(undefined);
 
 export const useUserActivities = () => {
   const context = useContext(UserActivitiesContext);
   if (context === undefined) {
-    throw new Error('useUserActivities must be used within a UserActivitiesProvider');
+    throw new Error(
+      "useUserActivities must be used within a UserActivitiesProvider",
+    );
   }
   return context;
 };
@@ -102,7 +148,9 @@ interface UserActivitiesProviderProps {
   children: ReactNode;
 }
 
-export const UserActivitiesProvider = ({ children }: UserActivitiesProviderProps) => {
+export const UserActivitiesProvider = ({
+  children,
+}: UserActivitiesProviderProps) => {
   const [activities, setActivities] = useState<UserActivity[]>([]);
   const [analytics, setAnalytics] = useState<DailyAnalytics[]>([]);
   const [loading, setLoading] = useState(false);
@@ -120,123 +168,142 @@ export const UserActivitiesProvider = ({ children }: UserActivitiesProviderProps
     return {
       ip_address: null, // Would be populated by backend
       user_agent: navigator.userAgent,
-      session_id: sessionStorage.getItem('session_id') || crypto.randomUUID(),
+      session_id: sessionStorage.getItem("session_id") || crypto.randomUUID(),
     };
   };
 
   // Log a general activity
-  const logActivity = async (activityData: Partial<UserActivity>): Promise<void> => {
+  const logActivity = async (
+    activityData: Partial<UserActivity>,
+  ): Promise<void> => {
     try {
       setError(null);
       const sessionInfo = getCurrentSessionInfo();
 
-      const { error } = await supabase
-        .from('user_activities')
-        .insert([{
+      const { error } = await supabase.from("user_activities").insert([
+        {
           ...activityData,
           ...sessionInfo,
           created_at: new Date().toISOString(),
-        }]);
+        },
+      ]);
 
       if (error) throw error;
     } catch (error) {
-      handleError(error, 'log activity');
+      handleError(error, "log activity");
     }
   };
 
   // Log user login
-  const logUserLogin = async (userId: string, metadata?: Record<string, any>): Promise<void> => {
+  const logUserLogin = async (
+    userId: string,
+    metadata?: Record<string, any>,
+  ): Promise<void> => {
     await logActivity({
       user_id: userId,
-      activity_type: 'login',
-      description: 'User logged in',
+      activity_type: "login",
+      description: "User logged in",
       metadata: metadata || {},
     });
   };
 
   // Log user logout
-  const logUserLogout = async (userId: string, sessionId?: string): Promise<void> => {
+  const logUserLogout = async (
+    userId: string,
+    sessionId?: string,
+  ): Promise<void> => {
     await logActivity({
       user_id: userId,
-      activity_type: 'logout',
-      description: 'User logged out',
+      activity_type: "logout",
+      description: "User logged out",
       session_id: sessionId,
     });
   };
 
   // Log order-related activity
   const logOrderActivity = async (
-    userId: string, 
-    orderId: string, 
-    type: 'created' | 'updated', 
-    metadata?: Record<string, any>
+    userId: string,
+    orderId: string,
+    type: "created" | "updated",
+    metadata?: Record<string, any>,
   ): Promise<void> => {
     await logActivity({
       user_id: userId,
-      activity_type: type === 'created' ? 'order_created' : 'order_updated',
+      activity_type: type === "created" ? "order_created" : "order_updated",
       description: `Order ${type}`,
-      related_entity_type: 'order',
+      related_entity_type: "order",
       related_entity_id: orderId,
       metadata: metadata || {},
     });
   };
 
   // Log payment completion
-  const logPaymentActivity = async (userId: string, orderId: string, metadata?: Record<string, any>): Promise<void> => {
+  const logPaymentActivity = async (
+    userId: string,
+    orderId: string,
+    metadata?: Record<string, any>,
+  ): Promise<void> => {
     await logActivity({
       user_id: userId,
-      activity_type: 'payment_completed',
-      description: 'Payment completed successfully',
-      related_entity_type: 'order',
+      activity_type: "payment_completed",
+      description: "Payment completed successfully",
+      related_entity_type: "order",
       related_entity_id: orderId,
       metadata: metadata || {},
     });
   };
 
   // Log page view
-  const logPageView = async (userId: string, page: string, metadata?: Record<string, any>): Promise<void> => {
+  const logPageView = async (
+    userId: string,
+    page: string,
+    metadata?: Record<string, any>,
+  ): Promise<void> => {
     await logActivity({
       user_id: userId,
-      activity_type: 'page_view',
+      activity_type: "page_view",
       description: `Viewed page: ${page}`,
       metadata: { page, ...metadata },
     });
   };
 
   // Get user activities
-  const getUserActivities = async (userId: string, filters?: ActivityFilters): Promise<UserActivity[]> => {
+  const getUserActivities = async (
+    userId: string,
+    filters?: ActivityFilters,
+  ): Promise<UserActivity[]> => {
     try {
       setError(null);
 
       let query = supabase
-        .from('user_activities')
-        .select('*')
-        .eq('user_id', userId);
+        .from("user_activities")
+        .select("*")
+        .eq("user_id", userId);
 
       if (filters?.activityType) {
-        query = query.eq('activity_type', filters.activityType);
+        query = query.eq("activity_type", filters.activityType);
       }
       if (filters?.startDate) {
-        query = query.gte('created_at', filters.startDate);
+        query = query.gte("created_at", filters.startDate);
       }
       if (filters?.endDate) {
-        query = query.lte('created_at', filters.endDate);
+        query = query.lte("created_at", filters.endDate);
       }
       if (filters?.relatedEntityType) {
-        query = query.eq('related_entity_type', filters.relatedEntityType);
+        query = query.eq("related_entity_type", filters.relatedEntityType);
       }
       if (filters?.relatedEntityId) {
-        query = query.eq('related_entity_id', filters.relatedEntityId);
+        query = query.eq("related_entity_id", filters.relatedEntityId);
       }
 
-      query = query.order('created_at', { ascending: false });
+      query = query.order("created_at", { ascending: false });
 
       const { data, error } = await query;
 
       if (error) throw error;
       return data || [];
     } catch (error) {
-      handleError(error, 'get user activities');
+      handleError(error, "get user activities");
       return [];
     }
   };
@@ -247,26 +314,33 @@ export const UserActivitiesProvider = ({ children }: UserActivitiesProviderProps
       setError(null);
 
       const { data, error } = await supabase
-        .from('user_activities')
-        .select('*')
-        .order('created_at', { ascending: false })
+        .from("user_activities")
+        .select("*")
+        .order("created_at", { ascending: false })
         .limit(limit);
 
       if (error) throw error;
       return data || [];
     } catch (error) {
-      handleError(error, 'get recent activities');
+      handleError(error, "get recent activities");
       return [];
     }
   };
 
   // Get activities by type
-  const getActivitiesByType = async (activityType: string, filters?: ActivityFilters): Promise<UserActivity[]> => {
-    return getUserActivities('', { ...filters, activityType });
+  const getActivitiesByType = async (
+    activityType: string,
+    filters?: ActivityFilters,
+  ): Promise<UserActivity[]> => {
+    return getUserActivities("", { ...filters, activityType });
   };
 
   // Get activities by date range
-  const getActivitiesByDateRange = async (startDate: string, endDate: string, userId?: string): Promise<UserActivity[]> => {
+  const getActivitiesByDateRange = async (
+    startDate: string,
+    endDate: string,
+    userId?: string,
+  ): Promise<UserActivity[]> => {
     const filters: ActivityFilters = { startDate, endDate };
     if (userId) {
       return getUserActivities(userId, filters);
@@ -276,44 +350,44 @@ export const UserActivitiesProvider = ({ children }: UserActivitiesProviderProps
       setError(null);
 
       const { data, error } = await supabase
-        .from('user_activities')
-        .select('*')
-        .gte('created_at', startDate)
-        .lte('created_at', endDate)
-        .order('created_at', { ascending: false });
+        .from("user_activities")
+        .select("*")
+        .gte("created_at", startDate)
+        .lte("created_at", endDate)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data || [];
     } catch (error) {
-      handleError(error, 'get activities by date range');
+      handleError(error, "get activities by date range");
       return [];
     }
   };
 
   // Get daily analytics
-  const getDailyAnalytics = async (filters?: AnalyticsFilters): Promise<DailyAnalytics[]> => {
+  const getDailyAnalytics = async (
+    filters?: AnalyticsFilters,
+  ): Promise<DailyAnalytics[]> => {
     try {
       setError(null);
 
-      let query = supabase
-        .from('analytics_daily')
-        .select('*');
+      let query = supabase.from("analytics_daily").select("*");
 
       if (filters?.startDate) {
-        query = query.gte('date', filters.startDate);
+        query = query.gte("date", filters.startDate);
       }
       if (filters?.endDate) {
-        query = query.lte('date', filters.endDate);
+        query = query.lte("date", filters.endDate);
       }
 
-      query = query.order('date', { ascending: false });
+      query = query.order("date", { ascending: false });
 
       const { data, error } = await query;
 
       if (error) throw error;
       return data || [];
     } catch (error) {
-      handleError(error, 'get daily analytics');
+      handleError(error, "get daily analytics");
       return [];
     }
   };
@@ -325,29 +399,31 @@ export const UserActivitiesProvider = ({ children }: UserActivitiesProviderProps
 
       // Get user activity stats
       const { data: activityStats, error: activityError } = await supabase
-        .from('user_activities')
-        .select('*')
-        .eq('user_id', userId);
+        .from("user_activities")
+        .select("*")
+        .eq("user_id", userId);
 
       if (activityError) throw activityError;
 
       // Get user's orders from unified_orders
       const { data: orderStats, error: orderError } = await supabase
-        .from('unified_orders')
-        .select('total_amount, created_at')
-        .eq('customer_id', userId)
-        .eq('status', 'completed');
+        .from("unified_orders")
+        .select("total_amount, created_at")
+        .eq("customer_id", userId)
+        .eq("status", "completed");
 
       if (orderError) throw orderError;
 
       // Get user creation date from auth.users (if accessible) or first activity
-      const firstActivity = activityStats?.sort((a, b) => 
-        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      const firstActivity = activityStats?.sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
       )[0];
 
-      const lastLogin = activityStats?.find(a => a.activity_type === 'login');
+      const lastLogin = activityStats?.find((a) => a.activity_type === "login");
 
-      const accountCreated = firstActivity?.created_at || new Date().toISOString();
+      const accountCreated =
+        firstActivity?.created_at || new Date().toISOString();
       const accountAgeMs = Date.now() - new Date(accountCreated).getTime();
       const accountAgeDays = Math.floor(accountAgeMs / (1000 * 60 * 60 * 24));
 
@@ -355,11 +431,15 @@ export const UserActivitiesProvider = ({ children }: UserActivitiesProviderProps
         total_activities: activityStats?.length || 0,
         last_login: lastLogin?.created_at || null,
         total_orders: orderStats?.length || 0,
-        total_spent: orderStats?.reduce((sum, order) => sum + (order.total_amount || 0), 0) || 0,
+        total_spent:
+          orderStats?.reduce(
+            (sum, order) => sum + (order.total_amount || 0),
+            0,
+          ) || 0,
         account_age_days: accountAgeDays,
       };
     } catch (error) {
-      handleError(error, 'get user stats');
+      handleError(error, "get user stats");
       return {
         total_activities: 0,
         last_login: null,
@@ -377,30 +457,30 @@ export const UserActivitiesProvider = ({ children }: UserActivitiesProviderProps
 
       // Get latest analytics data
       const { data: latestAnalytics, error: analyticsError } = await supabase
-        .from('analytics_daily')
-        .select('*')
-        .order('date', { ascending: false })
+        .from("analytics_daily")
+        .select("*")
+        .order("date", { ascending: false })
         .limit(1)
         .single();
 
-      if (analyticsError && analyticsError.code !== 'PGRST116') {
+      if (analyticsError && analyticsError.code !== "PGRST116") {
         throw analyticsError;
       }
 
       // Get total users count
       const { count: totalUsers, error: usersError } = await supabase
-        .from('user_activities')
-        .select('user_id', { count: 'exact', head: true })
-        .not('user_id', 'is', null);
+        .from("user_activities")
+        .select("user_id", { count: "exact", head: true })
+        .not("user_id", "is", null);
 
       if (usersError) throw usersError;
 
       // Get active users today
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString().split("T")[0];
       const { count: activeUsersToday, error: activeError } = await supabase
-        .from('user_activities')
-        .select('user_id', { count: 'exact', head: true })
-        .gte('created_at', today);
+        .from("user_activities")
+        .select("user_id", { count: "exact", head: true })
+        .gte("created_at", today);
 
       if (activeError) throw activeError;
 
@@ -412,7 +492,7 @@ export const UserActivitiesProvider = ({ children }: UserActivitiesProviderProps
         avg_order_value: latestAnalytics?.avg_order_value || 0,
       };
     } catch (error) {
-      handleError(error, 'get system stats');
+      handleError(error, "get system stats");
       return {
         total_users: 0,
         active_users_today: 0,
@@ -430,15 +510,15 @@ export const UserActivitiesProvider = ({ children }: UserActivitiesProviderProps
       setError(null);
 
       const { data, error } = await supabase
-        .from('user_activities')
-        .select('*')
-        .order('created_at', { ascending: false })
+        .from("user_activities")
+        .select("*")
+        .order("created_at", { ascending: false })
         .limit(100);
 
       if (error) throw error;
       setActivities(data || []);
     } catch (error) {
-      handleError(error, 'refresh activities');
+      handleError(error, "refresh activities");
     } finally {
       setLoading(false);
     }
@@ -451,15 +531,15 @@ export const UserActivitiesProvider = ({ children }: UserActivitiesProviderProps
       setError(null);
 
       const { data, error } = await supabase
-        .from('analytics_daily')
-        .select('*')
-        .order('date', { ascending: false })
+        .from("analytics_daily")
+        .select("*")
+        .order("date", { ascending: false })
         .limit(30);
 
       if (error) throw error;
       setAnalytics(data || []);
     } catch (error) {
-      handleError(error, 'refresh analytics');
+      handleError(error, "refresh analytics");
     } finally {
       setLoading(false);
     }
@@ -479,32 +559,32 @@ export const UserActivitiesProvider = ({ children }: UserActivitiesProviderProps
   // Set up real-time subscriptions
   useEffect(() => {
     const activitiesChannel = supabase
-      .channel('activities_changes')
+      .channel("activities_changes")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'user_activities',
+          event: "*",
+          schema: "public",
+          table: "user_activities",
         },
         () => {
           refreshActivities();
-        }
+        },
       )
       .subscribe();
 
     const analyticsChannel = supabase
-      .channel('analytics_changes')
+      .channel("analytics_changes")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'analytics_daily',
+          event: "*",
+          schema: "public",
+          table: "analytics_daily",
         },
         () => {
           refreshAnalytics();
-        }
+        },
       )
       .subscribe();
 

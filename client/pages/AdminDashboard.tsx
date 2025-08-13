@@ -147,8 +147,6 @@ export default function AdminDashboard() {
 
   const pendingOrders = regularPendingOrders + customPendingOrders;
 
-
-
   const activeServices = services.filter((service) => service.active).length;
 
   // Combine customers from both regular orders and custom orders
@@ -197,10 +195,12 @@ export default function AdminDashboard() {
   const getFilteredOrders = () => {
     // Combine regular orders and custom orders into one list
     const allOrders = [
-      ...orders.filter(
-        (order) => !order.services?.some((s) => s.id === "support-ticket"),
-      ).map(order => ({ ...order, type: 'regular' })),
-      ...customOrders.map(order => ({ ...order, type: 'custom' }))
+      ...orders
+        .filter(
+          (order) => !order.services?.some((s) => s.id === "support-ticket"),
+        )
+        .map((order) => ({ ...order, type: "regular" })),
+      ...customOrders.map((order) => ({ ...order, type: "custom" })),
     ];
 
     let filteredList = allOrders.filter((order) => {
@@ -215,9 +215,10 @@ export default function AdminDashboard() {
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       filteredList = filteredList.filter((order) => {
-        const searchableText = `${order.customerName || ''} ${order.customerEmail || ''} ${order.id || ''} ${
-          order.services?.map((s) => s.name).join(' ') || ''
-        }`.toLowerCase();
+        const searchableText =
+          `${order.customerName || ""} ${order.customerEmail || ""} ${order.id || ""} ${
+            order.services?.map((s) => s.name).join(" ") || ""
+          }`.toLowerCase();
         return searchableText.includes(searchLower);
       });
     }
@@ -325,7 +326,6 @@ export default function AdminDashboard() {
       deleteBundle(id);
     }
   };
-
 
   // Custom pricing management functions
   const handleEditPricing = (pricing: any) => {
@@ -568,7 +568,6 @@ export default function AdminDashboard() {
               </p>
             </CardContent>
           </Card>
-
         </div>
 
         {/* Main Content - Simplified Tabs */}
@@ -1107,7 +1106,9 @@ export default function AdminDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Total Revenue
+                      </p>
                       <p className="text-2xl font-bold text-green-600">
                         ${totalRevenue.toFixed(2)}
                       </p>
@@ -1121,8 +1122,12 @@ export default function AdminDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Total Orders</p>
-                      <p className="text-2xl font-bold text-blue-600">{filteredOrders.length}</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Total Orders
+                      </p>
+                      <p className="text-2xl font-bold text-blue-600">
+                        {filteredOrders.length}
+                      </p>
                     </div>
                     <Package className="h-8 w-8 text-blue-600" />
                   </div>
@@ -1133,9 +1138,14 @@ export default function AdminDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Avg Order Value</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Avg Order Value
+                      </p>
                       <p className="text-2xl font-bold text-purple-600">
-                        ${filteredOrders.length > 0 ? (totalRevenue / filteredOrders.length).toFixed(2) : '0.00'}
+                        $
+                        {filteredOrders.length > 0
+                          ? (totalRevenue / filteredOrders.length).toFixed(2)
+                          : "0.00"}
                       </p>
                     </div>
                     <TrendingUp className="h-8 w-8 text-purple-600" />
@@ -1147,9 +1157,15 @@ export default function AdminDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">Pending Orders</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Pending Orders
+                      </p>
                       <p className="text-2xl font-bold text-orange-600">
-                        {filteredOrders.filter(order => order.status === 'pending').length}
+                        {
+                          filteredOrders.filter(
+                            (order) => order.status === "pending",
+                          ).length
+                        }
                       </p>
                     </div>
                     <Clock className="h-8 w-8 text-orange-600" />
@@ -1187,7 +1203,9 @@ export default function AdminDashboard() {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          selectedOrders.forEach(orderId => updateOrderStatus(orderId, "processing"));
+                          selectedOrders.forEach((orderId) =>
+                            updateOrderStatus(orderId, "processing"),
+                          );
                           setSelectedOrders([]);
                           toast({
                             title: "Bulk update completed",
@@ -1201,7 +1219,6 @@ export default function AdminDashboard() {
                       </Button>
                     )}
                   </div>
-
 
                   {/* Status Filter Section */}
                   <div className="flex flex-col gap-3">
@@ -1219,7 +1236,7 @@ export default function AdminDashboard() {
                                 (s) => s.id === "support-ticket",
                               ),
                           ),
-                          ...customOrders
+                          ...customOrders,
                         ];
 
                         return [
@@ -1232,21 +1249,27 @@ export default function AdminDashboard() {
                           {
                             value: "pending",
                             label: "Pending",
-                            count: allOrders.filter(order => order.status === "pending").length,
+                            count: allOrders.filter(
+                              (order) => order.status === "pending",
+                            ).length,
                             color: "yellow",
                           },
                           {
                             value: "active",
                             label: "Active",
-                            count: allOrders.filter(order =>
-                              order.status === "processing" || order.status === "in-progress"
+                            count: allOrders.filter(
+                              (order) =>
+                                order.status === "processing" ||
+                                order.status === "in-progress",
                             ).length,
                             color: "blue",
                           },
                           {
                             value: "completed",
                             label: "Completed",
-                            count: allOrders.filter(order => order.status === "completed").length,
+                            count: allOrders.filter(
+                              (order) => order.status === "completed",
+                            ).length,
                             color: "green",
                           },
                         ];
@@ -1488,7 +1511,6 @@ export default function AdminDashboard() {
                             </div>
                           )}
 
-
                           {/* Notes */}
                           {order.notes && (
                             <div className="bg-muted/50 p-3 rounded-md">
@@ -1580,7 +1602,6 @@ export default function AdminDashboard() {
                               {order.status === "completed" && "🔄 Reopen"}
                             </Button>
 
-
                             {order.status === "in-progress" && (
                               <Button
                                 size="sm"
@@ -1668,7 +1689,6 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
-
         </Tabs>
       </div>
 
@@ -1826,7 +1846,6 @@ export default function AdminDashboard() {
                       {selectedOrderForResume.transactionId || "Not recorded"}
                     </p>
                   </div>
-
 
                   {selectedOrderForResume.progress && (
                     <div>
@@ -2074,7 +2093,6 @@ export default function AdminDashboard() {
         onSave={handleSavePricing}
         pricing={isEditingPricing}
       />
-
     </div>
   );
 }

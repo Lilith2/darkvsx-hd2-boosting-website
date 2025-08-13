@@ -64,7 +64,7 @@ export default function EnhancedCheckout() {
   const [orderNotes, setOrderNotes] = useState("");
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  
+
   // Referral & Credits states
   const [referralCode, setReferralCode] = useState("");
   const [referralDiscount, setReferralDiscount] = useState(0);
@@ -85,10 +85,13 @@ export default function EnhancedCheckout() {
   const subtotal = getCartTotal();
   const discount = referralDiscount;
   const amountAfterDiscount = subtotal - discount;
-  
+
   // Enhanced tax logic - no tax if fully paid with credits
-  const willBeFullyPaidWithCredits = useReferralCredits && referralCreditsApplied >= amountAfterDiscount;
-  const tax = willBeFullyPaidWithCredits ? 0 : amountAfterDiscount * PAYMENT_CONSTANTS.TAX_RATE;
+  const willBeFullyPaidWithCredits =
+    useReferralCredits && referralCreditsApplied >= amountAfterDiscount;
+  const tax = willBeFullyPaidWithCredits
+    ? 0
+    : amountAfterDiscount * PAYMENT_CONSTANTS.TAX_RATE;
   const subtotalAfterTax = amountAfterDiscount + tax;
   const total = Math.max(0, subtotalAfterTax - referralCreditsApplied);
 
@@ -148,9 +151,11 @@ export default function EnhancedCheckout() {
   const handleCreditsToggle = (checked: boolean) => {
     setUseReferralCredits(checked);
     if (checked && availableCredits > 0) {
-      const maxApplicable = availableCredits >= amountAfterDiscount 
-        ? amountAfterDiscount 
-        : amountAfterDiscount + (amountAfterDiscount * PAYMENT_CONSTANTS.TAX_RATE);
+      const maxApplicable =
+        availableCredits >= amountAfterDiscount
+          ? amountAfterDiscount
+          : amountAfterDiscount +
+            amountAfterDiscount * PAYMENT_CONSTANTS.TAX_RATE;
       const creditsToApply = Math.min(availableCredits, maxApplicable);
       setReferralCreditsApplied(creditsToApply);
 
@@ -177,7 +182,7 @@ export default function EnhancedCheckout() {
       }
 
       // Process order creation logic here...
-      
+
       toast({
         title: "Order Confirmed!",
         description: "Your order has been confirmed and paid with credits.",
@@ -189,7 +194,8 @@ export default function EnhancedCheckout() {
       console.error("Credit payment error:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to process payment. Please try again.",
+        description:
+          error.message || "Failed to process payment. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -199,10 +205,12 @@ export default function EnhancedCheckout() {
 
   const createPayPalOrder = (data: any, actions: any) => {
     return actions.order.create({
-      purchase_units: [{
-        amount: { value: total.toFixed(2) },
-        description: `Order for ${cartItems.length} item(s)`,
-      }],
+      purchase_units: [
+        {
+          amount: { value: total.toFixed(2) },
+          description: `Order for ${cartItems.length} item(s)`,
+        },
+      ],
     });
   };
 
@@ -211,7 +219,7 @@ export default function EnhancedCheckout() {
     try {
       const details = await actions.order.capture();
       // Handle successful PayPal payment
-      
+
       toast({
         title: "Payment Successful!",
         description: "Your order has been confirmed.",
@@ -223,7 +231,8 @@ export default function EnhancedCheckout() {
       console.error("PayPal payment error:", error);
       toast({
         title: "Payment Error",
-        description: "There was an issue processing your payment. Please try again.",
+        description:
+          "There was an issue processing your payment. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -234,14 +243,16 @@ export default function EnhancedCheckout() {
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background flex items-center justify-center p-4">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
           <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
           <h1 className="text-2xl font-bold mb-2">Your cart is empty</h1>
-          <p className="text-muted-foreground mb-6">Add some items to your cart to continue</p>
+          <p className="text-muted-foreground mb-6">
+            Add some items to your cart to continue
+          </p>
           <Button asChild>
             <Link href="/services">Browse Services</Link>
           </Button>
@@ -277,7 +288,7 @@ export default function EnhancedCheckout() {
                   SSL Secured
                 </Badge>
               </div>
-              
+
               <Button
                 variant="outline"
                 size="sm"
@@ -316,9 +327,11 @@ export default function EnhancedCheckout() {
                           )}
                         </motion.div>
                         {step < 3 && (
-                          <div className={`w-20 h-0.5 mx-2 ${
-                            currentStep > step ? "bg-primary" : "bg-muted"
-                          }`} />
+                          <div
+                            className={`w-20 h-0.5 mx-2 ${
+                              currentStep > step ? "bg-primary" : "bg-muted"
+                            }`}
+                          />
                         )}
                       </div>
                     ))}
@@ -369,20 +382,28 @@ export default function EnhancedCheckout() {
                                 id="guestName"
                                 value={guestInfo.name}
                                 onChange={(e) =>
-                                  setGuestInfo({ ...guestInfo, name: e.target.value })
+                                  setGuestInfo({
+                                    ...guestInfo,
+                                    name: e.target.value,
+                                  })
                                 }
                                 placeholder="John Doe"
                                 required
                               />
                             </div>
                             <div>
-                              <Label htmlFor="guestEmail">Email Address *</Label>
+                              <Label htmlFor="guestEmail">
+                                Email Address *
+                              </Label>
                               <Input
                                 id="guestEmail"
                                 type="email"
                                 value={guestInfo.email}
                                 onChange={(e) =>
-                                  setGuestInfo({ ...guestInfo, email: e.target.value })
+                                  setGuestInfo({
+                                    ...guestInfo,
+                                    email: e.target.value,
+                                  })
                                 }
                                 placeholder="john@example.com"
                                 required
@@ -408,7 +429,10 @@ export default function EnhancedCheckout() {
                         <div className="flex justify-end">
                           <Button
                             onClick={() => setCurrentStep(2)}
-                            disabled={!isAuthenticated && (!guestInfo.name || !guestInfo.email)}
+                            disabled={
+                              !isAuthenticated &&
+                              (!guestInfo.name || !guestInfo.email)
+                            }
                             className="bg-gradient-to-r from-primary to-blue-600"
                           >
                             Continue to Discounts
@@ -436,20 +460,27 @@ export default function EnhancedCheckout() {
                           Referral Code
                         </CardTitle>
                         <CardDescription>
-                          Enter a referral code to get {(REFERRAL_CONFIG.CUSTOMER_DISCOUNT * 100)}% off your order
+                          Enter a referral code to get{" "}
+                          {REFERRAL_CONFIG.CUSTOMER_DISCOUNT * 100}% off your
+                          order
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="flex space-x-2">
                           <Input
                             value={referralCode}
-                            onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                            onChange={(e) =>
+                              setReferralCode(e.target.value.toUpperCase())
+                            }
                             placeholder="HD2BOOST-XXXXXX"
                             className="flex-1"
                           />
                           <Button
                             onClick={handleReferralCodeSubmit}
-                            disabled={!referralCode.trim() || referralCodeStatus.isLoading}
+                            disabled={
+                              !referralCode.trim() ||
+                              referralCodeStatus.isLoading
+                            }
                             variant="outline"
                           >
                             {referralCodeStatus.isLoading ? (
@@ -461,11 +492,13 @@ export default function EnhancedCheckout() {
                         </div>
 
                         {referralCodeStatus.message && (
-                          <div className={`p-3 rounded-lg text-sm ${
-                            referralCodeStatus.isValid
-                              ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
-                              : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
-                          }`}>
+                          <div
+                            className={`p-3 rounded-lg text-sm ${
+                              referralCodeStatus.isValid
+                                ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
+                                : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
+                            }`}
+                          >
                             {referralCodeStatus.message}
                           </div>
                         )}
@@ -481,7 +514,8 @@ export default function EnhancedCheckout() {
                             Use Credits
                           </CardTitle>
                           <CardDescription>
-                            You have ${availableCredits.toFixed(2)} available in credits
+                            You have ${availableCredits.toFixed(2)} available in
+                            credits
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -489,8 +523,13 @@ export default function EnhancedCheckout() {
                             <div>
                               <p className="font-medium">Apply Credits</p>
                               <p className="text-sm text-muted-foreground">
-                                Use up to ${Math.min(availableCredits, subtotalAfterTax).toFixed(2)} 
-                                {" "}of your ${availableCredits.toFixed(2)} available credits
+                                Use up to $
+                                {Math.min(
+                                  availableCredits,
+                                  subtotalAfterTax,
+                                ).toFixed(2)}{" "}
+                                of your ${availableCredits.toFixed(2)} available
+                                credits
                               </p>
                             </div>
                             <Checkbox
@@ -501,7 +540,7 @@ export default function EnhancedCheckout() {
                           </div>
 
                           {useReferralCredits && referralCreditsApplied > 0 && (
-                            <motion.div 
+                            <motion.div
                               initial={{ opacity: 0, height: 0 }}
                               animate={{ opacity: 1, height: "auto" }}
                               className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 p-3 rounded-lg"
@@ -509,7 +548,8 @@ export default function EnhancedCheckout() {
                               <div className="flex items-center space-x-2">
                                 <Zap className="w-4 h-4 text-blue-600" />
                                 <span className="text-sm text-blue-700 dark:text-blue-400">
-                                  Applied ${referralCreditsApplied.toFixed(2)} in credits!
+                                  Applied ${referralCreditsApplied.toFixed(2)}{" "}
+                                  in credits!
                                 </span>
                               </div>
                             </motion.div>
@@ -519,7 +559,10 @@ export default function EnhancedCheckout() {
                     )}
 
                     <div className="flex justify-between">
-                      <Button variant="outline" onClick={() => setCurrentStep(1)}>
+                      <Button
+                        variant="outline"
+                        onClick={() => setCurrentStep(1)}
+                      >
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Back
                       </Button>
@@ -557,16 +600,24 @@ export default function EnhancedCheckout() {
                           <Checkbox
                             id="terms"
                             checked={agreeToTerms}
-                            onCheckedChange={(checked) => setAgreeToTerms(checked as boolean)}
+                            onCheckedChange={(checked) =>
+                              setAgreeToTerms(checked as boolean)
+                            }
                           />
                           <div className="text-sm">
                             <label htmlFor="terms" className="cursor-pointer">
                               I agree to the{" "}
-                              <Link href="/terms" className="text-primary hover:underline">
+                              <Link
+                                href="/terms"
+                                className="text-primary hover:underline"
+                              >
                                 Terms of Service
                               </Link>{" "}
                               and{" "}
-                              <Link href="/privacy" className="text-primary hover:underline">
+                              <Link
+                                href="/privacy"
+                                className="text-primary hover:underline"
+                              >
                                 Privacy Policy
                               </Link>
                             </label>
@@ -590,7 +641,8 @@ export default function EnhancedCheckout() {
                                     </span>
                                   </div>
                                   <p className="text-xs text-green-600 dark:text-green-500 mt-1">
-                                    No payment required. Click below to confirm your order.
+                                    No payment required. Click below to confirm
+                                    your order.
                                   </p>
                                 </div>
 
@@ -622,12 +674,18 @@ export default function EnhancedCheckout() {
                                       <Shield className="w-4 h-4" />
                                       <span>256-bit SSL</span>
                                     </div>
-                                    <Separator orientation="vertical" className="h-4" />
+                                    <Separator
+                                      orientation="vertical"
+                                      className="h-4"
+                                    />
                                     <div className="flex items-center space-x-1">
                                       <Lock className="w-4 h-4" />
                                       <span>Secure Payment</span>
                                     </div>
-                                    <Separator orientation="vertical" className="h-4" />
+                                    <Separator
+                                      orientation="vertical"
+                                      className="h-4"
+                                    />
                                     <div className="flex items-center space-x-1">
                                       <Wallet className="w-4 h-4" />
                                       <span>PayPal Protected</span>
@@ -640,10 +698,21 @@ export default function EnhancedCheckout() {
                                     Why PayPal?
                                   </h4>
                                   <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                                    <li>• Industry-leading security and fraud protection</li>
-                                    <li>• Pay with PayPal balance, bank account, or credit card</li>
-                                    <li>• Instant payment processing and order confirmation</li>
-                                    <li>• Buyer protection for eligible purchases</li>
+                                    <li>
+                                      • Industry-leading security and fraud
+                                      protection
+                                    </li>
+                                    <li>
+                                      • Pay with PayPal balance, bank account,
+                                      or credit card
+                                    </li>
+                                    <li>
+                                      • Instant payment processing and order
+                                      confirmation
+                                    </li>
+                                    <li>
+                                      • Buyer protection for eligible purchases
+                                    </li>
                                   </ul>
                                 </div>
 
@@ -661,7 +730,8 @@ export default function EnhancedCheckout() {
                                     console.error("PayPal error:", error);
                                     toast({
                                       title: "Payment Error",
-                                      description: "There was an issue with PayPal. Please try again.",
+                                      description:
+                                        "There was an issue with PayPal. Please try again.",
                                       variant: "destructive",
                                     });
                                   }}
@@ -672,7 +742,10 @@ export default function EnhancedCheckout() {
                         )}
 
                         <div className="flex justify-start">
-                          <Button variant="outline" onClick={() => setCurrentStep(2)}>
+                          <Button
+                            variant="outline"
+                            onClick={() => setCurrentStep(2)}
+                          >
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Back to Discounts
                           </Button>
@@ -685,7 +758,9 @@ export default function EnhancedCheckout() {
             </div>
 
             {/* Enhanced Order Summary */}
-            <div className={`lg:block ${showOrderSummary ? "block" : "hidden"}`}>
+            <div
+              className={`lg:block ${showOrderSummary ? "block" : "hidden"}`}
+            >
               <div className="sticky top-24 space-y-6">
                 <Card className="border-2 border-primary/20 shadow-lg">
                   <CardHeader className="bg-gradient-to-r from-primary/5 to-blue-500/5">
@@ -694,7 +769,8 @@ export default function EnhancedCheckout() {
                       Order Summary
                     </CardTitle>
                     <CardDescription>
-                      {cartItems.length} item{cartItems.length > 1 ? "s" : ""} in your cart
+                      {cartItems.length} item{cartItems.length > 1 ? "s" : ""}{" "}
+                      in your cart
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="p-6 space-y-4">
@@ -720,12 +796,19 @@ export default function EnhancedCheckout() {
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="font-medium">${(item.service.price * item.quantity).toFixed(2)}</p>
-                            {item.service.originalPrice && item.service.originalPrice > item.service.price && (
-                              <p className="text-xs text-muted-foreground line-through">
-                                ${(item.service.originalPrice * item.quantity).toFixed(2)}
-                              </p>
-                            )}
+                            <p className="font-medium">
+                              ${(item.service.price * item.quantity).toFixed(2)}
+                            </p>
+                            {item.service.originalPrice &&
+                              item.service.originalPrice >
+                                item.service.price && (
+                                <p className="text-xs text-muted-foreground line-through">
+                                  $
+                                  {(
+                                    item.service.originalPrice * item.quantity
+                                  ).toFixed(2)}
+                                </p>
+                              )}
                           </div>
                         </motion.div>
                       ))}
@@ -784,7 +867,9 @@ export default function EnhancedCheckout() {
 
                       <div className="flex justify-between font-bold text-lg">
                         <span>Total</span>
-                        <span className="text-primary">${total.toFixed(2)}</span>
+                        <span className="text-primary">
+                          ${total.toFixed(2)}
+                        </span>
                       </div>
 
                       {total <= 0 && (
@@ -810,11 +895,15 @@ export default function EnhancedCheckout() {
                     <div className="grid grid-cols-2 gap-3 text-center">
                       <div className="flex flex-col items-center space-y-1">
                         <Clock className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground">24-48h delivery</span>
+                        <span className="text-xs text-muted-foreground">
+                          24-48h delivery
+                        </span>
                       </div>
                       <div className="flex flex-col items-center space-y-1">
                         <Shield className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground">Secure payment</span>
+                        <span className="text-xs text-muted-foreground">
+                          Secure payment
+                        </span>
                       </div>
                     </div>
                   </CardContent>
@@ -826,7 +915,9 @@ export default function EnhancedCheckout() {
                     <div className="text-center space-y-2">
                       <div className="flex items-center justify-center space-x-2">
                         <TrendingUp className="w-4 h-4 text-green-600" />
-                        <span className="text-sm font-medium">Trusted by 10,000+ players</span>
+                        <span className="text-sm font-medium">
+                          Trusted by 10,000+ players
+                        </span>
                       </div>
                       <div className="flex justify-center space-x-4 text-xs text-muted-foreground">
                         <span>✓ 99.9% Success Rate</span>

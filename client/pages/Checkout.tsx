@@ -72,10 +72,13 @@ export default function Checkout() {
   const amountAfterDiscount = subtotal - discount;
 
   // Check if order will be fully paid with credits
-  const willBeFullyPaidWithCredits = useReferralCredits && referralCreditsApplied >= amountAfterDiscount;
+  const willBeFullyPaidWithCredits =
+    useReferralCredits && referralCreditsApplied >= amountAfterDiscount;
 
   // Only apply tax if there will be a payment (not fully covered by credits)
-  const tax = willBeFullyPaidWithCredits ? 0 : amountAfterDiscount * PAYMENT_CONSTANTS.TAX_RATE;
+  const tax = willBeFullyPaidWithCredits
+    ? 0
+    : amountAfterDiscount * PAYMENT_CONSTANTS.TAX_RATE;
   const subtotalAfterTax = amountAfterDiscount + tax;
   const total = Math.max(0, subtotalAfterTax - referralCreditsApplied);
 
@@ -219,9 +222,11 @@ export default function Checkout() {
       const amountAfterDiscount = subtotal - referralDiscount;
       // If credits can cover the full amount, no tax applies
       // Otherwise, tax applies and credits can cover up to amount + tax
-      const maxApplicable = availableCredits >= amountAfterDiscount
-        ? amountAfterDiscount
-        : amountAfterDiscount + (amountAfterDiscount * PAYMENT_CONSTANTS.TAX_RATE);
+      const maxApplicable =
+        availableCredits >= amountAfterDiscount
+          ? amountAfterDiscount
+          : amountAfterDiscount +
+            amountAfterDiscount * PAYMENT_CONSTANTS.TAX_RATE;
       const creditsToApply = Math.min(availableCredits, maxApplicable);
       setReferralCreditsApplied(creditsToApply);
 
@@ -644,7 +649,8 @@ export default function Checkout() {
                               availableCredits,
                               subtotal -
                                 referralDiscount +
-                                (subtotal - referralDiscount) * PAYMENT_CONSTANTS.TAX_RATE,
+                                (subtotal - referralDiscount) *
+                                  PAYMENT_CONSTANTS.TAX_RATE,
                             ).toFixed(2)}{" "}
                             of your ${availableCredits.toFixed(2)} available
                             credits

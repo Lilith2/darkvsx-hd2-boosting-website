@@ -139,7 +139,9 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
 
     try {
       // Check if user is authenticated
-      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
       if (!authUser) {
         console.warn("getUserCredits: User not authenticated");
         return 0;
@@ -154,10 +156,15 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       if (error) {
         // Handle specific known errors
         if (error.code === "PGRST116") {
-          console.warn("getUserCredits: No rows returned (user profile not found)");
+          console.warn(
+            "getUserCredits: No rows returned (user profile not found)",
+          );
           return 0;
         }
-        if (error.message?.includes("column") || error.message?.includes("does not exist")) {
+        if (
+          error.message?.includes("column") ||
+          error.message?.includes("does not exist")
+        ) {
           console.warn("getUserCredits: Credit balance column does not exist");
           return 0;
         }
@@ -174,7 +181,9 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
 
       // If it's a network error, provide more specific info
       if (err?.message?.includes("Failed to fetch")) {
-        console.error("Network error - check internet connection and Supabase configuration");
+        console.error(
+          "Network error - check internet connection and Supabase configuration",
+        );
       }
 
       return 0;
