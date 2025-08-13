@@ -36,9 +36,17 @@ export default function Bundles() {
     const bundleService = {
       id: bundle.id,
       title: bundle.name,
+      description: bundle.description,
       price: bundle.discountedPrice,
+      originalPrice: bundle.originalPrice,
       duration: bundle.duration,
       difficulty: "Bundle",
+      features: bundle.features || [],
+      active: bundle.active ?? true,
+      popular: bundle.popular ?? false,
+      category: "Level Boost" as const,
+      createdAt: bundle.created_at || new Date().toISOString(),
+      orders: bundle.orders_count || 0,
     };
 
     addToCart(bundleService);
