@@ -114,7 +114,6 @@ interface OrdersContextType {
     orderId: string,
     message: { from: "customer" | "admin" | "booster"; message: string },
   ) => Promise<void>;
-  assignBooster: (orderId: string, boosterName: string) => Promise<void>;
   updateOrderProgress: (orderId: string, progress: number) => Promise<void>;
   refreshOrders: () => Promise<void>;
 }
