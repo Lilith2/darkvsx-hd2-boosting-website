@@ -84,8 +84,8 @@ export function useCustomOrders() {
 
       setOrders(transformedOrders);
     } catch (err: any) {
-      console.error("Error fetching custom orders:", err);
-      setError(err.message || "Failed to fetch custom orders");
+      console.error("Error fetching custom orders:", err?.message || err);
+      setError(err?.message || "Failed to fetch custom orders");
     } finally {
       setLoading(false);
     }
