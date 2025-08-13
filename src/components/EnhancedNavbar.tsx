@@ -53,8 +53,7 @@ const navigation: NavigationItem[] = [
 ];
 
 export function EnhancedNavbar() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
   const { cartItems } = useCart();
   const { theme, setTheme } = useTheme();
