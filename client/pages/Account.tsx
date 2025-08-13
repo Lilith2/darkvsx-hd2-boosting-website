@@ -972,7 +972,7 @@ export default function Account() {
                       Your Earnings Summary
                     </CardTitle>
                     <CardDescription>
-                      Track your referral earnings and current credit balance
+                      Track your referral earnings and current credits
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
