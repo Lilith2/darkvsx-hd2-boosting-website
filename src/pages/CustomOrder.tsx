@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/router";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -56,7 +56,7 @@ interface OrderItem {
 }
 
 export default function CustomOrder() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { addToCart } = useCart();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -302,7 +302,7 @@ export default function CustomOrder() {
         description: "Your custom order has been added to the cart.",
       });
 
-      navigate("/cart");
+      router.push("/cart");
     } catch (error: any) {
       console.error("Error processing order:", error);
       const errorMessage =

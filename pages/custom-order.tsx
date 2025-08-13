@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 
-const CustomOrderPage = dynamic(() => import("../src/pages/CustomOrder"), {
+const CustomOrderPage = dynamic(() => import("../client/pages/CustomOrder"), {
   ssr: false,
 });
 
