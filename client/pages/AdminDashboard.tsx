@@ -110,7 +110,6 @@ export default function AdminDashboard() {
   const [editingService, setEditingService] = useState<any>(null);
   const [selectedBundle, setSelectedBundle] = useState<any>(null);
   const [orderFilter, setOrderFilter] = useState<string>("all"); // all, pending, processing, in-progress, completed
-  const [orderTypeFilter, setOrderTypeFilter] = useState<string>("regular"); // regular, custom
   const [customPricing, setCustomPricing] = useState<any[]>([]);
   const [isEditingPricing, setIsEditingPricing] = useState<any>(null);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
@@ -195,26 +194,20 @@ export default function AdminDashboard() {
     )
     .slice(0, 5);
 
-  // Filter orders based on selected filter, type, and search term
+  // Filter orders based on selected filter and search term (combine all orders)
   const getFilteredOrders = () => {
-    let filteredList = [];
+    // Combine regular orders and custom orders into one list
+    const allOrders = [
+      ...orders.filter(
+        (order) => !order.services?.some((s) => s.id === "support-ticket"),
+      ).map(order => ({ ...order, type: 'regular' })),
+      ...customOrders.map(order => ({ ...order, type: 'custom' }))
+    ];
 
-    if (orderTypeFilter === "custom") {
-      filteredList = customOrders
-        .filter((order) => {
-          if (orderFilter === "all") return true;
-          return order.status === orderFilter;
-        });
-    } else {
-      filteredList = orders
-        .filter(
-          (order) => !order.services?.some((s) => s.id === "support-ticket"),
-        )
-        .filter((order) => {
-          if (orderFilter === "all") return true;
-          return order.status === orderFilter;
-        });
-    }
+    let filteredList = allOrders.filter((order) => {
+      if (orderFilter === "all") return true;
+      return order.status === orderFilter;
+    });
 
     // Apply search filter
     if (searchTerm) {
@@ -229,8 +222,8 @@ export default function AdminDashboard() {
 
     // Sort by creation date
     return filteredList.sort((a, b) => {
-      const dateA = new Date(orderTypeFilter === "custom" ? a.created_at : a.createdAt);
-      const dateB = new Date(orderTypeFilter === "custom" ? b.created_at : b.createdAt);
+      const dateA = new Date(order.type === "custom" ? a.created_at : a.createdAt);
+      const dateB = new Date(order.type === "custom" ? b.created_at : b.createdAt);
       return dateB.getTime() - dateA.getTime();
     });
   };
