@@ -52,25 +52,25 @@ export function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link
-              to="/#services"
+              href="/#services"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
             >
               Services
             </Link>
             <Link
-              to="/bundles"
+              href="/bundles"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
             >
               Bundles
             </Link>
             <Link
-              to="/custom-order"
+              href="/custom-order"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
             >
               Custom Order
             </Link>
             <Link
-              to="/faq"
+              href="/faq"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
             >
               FAQ
@@ -83,20 +83,20 @@ export function Navbar() {
               <>
                 {isAdmin && (
                   <Button variant="ghost" size="sm" asChild>
-                    <Link to="/admin">
+                    <Link href="/admin">
                       <User className="w-4 h-4 mr-2" />
                       Admin
                     </Link>
                   </Button>
                 )}
                 <Button variant="ghost" size="sm" asChild>
-                  <Link to="/account">
+                  <Link href="/account">
                     <User className="w-4 h-4 mr-2" />
                     Account
                   </Link>
                 </Button>
                 <Button variant="ghost" size="sm" asChild className="relative">
-                  <Link to="/cart">
+                  <Link href="/cart">
                     <ShoppingCart className="w-4 h-4 mr-2" />
                     Cart
                     {cartItemCount > 0 && (
@@ -116,7 +116,7 @@ export function Navbar() {
             ) : (
               <>
                 <Button variant="ghost" size="sm" asChild>
-                  <Link to="/cart">
+                  <Link href="/cart">
                     <ShoppingCart className="w-4 h-4 mr-2" />
                     Cart
                     {cartItemCount > 0 && (
@@ -127,7 +127,7 @@ export function Navbar() {
                   </Link>
                 </Button>
                 <Button variant="outline" size="sm" asChild>
-                  <Link to="/login">
+                  <Link href="/login">
                     <LogIn className="w-4 h-4 mr-2" />
                     Login
                   </Link>
