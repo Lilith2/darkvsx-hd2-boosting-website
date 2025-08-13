@@ -17,6 +17,8 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
     scrollRestoration: true,
+    turbo: true,
+    serverComponentsExternalPackages: ['@supabase/supabase-js'],
   },
   transpilePackages: [
     "@supabase/supabase-js",
