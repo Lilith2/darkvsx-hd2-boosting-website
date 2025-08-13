@@ -178,7 +178,7 @@ export default function Cart() {
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Tax</span>
+                  <span>{PAYMENT_CONSTANTS.TAX_LABEL}</span>
                   <span>${tax.toFixed(2)}</span>
                 </div>
                 <Separator />
