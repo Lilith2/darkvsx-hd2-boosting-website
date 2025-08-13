@@ -59,12 +59,11 @@ const nextConfig = {
         encoding: false,
       };
 
-      // Exclude heavy Supabase modules from client bundle
+      // Only exclude optional peer dependencies that can cause issues
       config.externals = config.externals || [];
       config.externals.push({
         'utf-8-validate': 'commonjs utf-8-validate',
         'bufferutil': 'commonjs bufferutil',
-        '@supabase/realtime-js': 'commonjs @supabase/realtime-js',
       });
     }
 
