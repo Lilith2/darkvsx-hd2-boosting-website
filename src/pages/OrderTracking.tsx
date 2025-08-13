@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useOrders } from "@/hooks/useOrders";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,8 @@ import {
 } from "lucide-react";
 
 export default function OrderTracking() {
-  const { orderId } = useParams<{ orderId: string }>();
+  const router = useRouter();
+  const { orderId } = router.query as { orderId: string };
   const { getOrder, addOrderMessage, orders, loading } = useOrders();
   const { user } = useAuth();
   const [order, setOrder] = useState(getOrder(orderId || ""));
@@ -82,7 +84,7 @@ export default function OrderTracking() {
               The order ID you're looking for doesn't exist or you don't have
               permission to view it.
             </p>
-            <Link to="/">
+            <Link href="/">
               <Button>Back to Home</Button>
             </Link>
           </CardContent>
@@ -166,7 +168,7 @@ export default function OrderTracking() {
       <div className="bg-gradient-to-r from-card to-card/80 border-b border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center mb-6">
-            <Link to="/account">
+            <Link href="/account">
               <Button variant="ghost" size="sm" className="hover:bg-primary/10">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Account
@@ -446,14 +448,14 @@ export default function OrderTracking() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button variant="outline" className="w-full" asChild>
-                  <Link to="/contact">
+                  <Link href="/contact">
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Contact Support
                   </Link>
                 </Button>
 
                 <Button variant="outline" className="w-full" asChild>
-                  <Link to="/faq">
+                  <Link href="/faq">
                     <AlertCircle className="w-4 h-4 mr-2" />
                     View FAQ
                   </Link>
