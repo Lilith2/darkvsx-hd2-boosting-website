@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +30,7 @@ export default function Register() {
   });
 
   const { register } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +62,7 @@ export default function Register() {
           "Account created successfully! Redirecting to email confirmation...",
         );
         setTimeout(() => {
-          navigate(
+          router.push(
             `/email-confirmation?email=${encodeURIComponent(formData.email)}&type=signup`,
           );
         }, 1500);
@@ -214,11 +215,11 @@ export default function Register() {
                 />
                 <label className="text-xs text-muted-foreground leading-relaxed">
                   I agree to the{" "}
-                  <Link to="/terms" className="text-primary hover:underline">
+                  <Link href="/terms" className="text-primary hover:underline">
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link to="/privacy" className="text-primary hover:underline">
+                  <Link href="/privacy" className="text-primary hover:underline">
                     Privacy Policy
                   </Link>
                 </label>
@@ -248,7 +249,7 @@ export default function Register() {
               <div className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}
                 <Link
-                  to="/login"
+                  href="/login"
                   className="text-primary hover:text-primary/80 font-medium hover:underline"
                 >
                   Sign in
