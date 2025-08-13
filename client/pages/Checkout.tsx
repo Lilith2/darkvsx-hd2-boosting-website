@@ -211,8 +211,8 @@ export default function Checkout() {
       setReferralCreditsApplied(creditsToApply);
 
       toast({
-        title: "Referral credits applied!",
-        description: `You saved $${creditsToApply.toFixed(2)} using your referral credits.`,
+        title: "Credits applied!",
+        description: `You saved $${creditsToApply.toFixed(2)} using your credits.`,
       });
     } else {
       setReferralCreditsApplied(0);
@@ -336,7 +336,7 @@ export default function Checkout() {
 
       const paymentMessage =
         total <= 0
-          ? "Paid with referral credits"
+          ? "Paid with credits"
           : `Payment ID: ${paymentDetails?.id || "Credits + PayPal"}`;
 
       toast({
@@ -500,7 +500,7 @@ export default function Checkout() {
                     )}
                     {referralCreditsApplied > 0 && (
                       <div className="flex justify-between text-sm text-blue-600">
-                        <span>Referral Credits</span>
+                        <span>Credits</span>
                         <span>-${referralCreditsApplied.toFixed(2)}</span>
                       </div>
                     )}
@@ -608,7 +608,7 @@ export default function Checkout() {
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <DollarSign className="w-5 h-5 mr-2" />
-                      Use Referral Credits
+                      Use Credits
                     </CardTitle>
                     <CardDescription>
                       You have ${availableCredits.toFixed(2)} in referral
@@ -622,7 +622,7 @@ export default function Checkout() {
                           <DollarSign className="w-5 h-5 text-green-600" />
                         </div>
                         <div>
-                          <p className="font-medium">Apply Referral Credits</p>
+                          <p className="font-medium">Apply Credits</p>
                           <p className="text-sm text-muted-foreground">
                             Use up to $
                             {Math.min(
@@ -653,7 +653,7 @@ export default function Checkout() {
                           <CheckCircle className="w-4 h-4 text-blue-600" />
                           <span className="text-sm text-blue-700 dark:text-blue-400">
                             Applied ${referralCreditsApplied.toFixed(2)} in
-                            referral credits!
+                            credits!
                           </span>
                         </div>
                       </div>
@@ -749,7 +749,7 @@ export default function Checkout() {
                             <div className="flex items-center space-x-2 text-sm">
                               <CheckCircle className="w-4 h-4 text-green-600" />
                               <span className="text-green-700 dark:text-green-400 font-medium">
-                                Order total covered by referral credits!
+                                Order total covered by credits!
                               </span>
                             </div>
                             <p className="text-xs text-green-600 dark:text-green-500 mt-1">
