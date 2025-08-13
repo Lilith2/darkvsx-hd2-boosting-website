@@ -206,7 +206,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         supabase.from("order_tracking").select("*").in("order_id", orderIds),
       ]);
 
-      const messages = messagesResult.data || [];
+      const messages = (messagesResult.data || []).map(mapOrderMessageFromSupabase);
       const tracking = trackingResult.data || [];
 
       // Transform and combine data
