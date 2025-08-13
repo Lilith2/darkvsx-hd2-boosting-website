@@ -117,7 +117,7 @@ export function EnhancedNavbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link
-            to="/"
+            href="/"
             className="flex items-center space-x-2 group transition-transform hover:scale-105"
           >
             <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center">
