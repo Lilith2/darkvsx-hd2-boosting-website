@@ -40,7 +40,7 @@ export default function Cart() {
       <div className="min-h-screen bg-background">
         <div className="max-w-4xl mx-auto p-6">
           <div className="flex items-center mb-8">
-            <Link to="/">
+            <Link href="/">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Services
