@@ -191,32 +191,44 @@ export default function AdminDashboard() {
     )
     .slice(0, 5);
 
-  // Filter orders based on selected filter and type
+  // Filter orders based on selected filter, type, and search term
   const getFilteredOrders = () => {
+    let filteredList = [];
+
     if (orderTypeFilter === "custom") {
-      return customOrders
+      filteredList = customOrders
         .filter((order) => {
           if (orderFilter === "all") return true;
           return order.status === orderFilter;
-        })
-        .sort(
-          (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-        );
+        });
     } else {
-      return orders
+      filteredList = orders
         .filter(
-          (order) => !order.services.some((s) => s.id === "support-ticket"),
+          (order) => !order.services?.some((s) => s.id === "support-ticket"),
         )
         .filter((order) => {
           if (orderFilter === "all") return true;
           return order.status === orderFilter;
-        })
-        .sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        );
+        });
     }
+
+    // Apply search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filteredList = filteredList.filter((order) => {
+        const searchableText = `${order.customerName || ''} ${order.customerEmail || ''} ${order.id || ''} ${
+          order.services?.map((s) => s.name).join(' ') || ''
+        }`.toLowerCase();
+        return searchableText.includes(searchLower);
+      });
+    }
+
+    // Sort by creation date
+    return filteredList.sort((a, b) => {
+      const dateA = new Date(orderTypeFilter === "custom" ? a.created_at : a.createdAt);
+      const dateB = new Date(orderTypeFilter === "custom" ? b.created_at : b.createdAt);
+      return dateB.getTime() - dateA.getTime();
+    });
   };
 
   const filteredOrders = getFilteredOrders();
