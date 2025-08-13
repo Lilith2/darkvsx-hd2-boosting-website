@@ -10,6 +10,9 @@ import { UnifiedProductsProvider } from "@/hooks/useUnifiedProducts";
 import { UnifiedOrdersProvider } from "@/hooks/useUnifiedOrders";
 import { UserActivitiesProvider } from "@/hooks/useUserActivities";
 import { CommunicationsProvider } from "@/hooks/useCommunications";
+import { BundlesProvider } from "@/hooks/useBundlesCompat";
+import { ServicesProvider } from "@/hooks/useServicesCompat";
+import { OrdersProvider } from "@/hooks/useOrdersCompat";
 import { CartProvider } from "@/hooks/useCart";
 import { ReferralsProvider } from "@/hooks/useReferrals";
 import { AppContent } from "@/components/AppContent";
@@ -46,9 +49,15 @@ function AppProviders({ children }: { children: React.ReactNode }) {
                   <UnifiedOrdersProvider>
                     <UserActivitiesProvider>
                       <CommunicationsProvider>
-                        <CartProvider>
-                          <ReferralsProvider>{children}</ReferralsProvider>
-                        </CartProvider>
+                        <BundlesProvider>
+                          <ServicesProvider>
+                            <OrdersProvider>
+                              <CartProvider>
+                                <ReferralsProvider>{children}</ReferralsProvider>
+                              </CartProvider>
+                            </OrdersProvider>
+                          </ServicesProvider>
+                        </BundlesProvider>
                       </CommunicationsProvider>
                     </UserActivitiesProvider>
                   </UnifiedOrdersProvider>
