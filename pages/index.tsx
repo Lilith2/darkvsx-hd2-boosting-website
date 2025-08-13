@@ -72,7 +72,12 @@ export default function Index() {
   }, []);
 
   return (
-    <div className="bg-gradient-to-br from-background via-background to-background/80">
+    <>
+      <SEOHead
+        title="Helldivers 2 Boosting Services - Fast & Professional"
+        description="Premium Helldivers 2 boosting services. Get your rank up fast with our professional team. Safe, secure, and guaranteed results."
+      />
+      <div className="bg-gradient-to-br from-background via-background to-background/80">
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
@@ -478,6 +483,7 @@ export default function Index() {
       >
         <ArrowUp className="w-5 h-5" />
       </Button>
-    </div>
+      </div>
+    </>
   );
 }
