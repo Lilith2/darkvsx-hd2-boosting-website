@@ -153,8 +153,8 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       }
 
       return parseFloat(String(profileData?.credit_balance || 0));
-    } catch (err) {
-      console.error("Error fetching user credits:", err);
+    } catch (err: any) {
+      console.error("Error fetching user credits:", err?.message || err);
       return 0;
     }
   };
