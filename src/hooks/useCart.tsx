@@ -12,7 +12,7 @@ interface CartContextType {
   items: CartItem[];
   cartItems: CartItem[];
   addItem: (service: ServiceData) => void;
-  addToCart: (service: { id: string; title: string; price: number; duration?: string; difficulty?: string }) => void;
+  addToCart: (service: ServiceData) => void;
   removeItem: (id: string) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
