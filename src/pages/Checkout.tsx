@@ -73,9 +73,9 @@ export default function Checkout() {
   const subtotalAfterTax = subtotal - discount + tax;
   const total = Math.max(0, subtotalAfterTax - referralCreditsApplied); // Credits applied after tax
 
-  // Fetch user's available referral credits
+  // Fetch user's available credits
   useEffect(() => {
-    const fetchReferralCredits = async () => {
+    const fetchCredits = async () => {
       if (!user?.id) {
         setAvailableCredits(0);
         return;
@@ -85,12 +85,12 @@ export default function Checkout() {
         const balance = await getUserCredits();
         setAvailableCredits(balance);
       } catch (err) {
-        console.error("Error fetching referral credits:", err);
+        console.error("Error fetching credits:", err);
         setAvailableCredits(0);
       }
     };
 
-    fetchReferralCredits();
+    fetchCredits();
   }, [user?.id, getUserCredits]);
 
   const validateReferralCode = async (code: string) => {
@@ -202,7 +202,7 @@ export default function Checkout() {
     });
   };
 
-  const handleReferralCreditsToggle = (checked: boolean) => {
+  const handleCreditsToggle = (checked: boolean) => {
     setUseReferralCredits(checked);
     if (checked && availableCredits > 0) {
       // Apply up to the total amount (including tax) or available credits, whichever is smaller
@@ -211,8 +211,8 @@ export default function Checkout() {
       setReferralCreditsApplied(creditsToApply);
 
       toast({
-        title: "Referral credits applied!",
-        description: `You saved $${creditsToApply.toFixed(2)} using your referral credits.`,
+        title: "Credits applied!",
+        description: `You saved $${creditsToApply.toFixed(2)} using your credits.`,
       });
     } else {
       setReferralCreditsApplied(0);
@@ -243,12 +243,12 @@ export default function Checkout() {
     setIsProcessing(true);
 
     try {
-      // Use referral credits if applied
+      // Use credits if applied
       if (useReferralCredits && referralCreditsApplied > 0) {
         const success = await useCredits(referralCreditsApplied);
 
         if (!success) {
-          throw new Error("Failed to use referral credits");
+          throw new Error("Failed to use credits");
         }
       }
       // Check if cart contains custom orders
@@ -336,7 +336,7 @@ export default function Checkout() {
 
       const paymentMessage =
         total <= 0
-          ? "Paid with referral credits"
+          ? "Paid with credits"
           : `Payment ID: ${paymentDetails?.id || "Credits + PayPal"}`;
 
       toast({
@@ -500,7 +500,7 @@ export default function Checkout() {
                     )}
                     {referralCreditsApplied > 0 && (
                       <div className="flex justify-between text-sm text-blue-600">
-                        <span>Referral Credits</span>
+                        <span>Credits</span>
                         <span>-${referralCreditsApplied.toFixed(2)}</span>
                       </div>
                     )}
@@ -608,7 +608,7 @@ export default function Checkout() {
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <DollarSign className="w-5 h-5 mr-2" />
-                      Use Referral Credits
+                      Use Credits
                     </CardTitle>
                     <CardDescription>
                       You have ${availableCredits.toFixed(2)} in referral
@@ -622,7 +622,7 @@ export default function Checkout() {
                           <DollarSign className="w-5 h-5 text-green-600" />
                         </div>
                         <div>
-                          <p className="font-medium">Apply Referral Credits</p>
+                          <p className="font-medium">Apply Credits</p>
                           <p className="text-sm text-muted-foreground">
                             Use up to $
                             {Math.min(
@@ -640,7 +640,7 @@ export default function Checkout() {
                         <Checkbox
                           id="useCredits"
                           checked={useReferralCredits}
-                          onCheckedChange={handleReferralCreditsToggle}
+                          onCheckedChange={handleCreditsToggle}
                         />
                         <Label htmlFor="useCredits" className="cursor-pointer">
                           Use Credits
@@ -653,7 +653,7 @@ export default function Checkout() {
                           <CheckCircle className="w-4 h-4 text-blue-600" />
                           <span className="text-sm text-blue-700 dark:text-blue-400">
                             Applied ${referralCreditsApplied.toFixed(2)} in
-                            referral credits!
+                            credits!
                           </span>
                         </div>
                       </div>
@@ -749,7 +749,7 @@ export default function Checkout() {
                             <div className="flex items-center space-x-2 text-sm">
                               <CheckCircle className="w-4 h-4 text-green-600" />
                               <span className="text-green-700 dark:text-green-400 font-medium">
-                                Order total covered by referral credits!
+                                Order total covered by credits!
                               </span>
                             </div>
                             <p className="text-xs text-green-600 dark:text-green-500 mt-1">
