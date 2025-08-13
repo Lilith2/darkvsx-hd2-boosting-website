@@ -805,8 +805,10 @@ export default function Checkout() {
                             }}
                             createOrder={createPayPalOrder}
                             onApprove={async (data, actions) => {
-                              const details = await actions.order.capture();
-                              handlePayPalSuccess(details, data);
+                              if (actions.order) {
+                                const details = await actions.order.capture();
+                                handlePayPalSuccess(details, data);
+                              }
                             }}
                             onError={handlePayPalError}
                             onCancel={handlePayPalCancel}
