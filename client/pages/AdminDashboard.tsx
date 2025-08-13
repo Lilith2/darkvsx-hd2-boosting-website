@@ -1580,25 +1580,6 @@ export default function AdminDashboard() {
                               {order.status === "completed" && "🔄 Reopen"}
                             </Button>
 
-                            {order.status !== "completed" && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  const booster = prompt(
-                                    "Assign booster:",
-                                    order.assignedBooster || "",
-                                  );
-                                  if (booster !== null) {
-                                    assignBooster(order.id, booster);
-                                  }
-                                }}
-                                className="text-xs"
-                              >
-                                👤 {order.assignedBooster ? "Change" : "Assign"}{" "}
-                                Booster
-                              </Button>
-                            )}
 
                             {order.status === "in-progress" && (
                               <Button
