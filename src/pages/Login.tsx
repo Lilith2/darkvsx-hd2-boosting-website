@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +17,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Mail, Lock, Eye, EyeOff, CheckCircle, AlertTriangle, Zap } from "lucide-react";
 
 export default function Login() {
-  const [searchParams] = useSearchParams();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -27,13 +28,12 @@ export default function Login() {
   });
 
   const { login, isAdmin } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if (searchParams.get("confirmed") === "true") {
+    if (router.query.confirmed === "true") {
       setSuccess("Email confirmed! You can now sign in to your account.");
     }
-  }, [searchParams]);
+  }, [router.query]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,7 +143,7 @@ export default function Login() {
                   <span>Remember me</span>
                 </label>
                 <Link
-                  to="/forgot-password"
+                  href="/forgot-password"
                   className="text-sm text-primary hover:text-primary/80 hover:underline"
                 >
                   Forgot password?
@@ -174,7 +174,7 @@ export default function Login() {
               <div className="text-center text-sm text-muted-foreground">
                 Don't have an account?{" "}
                 <Link
-                  to="/register"
+                  href="/register"
                   className="text-primary hover:text-primary/80 font-medium hover:underline"
                 >
                   Create account
