@@ -270,7 +270,7 @@ export default function CustomOrder() {
           )
           .join(", ")}`,
         price: getTotalPrice(),
-        category: "Custom Orders",
+        category: "Level Boost" as const,
         image: "/placeholder.svg",
         features: orderItems.map(
           (item) =>
