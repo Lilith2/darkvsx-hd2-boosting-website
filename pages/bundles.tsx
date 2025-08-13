@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 
-const BundlesPage = dynamic(() => import("../src/pages/Bundles"), {
+const BundlesPage = dynamic(() => import("../client/pages/Bundles"), {
   ssr: false,
 });
 

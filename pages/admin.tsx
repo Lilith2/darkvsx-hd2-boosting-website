@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 
-const AdminDashboardPage = dynamic(() => import("../src/pages/AdminDashboard"), {
+const AdminDashboardPage = dynamic(() => import("../client/pages/AdminDashboard"), {
   ssr: false,
 });
 
