@@ -1363,9 +1363,11 @@ export default function AdminDashboard() {
                                   </p>
                                   <p className="font-medium text-primary text-xl">
                                     $
-                                    {orderTypeFilter === "custom"
+                                    {orderTypeFilter === "custom" && "total_amount" in order
                                       ? order.total_amount?.toFixed(2)
-                                      : order.totalAmount?.toFixed(2)}
+                                      : "totalAmount" in order
+                                        ? order.totalAmount?.toFixed(2)
+                                        : "0.00"}
                                   </p>
                                 </div>
                                 <div>
