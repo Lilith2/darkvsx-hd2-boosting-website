@@ -167,7 +167,7 @@ export function useCustomOrders() {
 
       // Create the main order
       const { data: orderResult, error: orderError } = await supabase
-        .from("custom_orders" as any)
+        .from("custom_orders")
         .insert({
           total_amount: totalAmount,
           special_instructions: orderData.special_instructions,
