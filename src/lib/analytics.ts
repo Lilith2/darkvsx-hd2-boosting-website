@@ -1,5 +1,10 @@
 // Analytics and performance tracking utilities
 
+// Declare global gtag function
+declare global {
+  function gtag(...args: any[]): void;
+}
+
 interface PerformanceMetrics {
   loadTime: number;
   domContentLoaded: number;
