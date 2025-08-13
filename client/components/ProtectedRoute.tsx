@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, AlertTriangle } from "lucide-react";
@@ -14,9 +15,16 @@ export function ProtectedRoute({
   requireAdmin = false,
 }: ProtectedRouteProps) {
   const { isAuthenticated, isAdmin } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, router]);
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return null;
   }
 
   if (requireAdmin && !isAdmin) {
