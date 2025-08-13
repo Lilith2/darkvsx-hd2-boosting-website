@@ -168,121 +168,121 @@ export default function Bundles() {
             </div>
           ) : (
             bundles.map((bundle) => (
-            <Card
-              key={bundle.id}
-              className={`relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
-                bundle.popular
-                  ? "border-2 border-primary shadow-lg bg-gradient-to-br from-card to-primary/5"
-                  : "border border-border/50 hover:border-primary/30 bg-gradient-to-br from-card to-card/80"
-              }`}
-            >
-              {bundle.badge && (
-                <div className="absolute top-4 right-4 z-10">
-                  <Badge
-                    className={
-                      bundle.popular
-                        ? "bg-gradient-to-r from-primary to-blue-600 text-white shadow-lg"
-                        : "bg-accent text-accent-foreground"
-                    }
-                  >
-                    {bundle.badge}
-                  </Badge>
-                </div>
-              )}
-
-              {bundle.popular && (
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-blue-600"></div>
-              )}
-
-              <CardHeader className="pb-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-2xl mb-2 group-hover:text-primary transition-colors">
-                      {bundle.name}
-                    </CardTitle>
-                    <CardDescription className="text-base leading-relaxed">
-                      {bundle.description}
-                    </CardDescription>
+              <Card
+                key={bundle.id}
+                className={`relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
+                  bundle.popular
+                    ? "border-2 border-primary shadow-lg bg-gradient-to-br from-card to-primary/5"
+                    : "border border-border/50 hover:border-primary/30 bg-gradient-to-br from-card to-card/80"
+                }`}
+              >
+                {bundle.badge && (
+                  <div className="absolute top-4 right-4 z-10">
+                    <Badge
+                      className={
+                        bundle.popular
+                          ? "bg-gradient-to-r from-primary to-blue-600 text-white shadow-lg"
+                          : "bg-accent text-accent-foreground"
+                      }
+                    >
+                      {bundle.badge}
+                    </Badge>
                   </div>
-                </div>
+                )}
 
-                <div className="flex items-baseline gap-3 mt-4">
-                  <span className="text-4xl font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
-                    ${bundle.discountedPrice}
-                  </span>
-                  <span className="text-lg text-muted-foreground line-through">
-                    ${bundle.originalPrice}
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className="text-green-600 border-green-600/20"
-                  >
-                    Save {bundle.discount}%
-                  </Badge>
-                </div>
-              </CardHeader>
+                {bundle.popular && (
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-blue-600"></div>
+                )}
 
-              <CardContent>
-                <div className="space-y-6">
-                  <div className="flex items-center text-sm">
-                    <Clock className="w-4 h-4 text-primary mr-2" />
-                    <span className="text-muted-foreground">
-                      Estimated completion:{" "}
-                    </span>
-                    <span className="font-medium text-primary ml-1">
-                      {bundle.duration}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold mb-3 text-sm">
-                      Included Services:
-                    </h4>
-                    <div className="space-y-1">
-                      {bundle.services.map((service, index) => (
-                        <div
-                          key={index}
-                          className="text-sm text-muted-foreground flex items-center"
-                        >
-                          <CheckCircle className="w-3 h-3 text-primary mr-2 flex-shrink-0" />
-                          {service}
-                        </div>
-                      ))}
+                <CardHeader className="pb-4">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle className="text-2xl mb-2 group-hover:text-primary transition-colors">
+                        {bundle.name}
+                      </CardTitle>
+                      <CardDescription className="text-base leading-relaxed">
+                        {bundle.description}
+                      </CardDescription>
                     </div>
                   </div>
 
-                  <div>
-                    <h4 className="font-semibold mb-3 text-sm">
-                      What You Get:
-                    </h4>
-                    <div className="space-y-1">
-                      {bundle.features.map((feature, index) => (
-                        <div
-                          key={index}
-                          className="text-sm text-muted-foreground flex items-center"
-                        >
-                          <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0" />
-                          {feature}
-                        </div>
-                      ))}
-                    </div>
+                  <div className="flex items-baseline gap-3 mt-4">
+                    <span className="text-4xl font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
+                      ${bundle.discountedPrice}
+                    </span>
+                    <span className="text-lg text-muted-foreground line-through">
+                      ${bundle.originalPrice}
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className="text-green-600 border-green-600/20"
+                    >
+                      Save {bundle.discount}%
+                    </Badge>
                   </div>
+                </CardHeader>
 
-                  <Button
-                    className={`w-full mt-6 group ${
-                      bundle.popular
-                        ? "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-lg"
-                        : "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-                    }`}
-                    onClick={() => handleAddBundle(bundle)}
-                  >
-                    <ShoppingCart className="w-4 h-4 mr-2" />
-                    Add Bundle to Cart
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div className="flex items-center text-sm">
+                      <Clock className="w-4 h-4 text-primary mr-2" />
+                      <span className="text-muted-foreground">
+                        Estimated completion:{" "}
+                      </span>
+                      <span className="font-medium text-primary ml-1">
+                        {bundle.duration}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-3 text-sm">
+                        Included Services:
+                      </h4>
+                      <div className="space-y-1">
+                        {bundle.services.map((service, index) => (
+                          <div
+                            key={index}
+                            className="text-sm text-muted-foreground flex items-center"
+                          >
+                            <CheckCircle className="w-3 h-3 text-primary mr-2 flex-shrink-0" />
+                            {service}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-3 text-sm">
+                        What You Get:
+                      </h4>
+                      <div className="space-y-1">
+                        {bundle.features.map((feature, index) => (
+                          <div
+                            key={index}
+                            className="text-sm text-muted-foreground flex items-center"
+                          >
+                            <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0" />
+                            {feature}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <Button
+                      className={`w-full mt-6 group ${
+                        bundle.popular
+                          ? "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-lg"
+                          : "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+                      }`}
+                      onClick={() => handleAddBundle(bundle)}
+                    >
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Add Bundle to Cart
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             ))
           )}
         </div>

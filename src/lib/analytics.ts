@@ -16,12 +16,12 @@ interface PerformanceMetrics {
 
 // Track page load performance
 export function trackPerformanceMetrics() {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   // Wait for page to load
-  window.addEventListener('load', () => {
+  window.addEventListener("load", () => {
     // Use requestIdleCallback to avoid blocking main thread
-    if ('requestIdleCallback' in window) {
+    if ("requestIdleCallback" in window) {
       requestIdleCallback(collectMetrics);
     } else {
       setTimeout(collectMetrics, 0);
@@ -31,22 +31,25 @@ export function trackPerformanceMetrics() {
 
 function collectMetrics() {
   try {
-    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    const paint = performance.getEntriesByType('paint');
-    
+    const navigation = performance.getEntriesByType(
+      "navigation",
+    )[0] as PerformanceNavigationTiming;
+    const paint = performance.getEntriesByType("paint");
+
     const metrics: Partial<PerformanceMetrics> = {
       loadTime: navigation.loadEventEnd - navigation.fetchStart,
-      domContentLoaded: navigation.domContentLoadedEventEnd - navigation.fetchStart,
+      domContentLoaded:
+        navigation.domContentLoadedEventEnd - navigation.fetchStart,
     };
 
     // First Contentful Paint
-    const fcp = paint.find(entry => entry.name === 'first-contentful-paint');
+    const fcp = paint.find((entry) => entry.name === "first-contentful-paint");
     if (fcp) {
       metrics.firstContentfulPaint = fcp.startTime;
     }
 
     // Largest Contentful Paint
-    if ('PerformanceObserver' in window) {
+    if ("PerformanceObserver" in window) {
       try {
         const lcpObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
@@ -54,9 +57,9 @@ function collectMetrics() {
           metrics.largestContentfulPaint = lastEntry.startTime;
           sendMetrics(metrics);
         });
-        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+        lcpObserver.observe({ entryTypes: ["largest-contentful-paint"] });
       } catch (e) {
-        console.warn('LCP observer not supported');
+        console.warn("LCP observer not supported");
       }
 
       // Cumulative Layout Shift
@@ -70,41 +73,42 @@ function collectMetrics() {
           }
           metrics.cumulativeLayoutShift = clsValue;
         });
-        clsObserver.observe({ entryTypes: ['layout-shift'] });
+        clsObserver.observe({ entryTypes: ["layout-shift"] });
       } catch (e) {
-        console.warn('CLS observer not supported');
+        console.warn("CLS observer not supported");
       }
 
       // First Input Delay
       try {
         const fidObserver = new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
-            metrics.firstInputDelay = (entry as any).processingStart - entry.startTime;
+            metrics.firstInputDelay =
+              (entry as any).processingStart - entry.startTime;
             sendMetrics(metrics);
           }
         });
-        fidObserver.observe({ entryTypes: ['first-input'] });
+        fidObserver.observe({ entryTypes: ["first-input"] });
       } catch (e) {
-        console.warn('FID observer not supported');
+        console.warn("FID observer not supported");
       }
     }
 
     // Send basic metrics immediately
     sendMetrics(metrics);
   } catch (error) {
-    console.warn('Performance metrics collection failed:', error);
+    console.warn("Performance metrics collection failed:", error);
   }
 }
 
 function sendMetrics(metrics: Partial<PerformanceMetrics>) {
   // Log to console in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Performance Metrics:', metrics);
+  if (process.env.NODE_ENV === "development") {
+    console.log("Performance Metrics:", metrics);
   }
 
   // Send to analytics service (Google Analytics, etc.)
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'page_performance', {
+  if (typeof gtag !== "undefined") {
+    gtag("event", "page_performance", {
       load_time: Math.round(metrics.loadTime || 0),
       dom_content_loaded: Math.round(metrics.domContentLoaded || 0),
       first_contentful_paint: Math.round(metrics.firstContentfulPaint || 0),
@@ -116,42 +120,45 @@ function sendMetrics(metrics: Partial<PerformanceMetrics>) {
 }
 
 // Track user interactions
-export function trackEvent(eventName: string, parameters?: Record<string, any>) {
-  if (typeof gtag !== 'undefined') {
-    gtag('event', eventName, parameters);
+export function trackEvent(
+  eventName: string,
+  parameters?: Record<string, any>,
+) {
+  if (typeof gtag !== "undefined") {
+    gtag("event", eventName, parameters);
   }
 
   // Also log in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Analytics Event:', eventName, parameters);
+  if (process.env.NODE_ENV === "development") {
+    console.log("Analytics Event:", eventName, parameters);
   }
 }
 
 // Track page views
 export function trackPageView(path: string, title?: string) {
-  if (typeof gtag !== 'undefined') {
-    gtag('config', 'GA_MEASUREMENT_ID', {
+  if (typeof gtag !== "undefined") {
+    gtag("config", "GA_MEASUREMENT_ID", {
       page_path: path,
       page_title: title || document.title,
     });
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Page View:', path, title);
+  if (process.env.NODE_ENV === "development") {
+    console.log("Page View:", path, title);
   }
 }
 
 // Track errors
 export function trackError(error: Error, context?: string) {
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'exception', {
+  if (typeof gtag !== "undefined") {
+    gtag("event", "exception", {
       description: error.message,
       fatal: false,
       context: context,
     });
   }
 
-  console.error('Tracked Error:', error, context);
+  console.error("Tracked Error:", error, context);
 }
 
 // Core Web Vitals scoring
@@ -168,7 +175,10 @@ export function getWebVitalsScore(metrics: Partial<PerformanceMetrics>) {
   };
 }
 
-function getScoreForMetric(value: number | undefined, thresholds: [number, number]): number {
+function getScoreForMetric(
+  value: number | undefined,
+  thresholds: [number, number],
+): number {
   if (value === undefined) return 0;
   if (value <= thresholds[0]) return 100;
   if (value <= thresholds[1]) return 75;
@@ -177,25 +187,25 @@ function getScoreForMetric(value: number | undefined, thresholds: [number, numbe
 
 // Initialize analytics
 export function initializeAnalytics() {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   // Track performance metrics
   trackPerformanceMetrics();
 
   // Track page visibility changes
-  document.addEventListener('visibilitychange', () => {
-    trackEvent('page_visibility_change', {
+  document.addEventListener("visibilitychange", () => {
+    trackEvent("page_visibility_change", {
       visibility_state: document.visibilityState,
     });
   });
 
   // Track errors
-  window.addEventListener('error', (event) => {
-    trackError(event.error, 'window_error');
+  window.addEventListener("error", (event) => {
+    trackError(event.error, "window_error");
   });
 
-  window.addEventListener('unhandledrejection', (event) => {
-    trackError(new Error(event.reason), 'unhandled_promise_rejection');
+  window.addEventListener("unhandledrejection", (event) => {
+    trackError(new Error(event.reason), "unhandled_promise_rejection");
   });
 }
 

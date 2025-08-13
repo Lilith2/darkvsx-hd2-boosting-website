@@ -80,7 +80,13 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
     features: service.features || [],
     active: service.active ?? true,
     popular: service.popular ?? false,
-    category: service.category as "Level Boost" | "Medals" | "Samples" | "Super Credits" | "Promotions" || "Level Boost",
+    category:
+      (service.category as
+        | "Level Boost"
+        | "Medals"
+        | "Samples"
+        | "Super Credits"
+        | "Promotions") || "Level Boost",
     createdAt: service.created_at || "",
     orders: service.orders_count || 0,
   });

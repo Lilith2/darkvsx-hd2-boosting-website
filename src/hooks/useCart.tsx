@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
-import { ServiceData } from './useServices';
+import { ServiceData } from "./useServices";
 
 interface CartItem {
   id: string;
@@ -30,24 +30,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = (service: ServiceData) => {
     setItems((prev) => {
-      const existing = prev.find(item => item.service.id === service.id);
+      const existing = prev.find((item) => item.service.id === service.id);
       if (existing) {
-        return prev.map(item =>
+        return prev.map((item) =>
           item.service.id === service.id
             ? { ...item, quantity: item.quantity + 1 }
-            : item
+            : item,
         );
       }
-      return [...prev, {
-        id: service.id,
-        service,
-        quantity: 1
-      }];
+      return [
+        ...prev,
+        {
+          id: service.id,
+          service,
+          quantity: 1,
+        },
+      ];
     });
   };
 
   const removeItem = (id: string) => {
-    setItems((prev) => prev.filter(item => item.service.id !== id));
+    setItems((prev) => prev.filter((item) => item.service.id !== id));
   };
 
   const updateQuantity = (id: string, quantity: number) => {
@@ -56,9 +59,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return;
     }
     setItems((prev) =>
-      prev.map(item =>
-        item.service.id === id ? { ...item, quantity } : item
-      )
+      prev.map((item) =>
+        item.service.id === id ? { ...item, quantity } : item,
+      ),
     );
   };
 
@@ -66,7 +69,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems([]);
   };
 
-  const total = items.reduce((sum, item) => sum + (item.service.price * item.quantity), 0);
+  const total = items.reduce(
+    (sum, item) => sum + item.service.price * item.quantity,
+    0,
+  );
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   // Aliases to match expected interface
