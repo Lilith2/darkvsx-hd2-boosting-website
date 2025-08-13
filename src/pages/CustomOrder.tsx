@@ -632,8 +632,23 @@ function ItemCard({ item, onAdd, currentQuantity }: ItemCardProps) {
             type="number"
             value={quantity}
             onChange={(e) => {
+              const inputValue = e.target.value;
+              // Allow empty input or any number during typing
+              if (inputValue === "" || inputValue === "0") {
+                setQuantity(item.minimum_quantity);
+                return;
+              }
+              const value = parseInt(inputValue);
+              if (!isNaN(value)) {
+                const maxQty = item.maximum_quantity || 999999;
+                // Only apply maximum constraint, not minimum during typing
+                setQuantity(Math.min(maxQty, value));
+              }
+            }}
+            onBlur={(e) => {
+              // Apply minimum constraint only when user finishes editing
               const value = parseInt(e.target.value) || item.minimum_quantity;
-              const maxQty = item.maximum_quantity || 999999; // Default to large number if null
+              const maxQty = item.maximum_quantity || 999999;
               setQuantity(
                 Math.max(item.minimum_quantity, Math.min(maxQty, value)),
               );
