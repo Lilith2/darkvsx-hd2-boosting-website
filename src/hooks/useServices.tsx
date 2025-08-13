@@ -29,6 +29,20 @@ export interface ServiceData {
     | "Promotions";
   createdAt: string;
   orders: number;
+  customOrderData?: {
+    items: Array<{
+      category: string;
+      item_name: string;
+      quantity: number;
+      price_per_unit: number;
+      total_price: number;
+      description: string;
+    }>;
+    notes?: string;
+    customer_email?: string;
+    customer_discord?: string;
+    special_instructions?: string;
+  };
 }
 
 interface ServicesContextType {
