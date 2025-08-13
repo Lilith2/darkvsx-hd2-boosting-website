@@ -729,7 +729,7 @@ export default function Account() {
                           </span>
                           <div className="flex space-x-2">
                             <Link
-                              to={`/order/${order.id}`}
+                              href={`/order/${order.id}`}
                               className="text-primary hover:underline"
                             >
                               Track Order
