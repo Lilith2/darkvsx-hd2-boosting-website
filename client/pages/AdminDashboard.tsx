@@ -1613,29 +1613,11 @@ export default function AdminDashboard() {
                                       message,
                                     });
 
-                                    // Send email notification
-                                    try {
-                                      await sendTicketReplyEmail({
-                                        to: order.customerEmail,
-                                        subject: `Order Update #${order.id.slice(-6)}`,
-                                        message: message,
-                                        ticketId: order.id,
-                                        customerName: order.customerName,
-                                      });
-
-                                      toast({
-                                        title: "Message sent!",
-                                        description: `Update sent to ${order.customerEmail}`,
-                                      });
-                                    } catch (emailError) {
-                                      console.error("Email error:", emailError);
-                                      toast({
-                                        title: "Message saved but email failed",
-                                        description:
-                                          "Message was saved but email notification failed.",
-                                        variant: "destructive",
-                                      });
-                                    }
+                                    // Message added successfully
+                                    toast({
+                                      title: "Message sent!",
+                                      description: `Order update message added successfully`,
+                                    });
                                   } catch (error) {
                                     console.error(
                                       "Error sending message:",
