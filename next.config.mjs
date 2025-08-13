@@ -29,6 +29,16 @@ const nextConfig = {
     "@supabase/functions-js",
   ],
   webpack: (config, { dev, isServer }) => {
+    // Speed up development builds
+    if (dev) {
+      config.optimization = {
+        ...config.optimization,
+        removeAvailableModules: false,
+        removeEmptyChunks: false,
+        splitChunks: false,
+      };
+    }
+
     // Handle ESM modules
     config.resolve.extensionAlias = {
       ".js": [".tsx", ".ts", ".jsx", ".js"],
@@ -51,15 +61,16 @@ const nextConfig = {
         encoding: false,
       };
 
-      // Fix webpack require issues
+      // Exclude heavy Supabase modules from client bundle
       config.externals = config.externals || [];
       config.externals.push({
         'utf-8-validate': 'commonjs utf-8-validate',
         'bufferutil': 'commonjs bufferutil',
+        '@supabase/realtime-js': 'commonjs @supabase/realtime-js',
       });
     }
 
-    // Optimize for static builds
+    // Optimize for production builds only
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
         chunks: "all",
