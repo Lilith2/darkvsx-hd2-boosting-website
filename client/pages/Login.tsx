@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +17,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Mail, Lock, Eye, EyeOff, CheckCircle, AlertTriangle, Zap } from "lucide-react";
 
 export default function Login() {
-  const [searchParams] = useSearchParams();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -27,13 +28,12 @@ export default function Login() {
   });
 
   const { login, isAdmin } = useAuth();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if (searchParams.get("confirmed") === "true") {
+    if (router.query.confirmed === "true") {
       setSuccess("Email confirmed! You can now sign in to your account.");
     }
-  }, [searchParams]);
+  }, [router.query]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
