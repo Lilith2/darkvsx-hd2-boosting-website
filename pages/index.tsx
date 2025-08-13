@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { SEOHead } from "../components/SEOHead";
 import { useServices } from "@/hooks/useServices";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
