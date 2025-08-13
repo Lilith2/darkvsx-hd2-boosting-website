@@ -402,7 +402,7 @@ export default function AdminDashboard() {
       const { supabase } = await import("@/integrations/supabase/client");
 
       if (isEditingPricing) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from("custom_pricing")
           .update(pricingData)
           .eq("id", isEditingPricing.id);
@@ -420,7 +420,7 @@ export default function AdminDashboard() {
           description: "Custom pricing has been updated successfully.",
         });
       } else {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from("custom_pricing")
           .insert([pricingData])
           .select()
@@ -453,7 +453,7 @@ export default function AdminDashboard() {
 
     try {
       const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("custom_pricing")
         .delete()
         .eq("id", id);
@@ -479,9 +479,9 @@ export default function AdminDashboard() {
   const togglePricingStatus = async (id: string, currentStatus: boolean) => {
     try {
       const { supabase } = await import("@/integrations/supabase/client");
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("custom_pricing")
-        .update({ is_active: !currentStatus })
+        .update({ active: !currentStatus })
         .eq("id", id);
 
       if (error) throw error;
