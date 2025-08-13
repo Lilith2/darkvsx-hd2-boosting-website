@@ -6,7 +6,6 @@ import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceModal } from "@/components/ServiceModal";
 import { BundleModal } from "@/components/BundleModal";
-import { TicketSystem } from "@/components/TicketSystem";
 import { PricingModal } from "@/components/PricingModal";
 import SimpleCustomOrders from "@/components/SimpleCustomOrders";
 import { Button } from "@/components/ui/button";
