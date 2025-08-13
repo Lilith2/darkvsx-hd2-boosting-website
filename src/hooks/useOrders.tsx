@@ -337,7 +337,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         );
         // Try again without the optional fields
         try {
-          const retryOrderData = {
+          const retryOrderData: any = {
             user_id: orderData.userId,
             customer_email: orderData.customerEmail,
             customer_name: orderData.customerName,
