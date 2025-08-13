@@ -133,13 +133,13 @@ export default function Checkout() {
         const codeUserId = code.replace("HD2BOOST-", "");
 
         // Check if this code belongs to the current user
-        const { data: users, error } = await supabase
-          .from("auth.users")
+        const { data: profiles, error } = await supabase
+          .from("profiles")
           .select("id")
           .ilike("id", `%${codeUserId}`)
           .limit(1);
 
-        if (!error && users && users.length > 0 && users[0].id === user.id) {
+        if (!error && profiles && profiles.length > 0 && profiles[0].id === user.id) {
           toast({
             title: "Invalid referral code",
             description: "You cannot use your own referral code.",
