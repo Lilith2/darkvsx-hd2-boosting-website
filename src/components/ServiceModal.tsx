@@ -56,7 +56,7 @@ export function ServiceModal({
         originalPrice: service.original_price?.toString() || "",
         duration: service.duration,
         difficulty: service.difficulty,
-        features: service.features.length > 0 ? service.features : [""],
+        features: service.features && service.features.length > 0 ? service.features : [""],
         active: service.active,
         popular: service.popular || false,
       });
