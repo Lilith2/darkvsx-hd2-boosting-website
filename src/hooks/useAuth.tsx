@@ -16,6 +16,7 @@ interface User {
   email: string;
   role: "user" | "admin";
   discord_username?: string;
+  created_at?: string;
 }
 
 interface AuthContextType {
