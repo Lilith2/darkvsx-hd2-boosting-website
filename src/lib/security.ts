@@ -267,6 +267,9 @@ export function initializeSecurity(): void {
   // Validate environment
   validateEnvironment();
 
+  // Only run browser-specific code on client side
+  if (typeof window === 'undefined') return;
+
   // Set up global error handling for security events
   window.addEventListener("error", (event) => {
     auditLogger.log({
