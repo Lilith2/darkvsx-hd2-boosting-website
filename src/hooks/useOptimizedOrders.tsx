@@ -110,7 +110,7 @@ export function useOptimizedOrders() {
           .order("created_at", { ascending: true });
 
         if (error) throw error;
-        return data || [];
+        return data?.map(mapOrderMessageFromSupabase) || [];
       },
       enabled: !!orderId,
       staleTime: 30 * 1000, // 30 seconds
