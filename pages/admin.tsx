@@ -6,18 +6,20 @@ import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useToast } from "@/hooks/use-toast";
 import dynamic from 'next/dynamic';
 
+import { LoadingSpinner } from "../components/LoadingSpinner";
+
 // Dynamically import heavy components
 const ServiceModal = dynamic(() => import("@/components/ServiceModal").then(mod => ({ default: mod.ServiceModal })), {
-  loading: () => <div>Loading...</div>
+  loading: () => <LoadingSpinner className="p-4" />
 });
 const BundleModal = dynamic(() => import("@/components/BundleModal").then(mod => ({ default: mod.BundleModal })), {
-  loading: () => <div>Loading...</div>
+  loading: () => <LoadingSpinner className="p-4" />
 });
 const PricingModal = dynamic(() => import("@/components/PricingModal").then(mod => ({ default: mod.PricingModal })), {
-  loading: () => <div>Loading...</div>
+  loading: () => <LoadingSpinner className="p-4" />
 });
 const SimpleCustomOrders = dynamic(() => import("@/components/SimpleCustomOrders"), {
-  loading: () => <div>Loading...</div>
+  loading: () => <LoadingSpinner className="p-4" />
 });
 import { Button } from "@/components/ui/button";
 import {
