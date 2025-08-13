@@ -287,7 +287,7 @@ export default function CustomOrder() {
           items: orderItems,
           notes: orderNotes,
           customer_email: user?.email,
-          customer_discord: null, // Could be added to user profile later
+          customer_discord: undefined, // Could be added to user profile later
           special_instructions: orderNotes,
         },
       };
