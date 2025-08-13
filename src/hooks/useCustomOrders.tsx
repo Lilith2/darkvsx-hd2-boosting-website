@@ -188,7 +188,7 @@ export function useCustomOrders() {
       }));
 
       const { error: itemsError } = await supabase
-        .from("custom_order_items" as any)
+        .from("custom_order_items")
         .insert(orderItems);
 
       if (itemsError) {
