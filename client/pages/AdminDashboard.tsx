@@ -69,7 +69,6 @@ export default function AdminDashboard() {
     orders,
     updateOrderStatus,
     addOrderMessage,
-    assignBooster,
     updateOrderProgress,
     loading,
     error,
