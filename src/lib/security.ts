@@ -247,12 +247,15 @@ export function validateSecurityHeaders(headers: Headers): boolean {
 // Environment variable validation
 export function validateEnvironment(): void {
   const requiredEnvVars = [
-    "VITE_SUPABASE_URL",
-    "VITE_SUPABASE_ANON_KEY",
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     "VITE_PAYPAL_CLIENT_ID",
   ];
 
-  const missing = requiredEnvVars.filter((envVar) => !import.meta.env[envVar]);
+  const missing = requiredEnvVars.filter((envVar) => {
+    const value = typeof window !== 'undefined' ? (window as any).process?.env?.[envVar] : process.env[envVar];
+    return !value;
+  });
 
   if (missing.length > 0) {
     console.warn("Missing environment variables:", missing);
