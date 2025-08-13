@@ -34,6 +34,30 @@ const nextConfig = {
       ".mjs": [".mts", ".mjs"],
     };
 
+    // Fix Supabase realtime issues
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+      crypto: false,
+    };
+
+    // Ignore problematic modules on the client side
+    if (!isServer) {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        encoding: false,
+      };
+
+      // Fix webpack require issues
+      config.externals = config.externals || [];
+      config.externals.push({
+        'utf-8-validate': 'commonjs utf-8-validate',
+        'bufferutil': 'commonjs bufferutil',
+      });
+    }
+
     // Optimize for static builds
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
