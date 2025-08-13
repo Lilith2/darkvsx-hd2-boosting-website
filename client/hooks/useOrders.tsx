@@ -508,7 +508,6 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         getOrder,
         updateOrderStatus,
         addOrderMessage,
-        assignBooster,
         updateOrderProgress,
         refreshOrders,
       }}
