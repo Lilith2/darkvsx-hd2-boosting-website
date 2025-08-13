@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { useServices } from "@/hooks/useServices";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
@@ -421,7 +421,7 @@ export default function Index() {
             className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 px-8"
             asChild
           >
-            <Link to="/custom-order">
+            <Link href="/custom-order">
               Build Custom Order
               <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
