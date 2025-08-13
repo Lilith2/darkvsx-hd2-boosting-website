@@ -135,7 +135,7 @@ export function EnhancedNavbar() {
               return (
                 <Link
                   key={item.name}
-                  to={item.href}
+                  href={item.href}
                   className={cn(
                     "relative px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2",
                     isActive
@@ -190,7 +190,7 @@ export function EnhancedNavbar() {
 
             {/* Cart */}
             <Button variant="ghost" size="icon" asChild className="relative">
-              <Link to="/cart">
+              <Link href="/cart">
                 <ShoppingCart className="w-4 h-4" />
                 {cartItemCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary">
@@ -219,20 +219,20 @@ export function EnhancedNavbar() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to="/account" className="flex items-center">
+                    <Link href="/account" className="flex items-center">
                       <User className="w-4 h-4 mr-2" />
                       Account
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/order-tracking" className="flex items-center">
+                    <Link href="/order-tracking" className="flex items-center">
                       <Package className="w-4 h-4 mr-2" />
                       Orders
                     </Link>
                   </DropdownMenuItem>
                   {user?.role === "admin" && (
                     <DropdownMenuItem asChild>
-                      <Link to="/admin" className="flex items-center">
+                      <Link href="/admin" className="flex items-center">
                         <Settings className="w-4 h-4 mr-2" />
                         Admin Dashboard
                       </Link>
@@ -248,10 +248,10 @@ export function EnhancedNavbar() {
             ) : (
               <div className="flex items-center space-x-2">
                 <Button variant="ghost" size="sm" asChild>
-                  <Link to="/login">Login</Link>
+                  <Link href="/login">Login</Link>
                 </Button>
                 <Button size="sm" asChild>
-                  <Link to="/register">Sign Up</Link>
+                  <Link href="/register">Sign Up</Link>
                 </Button>
               </div>
             )}
@@ -271,7 +271,7 @@ export function EnhancedNavbar() {
                   {navigation.map((item) => (
                     <Link
                       key={item.name}
-                      to={item.href}
+                      href={item.href}
                       className={cn(
                         "flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                         isActivePath(item.href)
