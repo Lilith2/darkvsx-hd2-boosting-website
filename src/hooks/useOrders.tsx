@@ -272,8 +272,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       const insertData = { ...baseOrderData };
 
       // Add transaction ID for PayPal tracking
-      if (orderData.transactionId) {
-        insertData.transaction_id = orderData.transactionId;
+      if ((orderData as any).transactionId) {
+        (insertData as any).transaction_id = (orderData as any).transactionId;
       }
 
       // Add IP address for security/chargeback protection
