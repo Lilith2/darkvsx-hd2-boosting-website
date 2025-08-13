@@ -643,13 +643,12 @@ export default function AdminDashboard() {
 
         {/* Main Content - Simplified Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="bundles">Bundles</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="pricing">Pricing</TabsTrigger>
-            <TabsTrigger value="tickets">Support</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
