@@ -87,7 +87,7 @@ export default function AdminDashboard() {
     const fetchCustomPricing = async () => {
       try {
         const { supabase } = await import("@/integrations/supabase/client");
-        const { data, error } = await supabase
+        const { data, error } = await (supabase as any)
           .from("custom_pricing")
           .select("*")
           .order("category", { ascending: true });
