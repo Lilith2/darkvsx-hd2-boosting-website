@@ -33,7 +33,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
+          <Link href="/" className="flex items-center space-x-3">
             <div className="w-10 h-10">
               <img
                 src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64"
@@ -52,25 +52,25 @@ export function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link
-              to="/#services"
+              href="/#services"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
             >
               Services
             </Link>
             <Link
-              to="/bundles"
+              href="/bundles"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
             >
               Bundles
             </Link>
             <Link
-              to="/custom-order"
+              href="/custom-order"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
             >
               Custom Order
             </Link>
             <Link
-              to="/faq"
+              href="/faq"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
             >
               FAQ
@@ -83,20 +83,20 @@ export function Navbar() {
               <>
                 {isAdmin && (
                   <Button variant="ghost" size="sm" asChild>
-                    <Link to="/admin">
+                    <Link href="/admin">
                       <User className="w-4 h-4 mr-2" />
                       Admin
                     </Link>
                   </Button>
                 )}
                 <Button variant="ghost" size="sm" asChild>
-                  <Link to="/account">
+                  <Link href="/account">
                     <User className="w-4 h-4 mr-2" />
                     Account
                   </Link>
                 </Button>
                 <Button variant="ghost" size="sm" asChild className="relative">
-                  <Link to="/cart">
+                  <Link href="/cart">
                     <ShoppingCart className="w-4 h-4 mr-2" />
                     Cart
                     {cartItemCount > 0 && (
@@ -116,7 +116,7 @@ export function Navbar() {
             ) : (
               <>
                 <Button variant="ghost" size="sm" asChild>
-                  <Link to="/cart">
+                  <Link href="/cart">
                     <ShoppingCart className="w-4 h-4 mr-2" />
                     Cart
                     {cartItemCount > 0 && (
@@ -127,7 +127,7 @@ export function Navbar() {
                   </Link>
                 </Button>
                 <Button variant="outline" size="sm" asChild>
-                  <Link to="/login">
+                  <Link href="/login">
                     <LogIn className="w-4 h-4 mr-2" />
                     Login
                   </Link>
@@ -157,21 +157,21 @@ export function Navbar() {
           <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
             <div className="px-2 pt-2 pb-3 space-y-1">
               <Link
-                to="/#services"
+                href="/#services"
                 className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Services
               </Link>
               <Link
-                to="/bundles"
+                href="/bundles"
                 className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Bundles
               </Link>
               <Link
-                to="/faq"
+                href="/faq"
                 className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -183,7 +183,7 @@ export function Navbar() {
                   <>
                     {isAdmin && (
                       <Link
-                        to="/admin"
+                        href="/admin"
                         className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
                         onClick={() => setMobileMenuOpen(false)}
                       >
@@ -191,14 +191,14 @@ export function Navbar() {
                       </Link>
                     )}
                     <Link
-                      to="/account"
+                      href="/account"
                       className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Account
                     </Link>
                     <Link
-                      to="/cart"
+                      href="/cart"
                       className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
                       onClick={() => setMobileMenuOpen(false)}
                     >
@@ -220,14 +220,14 @@ export function Navbar() {
                 ) : (
                   <>
                     <Link
-                      to="/cart"
+                      href="/cart"
                       className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Cart ({cartItemCount})
                     </Link>
                     <Link
-                      to="/login"
+                      href="/login"
                       className="block px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
                       onClick={() => setMobileMenuOpen(false)}
                     >
