@@ -1306,8 +1306,8 @@ export default function AdminDashboard() {
                       <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
                       <h3 className="text-lg font-semibold mb-2">
                         {orderFilter === "all"
-                          ? `No ${orderTypeFilter} orders yet`
-                          : `No ${orderFilter} ${orderTypeFilter} orders`}
+                          ? "No orders yet"
+                          : `No ${orderFilter} orders`}
                       </h3>
                       <p className="text-muted-foreground">
                         {orderFilter === "all"
