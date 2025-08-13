@@ -154,15 +154,36 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       if (error) {
         // Handle specific known errors
         if (error.code === "PGRST116") {
-          console.warn("getUserCredits: No rows returned (user profile not found)");
+          console.warn("getUserCredits: No rows returned (user profile not found), attempting to create profile");
+          // Try to create a profile for the user
+          try {
+            const { error: insertError } = await supabase
+              .from("profiles")
+              .insert([{
+                id: user.id,
+                email: authUser.email,
+                credit_balance: 0,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              }]);
+
+            if (!insertError) {
+              console.log("getUserCredits: Profile created successfully");
+              return 0; // New profile starts with 0 credits
+            } else {
+              console.error("getUserCredits: Failed to create profile:", insertError);
+            }
+          } catch (createError) {
+            console.error("getUserCredits: Error creating profile:", createError);
+          }
           return 0;
         }
         if (error.message?.includes("column") || error.message?.includes("does not exist")) {
           console.warn("getUserCredits: Credit balance column does not exist");
           return 0;
         }
-        if (error.message?.includes("JWT")) {
-          console.warn("getUserCredits: Authentication issue");
+        if (error.message?.includes("JWT") || error.message?.includes("auth")) {
+          console.warn("getUserCredits: Authentication issue:", error.message);
           return 0;
         }
         throw error;
