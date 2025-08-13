@@ -28,7 +28,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  const addItem = (service: { id: string; title: string; price: number; duration?: string; difficulty?: string }) => {
+  const addItem = (service: ServiceData) => {
     setItems((prev) => {
       const existing = prev.find(item => item.service.id === service.id);
       if (existing) {
