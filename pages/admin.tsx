@@ -4,23 +4,44 @@ import { useBundles } from "@/hooks/useBundles";
 import { useOrders } from "@/hooks/useOrders";
 import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useToast } from "@/hooks/use-toast";
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 
 import { LoadingSpinner } from "../components/LoadingSpinner";
 
 // Dynamically import heavy components
-const ServiceModal = dynamic(() => import("@/components/ServiceModal").then(mod => ({ default: mod.ServiceModal })), {
-  loading: () => <LoadingSpinner className="p-4" />
-});
-const BundleModal = dynamic(() => import("@/components/BundleModal").then(mod => ({ default: mod.BundleModal })), {
-  loading: () => <LoadingSpinner className="p-4" />
-});
-const PricingModal = dynamic(() => import("@/components/PricingModal").then(mod => ({ default: mod.PricingModal })), {
-  loading: () => <LoadingSpinner className="p-4" />
-});
-const SimpleCustomOrders = dynamic(() => import("@/components/SimpleCustomOrders"), {
-  loading: () => <LoadingSpinner className="p-4" />
-});
+const ServiceModal = dynamic(
+  () =>
+    import("@/components/ServiceModal").then((mod) => ({
+      default: mod.ServiceModal,
+    })),
+  {
+    loading: () => <LoadingSpinner className="p-4" />,
+  },
+);
+const BundleModal = dynamic(
+  () =>
+    import("@/components/BundleModal").then((mod) => ({
+      default: mod.BundleModal,
+    })),
+  {
+    loading: () => <LoadingSpinner className="p-4" />,
+  },
+);
+const PricingModal = dynamic(
+  () =>
+    import("@/components/PricingModal").then((mod) => ({
+      default: mod.PricingModal,
+    })),
+  {
+    loading: () => <LoadingSpinner className="p-4" />,
+  },
+);
+const SimpleCustomOrders = dynamic(
+  () => import("@/components/SimpleCustomOrders"),
+  {
+    loading: () => <LoadingSpinner className="p-4" />,
+  },
+);
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -1314,20 +1335,25 @@ export default function AdminDashboard() {
                                       ? order.items?.map((item, idx) => (
                                           <span key={item.id}>
                                             {item.item_name} ({item.quantity})
-                                            {idx < order.items.length - 1 && ", "}
+                                            {idx < order.items.length - 1 &&
+                                              ", "}
                                           </span>
                                         ))
                                       : order.services?.map((s, idx) => (
                                           <span key={s.id}>
                                             {s.name}
-                                            {s.quantity > 1 && ` (x${s.quantity})`}
-                                            {idx < order.services.length - 1 && ", "}
+                                            {s.quantity > 1 &&
+                                              ` (x${s.quantity})`}
+                                            {idx < order.services.length - 1 &&
+                                              ", "}
                                           </span>
                                         ))}
                                   </div>
                                 </div>
                                 <div>
-                                  <p className="text-muted-foreground">Payment</p>
+                                  <p className="text-muted-foreground">
+                                    Payment
+                                  </p>
                                   <p className="font-medium text-primary text-xl">
                                     $
                                     {orderTypeFilter === "custom"
@@ -1336,7 +1362,9 @@ export default function AdminDashboard() {
                                   </p>
                                 </div>
                                 <div>
-                                  <p className="text-muted-foreground">Created</p>
+                                  <p className="text-muted-foreground">
+                                    Created
+                                  </p>
                                   <p className="font-medium">
                                     {new Date(
                                       orderTypeFilter === "custom"
@@ -1368,9 +1396,12 @@ export default function AdminDashboard() {
                               className="text-xs"
                             >
                               {order.status === "pending" && "Start Processing"}
-                              {order.status === "processing" && "Mark In Progress"}
-                              {order.status === "in-progress" && "Mark Completed"}
-                              {order.status === "completed" && "Reset to Pending"}
+                              {order.status === "processing" &&
+                                "Mark In Progress"}
+                              {order.status === "in-progress" &&
+                                "Mark Completed"}
+                              {order.status === "completed" &&
+                                "Reset to Pending"}
                             </Button>
                           </div>
                         </div>
