@@ -1948,7 +1948,7 @@ export default function AdminDashboard() {
 
                     {selectedOrderForResume.referralCreditsUsed > 0 && (
                       <div className="flex justify-between items-center text-blue-600">
-                        <span>Referral Credits Used</span>
+                        <span>Credits Used</span>
                         <span className="font-medium">
                           -$
                           {selectedOrderForResume.referralCreditsUsed.toFixed(
