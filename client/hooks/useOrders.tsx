@@ -469,35 +469,6 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const assignBooster = async (orderId: string, boosterName: string) => {
-    try {
-      const { error } = await supabase
-        .from("orders")
-        .update({
-          assigned_booster: boosterName,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", orderId);
-
-      if (error) throw error;
-
-      // Add tracking entry
-      await supabase.from("order_tracking").insert([
-        {
-          order_id: orderId,
-          status: "Booster Assigned",
-          description: `${boosterName} has been assigned to your order`,
-        },
-      ]);
-
-      await refreshOrders();
-    } catch (err: any) {
-      console.error("Error assigning booster:", err);
-      throw new Error(
-        err?.message || err?.error_description || "Failed to assign booster",
-      );
-    }
-  };
 
   const updateOrderProgress = async (orderId: string, progress: number) => {
     try {
