@@ -96,12 +96,12 @@ export function EnhancedNavbar() {
 
   const isActivePath = useCallback(
     (path: string) => {
-      if (path === "/" && location.pathname !== "/") return false;
+      if (path === "/" && router.pathname !== "/") return false;
       return (
-        location.pathname === path || location.pathname.startsWith(path + "/")
+        router.pathname === path || router.pathname.startsWith(path + "/")
       );
     },
-    [location.pathname],
+    [router.pathname],
   );
 
   return (
