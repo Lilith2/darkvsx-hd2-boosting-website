@@ -206,6 +206,9 @@ export default function AdminDashboard() {
 
     let filteredList = allOrders.filter((order) => {
       if (orderFilter === "all") return true;
+      if (orderFilter === "active") {
+        return order.status === "processing" || order.status === "in-progress";
+      }
       return order.status === orderFilter;
     });
 
