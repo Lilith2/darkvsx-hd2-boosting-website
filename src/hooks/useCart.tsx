@@ -40,13 +40,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, {
         id: service.id,
-        service: {
-          id: service.id,
-          title: service.title,
-          price: service.price,
-          duration: service.duration,
-          difficulty: service.difficulty
-        },
+        service,
         quantity: 1
       }];
     });
