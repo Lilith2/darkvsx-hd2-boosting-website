@@ -155,8 +155,8 @@ export default function AdminDashboard() {
     customOrders.map((order) => order.user_id),
   );
   const allCustomers = new Set([
-    ...regularOrderCustomers,
-    ...customOrderCustomers,
+    ...Array.from(regularOrderCustomers),
+    ...Array.from(customOrderCustomers),
   ]);
   const totalCustomers = allCustomers.size;
 
