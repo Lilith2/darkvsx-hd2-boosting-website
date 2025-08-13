@@ -548,6 +548,18 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// Helper function to map Supabase data to OrderMessage interface
+function mapOrderMessageFromSupabase(data: any): OrderMessage {
+  return {
+    id: data.id,
+    order_id: data.order_id || "",
+    from: data.from,
+    message: data.message,
+    is_read: data.is_read ?? false,
+    created_at: data.created_at || new Date().toISOString(),
+  };
+}
+
 export function useOrders() {
   const context = useContext(OrdersContext);
   if (context === undefined) {
