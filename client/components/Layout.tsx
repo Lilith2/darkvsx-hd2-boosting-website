@@ -12,7 +12,7 @@ export function Layout({ children, showNavbar = true, showFooter = true }: Layou
   return (
     <div className="min-h-screen flex flex-col">
       {showNavbar && <DynamicNavbar />}
-      <main className={`flex-1 ${showNavbar ? 'pt-16' : ''}`}>
+      <main className="flex-1">
         {children}
       </main>
       {showFooter && <Footer />}
