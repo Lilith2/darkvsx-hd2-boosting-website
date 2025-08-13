@@ -228,7 +228,7 @@ export function useCustomOrders() {
   ) => {
     try {
       const { error } = await supabase
-        .from("custom_orders" as any)
+        .from("custom_orders")
         .update({ status })
         .eq("id", orderId);
 
@@ -267,7 +267,7 @@ export function useCustomOrders() {
       }
 
       const { error } = await supabase
-        .from("custom_orders" as any)
+        .from("custom_orders")
         .update(updates)
         .eq("id", orderId);
 
@@ -297,7 +297,7 @@ export function useCustomOrders() {
   const updateAdminNotes = async (orderId: string, notes: string) => {
     try {
       const { error } = await supabase
-        .from("custom_orders" as any)
+        .from("custom_orders")
         .update({ admin_notes: notes })
         .eq("id", orderId);
 
@@ -326,7 +326,7 @@ export function useCustomOrders() {
   const deleteOrder = async (orderId: string) => {
     try {
       const { error } = await supabase
-        .from("custom_orders" as any)
+        .from("custom_orders")
         .delete()
         .eq("id", orderId);
 
@@ -367,7 +367,7 @@ export function useCustomOrders() {
         {
           event: "*",
           schema: "public",
-          table: "custom_orders" as any,
+          table: "custom_orders",
         },
         () => {
           fetchOrders();
