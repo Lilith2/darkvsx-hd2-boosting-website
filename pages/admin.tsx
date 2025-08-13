@@ -1317,14 +1317,16 @@ export default function AdminDashboard() {
                                     Customer
                                   </p>
                                   <p className="font-medium">
-                                    {orderTypeFilter === "custom" && "customer_email" in order
+                                    {orderTypeFilter === "custom" &&
+                                    "customer_email" in order
                                       ? order.customer_email || "N/A"
                                       : "customerName" in order
                                         ? order.customerName
                                         : "N/A"}
                                   </p>
                                   <p className="text-xs text-muted-foreground">
-                                    {orderTypeFilter === "custom" && "customer_email" in order
+                                    {orderTypeFilter === "custom" &&
+                                    "customer_email" in order
                                       ? order.customer_email || "N/A"
                                       : "customerEmail" in order
                                         ? order.customerEmail
@@ -1336,7 +1338,8 @@ export default function AdminDashboard() {
                                     Services
                                   </p>
                                   <div className="font-medium">
-                                    {orderTypeFilter === "custom" && "items" in order
+                                    {orderTypeFilter === "custom" &&
+                                    "items" in order
                                       ? order.items?.map((item, idx) => (
                                           <span key={item.id}>
                                             {item.item_name} ({item.quantity})
@@ -1350,7 +1353,8 @@ export default function AdminDashboard() {
                                               {s.name}
                                               {s.quantity > 1 &&
                                                 ` (x${s.quantity})`}
-                                              {idx < order.services.length - 1 &&
+                                              {idx <
+                                                order.services.length - 1 &&
                                                 ", "}
                                             </span>
                                           ))
@@ -1363,7 +1367,8 @@ export default function AdminDashboard() {
                                   </p>
                                   <p className="font-medium text-primary text-xl">
                                     $
-                                    {orderTypeFilter === "custom" && "total_amount" in order
+                                    {orderTypeFilter === "custom" &&
+                                    "total_amount" in order
                                       ? order.total_amount?.toFixed(2)
                                       : "totalAmount" in order
                                         ? order.totalAmount?.toFixed(2)
@@ -1376,7 +1381,8 @@ export default function AdminDashboard() {
                                   </p>
                                   <p className="font-medium">
                                     {new Date(
-                                      orderTypeFilter === "custom" && "created_at" in order
+                                      orderTypeFilter === "custom" &&
+                                      "created_at" in order
                                         ? order.created_at
                                         : "createdAt" in order
                                           ? order.createdAt
