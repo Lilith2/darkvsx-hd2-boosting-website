@@ -183,7 +183,7 @@ export function useCustomOrders() {
 
       // Create order items
       const orderItems = orderData.items.map((item) => ({
-        order_id: (orderResult as any).id,
+        order_id: orderResult.id,
         ...item,
       }));
 
