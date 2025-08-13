@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -25,8 +26,7 @@ import {
 } from "lucide-react";
 
 export default function EmailConfirmation() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { toast } = useToast();
 
   const [isResending, setIsResending] = useState(false);
@@ -36,8 +36,8 @@ export default function EmailConfirmation() {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
 
-  const email = searchParams.get("email") || "";
-  const isSignUp = searchParams.get("type") === "signup";
+  const email = (router.query.email as string) || "";
+  const isSignUp = router.query.type === "signup";
 
   // Timer for resend cooldown
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function EmailConfirmation() {
             description: "Your account has been verified successfully.",
           });
           setTimeout(() => {
-            navigate("/login?confirmed=true");
+            router.push("/login?confirmed=true");
           }, 2000);
         }
       } catch (error) {
@@ -87,7 +87,7 @@ export default function EmailConfirmation() {
     const interval = setInterval(checkConfirmation, 5000);
 
     return () => clearInterval(interval);
-  }, [navigate, toast]);
+  }, [router, toast]);
 
   const handleResendEmail = async () => {
     if (!email || !canResend) return;
@@ -141,7 +141,7 @@ export default function EmailConfirmation() {
           description: "Your account has been verified successfully.",
         });
         setTimeout(() => {
-          navigate("/login?confirmed=true");
+          router.push("/login?confirmed=true");
         }, 2000);
       } else {
         toast({
@@ -326,7 +326,7 @@ export default function EmailConfirmation() {
             {/* Back to login */}
             <div className="border-t pt-4 text-center">
               <Link
-                to="/login"
+                href="/login"
                 className="inline-flex items-center text-sm text-muted-foreground hover:text-primary"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />
