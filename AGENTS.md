@@ -30,24 +30,26 @@ shared/                   # Types used by both client & server
 
 ## Key Features
 
-## SPA Routing System
+## Next.js Routing System
 
-The routing system is powered by React Router 6:
+The routing system is powered by Next.js file-based routing:
 
-- `client/pages/Index.tsx` represents the home page.
-- Routes are defined in `client/App.tsx` using the `react-router-dom` import
-- Route files are located in the `client/pages/` directory
+- `pages/index.tsx` represents the home page
+- Route files are located in the `pages/` directory
+- Dynamic routes use bracket notation (e.g., `pages/order/[orderId].tsx`)
+- Client-side components are in `client/pages/` and `src/pages/`
 
-For example, routes can be defined with:
+For example, dynamic route parameter access:
 
 ```typescript
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useRouter } from "next/router";
 
-<Routes>
-  <Route path="/" element={<Index />} />
-  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-  <Route path="*" element={<NotFound />} />
-</Routes>;
+export default function OrderPage() {
+  const router = useRouter();
+  const { orderId } = router.query as { orderId: string };
+
+  return <div>Order ID: {orderId}</div>;
+}
 ```
 
 ### Styling System
