@@ -1438,7 +1438,6 @@ export default function AdminDashboard() {
           onClose={() => setIsBundleModalOpen(false)}
           onSave={handleSaveBundle}
           bundle={selectedBundle}
-          services={services}
         />
 
         <PricingModal
