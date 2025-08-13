@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Github,
@@ -54,25 +54,25 @@ export function Footer() {
             <h3 className="text-lg font-semibold">Company</h3>
             <div className="space-y-2">
               <Link
-                to="/faq"
+                href="/faq"
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 FAQ
               </Link>
               <Link
-                to="/contact"
+                href="/contact"
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Contact
               </Link>
               <Link
-                to="/terms"
+                href="/terms"
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Terms of Service
               </Link>
               <Link
-                to="/privacy"
+                href="/privacy"
                 className="block text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Privacy Policy
