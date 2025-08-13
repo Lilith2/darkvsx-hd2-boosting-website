@@ -46,10 +46,9 @@ export function SecurityProvider({ children }: { children: ReactNode }) {
   };
 
   const isSecureEnvironment =
-    typeof window !== 'undefined' && (
-      window.location.protocol === "https:" ||
-      window.location.hostname === "localhost"
-    );
+    typeof window !== "undefined" &&
+    (window.location.protocol === "https:" ||
+      window.location.hostname === "localhost");
 
   return (
     <SecurityContext.Provider

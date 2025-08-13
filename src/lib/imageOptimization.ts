@@ -90,7 +90,7 @@ export const lazyImageObserver = new LazyImageObserver();
 export function trackImagePerformance(src: string, startTime: number) {
   const duration = performance.now() - startTime;
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === "development") {
     console.log(`Image loaded: ${src} in ${duration.toFixed(2)}ms`);
   }
 

@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  output: "export",
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
-  distDir: 'dist',
+  distDir: "dist",
   images: {
     unoptimized: true,
   },
@@ -11,34 +11,34 @@ const nextConfig = {
     esmExternals: true,
   },
   transpilePackages: [
-    '@supabase/supabase-js',
-    '@supabase/auth-js',
-    '@supabase/postgrest-js',
-    '@supabase/storage-js',
-    '@supabase/realtime-js',
-    '@supabase/functions-js',
+    "@supabase/supabase-js",
+    "@supabase/auth-js",
+    "@supabase/postgrest-js",
+    "@supabase/storage-js",
+    "@supabase/realtime-js",
+    "@supabase/functions-js",
   ],
   webpack: (config, { dev, isServer }) => {
     // Handle ESM modules
     config.resolve.extensionAlias = {
-      '.js': ['.tsx', '.ts', '.jsx', '.js'],
-      '.mjs': ['.mts', '.mjs'],
+      ".js": [".tsx", ".ts", ".jsx", ".js"],
+      ".mjs": [".mts", ".mjs"],
     };
 
     // Optimize for static builds
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
-        chunks: 'all',
+        chunks: "all",
         cacheGroups: {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
+            name: "vendors",
+            chunks: "all",
           },
           common: {
-            name: 'common',
+            name: "common",
             minChunks: 2,
-            chunks: 'all',
+            chunks: "all",
             enforce: true,
           },
         },

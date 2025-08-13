@@ -21,16 +21,16 @@ export default function NotFound() {
           <h1 className="text-3xl md:text-4xl font-bold text-foreground">
             Page Not Found
           </h1>
-          
+
           <p className="text-lg text-muted-foreground max-w-md mx-auto">
-            The page you're looking for doesn't exist or has been moved. 
-            Let's get you back on track!
+            The page you're looking for doesn't exist or has been moved. Let's
+            get you back on track!
           </p>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 group"
               asChild
             >
@@ -39,10 +39,10 @@ export default function NotFound() {
                 Go Home
               </Link>
             </Button>
-            
-            <Button 
-              size="lg" 
-              variant="outline" 
+
+            <Button
+              size="lg"
+              variant="outline"
               className="border-primary/20 hover:bg-primary/10 group"
               onClick={() => window.history.back()}
             >
@@ -53,9 +53,7 @@ export default function NotFound() {
 
           {/* Quick Links */}
           <div className="mt-12 pt-8 border-t border-border/50">
-            <p className="text-sm text-muted-foreground mb-4">
-              Popular pages:
-            </p>
+            <p className="text-sm text-muted-foreground mb-4">Popular pages:</p>
             <div className="flex flex-wrap gap-2 justify-center">
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/bundles">Services</Link>

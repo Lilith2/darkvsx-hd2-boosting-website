@@ -1,7 +1,7 @@
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 
-const LoginPage = dynamic(() => import('../src/pages/Login'), {
-  ssr: false
+const LoginPage = dynamic(() => import("../src/pages/Login"), {
+  ssr: false,
 });
 
 export default LoginPage;

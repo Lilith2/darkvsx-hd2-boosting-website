@@ -62,12 +62,18 @@ export function BundleModal({
       setFormData({
         name: bundle.name,
         description: bundle.description,
-        services: bundle.services && bundle.services.length > 0 ? bundle.services : [""],
+        services:
+          bundle.services && bundle.services.length > 0
+            ? bundle.services
+            : [""],
         originalPrice: bundle.original_price.toString(),
         discountedPrice: bundle.discounted_price.toString(),
         discount: bundle.discount,
         duration: bundle.duration,
-        features: bundle.features && bundle.features.length > 0 ? bundle.features : [""],
+        features:
+          bundle.features && bundle.features.length > 0
+            ? bundle.features
+            : [""],
         active: bundle.active ?? true,
         popular: bundle.popular ?? false,
         badge: bundle.badge || "",

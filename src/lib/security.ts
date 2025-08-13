@@ -211,7 +211,7 @@ class AuditLogger {
     }
 
     // In production, send to logging service
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       this.sendToLoggingService(event);
     } else {
       console.log("Audit:", event);
@@ -253,7 +253,10 @@ export function validateEnvironment(): void {
   ];
 
   const missing = requiredEnvVars.filter((envVar) => {
-    const value = typeof window !== 'undefined' ? (window as any).process?.env?.[envVar] : process.env[envVar];
+    const value =
+      typeof window !== "undefined"
+        ? (window as any).process?.env?.[envVar]
+        : process.env[envVar];
     return !value;
   });
 
@@ -268,7 +271,7 @@ export function initializeSecurity(): void {
   validateEnvironment();
 
   // Only run browser-specific code on client side
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   // Set up global error handling for security events
   window.addEventListener("error", (event) => {
