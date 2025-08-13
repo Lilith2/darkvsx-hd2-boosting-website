@@ -84,8 +84,8 @@ export default function Checkout() {
       try {
         const balance = await getUserCredits();
         setAvailableCredits(balance);
-      } catch (err) {
-        console.error("Error fetching credits:", err);
+      } catch (err: any) {
+        console.error("Error fetching credits:", err?.message || err);
         setAvailableCredits(0);
       }
     };
