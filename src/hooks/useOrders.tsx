@@ -207,7 +207,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       ]);
 
       const messages = (messagesResult.data || []).map(mapOrderMessageFromSupabase);
-      const tracking = trackingResult.data || [];
+      const tracking = (trackingResult.data || []).map(mapOrderTrackingFromSupabase);
 
       // Transform and combine data
       const transformedOrders =
@@ -556,6 +556,17 @@ function mapOrderMessageFromSupabase(data: any): OrderMessage {
     from: data.from,
     message: data.message,
     is_read: data.is_read ?? false,
+    created_at: data.created_at || new Date().toISOString(),
+  };
+}
+
+// Helper function to map Supabase data to OrderTracking interface
+function mapOrderTrackingFromSupabase(data: any): OrderTracking {
+  return {
+    id: data.id,
+    order_id: data.order_id || "",
+    status: data.status,
+    description: data.description,
     created_at: data.created_at || new Date().toISOString(),
   };
 }
