@@ -428,7 +428,7 @@ export default function Account() {
                       <p className="text-muted-foreground mb-4">
                         Your recent orders and actions will appear here
                       </p>
-                      <Link to="/">
+                      <Link href="/">
                         <Button size="sm">Browse Services</Button>
                       </Link>
                     </div>
