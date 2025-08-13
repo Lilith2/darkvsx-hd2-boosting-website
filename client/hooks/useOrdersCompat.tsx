@@ -104,13 +104,13 @@ interface OrdersContextType {
 const OrdersContext = createContext<OrdersContextType | undefined>(undefined);
 
 export function OrdersProvider({ children }: { children: ReactNode }) {
-  const { 
-    orders: unifiedOrders, 
-    loading, 
-    error, 
+  const {
+    orders: unifiedOrders,
+    loading,
+    error,
     createOrder,
     updateOrder,
-    updateOrderStatus as updateUnifiedOrderStatus,
+    updateOrderStatus: updateUnifiedOrderStatus,
     addOrderNote,
     getOrdersByUser,
     refreshOrders: refreshUnifiedOrders
