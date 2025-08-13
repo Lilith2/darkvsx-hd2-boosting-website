@@ -19,14 +19,12 @@ const nextConfig = {
     scrollRestoration: true,
   },
   transpilePackages: [
+    "@supabase/supabase-js",
     "@supabase/auth-js",
     "@supabase/postgrest-js",
     "@supabase/storage-js",
-    "@supabase/functions-js",
-  ],
-  serverExternalPackages: [
-    "@supabase/supabase-js",
     "@supabase/realtime-js",
+    "@supabase/functions-js",
   ],
   webpack: (config, { dev, isServer }) => {
     // Speed up development builds
