@@ -7,6 +7,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  allowedDevOrigins: [
+    "b57d26c4f4db47cd8de974405426d026-70affd08668f42aca7a0f226c.fly.dev",
+  ],
   experimental: {
     esmExternals: true,
   },
