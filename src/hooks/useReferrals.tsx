@@ -77,7 +77,7 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       // Fetch orders that used referral codes (simple tracking)
       const { data: ordersData, error: ordersError } = await supabase
         .from("orders")
-        .select("referral_code, referral_credits_used, total_amount, status")
+        .select("referral_code, credits_used, total_amount, status")
         .not("referral_code", "is", null);
 
       const creditBalance = profileData?.credit_balance || 0;
