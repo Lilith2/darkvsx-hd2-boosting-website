@@ -225,7 +225,7 @@ export default function Cart() {
             {/* Continue Shopping */}
             <Card className="mt-6">
               <CardContent className="pt-6">
-                <Link to="/">
+                <Link href="/">
                   <Button variant="outline" className="w-full">
                     Continue Shopping
                   </Button>
