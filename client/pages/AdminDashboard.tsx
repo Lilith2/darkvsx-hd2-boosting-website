@@ -1488,18 +1488,6 @@ export default function AdminDashboard() {
                             </div>
                           )}
 
-                          {/* Assigned Booster */}
-                          {order.assignedBooster && (
-                            <div className="flex items-center space-x-2 text-sm">
-                              <User className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-muted-foreground">
-                                Assigned to:
-                              </span>
-                              <span className="font-medium">
-                                {order.assignedBooster}
-                              </span>
-                            </div>
-                          )}
 
                           {/* Notes */}
                           {order.notes && (
