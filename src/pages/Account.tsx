@@ -59,7 +59,7 @@ import {
   Share2,
   ExternalLink,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { getSiteUrl } from "@/lib/config";
 
 export default function Account() {
