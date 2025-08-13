@@ -41,7 +41,7 @@ import { REFERRAL_CONFIG } from "@/lib/config";
 import { useEffect } from "react";
 
 const PAYPAL_CLIENT_ID =
-  import.meta.env.VITE_PAYPAL_CLIENT_ID ||
+  process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ||
   "AefD8SednJLcqfFDsiO9AetjGEsCMVPYSCp-gX-UmUyJsQvSUHgbhnl39ZJCB14Tq-eXM3kG2Q6aizB8";
 
 export default function Checkout() {

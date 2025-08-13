@@ -6,7 +6,7 @@ export const getSiteUrl = (): string => {
   }
   
   // Fallback for SSR or initial load
-  return import.meta.env.VITE_SITE_URL || 'https://helldivers-boost.com';
+  return process.env.NEXT_PUBLIC_SITE_URL || 'https://helldivers-boost.com';
 };
 
 export const getSiteDomain = (): string => {
