@@ -85,7 +85,7 @@ export function useCustomOrders() {
     try {
       // Try using the stored function first
       const { data, error: statsError } = await supabase.rpc(
-        "get_custom_order_stats" as any,
+        "get_custom_order_stats",
       );
 
       if (statsError) {
