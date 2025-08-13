@@ -211,7 +211,7 @@ class AuditLogger {
     }
 
     // In production, send to logging service
-    if (import.meta.env.PROD) {
+    if (process.env.NODE_ENV === 'production') {
       this.sendToLoggingService(event);
     } else {
       console.log("Audit:", event);
