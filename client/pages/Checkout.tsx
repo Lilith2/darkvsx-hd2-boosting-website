@@ -505,7 +505,7 @@ export default function Checkout() {
                       </div>
                     )}
                     <div className="flex justify-between text-sm">
-                      <span>Tax (8%)</span>
+                      <span>{PAYMENT_CONSTANTS.TAX_LABEL}</span>
                       <span>${tax.toFixed(2)}</span>
                     </div>
                     <Separator />
