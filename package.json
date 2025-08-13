@@ -15,18 +15,16 @@
     ]
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
-    "build:client": "vite build",
-    "build:server": "vite build --config vite.config.server.ts",
-    "build:full": "npm run build:client && npm run build:server",
-    "build:vercel": "vite build",
-    "start": "node dist/server/node-build.mjs",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next build && next export",
     "test": "vitest --run",
     "format.fix": "prettier --write .",
-    "typecheck": "tsc",
-    "deploy:vercel": "vercel --prod"
+    "typecheck": "tsc --noEmit",
+    "deploy:vercel": "vercel --prod",
+    "legacy:dev": "vite",
+    "legacy:build": "vite build"
   },
   "dependencies": {
     "@paypal/react-paypal-js": "^8.8.3",
