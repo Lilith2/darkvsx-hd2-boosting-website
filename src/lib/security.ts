@@ -249,7 +249,7 @@ export function validateEnvironment(): void {
   const requiredEnvVars = [
     "NEXT_PUBLIC_SUPABASE_URL",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    "VITE_PAYPAL_CLIENT_ID",
+    "NEXT_PUBLIC_PAYPAL_CLIENT_ID",
   ];
 
   const missing = requiredEnvVars.filter((envVar) => {
