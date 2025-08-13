@@ -1,16 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import {
-  Github,
-  Twitter,
-  MessageCircle,
-  Mail,
-  Shield,
-  Clock,
-  Award,
-  MessageSquare,
-  ExternalLink,
-} from "lucide-react";
+import { Shield, MessageCircle, ExternalLink, Gift, Users, Vote } from "lucide-react";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -25,23 +14,21 @@ export function Footer() {
               <div className="w-8 h-8">
                 <img
                   src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64"
-                  alt="HelldiversBoost Logo"
+                  alt="RobCat Logo"
                   className="w-full h-full object-contain"
                 />
               </div>
               <div>
                 <div className="text-lg font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
-                  HELLDIVERS II
+                  RobCat
                 </div>
                 <div className="text-sm text-primary font-semibold">
-                  BOOSTING
+                  Gaming Services
                 </div>
               </div>
             </div>
             <p className="text-sm text-muted-foreground max-w-md">
-              Professional Helldivers 2 boosting services. Fast, secure, and
-              reliable gaming enhancement for the ultimate Super Earth
-              experience.
+              Fair, competitive, and reliable gaming services for an enhanced online experience.
             </p>
             <div className="flex items-center space-x-2 text-sm">
               <Shield className="w-4 h-4 text-green-600" />
@@ -53,56 +40,38 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Company</h3>
             <div className="space-y-2">
-              <Link
-                href="/faq"
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                FAQ
-              </Link>
-              <Link
-                href="/contact"
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Contact
-              </Link>
-              <Link
-                href="/terms"
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Terms of Service
-              </Link>
-              <Link
-                href="/privacy"
-                className="block text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                Privacy Policy
-              </Link>
+              <Link href="/faq" className="block text-sm text-muted-foreground hover:text-primary transition-colors">FAQ</Link>
+              <Link href="/contact" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Contact</Link>
+              <Link href="/terms" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Terms of Service</Link>
+              <Link href="/privacy" className="block text-sm text-muted-foreground hover:text-primary transition-colors">Privacy Policy</Link>
             </div>
           </div>
 
-          {/* Community & Support */}
+          {/* Community */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Community</h3>
             <div className="space-y-3">
               <a
-                href="https://discord.gg/helldivers2boost"
+                href="https://discord.gg/yourdiscordlink"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>Join Discord</span>
+                <span>Discord</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <Clock className="w-4 h-4" />
-                  <span>24/7 Support</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <Award className="w-4 h-4" />
-                  <span>Professional Team</span>
-                </div>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <Gift className="w-4 h-4" />
+                <span>Giveaways</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <Users className="w-4 h-4" />
+                <span>Free Lobbies</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <Vote className="w-4 h-4" />
+                <span>Democracy</span>
               </div>
             </div>
           </div>
@@ -112,18 +81,7 @@ export function Footer() {
         <div className="border-t border-border mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-muted-foreground">
-              © {currentYear} HelldiversBoost. All rights reserved.
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-xs text-muted-foreground">
-                Powered by PayPal Secure Payments
-              </div>
-              <div className="flex items-center space-x-2">
-                <Shield className="w-4 h-4 text-green-600" />
-                <span className="text-xs text-muted-foreground">
-                  SSL Secured
-                </span>
-              </div>
+              © {currentYear} RobCat. All rights reserved.
             </div>
           </div>
         </div>
