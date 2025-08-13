@@ -17,16 +17,16 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
     scrollRestoration: true,
-    turbo: true,
-    serverComponentsExternalPackages: ['@supabase/supabase-js'],
   },
   transpilePackages: [
-    "@supabase/supabase-js",
     "@supabase/auth-js",
     "@supabase/postgrest-js",
     "@supabase/storage-js",
-    "@supabase/realtime-js",
     "@supabase/functions-js",
+  ],
+  serverExternalPackages: [
+    "@supabase/supabase-js",
+    "@supabase/realtime-js",
   ],
   webpack: (config, { dev, isServer }) => {
     // Speed up development builds
