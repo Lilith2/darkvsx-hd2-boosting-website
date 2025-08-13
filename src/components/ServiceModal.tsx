@@ -57,7 +57,7 @@ export function ServiceModal({
         duration: service.duration,
         difficulty: service.difficulty,
         features: service.features && service.features.length > 0 ? service.features : [""],
-        active: service.active,
+        active: service.active ?? true,
         popular: service.popular || false,
       });
     } else {
