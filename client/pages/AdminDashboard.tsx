@@ -222,8 +222,8 @@ export default function AdminDashboard() {
 
     // Sort by creation date
     return filteredList.sort((a, b) => {
-      const dateA = new Date(order.type === "custom" ? a.created_at : a.createdAt);
-      const dateB = new Date(order.type === "custom" ? b.created_at : b.createdAt);
+      const dateA = new Date(a.type === "custom" ? a.created_at : a.createdAt);
+      const dateB = new Date(b.type === "custom" ? b.created_at : b.createdAt);
       return dateB.getTime() - dateA.getTime();
     });
   };
