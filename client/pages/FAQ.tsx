@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -116,7 +116,7 @@ export default function FAQ() {
       <div className="bg-gradient-to-r from-card to-card/80 border-b border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center mb-6">
-            <Link to="/">
+            <Link href="/">
               <Button variant="ghost" size="sm" className="hover:bg-primary/10">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Home
@@ -225,7 +225,7 @@ export default function FAQ() {
                   className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
                   asChild
                 >
-                  <Link to="/contact">
+                  <Link href="/contact">
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Contact Support
                   </Link>
