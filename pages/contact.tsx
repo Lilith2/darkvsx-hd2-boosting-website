@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 
-const ContactPage = dynamic(() => import("../src/pages/Contact"), {
+const ContactPage = dynamic(() => import("../client/pages/Contact"), {
   ssr: false,
 });
 

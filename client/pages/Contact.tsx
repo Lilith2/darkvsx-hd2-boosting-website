@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,146 +7,30 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
-import { useOrders } from "@/hooks/useOrders";
-import { getCurrentIPAddress } from "@/hooks/useIPAddress";
 import {
   ArrowLeft,
   MessageSquare,
-  Mail,
-  Clock,
-  Send,
-  Phone,
-  MapPin,
-  Headphones,
-  Shield,
-  Zap,
+  ExternalLink,
   Users,
-  AlertCircle,
+  Zap,
+  Shield,
   CheckCircle,
-  HelpCircle,
+  Clock,
+  Globe,
 } from "lucide-react";
 
-const supportCategories = [
-  { value: "order-inquiry", label: "Order Inquiry" },
-  { value: "technical-issue", label: "Technical Issue" },
-  { value: "payment-problem", label: "Payment Problem" },
-  { value: "account-support", label: "Account Support" },
-  { value: "general-question", label: "General Question" },
-  { value: "feedback", label: "Feedback" },
-];
-
-const urgencyLevels = [
-  {
-    value: "low",
-    label: "Low - General inquiry",
-    color: "bg-green-500/20 text-green-700",
-  },
-  {
-    value: "medium",
-    label: "Medium - Need assistance",
-    color: "bg-yellow-500/20 text-yellow-700",
-  },
-  {
-    value: "high",
-    label: "High - Order issue",
-    color: "bg-orange-500/20 text-orange-700",
-  },
-  {
-    value: "urgent",
-    label: "Urgent - Payment/Security",
-    color: "bg-red-500/20 text-red-700",
-  },
-];
-
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    category: "",
-    urgency: "",
-    orderId: "",
-    message: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-  const { user } = useAuth();
-  const { addOrder } = useOrders();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      // Get user's IP address for support ticket tracking
-      const ipAddress = await getCurrentIPAddress();
-
-      // Create support ticket as a special order
-      const ticketId = await addOrder({
-        userId: user?.id || "guest",
-        customerEmail: formData.email,
-        customerName: formData.name,
-        services: [{
-          id: "support-ticket",
-          name: `Support: ${formData.subject}`,
-          price: 0,
-          quantity: 1
-        }],
-        status: "pending",
-        totalAmount: 0,
-        paymentStatus: "paid", // Support tickets are free
-        notes: `Category: ${formData.category}\nUrgency: ${formData.urgency}\nOrder ID: ${formData.orderId || "N/A"}\n\nMessage:\n${formData.message}${ipAddress ? `\n\nSubmitted from IP: ${ipAddress}` : ""}`
-      });
-
-      toast({
-        title: "Support ticket created!",
-        description: `Your ticket #${ticketId.slice(-6)} has been submitted. We'll respond within 24 hours.`,
-      });
-
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        category: "",
-        urgency: "",
-        orderId: "",
-        message: "",
-      });
-    } catch (error: any) {
-      console.error("Error creating support ticket:", error);
-
-      const errorMessage = error?.message || "Unknown error occurred";
-
-      toast({
-        title: "Error creating ticket",
-        description: `${errorMessage}. Please try again or contact us directly via Discord.`,
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleDiscordClick = () => {
+    window.open('https://discord.gg/helldivers2boost', '_blank');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
       <div className="bg-gradient-to-r from-card to-card/80 border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center mb-6">
-            <Link to="/">
+            <Link href="/">
               <Button variant="ghost" size="sm" className="hover:bg-primary/10">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Home
@@ -157,390 +40,247 @@ export default function Contact() {
 
           <div className="text-center">
             <div className="inline-flex items-center bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <Headphones className="w-4 h-4 mr-2" />
-              24/7 Support Available
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Discord Support Available
             </div>
 
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                Contact
+                Join Our
               </span>
               <span className="bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
                 {" "}
-                Support
+                Discord
               </span>
             </h1>
 
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Need help? Our expert support team is here to assist you 24/7
+              Get instant support, connect with our community, and stay updated with the latest news
             </p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-
-          <Card className="border border-border/50 hover:border-primary/30 transition-colors cursor-pointer group">
-            <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <Mail className="w-6 h-6 text-primary" />
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Main Discord CTA */}
+        <div className="text-center mb-16">
+          <Card className="bg-gradient-to-r from-primary/10 to-blue-500/10 border border-primary/20 overflow-hidden">
+            <CardContent className="p-12">
+              <div className="w-24 h-24 bg-gradient-to-r from-primary to-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
+                <MessageSquare className="w-12 h-12 text-white" />
               </div>
-              <h3 className="font-semibold mb-2">Email Support</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Send us a detailed message
+              
+              <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
+              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                Join thousands of Helldivers in our Discord community. Get instant support, 
+                participate in events, and connect with other players.
               </p>
-              <Badge className="bg-blue-500/20 text-blue-700">
-                Response within 24h
-              </Badge>
+
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-lg px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                onClick={handleDiscordClick}
+              >
+                <MessageSquare className="w-5 h-5 mr-3" />
+                Join Discord Server
+                <ExternalLink className="w-4 h-4 ml-2" />
+              </Button>
+
+              <p className="text-sm text-muted-foreground mt-4">
+                Click to open Discord in a new tab
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Benefits Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <Card className="border border-border/50 hover:border-primary/30 transition-colors">
+            <CardContent className="p-6 text-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="font-semibold mb-2">Instant Support</h3>
+              <p className="text-sm text-muted-foreground">
+                Get help immediately from our active support team and community members
+              </p>
             </CardContent>
           </Card>
 
-          <Link to="/faq">
-            <Card className="border border-border/50 hover:border-primary/30 transition-colors cursor-pointer group">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <HelpCircle className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-2">FAQ</h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Find answers to common questions
-                </p>
-                <Badge className="bg-purple-500/20 text-purple-700">
-                  Instant answers
-                </Badge>
-              </CardContent>
-            </Card>
-          </Link>
+          <Card className="border border-border/50 hover:border-primary/30 transition-colors">
+            <CardContent className="p-6 text-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Users className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="font-semibold mb-2">Active Community</h3>
+              <p className="text-sm text-muted-foreground">
+                Connect with thousands of Helldivers players and boosting customers
+              </p>
+            </CardContent>
+          </Card>
 
-          <a
-            href="https://discord.gg/helldivers2boost"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Card className="border border-border/50 hover:border-primary/30 transition-colors cursor-pointer group">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <MessageSquare className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold mb-2">Discord</h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Join our community server
-                </p>
-                <Badge className="bg-indigo-500/20 text-indigo-700">
-                  Active community
-                </Badge>
-              </CardContent>
-            </Card>
-          </a>
+          <Card className="border border-border/50 hover:border-primary/30 transition-colors">
+            <CardContent className="p-6 text-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="font-semibold mb-2">Verified Safe</h3>
+              <p className="text-sm text-muted-foreground">
+                Official server with verified staff and secure communication
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
-          <div>
-            <Card className="border border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Send className="w-5 h-5 mr-2" />
-                  Create Support Ticket
-                </CardTitle>
-                <CardDescription>
-                  Submit a detailed support request and we'll get back to you
-                  soon
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Name *</Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            name: e.target.value,
-                          }))
-                        }
-                        placeholder="Your full name"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            email: e.target.value,
-                          }))
-                        }
-                        placeholder="your.email@example.com"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="subject">Subject *</Label>
-                    <Input
-                      id="subject"
-                      value={formData.subject}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          subject: e.target.value,
-                        }))
-                      }
-                      placeholder="Brief description of your issue"
-                      required
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Category *</Label>
-                      <Select
-                        value={formData.category}
-                        onValueChange={(value) =>
-                          setFormData((prev) => ({ ...prev, category: value }))
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {supportCategories.map((category) => (
-                            <SelectItem
-                              key={category.value}
-                              value={category.value}
-                            >
-                              {category.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Urgency *</Label>
-                      <Select
-                        value={formData.urgency}
-                        onValueChange={(value) =>
-                          setFormData((prev) => ({ ...prev, urgency: value }))
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select urgency" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {urgencyLevels.map((level) => (
-                            <SelectItem key={level.value} value={level.value}>
-                              <div className="flex items-center">
-                                <div
-                                  className={`w-2 h-2 rounded-full mr-2 ${level.color.split(" ")[0]}`}
-                                />
-                                {level.label}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="orderId">Order ID (Optional)</Label>
-                    <Input
-                      id="orderId"
-                      value={formData.orderId}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          orderId: e.target.value,
-                        }))
-                      }
-                      placeholder="ORD-123456"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="message">Message *</Label>
-                    <Textarea
-                      id="message"
-                      value={formData.message}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          message: e.target.value,
-                        }))
-                      }
-                      placeholder="Please describe your issue in detail..."
-                      rows={5}
-                      required
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
-                        Submitting...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-2" />
-                        Submit Ticket
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Contact Information & FAQ */}
-          <div className="space-y-6">
-            {/* Contact Info */}
-            <Card className="border border-border/50">
-              <CardHeader>
-                <CardTitle>Get in Touch</CardTitle>
-                <CardDescription>
-                  Multiple ways to reach our support team
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                    <Mail className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Email Support</p>
-                    <p className="text-sm text-muted-foreground">
-                      support@helldivers-boost.com
-                    </p>
-                  </div>
-                </div>
-
-
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                    <Clock className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Response Time</p>
-                    <p className="text-sm text-muted-foreground">
-                      Within 2-24 hours
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                    <MessageSquare className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium">Discord Community</p>
-                    <a
-                      href="https://discord.gg/helldivers2boost"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-primary hover:underline"
-                    >
-                      Join our Discord server
-                    </a>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Support Features */}
-            <Card className="border border-border/50">
-              <CardHeader>
-                <CardTitle>Why Our Support?</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+        {/* What You Get */}
+        <Card className="mb-12">
+          <CardHeader>
+            <CardTitle className="text-center">What You'll Find in Our Discord</CardTitle>
+            <CardDescription className="text-center">
+              Everything you need for the best Helldivers 2 boosting experience
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium">Expert Team</p>
+                    <p className="font-medium">24/7 Support Channels</p>
                     <p className="text-sm text-muted-foreground">
-                      Experienced Helldivers players
+                      Dedicated support channels with fast response times
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium">Fast Resolution</p>
+                    <p className="font-medium">Order Updates</p>
                     <p className="text-sm text-muted-foreground">
-                      Quick problem solving
+                      Real-time notifications about your boost progress
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium">24/7 Availability</p>
+                    <p className="font-medium">Community Events</p>
                     <p className="text-sm text-muted-foreground">
-                      Round-the-clock assistance
+                      Special events, giveaways, and community challenges
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium">Multilingual</p>
+                    <p className="font-medium">Game Tips & Strategies</p>
                     <p className="text-sm text-muted-foreground">
-                      Support in multiple languages
+                      Learn from experienced players and improve your gameplay
                     </p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* Emergency Contact */}
-            <Card className="bg-gradient-to-r from-red-500/10 to-orange-500/10 border border-red-500/20">
-              <CardContent className="p-6">
+              <div className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <AlertCircle className="w-6 h-6 text-red-500 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-red-700 dark:text-red-400 mb-2">
-                      Urgent Issues?
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      For payment problems, security concerns, or account access
-                      issues, contact us immediately via Discord or email.
+                    <p className="font-medium">Exclusive Offers</p>
+                    <p className="text-sm text-muted-foreground">
+                      Discord-only discounts and special pricing
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-red-500/20 hover:bg-red-500/10"
-                        onClick={() => window.open('https://discord.gg/helldivers2boost', '_blank')}
-                      >
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Discord Support
-                      </Button>
-                    </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+
+                <div className="flex items-start space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">Direct Communication</p>
+                    <p className="text-sm text-muted-foreground">
+                      Chat directly with boosters and support staff
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">News & Updates</p>
+                    <p className="text-sm text-muted-foreground">
+                      Be first to know about new services and features
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">Multilingual Support</p>
+                    <p className="text-sm text-muted-foreground">
+                      Support available in multiple languages
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="border border-border/50">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Response Time</h3>
+                  <p className="text-sm text-muted-foreground">Usually within minutes</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Our support team and community are active around the clock to help you with any questions or issues.
+              </p>
+              <Button 
+                variant="outline" 
+                className="w-full border-primary/20 hover:bg-primary/10"
+                onClick={handleDiscordClick}
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Get Support Now
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-border/50">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Alternative Contact</h3>
+                  <p className="text-sm text-muted-foreground">Need help with Discord?</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                If you need help accessing Discord or have any other concerns, check our FAQ section.
+              </p>
+              <Button 
+                variant="outline" 
+                className="w-full border-primary/20 hover:bg-primary/10"
+                asChild
+              >
+                <Link href="/faq">
+                  View FAQ
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
