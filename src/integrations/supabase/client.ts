@@ -27,5 +27,18 @@ export const supabase = createClient<Database>(
       persistSession: true,
       autoRefreshToken: true,
     },
+    realtime: {
+      // Disable realtime to prevent webpack issues
+      params: {
+        eventsPerSecond: 1,
+      },
+      heartbeatIntervalMs: 30000,
+      reconnectAfterMs: (tries: number) => Math.min(tries * 1000, 10000),
+    },
+    global: {
+      headers: {
+        'X-Client-Info': 'helldivers2-boost-app',
+      },
+    },
   },
 );
