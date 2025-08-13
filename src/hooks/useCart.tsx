@@ -1,14 +1,10 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
+import { ServiceData } from './useServices';
+
 interface CartItem {
   id: string;
-  service: {
-    id: string;
-    title: string;
-    price: number;
-    duration?: string;
-    difficulty?: string;
-  };
+  service: ServiceData;
   quantity: number;
 }
 
