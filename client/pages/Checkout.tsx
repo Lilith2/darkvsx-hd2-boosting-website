@@ -211,8 +211,13 @@ export default function Checkout() {
   const handleCreditsToggle = (checked: boolean) => {
     setUseReferralCredits(checked);
     if (checked && availableCredits > 0) {
-      // Apply up to the total amount (including tax) or available credits, whichever is smaller
-      const maxApplicable = subtotal - referralDiscount + (subtotal - referralDiscount) * PAYMENT_CONSTANTS.TAX_RATE;
+      // Calculate maximum applicable credits
+      const amountAfterDiscount = subtotal - referralDiscount;
+      // If credits can cover the full amount, no tax applies
+      // Otherwise, tax applies and credits can cover up to amount + tax
+      const maxApplicable = availableCredits >= amountAfterDiscount
+        ? amountAfterDiscount
+        : amountAfterDiscount + (amountAfterDiscount * PAYMENT_CONSTANTS.TAX_RATE);
       const creditsToApply = Math.min(availableCredits, maxApplicable);
       setReferralCreditsApplied(creditsToApply);
 
