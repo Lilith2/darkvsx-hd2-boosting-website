@@ -66,8 +66,8 @@ export function BundleModal({
           bundle.services && bundle.services.length > 0
             ? bundle.services
             : [""],
-        originalPrice: bundle.original_price.toString(),
-        discountedPrice: bundle.discounted_price.toString(),
+        originalPrice: bundle.original_price?.toString() || "",
+        discountedPrice: bundle.discounted_price?.toString() || "",
         discount: bundle.discount,
         duration: bundle.duration,
         features:
