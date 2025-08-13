@@ -10,14 +10,7 @@ export default function Document() {
         <link rel="apple-touch-icon" href="/logo192.png" />
         <link rel="manifest" href="/manifest.json" />
         
-        {/* Preload critical resources */}
-        <link
-          rel="preload"
-          href="/fonts/inter-var.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
+        {/* Fonts will be loaded via Tailwind CSS */}
         
         {/* Security headers */}
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
