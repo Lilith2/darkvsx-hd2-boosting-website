@@ -222,7 +222,7 @@ export default function CustomOrder() {
         quantity: quantity,
         price_per_unit: pricingItem.price_per_unit,
         total_price: totalPrice,
-        description: pricingItem.description,
+        description: pricingItem.description || "",
       };
       setOrderItems([...orderItems, newItem]);
     }
