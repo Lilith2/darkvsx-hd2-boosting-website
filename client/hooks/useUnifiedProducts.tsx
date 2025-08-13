@@ -1,477 +1,482 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { supabase } from '../integrations/supabase/client';
 
-// Enhanced product interface for the unified system
 export interface UnifiedProduct {
   id: string;
   name: string;
-  slug: string;
-  description: string;
-  short_description?: string;
-  product_type: 'service' | 'bundle' | 'custom_item';
-  category: string;
-  subcategory?: string;
-  tags: string[];
-  base_price: number;
-  sale_price?: number;
-  current_price: number;
-  cost_price?: number;
-  price_per_unit?: number;
-  minimum_quantity: number;
-  maximum_quantity?: number;
-  features: string[];
-  specifications: Record<string, any>;
-  requirements: string[];
-  estimated_duration_hours?: number;
-  difficulty_level?: 'easy' | 'medium' | 'hard' | 'expert';
-  auto_fulfill: boolean;
-  stock_quantity?: number;
-  track_inventory: boolean;
-  allow_backorder: boolean;
-  meta_title?: string;
-  meta_description?: string;
-  featured_image?: string;
-  gallery_images: string[];
-  status: 'draft' | 'active' | 'inactive' | 'discontinued';
-  visibility: 'public' | 'private' | 'hidden';
-  featured: boolean;
-  popular: boolean;
-  view_count: number;
-  order_count: number;
-  conversion_rate: number;
-  bundled_products: any[];
-  bundle_type?: 'fixed' | 'flexible';
+  description: string | null;
+  type: 'service' | 'bundle' | 'custom';
+  category: string | null;
+  price: number;
+  base_price: number | null;
+  currency: string;
+  is_active: boolean;
+  metadata: Record<string, any> | null;
+  image_url: string | null;
+  tags: string[] | null;
+  availability_status: 'available' | 'limited' | 'out_of_stock' | 'discontinued';
+  min_quantity: number;
+  max_quantity: number | null;
+  estimated_delivery_days: number | null;
+  requirements: Record<string, any> | null;
+  features: string[] | null;
   created_at: string;
   updated_at: string;
-  published_at?: string;
-  deleted_at?: string;
-  availability_status: 'in_stock' | 'low_stock' | 'out_of_stock';
-  discount_percentage: number;
+  created_by: string | null;
+  updated_by: string | null;
 }
 
-export interface ProductStats {
-  total_products: number;
-  active_products: number;
-  featured_products: number;
-  total_revenue: number;
-  avg_conversion_rate: number;
+export interface ProductFilters {
+  type?: 'service' | 'bundle' | 'custom';
+  category?: string;
+  isActive?: boolean;
+  availabilityStatus?: 'available' | 'limited' | 'out_of_stock' | 'discontinued';
+  minPrice?: number;
+  maxPrice?: number;
+  tags?: string[];
+  search?: string;
+}
+
+export interface ProductSort {
+  field: 'name' | 'price' | 'created_at' | 'updated_at';
+  direction: 'asc' | 'desc';
 }
 
 interface UnifiedProductsContextType {
   products: UnifiedProduct[];
-  stats: ProductStats;
   loading: boolean;
   error: string | null;
-  refreshProducts: () => Promise<void>;
+  
+  // CRUD Operations
   createProduct: (productData: Partial<UnifiedProduct>) => Promise<string>;
-  updateProduct: (productId: string, updates: Partial<UnifiedProduct>) => Promise<void>;
-  deleteProduct: (productId: string) => Promise<void>;
-  getProductById: (productId: string) => Promise<UnifiedProduct | null>;
-  getProductBySlug: (slug: string) => Promise<UnifiedProduct | null>;
+  updateProduct: (id: string, updates: Partial<UnifiedProduct>) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
+  archiveProduct: (id: string) => Promise<void>;
+  restoreProduct: (id: string) => Promise<void>;
+  
+  // Fetching
+  getProductById: (id: string) => Promise<UnifiedProduct | null>;
+  searchProducts: (filters: ProductFilters, sort?: ProductSort) => Promise<UnifiedProduct[]>;
   getProductsByCategory: (category: string) => Promise<UnifiedProduct[]>;
-  getActiveProducts: () => Promise<UnifiedProduct[]>;
+  getProductsByType: (type: 'service' | 'bundle' | 'custom') => Promise<UnifiedProduct[]>;
   getFeaturedProducts: () => Promise<UnifiedProduct[]>;
-  searchProducts: (query: string) => Promise<UnifiedProduct[]>;
-  updateProductAnalytics: (productId: string, incrementViews?: number, incrementOrders?: number) => Promise<void>;
+  getPopularProducts: (limit?: number) => Promise<UnifiedProduct[]>;
+  
+  // Bulk Operations
+  bulkUpdateProducts: (updates: Array<{ id: string; data: Partial<UnifiedProduct> }>) => Promise<void>;
+  bulkArchiveProducts: (ids: string[]) => Promise<void>;
+  bulkRestoreProducts: (ids: string[]) => Promise<void>;
+  
+  // Analytics
+  getProductStats: (productId: string) => Promise<{
+    total_orders: number;
+    total_revenue: number;
+    avg_rating: number;
+    last_ordered: string | null;
+  }>;
+  
+  // Utility
+  refreshProducts: () => Promise<void>;
+  clearError: () => void;
 }
 
 const UnifiedProductsContext = createContext<UnifiedProductsContextType | undefined>(undefined);
 
-export function UnifiedProductsProvider({ children }: { children: ReactNode }) {
+export const useUnifiedProducts = () => {
+  const context = useContext(UnifiedProductsContext);
+  if (context === undefined) {
+    throw new Error('useUnifiedProducts must be used within a UnifiedProductsProvider');
+  }
+  return context;
+};
+
+interface UnifiedProductsProviderProps {
+  children: ReactNode;
+}
+
+export const UnifiedProductsProvider = ({ children }: UnifiedProductsProviderProps) => {
   const [products, setProducts] = useState<UnifiedProduct[]>([]);
-  const [stats, setStats] = useState<ProductStats>({
-    total_products: 0,
-    active_products: 0,
-    featured_products: 0,
-    total_revenue: 0,
-    avg_conversion_rate: 0,
-  });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch products from the unified products table
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const { data, error: fetchError } = await supabase
-        .from("product_catalog_view")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (fetchError) {
-        throw fetchError;
-      }
-
-      const transformedProducts: UnifiedProduct[] = (data || []).map((product: any) => ({
-        ...product,
-        tags: product.tags || [],
-        features: product.features || [],
-        specifications: product.specifications || {},
-        requirements: product.requirements || [],
-        gallery_images: product.gallery_images || [],
-        bundled_products: product.bundled_products || [],
-      }));
-
-      setProducts(transformedProducts);
-    } catch (err: any) {
-      console.error("Error fetching unified products:", err?.message || err);
-      setError(err?.message || "Failed to fetch products");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Calculate product statistics
-  const calculateStats = async () => {
-    try {
-      const { data, error: statsError } = await supabase
-        .from("products")
-        .select("status, featured, view_count, order_count, conversion_rate")
-        .is("deleted_at", null);
-
-      if (statsError) {
-        throw statsError;
-      }
-
-      const totalProducts = data?.length || 0;
-      const activeProducts = data?.filter(p => p.status === 'active').length || 0;
-      const featuredProducts = data?.filter(p => p.featured).length || 0;
-      const avgConversionRate = totalProducts > 0 
-        ? data.reduce((sum, p) => sum + (p.conversion_rate || 0), 0) / totalProducts 
-        : 0;
-
-      // Get revenue data from product performance view
-      const { data: revenueData } = await supabase
-        .from("product_performance_summary")
-        .select("total_revenue");
-
-      const totalRevenue = revenueData?.reduce((sum, p) => sum + (p.total_revenue || 0), 0) || 0;
-
-      setStats({
-        total_products: totalProducts,
-        active_products: activeProducts,
-        featured_products: featuredProducts,
-        total_revenue: totalRevenue,
-        avg_conversion_rate: avgConversionRate,
-      });
-    } catch (err: any) {
-      console.error("Error calculating product stats:", err);
-    }
+  // Helper function to handle errors
+  const handleError = (error: any, operation: string) => {
+    console.error(`Error in ${operation}:`, error);
+    setError(error?.message || `Failed to ${operation}`);
+    throw error;
   };
 
   // Create a new product
   const createProduct = async (productData: Partial<UnifiedProduct>): Promise<string> => {
     try {
+      setLoading(true);
+      setError(null);
+
       const { data, error } = await supabase
-        .from("products")
+        .from('products')
         .insert([{
           ...productData,
-          status: productData.status || 'draft',
-          visibility: productData.visibility || 'public',
-          product_type: productData.product_type || 'service',
-          category: productData.category || 'General',
-          base_price: productData.base_price || 0,
-          minimum_quantity: productData.minimum_quantity || 1,
-          auto_fulfill: productData.auto_fulfill || false,
-          track_inventory: productData.track_inventory || false,
-          allow_backorder: productData.allow_backorder || true,
-          featured: productData.featured || false,
-          popular: productData.popular || false,
-          view_count: 0,
-          order_count: 0,
-          conversion_rate: 0,
-          tags: productData.tags || [],
-          features: productData.features || [],
-          specifications: productData.specifications || {},
-          requirements: productData.requirements || [],
-          gallery_images: productData.gallery_images || [],
-          bundled_products: productData.bundled_products || [],
+          type: productData.type || 'service',
+          currency: productData.currency || 'USD',
+          is_active: productData.is_active !== undefined ? productData.is_active : true,
+          availability_status: productData.availability_status || 'available',
+          min_quantity: productData.min_quantity || 1,
+          price: productData.price || 0,
         }])
         .select()
         .single();
 
       if (error) throw error;
-
+      
       await refreshProducts();
       return data.id;
-    } catch (err: any) {
-      console.error("Error creating product:", err);
-      throw new Error(err?.message || "Failed to create product");
+    } catch (error) {
+      handleError(error, 'create product');
+      return '';
+    } finally {
+      setLoading(false);
     }
   };
 
   // Update an existing product
-  const updateProduct = async (productId: string, updates: Partial<UnifiedProduct>) => {
+  const updateProduct = async (id: string, updates: Partial<UnifiedProduct>): Promise<void> => {
     try {
+      setLoading(true);
+      setError(null);
+
       const { error } = await supabase
-        .from("products")
+        .from('products')
         .update({
           ...updates,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", productId);
+        .eq('id', id);
 
       if (error) throw error;
-
+      
       await refreshProducts();
-    } catch (err: any) {
-      console.error("Error updating product:", err);
-      throw new Error(err?.message || "Failed to update product");
+    } catch (error) {
+      handleError(error, 'update product');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Soft delete a product
-  const deleteProduct = async (productId: string) => {
+  // Delete a product (hard delete)
+  const deleteProduct = async (id: string): Promise<void> => {
     try {
+      setLoading(true);
+      setError(null);
+
       const { error } = await supabase
-        .from("products")
-        .update({
-          deleted_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", productId);
+        .from('products')
+        .delete()
+        .eq('id', id);
 
       if (error) throw error;
-
+      
       await refreshProducts();
-    } catch (err: any) {
-      console.error("Error deleting product:", err);
-      throw new Error(err?.message || "Failed to delete product");
+    } catch (error) {
+      handleError(error, 'delete product');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Get a specific product by ID
-  const getProductById = async (productId: string): Promise<UnifiedProduct | null> => {
+  // Archive a product (soft delete)
+  const archiveProduct = async (id: string): Promise<void> => {
+    await updateProduct(id, { 
+      is_active: false, 
+      availability_status: 'discontinued' 
+    });
+  };
+
+  // Restore an archived product
+  const restoreProduct = async (id: string): Promise<void> => {
+    await updateProduct(id, { 
+      is_active: true, 
+      availability_status: 'available' 
+    });
+  };
+
+  // Get product by ID
+  const getProductById = async (id: string): Promise<UnifiedProduct | null> => {
     try {
+      setError(null);
+
       const { data, error } = await supabase
-        .from("product_catalog_view")
-        .select("*")
-        .eq("id", productId)
+        .from('products')
+        .select('*')
+        .eq('id', id)
         .single();
 
-      if (error) {
-        if (error.code === 'PGRST116') return null; // Not found
-        throw error;
-      }
-
-      return {
-        ...data,
-        tags: data.tags || [],
-        features: data.features || [],
-        specifications: data.specifications || {},
-        requirements: data.requirements || [],
-        gallery_images: data.gallery_images || [],
-        bundled_products: data.bundled_products || [],
-      };
-    } catch (err: any) {
-      console.error("Error fetching product by ID:", err);
-      throw new Error(err?.message || "Failed to fetch product");
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      handleError(error, 'get product by ID');
+      return null;
     }
   };
 
-  // Get a product by slug
-  const getProductBySlug = async (slug: string): Promise<UnifiedProduct | null> => {
+  // Search products with filters and sorting
+  const searchProducts = async (filters: ProductFilters, sort?: ProductSort): Promise<UnifiedProduct[]> => {
     try {
-      const { data, error } = await supabase
-        .from("product_catalog_view")
-        .select("*")
-        .eq("slug", slug)
-        .single();
+      setError(null);
 
-      if (error) {
-        if (error.code === 'PGRST116') return null; // Not found
-        throw error;
+      let query = supabase.from('products').select('*');
+
+      // Apply filters
+      if (filters.type) {
+        query = query.eq('type', filters.type);
+      }
+      if (filters.category) {
+        query = query.eq('category', filters.category);
+      }
+      if (filters.isActive !== undefined) {
+        query = query.eq('is_active', filters.isActive);
+      }
+      if (filters.availabilityStatus) {
+        query = query.eq('availability_status', filters.availabilityStatus);
+      }
+      if (filters.minPrice !== undefined) {
+        query = query.gte('price', filters.minPrice);
+      }
+      if (filters.maxPrice !== undefined) {
+        query = query.lte('price', filters.maxPrice);
+      }
+      if (filters.tags && filters.tags.length > 0) {
+        query = query.overlaps('tags', filters.tags);
+      }
+      if (filters.search) {
+        query = query.or(`name.ilike.%${filters.search}%,description.ilike.%${filters.search}%`);
       }
 
-      return {
-        ...data,
-        tags: data.tags || [],
-        features: data.features || [],
-        specifications: data.specifications || {},
-        requirements: data.requirements || [],
-        gallery_images: data.gallery_images || [],
-        bundled_products: data.bundled_products || [],
-      };
-    } catch (err: any) {
-      console.error("Error fetching product by slug:", err);
-      throw new Error(err?.message || "Failed to fetch product");
+      // Apply sorting
+      if (sort) {
+        query = query.order(sort.field, { ascending: sort.direction === 'asc' });
+      } else {
+        query = query.order('created_at', { ascending: false });
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      handleError(error, 'search products');
+      return [];
     }
   };
 
   // Get products by category
   const getProductsByCategory = async (category: string): Promise<UnifiedProduct[]> => {
-    try {
-      const { data, error } = await supabase
-        .from("product_catalog_view")
-        .select("*")
-        .eq("category", category)
-        .eq("status", "active")
-        .eq("visibility", "public")
-        .order("featured", { ascending: false })
-        .order("popular", { ascending: false })
-        .order("order_count", { ascending: false });
-
-      if (error) throw error;
-
-      return (data || []).map((product: any) => ({
-        ...product,
-        tags: product.tags || [],
-        features: product.features || [],
-        specifications: product.specifications || {},
-        requirements: product.requirements || [],
-        gallery_images: product.gallery_images || [],
-        bundled_products: product.bundled_products || [],
-      }));
-    } catch (err: any) {
-      console.error("Error fetching products by category:", err);
-      throw new Error(err?.message || "Failed to fetch products");
-    }
+    return searchProducts({ category, isActive: true });
   };
 
-  // Get active products
-  const getActiveProducts = async (): Promise<UnifiedProduct[]> => {
-    try {
-      const { data, error } = await supabase
-        .from("product_catalog_view")
-        .select("*")
-        .eq("status", "active")
-        .eq("visibility", "public")
-        .order("featured", { ascending: false })
-        .order("order_count", { ascending: false });
-
-      if (error) throw error;
-
-      return (data || []).map((product: any) => ({
-        ...product,
-        tags: product.tags || [],
-        features: product.features || [],
-        specifications: product.specifications || {},
-        requirements: product.requirements || [],
-        gallery_images: product.gallery_images || [],
-        bundled_products: product.bundled_products || [],
-      }));
-    } catch (err: any) {
-      console.error("Error fetching active products:", err);
-      throw new Error(err?.message || "Failed to fetch active products");
-    }
+  // Get products by type
+  const getProductsByType = async (type: 'service' | 'bundle' | 'custom'): Promise<UnifiedProduct[]> => {
+    return searchProducts({ type, isActive: true });
   };
 
-  // Get featured products
+  // Get featured products (products with featured tag)
   const getFeaturedProducts = async (): Promise<UnifiedProduct[]> => {
+    return searchProducts({ 
+      tags: ['featured'], 
+      isActive: true,
+      availabilityStatus: 'available'
+    });
+  };
+
+  // Get popular products based on order analytics
+  const getPopularProducts = async (limit = 10): Promise<UnifiedProduct[]> => {
     try {
+      setError(null);
+
       const { data, error } = await supabase
-        .from("product_catalog_view")
-        .select("*")
-        .eq("status", "active")
-        .eq("visibility", "public")
-        .eq("featured", true)
-        .order("order_count", { ascending: false })
-        .limit(6);
+        .from('product_analytics_view')
+        .select(`
+          product_id,
+          total_orders,
+          products!inner(*)
+        `)
+        .eq('products.is_active', true)
+        .eq('products.availability_status', 'available')
+        .order('total_orders', { ascending: false })
+        .limit(limit);
 
       if (error) throw error;
-
-      return (data || []).map((product: any) => ({
-        ...product,
-        tags: product.tags || [],
-        features: product.features || [],
-        specifications: product.specifications || {},
-        requirements: product.requirements || [],
-        gallery_images: product.gallery_images || [],
-        bundled_products: product.bundled_products || [],
-      }));
-    } catch (err: any) {
-      console.error("Error fetching featured products:", err);
-      throw new Error(err?.message || "Failed to fetch featured products");
+      return data?.map(item => item.products) || [];
+    } catch (error) {
+      handleError(error, 'get popular products');
+      return [];
     }
   };
 
-  // Search products
-  const searchProducts = async (query: string): Promise<UnifiedProduct[]> => {
+  // Bulk update products
+  const bulkUpdateProducts = async (updates: Array<{ id: string; data: Partial<UnifiedProduct> }>): Promise<void> => {
     try {
+      setLoading(true);
+      setError(null);
+
+      const promises = updates.map(({ id, data }) =>
+        supabase
+          .from('products')
+          .update({
+            ...data,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', id)
+      );
+
+      const results = await Promise.all(promises);
+      
+      // Check for errors
+      const errors = results.filter(result => result.error);
+      if (errors.length > 0) {
+        throw new Error(`Failed to update ${errors.length} products`);
+      }
+
+      await refreshProducts();
+    } catch (error) {
+      handleError(error, 'bulk update products');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Bulk archive products
+  const bulkArchiveProducts = async (ids: string[]): Promise<void> => {
+    const updates = ids.map(id => ({
+      id,
+      data: { 
+        is_active: false, 
+        availability_status: 'discontinued' as const 
+      }
+    }));
+    await bulkUpdateProducts(updates);
+  };
+
+  // Bulk restore products
+  const bulkRestoreProducts = async (ids: string[]): Promise<void> => {
+    const updates = ids.map(id => ({
+      id,
+      data: { 
+        is_active: true, 
+        availability_status: 'available' as const 
+      }
+    }));
+    await bulkUpdateProducts(updates);
+  };
+
+  // Get product statistics
+  const getProductStats = async (productId: string) => {
+    try {
+      setError(null);
+
       const { data, error } = await supabase
-        .from("product_catalog_view")
-        .select("*")
-        .eq("status", "active")
-        .eq("visibility", "public")
-        .textSearch("name", query)
-        .order("order_count", { ascending: false });
+        .from('product_analytics_view')
+        .select('*')
+        .eq('product_id', productId)
+        .single();
 
       if (error) throw error;
-
-      return (data || []).map((product: any) => ({
-        ...product,
-        tags: product.tags || [],
-        features: product.features || [],
-        specifications: product.specifications || {},
-        requirements: product.requirements || [],
-        gallery_images: product.gallery_images || [],
-        bundled_products: product.bundled_products || [],
-      }));
-    } catch (err: any) {
-      console.error("Error searching products:", err);
-      throw new Error(err?.message || "Failed to search products");
+      
+      return {
+        total_orders: data?.total_orders || 0,
+        total_revenue: data?.total_revenue || 0,
+        avg_rating: data?.avg_rating || 0,
+        last_ordered: data?.last_ordered || null,
+      };
+    } catch (error) {
+      handleError(error, 'get product stats');
+      return {
+        total_orders: 0,
+        total_revenue: 0,
+        avg_rating: 0,
+        last_ordered: null,
+      };
     }
   };
 
-  // Update product analytics
-  const updateProductAnalytics = async (
-    productId: string, 
-    incrementViews = 0, 
-    incrementOrders = 0
-  ) => {
+  // Refresh products from database
+  const refreshProducts = async (): Promise<void> => {
     try {
-      await supabase.rpc('update_product_analytics', {
-        p_product_id: productId,
-        p_increment_views: incrementViews,
-        p_increment_orders: incrementOrders,
-      });
-    } catch (err: any) {
-      console.error("Error updating product analytics:", err);
-      // Don't throw error for analytics updates to avoid breaking user flow
+      setLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error) {
+      handleError(error, 'refresh products');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Refresh products and stats
-  const refreshProducts = async () => {
-    await Promise.all([fetchProducts(), calculateStats()]);
+  // Clear error state
+  const clearError = () => {
+    setError(null);
   };
 
-  // Initialize data
+  // Load products on mount
   useEffect(() => {
     refreshProducts();
   }, []);
 
-  const contextValue: UnifiedProductsContextType = {
+  // Set up real-time subscription
+  useEffect(() => {
+    const channel = supabase
+      .channel('products_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'products',
+        },
+        () => {
+          refreshProducts();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const value: UnifiedProductsContextType = {
     products,
-    stats,
     loading,
     error,
-    refreshProducts,
     createProduct,
     updateProduct,
     deleteProduct,
+    archiveProduct,
+    restoreProduct,
     getProductById,
-    getProductBySlug,
-    getProductsByCategory,
-    getActiveProducts,
-    getFeaturedProducts,
     searchProducts,
-    updateProductAnalytics,
+    getProductsByCategory,
+    getProductsByType,
+    getFeaturedProducts,
+    getPopularProducts,
+    bulkUpdateProducts,
+    bulkArchiveProducts,
+    bulkRestoreProducts,
+    getProductStats,
+    refreshProducts,
+    clearError,
   };
 
   return (
-    <UnifiedProductsContext.Provider value={contextValue}>
+    <UnifiedProductsContext.Provider value={value}>
       {children}
     </UnifiedProductsContext.Provider>
   );
-}
-
-export function useUnifiedProducts() {
-  const context = useContext(UnifiedProductsContext);
-  if (context === undefined) {
-    throw new Error("useUnifiedProducts must be used within a UnifiedProductsProvider");
-  }
-  return context;
-}
+};
