@@ -1293,7 +1293,7 @@ export default function AdminDashboard() {
                                     {order.status}
                                   </span>
                                 </Badge>
-                                {orderTypeFilter === "regular" && (
+                                {orderTypeFilter === "regular" && "paymentStatus" in order && (
                                   <Badge
                                     variant="outline"
                                     className={
