@@ -345,9 +345,9 @@ export default function Checkout() {
 
       // Redirect to appropriate page
       if (regularOrderItems.length > 0) {
-        navigate(`/order/${orderId}`);
+        router.push(`/order/${orderId}`);
       } else {
-        navigate("/account"); // Redirect to account page for custom orders
+        router.push("/account"); // Redirect to account page for custom orders
       }
     } catch (error: any) {
       console.error("Error creating order:", error);
