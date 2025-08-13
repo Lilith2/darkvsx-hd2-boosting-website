@@ -11,7 +11,7 @@ interface CartItem {
 interface CartContextType {
   items: CartItem[];
   cartItems: CartItem[];
-  addItem: (service: { id: string; title: string; price: number; duration?: string; difficulty?: string }) => void;
+  addItem: (service: ServiceData) => void;
   addToCart: (service: { id: string; title: string; price: number; duration?: string; difficulty?: string }) => void;
   removeItem: (id: string) => void;
   removeFromCart: (id: string) => void;
