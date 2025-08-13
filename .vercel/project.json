@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "devCommand": "next dev --port $PORT",
+  "buildCommand": "next build",
+  "outputDirectory": ".next"
+}
