@@ -139,7 +139,12 @@ export default function Checkout() {
           .ilike("id", `%${codeUserId}`)
           .limit(1);
 
-        if (!error && profiles && profiles.length > 0 && profiles[0].id === user.id) {
+        if (
+          !error &&
+          profiles &&
+          profiles.length > 0 &&
+          profiles[0].id === user.id
+        ) {
           toast({
             title: "Invalid referral code",
             description: "You cannot use your own referral code.",
