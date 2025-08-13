@@ -42,7 +42,7 @@ export function useOptimizedOrders() {
       return data?.map(mapOrderFromSupabase) || [];
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
-    cacheTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   // Add order mutation
