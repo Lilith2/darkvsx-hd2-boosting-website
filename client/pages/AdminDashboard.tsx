@@ -1172,6 +1172,74 @@ export default function AdminDashboard() {
                     </CardDescription>
                   </div>
 
+                  {/* Enhanced Search and Actions */}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search orders, customers, emails..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 w-64"
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const csvData = filteredOrders.map(order => [
+                          order.id,
+                          order.customerName || '',
+                          order.customerEmail || '',
+                          order.status,
+                          `$${(order.totalAmount || order.total_amount || 0).toFixed(2)}`,
+                          new Date(orderTypeFilter === "custom" ? order.created_at : order.createdAt).toLocaleDateString(),
+                          orderTypeFilter === "custom" ? "Custom" : "Regular"
+                        ]);
+                        const csvContent = [
+                          ["Order ID", "Customer Name", "Email", "Status", "Total", "Created Date", "Type"],
+                          ...csvData
+                        ].map(row => row.map(cell => `"${cell}"`).join(",")).join("\\n");
+
+                        const blob = new Blob([csvContent], { type: "text/csv" });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = `orders_export_${new Date().toISOString().split('T')[0]}.csv`;
+                        link.click();
+                        URL.revokeObjectURL(url);
+
+                        toast({
+                          title: "Export completed",
+                          description: "Orders have been exported to CSV",
+                        });
+                      }}
+                      disabled={filteredOrders.length === 0}
+                      className="flex items-center gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      Export CSV
+                    </Button>
+                    {selectedOrders.length > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          selectedOrders.forEach(orderId => updateOrderStatus(orderId, "processing"));
+                          setSelectedOrders([]);
+                          toast({
+                            title: "Bulk update completed",
+                            description: `Updated ${selectedOrders.length} orders to processing`,
+                          });
+                        }}
+                        className="flex items-center gap-2"
+                      >
+                        <Package className="w-4 h-4" />
+                        Bulk Update ({selectedOrders.length})
+                      </Button>
+                    )}
+                  </div>
+
                   {/* Order Type Filter */}
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
