@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, ArrowLeft, Send, CheckCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -73,7 +73,7 @@ export default function ForgotPassword() {
                 Click the link in the email to reset your password. The link
                 will expire in 1 hour.
               </p>
-              <Link to="/login">
+              <Link href="/login">
                 <Button variant="outline" className="w-full">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back to Login
@@ -139,7 +139,7 @@ export default function ForgotPassword() {
 
             <div className="mt-6 text-center">
               <Link
-                to="/login"
+                href="/login"
                 className="inline-flex items-center text-sm text-muted-foreground hover:text-primary"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />
