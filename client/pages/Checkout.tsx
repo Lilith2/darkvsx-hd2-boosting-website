@@ -83,15 +83,19 @@ export default function Checkout() {
   useEffect(() => {
     const fetchCredits = async () => {
       if (!user?.id) {
+        console.log("Checkout: No user ID, skipping credits fetch");
         setAvailableCredits(0);
         return;
       }
 
+      console.log("Checkout: Fetching credits for user:", user.id);
+
       try {
         const balance = await getUserCredits();
+        console.log("Checkout: Credits fetched successfully:", balance);
         setAvailableCredits(balance);
       } catch (err: any) {
-        console.error("Error fetching credits:", err?.message || err);
+        console.error("Checkout: Error fetching credits:", err?.message || err);
         setAvailableCredits(0);
       }
     };
