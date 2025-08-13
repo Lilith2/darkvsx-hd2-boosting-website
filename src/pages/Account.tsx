@@ -316,7 +316,7 @@ export default function Account() {
               </div>
             </div>
             <div className="flex items-center space-x-3 mt-4 md:mt-0">
-              <Link to="/">
+              <Link href="/">
                 <Button variant="outline">Back to Home</Button>
               </Link>
               <Button variant="outline" onClick={logout}>
