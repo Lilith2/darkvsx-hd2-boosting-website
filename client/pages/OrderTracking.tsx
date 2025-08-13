@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useOrders } from "@/hooks/useOrders";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,8 @@ import {
 } from "lucide-react";
 
 export default function OrderTracking() {
-  const { orderId } = useParams<{ orderId: string }>();
+  const router = useRouter();
+  const { orderId } = router.query as { orderId: string };
   const { getOrder, addOrderMessage, orders, loading } = useOrders();
   const { user } = useAuth();
   const [order, setOrder] = useState(getOrder(orderId || ""));
