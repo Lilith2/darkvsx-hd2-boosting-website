@@ -32,7 +32,7 @@ export default function Cart() {
   };
 
   const subtotal = getCartTotal();
-  const tax = subtotal * 0.08; // 8% tax
+  const tax = subtotal * PAYMENT_CONSTANTS.TAX_RATE; // Sales tax
   const total = subtotal + tax;
 
   if (cartItems.length === 0) {
