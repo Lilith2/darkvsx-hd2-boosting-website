@@ -269,11 +269,11 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       };
 
       // Add all optional fields that now exist in the database schema
-      const insertData = { ...baseOrderData };
+      const insertData: any = { ...baseOrderData };
 
       // Add transaction ID for PayPal tracking
       if ((orderData as any).transactionId) {
-        (insertData as any).transaction_id = (orderData as any).transactionId;
+        insertData.transaction_id = (orderData as any).transactionId;
       }
 
       // Add IP address for security/chargeback protection
