@@ -14,7 +14,7 @@ import {
   Shield,
   Clock,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 export default function Cart() {
   const { cartItems, updateQuantity, removeFromCart, getCartTotal } = useCart();
