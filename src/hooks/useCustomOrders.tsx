@@ -56,20 +56,7 @@ export function useCustomOrders() {
 
       const { data, error: fetchError } = await supabase
         .from("custom_orders" as any)
-        .select(
-          `
-          *,
-          custom_order_items (
-            id,
-            category,
-            item_name,
-            quantity,
-            price_per_unit,
-            total_price,
-            description
-          )
-        `,
-        )
+        .select("*")
         .order("created_at", { ascending: false });
 
       if (fetchError) {
