@@ -680,7 +680,7 @@ export default function Account() {
                     <p className="text-muted-foreground mb-4">
                       Start by browsing our boosting services
                     </p>
-                    <Link to="/">
+                    <Link href="/">
                       <Button>Browse Services</Button>
                     </Link>
                   </div>
