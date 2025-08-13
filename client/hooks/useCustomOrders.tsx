@@ -66,7 +66,7 @@ export function useCustomOrders() {
       // Transform the data to match our interface
       const transformedOrders: CustomOrder[] = (data || []).map((order: any) => ({
         ...order,
-        items: order.custom_order_items || [],
+        items: order.items || [], // Use items from the jsonb column
       }));
 
       setOrders(transformedOrders);
