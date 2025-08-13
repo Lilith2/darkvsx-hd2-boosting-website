@@ -76,7 +76,7 @@ export function EnhancedNavbar() {
   const handleLogout = useCallback(async () => {
     try {
       await logout();
-      navigate("/");
+      router.push("/");
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -86,7 +86,7 @@ export function EnhancedNavbar() {
     (e: React.FormEvent) => {
       e.preventDefault();
       if (searchQuery.trim()) {
-        navigate(`/?search=${encodeURIComponent(searchQuery)}`);
+        router.push(`/?search=${encodeURIComponent(searchQuery)}`);
         setShowSearch(false);
         setSearchQuery("");
       }
