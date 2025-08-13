@@ -73,9 +73,9 @@ export default function Checkout() {
   const subtotalAfterTax = subtotal - discount + tax;
   const total = Math.max(0, subtotalAfterTax - referralCreditsApplied); // Credits applied after tax
 
-  // Fetch user's available referral credits
+  // Fetch user's available credits
   useEffect(() => {
-    const fetchReferralCredits = async () => {
+    const fetchCredits = async () => {
       if (!user?.id) {
         setAvailableCredits(0);
         return;
@@ -85,12 +85,12 @@ export default function Checkout() {
         const balance = await getUserCredits();
         setAvailableCredits(balance);
       } catch (err) {
-        console.error("Error fetching referral credits:", err);
+        console.error("Error fetching credits:", err);
         setAvailableCredits(0);
       }
     };
 
-    fetchReferralCredits();
+    fetchCredits();
   }, [user?.id, getUserCredits]);
 
   const validateReferralCode = async (code: string) => {
@@ -202,7 +202,7 @@ export default function Checkout() {
     });
   };
 
-  const handleReferralCreditsToggle = (checked: boolean) => {
+  const handleCreditsToggle = (checked: boolean) => {
     setUseReferralCredits(checked);
     if (checked && availableCredits > 0) {
       // Apply up to the total amount (including tax) or available credits, whichever is smaller
@@ -243,12 +243,12 @@ export default function Checkout() {
     setIsProcessing(true);
 
     try {
-      // Use referral credits if applied
+      // Use credits if applied
       if (useReferralCredits && referralCreditsApplied > 0) {
         const success = await useCredits(referralCreditsApplied);
 
         if (!success) {
-          throw new Error("Failed to use referral credits");
+          throw new Error("Failed to use credits");
         }
       }
       // Check if cart contains custom orders
@@ -640,7 +640,7 @@ export default function Checkout() {
                         <Checkbox
                           id="useCredits"
                           checked={useReferralCredits}
-                          onCheckedChange={handleReferralCreditsToggle}
+                          onCheckedChange={handleCreditsToggle}
                         />
                         <Label htmlFor="useCredits" className="cursor-pointer">
                           Use Credits
@@ -784,7 +784,7 @@ export default function Checkout() {
                             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                               <Shield className="w-4 h-4" />
                               <span>
-                                Secured by PayPal • 256-bit SSL encryption
+                                Secured by PayPal ��� 256-bit SSL encryption
                               </span>
                             </div>
                           </div>
