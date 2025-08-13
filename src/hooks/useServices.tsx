@@ -63,12 +63,12 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       : undefined,
     duration: service.duration,
     difficulty: service.difficulty,
-    features: service.features,
-    active: service.active,
-    popular: service.popular,
-    category: service.category,
-    createdAt: service.created_at,
-    orders: service.orders_count,
+    features: service.features || [],
+    active: service.active ?? true,
+    popular: service.popular ?? false,
+    category: service.category as "Level Boost" | "Medals" | "Samples" | "Super Credits" | "Promotions" || "Level Boost",
+    createdAt: service.created_at || "",
+    orders: service.orders_count || 0,
   });
 
   const refreshServices = async () => {
