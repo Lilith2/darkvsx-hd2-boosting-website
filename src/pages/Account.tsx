@@ -476,7 +476,7 @@ export default function Account() {
                       <p className="text-muted-foreground mb-4">
                         Complete orders to see your most used services here
                       </p>
-                      <Link to="/">
+                      <Link href="/">
                         <Button size="sm">Browse Services</Button>
                       </Link>
                     </div>
