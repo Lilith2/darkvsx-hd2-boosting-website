@@ -80,7 +80,7 @@ export function EnhancedNavbar() {
     } catch (error) {
       console.error("Logout error:", error);
     }
-  }, [logout, navigate]);
+  }, [logout, router]);
 
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
@@ -91,7 +91,7 @@ export function EnhancedNavbar() {
         setSearchQuery("");
       }
     },
-    [searchQuery, navigate],
+    [searchQuery, router],
   );
 
   const isActivePath = useCallback(
