@@ -56,7 +56,7 @@ export default function Cart() {
               <p className="text-muted-foreground mb-6">
                 Add some boosting services to get started
               </p>
-              <Link to="/">
+              <Link href="/">
                 <Button>Browse Services</Button>
               </Link>
             </CardContent>
