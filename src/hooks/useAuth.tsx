@@ -6,6 +6,10 @@ import {
   ReactNode,
 } from "react";
 // Dynamic import to avoid webpack issues
+const getSupabaseClient = async () => {
+  const { supabase } = await import("@/integrations/supabase/client");
+  return supabase;
+};
 import type { Tables } from "@/integrations/supabase/types";
 
 type Profile = Tables<"profiles">;
