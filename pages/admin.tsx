@@ -1293,22 +1293,23 @@ export default function AdminDashboard() {
                                     {order.status}
                                   </span>
                                 </Badge>
-                                {orderTypeFilter === "regular" && "paymentStatus" in order && (
-                                  <Badge
-                                    variant="outline"
-                                    className={
-                                      order.paymentStatus === "paid"
-                                        ? "border-green-500/50 text-green-600"
-                                        : order.paymentStatus === "pending"
-                                          ? "border-yellow-500/50 text-yellow-600"
-                                          : "border-red-500/50 text-red-600"
-                                    }
-                                  >
-                                    {order.paymentStatus === "paid"
-                                      ? "Paid"
-                                      : "Payment " + order.paymentStatus}
-                                  </Badge>
-                                )}
+                                {orderTypeFilter === "regular" &&
+                                  "paymentStatus" in order && (
+                                    <Badge
+                                      variant="outline"
+                                      className={
+                                        order.paymentStatus === "paid"
+                                          ? "border-green-500/50 text-green-600"
+                                          : order.paymentStatus === "pending"
+                                            ? "border-yellow-500/50 text-yellow-600"
+                                            : "border-red-500/50 text-red-600"
+                                      }
+                                    >
+                                      {order.paymentStatus === "paid"
+                                        ? "Paid"
+                                        : "Payment " + order.paymentStatus}
+                                    </Badge>
+                                  )}
                               </div>
                               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                                 <div>
