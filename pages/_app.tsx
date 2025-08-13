@@ -32,7 +32,7 @@ const queryClient = new QueryClient({
         return failureCount < 2; // Reduced retries
       },
       // Add request deduplication
-      notifyOnChangeProps: ['data', 'error'],
+      notifyOnChangeProps: ["data", "error"],
     },
     mutations: {
       retry: 1,

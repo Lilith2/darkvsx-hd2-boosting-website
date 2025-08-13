@@ -1,40 +1,44 @@
-import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import { AlertTriangle, Rocket, Zap, Shield, Crosshair } from 'lucide-react'
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { AlertTriangle, Rocket, Zap, Shield, Crosshair } from "lucide-react";
 
 export default function Custom404() {
-  const [isExtracting, setIsExtracting] = useState(false)
-  const [glitchText, setGlitchText] = useState('404')
+  const [isExtracting, setIsExtracting] = useState(false);
+  const [glitchText, setGlitchText] = useState("404");
 
   // Glitch effect for the 404 text
   useEffect(() => {
-    const glitchChars = ['4', '0', '4', 'Ø', '£', '#', '@', '∆', '◊']
+    const glitchChars = ["4", "0", "4", "Ø", "£", "#", "@", "∆", "◊"];
     const interval = setInterval(() => {
-      const glitched = Array.from('404').map((char, i) =>
-        Math.random() > 0.7 ? glitchChars[Math.floor(Math.random() * glitchChars.length)] : char
-      ).join('')
-      setGlitchText(glitched)
+      const glitched = Array.from("404")
+        .map((char, i) =>
+          Math.random() > 0.7
+            ? glitchChars[Math.floor(Math.random() * glitchChars.length)]
+            : char,
+        )
+        .join("");
+      setGlitchText(glitched);
 
-      setTimeout(() => setGlitchText('404'), 150)
-    }, 2000)
+      setTimeout(() => setGlitchText("404"), 150);
+    }, 2000);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   const handleExtraction = () => {
-    setIsExtracting(true)
-    setTimeout(() => setIsExtracting(false), 3000)
-  }
+    setIsExtracting(true);
+    setTimeout(() => setIsExtracting(false), 3000);
+  };
 
   const bugFacts = [
     "🐛 A Charger destroyed this page coordinates",
     "🔥 Orbital bombardment wiped out this sector",
     "⚡ EMS Artillery caused data corruption",
     "🚀 Extraction ship couldn't find landing zone",
-    "💥 Strategem malfunction detected"
-  ]
+    "💥 Strategem malfunction detected",
+  ];
 
-  const randomFact = bugFacts[Math.floor(Math.random() * bugFacts.length)]
+  const randomFact = bugFacts[Math.floor(Math.random() * bugFacts.length)];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-red-950/20 relative overflow-hidden">
@@ -78,9 +82,7 @@ export default function Custom404() {
               <p className="text-lg text-orange-300 font-medium">
                 🦅 SUPER EARTH COMMAND TRANSMISSION 🦅
               </p>
-              <p className="text-muted-foreground">
-                {randomFact}
-              </p>
+              <p className="text-muted-foreground">{randomFact}</p>
               <p className="text-blue-300 text-sm italic">
                 "Democracy never sleeps, but sometimes URLs do."
               </p>
@@ -122,10 +124,15 @@ export default function Custom404() {
               <div className="mt-6 p-4 bg-green-900/30 border border-green-500/50 rounded-lg animate-fade-in">
                 <div className="flex items-center justify-center space-x-2 text-green-400">
                   <Crosshair className="w-5 h-5 animate-spin" />
-                  <span className="font-mono">EXTRACTION BEACON ACTIVATED...</span>
+                  <span className="font-mono">
+                    EXTRACTION BEACON ACTIVATED...
+                  </span>
                 </div>
                 <div className="w-full bg-green-900/50 rounded-full h-2 mt-2">
-                  <div className="bg-green-400 h-2 rounded-full animate-pulse" style={{ width: '100%' }} />
+                  <div
+                    className="bg-green-400 h-2 rounded-full animate-pulse"
+                    style={{ width: "100%" }}
+                  />
                 </div>
               </div>
             )}
@@ -134,7 +141,8 @@ export default function Custom404() {
           {/* Footer Message */}
           <div className="text-center space-y-2">
             <p className="text-sm text-muted-foreground">
-              🎖️ <strong>Helldiver Tip:</strong> Always check your coordinates before diving!
+              🎖️ <strong>Helldiver Tip:</strong> Always check your coordinates
+              before diving!
             </p>
             <p className="text-xs text-muted-foreground/70">
               For Liberty! For Democracy! For... properly working URLs! 🫡
@@ -142,38 +150,71 @@ export default function Custom404() {
           </div>
 
           {/* Floating Elements */}
-          <div className="absolute -top-4 -left-4 text-4xl animate-float">🚀</div>
-          <div className="absolute -top-2 -right-8 text-2xl animate-float" style={{animationDelay: '1s'}}>⚡</div>
-          <div className="absolute -bottom-4 left-8 text-3xl animate-float" style={{animationDelay: '2s'}}>🛡️</div>
+          <div className="absolute -top-4 -left-4 text-4xl animate-float">
+            🚀
+          </div>
+          <div
+            className="absolute -top-2 -right-8 text-2xl animate-float"
+            style={{ animationDelay: "1s" }}
+          >
+            ⚡
+          </div>
+          <div
+            className="absolute -bottom-4 left-8 text-3xl animate-float"
+            style={{ animationDelay: "2s" }}
+          >
+            🛡️
+          </div>
         </div>
       </div>
 
       {/* CSS for animations */}
       <style jsx>{`
         @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(5deg); }
+          0%,
+          100% {
+            transform: translateY(0px) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-20px) rotate(5deg);
+          }
         }
         .animate-float {
           animation: float 3s ease-in-out infinite;
         }
         @keyframes fade-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
         .animate-fade-in {
           animation: fade-in 0.5s ease-out;
         }
         @keyframes matrix-rain {
-          0% { transform: translateY(-100vh); opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          100% { transform: translateY(100vh); opacity: 0; }
+          0% {
+            transform: translateY(-100vh);
+            opacity: 0;
+          }
+          10% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(100vh);
+            opacity: 0;
+          }
         }
         .matrix-char {
           position: absolute;
           color: #00ff00;
-          font-family: 'Courier New', monospace;
+          font-family: "Courier New", monospace;
           font-size: 14px;
           animation: matrix-rain 3s linear infinite;
           pointer-events: none;
@@ -189,13 +230,13 @@ export default function Custom404() {
             style={{
               left: `${Math.random() * 100}%`,
               animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${3 + Math.random() * 2}s`
+              animationDuration: `${3 + Math.random() * 2}s`,
             }}
           >
-            {Math.random() > 0.5 ? '01001' : '11010'}
+            {Math.random() > 0.5 ? "01001" : "11010"}
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }
