@@ -1827,16 +1827,6 @@ export default function AdminDashboard() {
                     </p>
                   </div>
 
-                  {selectedOrderForResume.assignedBooster && (
-                    <div>
-                      <Label className="text-sm font-medium text-muted-foreground">
-                        Assigned Booster
-                      </Label>
-                      <p className="font-medium">
-                        {selectedOrderForResume.assignedBooster}
-                      </p>
-                    </div>
-                  )}
 
                   {selectedOrderForResume.progress && (
                     <div>
