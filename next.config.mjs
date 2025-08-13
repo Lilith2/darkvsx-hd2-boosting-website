@@ -3,14 +3,20 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   trailingSlash: false,
+  compress: true,
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "localhost",
+        protocol: 'https',
+        hostname: 'localhost',
       },
     ],
     unoptimized: false,
+    formats: ['image/webp', 'image/avif'],
+  },
+  experimental: {
+    optimizeCss: true,
+    scrollRestoration: true,
   },
   transpilePackages: [
     "@supabase/supabase-js",
