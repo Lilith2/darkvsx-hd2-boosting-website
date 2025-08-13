@@ -629,7 +629,7 @@ export default function Checkout() {
                               availableCredits,
                               subtotal -
                                 referralDiscount +
-                                (subtotal - referralDiscount) * 0.08,
+                                (subtotal - referralDiscount) * PAYMENT_CONSTANTS.TAX_RATE,
                             ).toFixed(2)}{" "}
                             of your ${availableCredits.toFixed(2)} available
                             credits
