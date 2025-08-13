@@ -154,3 +154,15 @@ function mapOrderFromSupabase(data: any): Order {
     referral_credits_used: data.referral_credits_used,
   };
 }
+
+// Helper function to map Supabase data to OrderMessage interface
+function mapOrderMessageFromSupabase(data: any): OrderMessage {
+  return {
+    id: data.id,
+    order_id: data.order_id || "",
+    from: data.from,
+    message: data.message,
+    is_read: data.is_read ?? false,
+    created_at: data.created_at || new Date().toISOString(),
+  };
+}
