@@ -4,10 +4,21 @@ import { useBundles } from "@/hooks/useBundles";
 import { useOrders } from "@/hooks/useOrders";
 import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useToast } from "@/hooks/use-toast";
-import { ServiceModal } from "@/components/ServiceModal";
-import { BundleModal } from "@/components/BundleModal";
-import { PricingModal } from "@/components/PricingModal";
-import SimpleCustomOrders from "@/components/SimpleCustomOrders";
+import dynamic from 'next/dynamic';
+
+// Dynamically import heavy components
+const ServiceModal = dynamic(() => import("@/components/ServiceModal").then(mod => ({ default: mod.ServiceModal })), {
+  loading: () => <div>Loading...</div>
+});
+const BundleModal = dynamic(() => import("@/components/BundleModal").then(mod => ({ default: mod.BundleModal })), {
+  loading: () => <div>Loading...</div>
+});
+const PricingModal = dynamic(() => import("@/components/PricingModal").then(mod => ({ default: mod.PricingModal })), {
+  loading: () => <div>Loading...</div>
+});
+const SimpleCustomOrders = dynamic(() => import("@/components/SimpleCustomOrders"), {
+  loading: () => <div>Loading...</div>
+});
 import { Button } from "@/components/ui/button";
 import {
   Card,
