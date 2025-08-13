@@ -109,7 +109,7 @@ export function useCustomOrders() {
   const calculateStatsManually = async () => {
     try {
       const { data: allOrders, error } = await supabase
-        .from("custom_orders" as any)
+        .from("custom_orders")
         .select("*");
 
       if (error) {
