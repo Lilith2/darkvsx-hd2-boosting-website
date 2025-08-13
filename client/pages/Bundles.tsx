@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { useBundles } from "@/hooks/useBundles";
+import { useBundles } from "@/hooks/useBundlesCompat";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
