@@ -163,9 +163,9 @@ export default function Checkout() {
       try {
         const { supabase } = await import("@/integrations/supabase/client");
         const { data: existingReferrals, error } = await supabase
-          .from("referrals")
+          .from("user_referral_usage")
           .select("id")
-          .eq("referred_user_id", user.id)
+          .eq("user_id", user.id)
           .limit(1);
 
         if (error) {
@@ -173,11 +173,10 @@ export default function Checkout() {
           if (
             error.code === "PGRST116" ||
             error.message?.includes("relation") ||
-            error.message?.includes("does not exist") ||
-            error.message?.includes("referrals")
+            error.message?.includes("does not exist")
           ) {
             console.warn(
-              "Referrals table not found, allowing referral to proceed",
+              "User referral usage table not found, allowing referral to proceed",
             );
           } else {
             console.error("Error checking existing referrals:", error);
