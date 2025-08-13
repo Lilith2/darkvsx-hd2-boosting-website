@@ -93,7 +93,7 @@ export default function Account() {
     ["pending", "processing", "in-progress"].includes(order.status),
   ).length;
   const totalOrders = userOrders.length;
-  const joinDate = user?.id ? new Date(2024, 0, 1) : new Date(); // Mock join date
+  const joinDate = user?.created_at ? new Date(user.created_at) : new Date();
 
   const [accountData, setAccountData] = useState({
     username: user?.username || "",
