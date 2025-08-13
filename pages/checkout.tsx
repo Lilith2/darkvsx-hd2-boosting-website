@@ -307,6 +307,8 @@ export default function Checkout() {
       if (customOrderItems.length > 0) {
         for (const cartItem of customOrderItems) {
           const customOrderData = cartItem.service.customOrderData;
+          if (!customOrderData) continue;
+
           await createCustomOrder({
             items: customOrderData.items.map((item: any) => ({
               category: item.category,
