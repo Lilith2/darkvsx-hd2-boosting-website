@@ -10,10 +10,6 @@ import { PricingModal } from "@/components/PricingModal";
 import SimpleCustomOrders from "@/components/SimpleCustomOrders";
 import { Button } from "@/components/ui/button";
 import {
-  sendTicketReplyEmail,
-  generateTicketSubject,
-} from "@/lib/emailService";
-import {
   Card,
   CardContent,
   CardDescription,
