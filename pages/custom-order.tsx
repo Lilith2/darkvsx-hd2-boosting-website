@@ -41,8 +41,8 @@ interface CustomPricing {
   base_price: number;
   price_per_unit: number;
   minimum_quantity: number;
-  maximum_quantity: number;
-  description: string;
+  maximum_quantity: number | null;
+  description: string | null;
   is_active: boolean;
 }
 
