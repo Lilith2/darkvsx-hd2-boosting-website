@@ -32,7 +32,7 @@ export interface Order {
   ip_address?: string;
   referral_code?: string;
   referral_discount?: number;
-  referral_credits_used?: number;
+  credits_used?: number;
   referred_by_user_id?: string;
 }
 
@@ -152,8 +152,8 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     referralDiscount: order.referral_discount
       ? parseFloat(Number(order.referral_discount).toFixed(2))
       : undefined,
-    referralCreditsUsed: order.referral_credits_used
-      ? parseFloat(Number(order.referral_credits_used).toFixed(2))
+    referralCreditsUsed: order.credits_used
+      ? parseFloat(Number(order.credits_used).toFixed(2))
       : undefined,
     referredByUserId: order.referred_by_user_id || undefined,
     messages: messages.map((msg) => ({
@@ -291,7 +291,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       }
 
       if (orderData.referralCreditsUsed) {
-        insertData.referral_credits_used = orderData.referralCreditsUsed;
+        insertData.credits_used = orderData.referralCreditsUsed;
       }
 
       const { data: orderResult, error: orderError } = await supabase
@@ -330,7 +330,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
         (err?.message?.includes("transaction_id") ||
           err?.message?.includes("referral_code") ||
           err?.message?.includes("referral_discount") ||
-          err?.message?.includes("referral_credits_used"))
+          err?.message?.includes("credits_used"))
       ) {
         console.warn(
           "Database schema missing some expected columns. Retrying with base fields only.",
@@ -362,7 +362,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
             retryOrderData.referral_discount = orderData.referralDiscount;
           }
           if (orderData.referralCreditsUsed) {
-            retryOrderData.referral_credits_used =
+            retryOrderData.credits_used =
               orderData.referralCreditsUsed;
           }
 
