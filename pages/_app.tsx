@@ -17,6 +17,7 @@ import { AccessibilityWrapper } from '@/components/AccessibilityWrapper';
 import { SEOHead } from '@/components/SEOHead';
 import { SecurityProvider } from '@/components/SecurityProvider';
 import { Layout } from '@/components/Layout';
+import { AppContent } from '@/components/AppContent';
 import { initializeAnalytics } from '@/lib/analytics';
 
 const queryClient = new QueryClient({
@@ -51,11 +52,13 @@ export default function App({ Component, pageProps }: AppProps) {
                     <CartProvider>
                       <OrdersProvider>
                         <ReferralsProvider>
-                          <Layout>
-                            <Component {...pageProps} />
-                            <Toaster />
-                            <Sonner />
-                          </Layout>
+                          <AppContent>
+                            <Layout>
+                              <Component {...pageProps} />
+                              <Toaster />
+                              <Sonner />
+                            </Layout>
+                          </AppContent>
                         </ReferralsProvider>
                       </OrdersProvider>
                     </CartProvider>
