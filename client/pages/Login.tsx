@@ -46,7 +46,7 @@ export default function Login() {
       if (success) {
         // Small delay to allow auth state to update
         setTimeout(() => {
-          navigate(isAdmin ? "/admin" : "/");
+          router.push(isAdmin ? "/admin" : "/");
         }, 100);
       } else {
         setError("Invalid email or password");
