@@ -8,6 +8,7 @@ import { ServiceModal } from "@/components/ServiceModal";
 import { BundleModal } from "@/components/BundleModal";
 import { PricingModal } from "@/components/PricingModal";
 import SimpleCustomOrders from "@/components/SimpleCustomOrders";
+import { EnhancedOrdersTab } from "@/components/EnhancedOrdersTab";
 import { Button } from "@/components/ui/button";
 import {
   Card,
