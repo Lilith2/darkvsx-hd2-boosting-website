@@ -200,10 +200,12 @@ class AuditLogger {
   private maxEvents = 1000;
 
   log(event: Omit<AuditEvent, "timestamp">): void {
-    this.events.push({
+    const fullEvent = {
       ...event,
       timestamp: new Date(),
-    });
+    };
+
+    this.events.push(fullEvent);
 
     // Keep only recent events
     if (this.events.length > this.maxEvents) {
@@ -212,9 +214,9 @@ class AuditLogger {
 
     // In production, send to logging service
     if (process.env.NODE_ENV === "production") {
-      this.sendToLoggingService(event);
+      this.sendToLoggingService(fullEvent);
     } else {
-      console.log("Audit:", event);
+      console.log("Audit:", fullEvent);
     }
   }
 
