@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -52,8 +53,7 @@ const navigation: NavigationItem[] = [
 ];
 
 export function EnhancedNavbar() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
   const { cartItems } = useCart();
   const { theme, setTheme } = useTheme();
@@ -76,32 +76,32 @@ export function EnhancedNavbar() {
   const handleLogout = useCallback(async () => {
     try {
       await logout();
-      navigate("/");
+      router.push("/");
     } catch (error) {
       console.error("Logout error:", error);
     }
-  }, [logout, navigate]);
+  }, [logout, router]);
 
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
       if (searchQuery.trim()) {
-        navigate(`/?search=${encodeURIComponent(searchQuery)}`);
+        router.push(`/?search=${encodeURIComponent(searchQuery)}`);
         setShowSearch(false);
         setSearchQuery("");
       }
     },
-    [searchQuery, navigate],
+    [searchQuery, router],
   );
 
   const isActivePath = useCallback(
     (path: string) => {
-      if (path === "/" && location.pathname !== "/") return false;
+      if (path === "/" && router.pathname !== "/") return false;
       return (
-        location.pathname === path || location.pathname.startsWith(path + "/")
+        router.pathname === path || router.pathname.startsWith(path + "/")
       );
     },
-    [location.pathname],
+    [router.pathname],
   );
 
   return (
