@@ -1317,14 +1317,18 @@ export default function AdminDashboard() {
                                     Customer
                                   </p>
                                   <p className="font-medium">
-                                    {orderTypeFilter === "custom"
+                                    {orderTypeFilter === "custom" && "customer_email" in order
                                       ? order.customer_email || "N/A"
-                                      : order.customerName}
+                                      : "customerName" in order
+                                        ? order.customerName
+                                        : "N/A"}
                                   </p>
                                   <p className="text-xs text-muted-foreground">
-                                    {orderTypeFilter === "custom"
+                                    {orderTypeFilter === "custom" && "customer_email" in order
                                       ? order.customer_email || "N/A"
-                                      : order.customerEmail}
+                                      : "customerEmail" in order
+                                        ? order.customerEmail
+                                        : "N/A"}
                                   </p>
                                 </div>
                                 <div>
@@ -1332,7 +1336,7 @@ export default function AdminDashboard() {
                                     Services
                                   </p>
                                   <div className="font-medium">
-                                    {orderTypeFilter === "custom"
+                                    {orderTypeFilter === "custom" && "items" in order
                                       ? order.items?.map((item, idx) => (
                                           <span key={item.id}>
                                             {item.item_name} ({item.quantity})
@@ -1340,15 +1344,17 @@ export default function AdminDashboard() {
                                               ", "}
                                           </span>
                                         ))
-                                      : order.services?.map((s, idx) => (
-                                          <span key={s.id}>
-                                            {s.name}
-                                            {s.quantity > 1 &&
-                                              ` (x${s.quantity})`}
-                                            {idx < order.services.length - 1 &&
-                                              ", "}
-                                          </span>
-                                        ))}
+                                      : "services" in order
+                                        ? order.services?.map((s, idx) => (
+                                            <span key={s.id}>
+                                              {s.name}
+                                              {s.quantity > 1 &&
+                                                ` (x${s.quantity})`}
+                                              {idx < order.services.length - 1 &&
+                                                ", "}
+                                            </span>
+                                          ))
+                                        : "No services"}
                                   </div>
                                 </div>
                                 <div>
