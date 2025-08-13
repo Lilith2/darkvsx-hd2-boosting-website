@@ -995,7 +995,19 @@ export type Database = {
       };
     };
     Views: {};
-    Functions: {};
+    Functions: {
+      get_custom_order_stats: {
+        Args: {};
+        Returns: {
+          total_orders: number;
+          total_revenue: number;
+          avg_order_value: number;
+          pending_orders: number;
+          completed_orders: number;
+          most_popular_category?: string;
+        }[];
+      };
+    };
     Enums: {};
     CompositeTypes: {};
   };
