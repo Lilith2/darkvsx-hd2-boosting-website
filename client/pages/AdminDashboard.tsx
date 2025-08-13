@@ -1208,63 +1208,51 @@ export default function AdminDashboard() {
                       <span>Filter by Status:</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {[
-                        {
-                          value: "all",
-                          label: "All Orders",
-                          count: orders.filter(
+                      {(() => {
+                        // Combine all orders for counting
+                        const allOrders = [
+                          ...orders.filter(
                             (order) =>
                               !order.services.some(
                                 (s) => s.id === "support-ticket",
                               ),
-                          ).length,
-                          color: "default",
-                        },
-                        {
-                          value: "pending",
-                          label: "Pending",
-                          count: orders.filter(
-                            (order) =>
-                              !order.services.some(
-                                (s) => s.id === "support-ticket",
-                              ) && order.status === "pending",
-                          ).length,
-                          color: "yellow",
-                        },
-                        {
-                          value: "processing",
-                          label: "Processing",
-                          count: orders.filter(
-                            (order) =>
-                              !order.services.some(
-                                (s) => s.id === "support-ticket",
-                              ) && order.status === "processing",
-                          ).length,
-                          color: "blue",
-                        },
-                        {
-                          value: "in-progress",
-                          label: "In Progress",
-                          count: orders.filter(
-                            (order) =>
-                              !order.services.some(
-                                (s) => s.id === "support-ticket",
-                              ) && order.status === "in-progress",
-                          ).length,
-                          color: "purple",
-                        },
-                        {
-                          value: "completed",
-                          label: "Completed",
-                          count: orders.filter(
-                            (order) =>
-                              !order.services.some(
-                                (s) => s.id === "support-ticket",
-                              ) && order.status === "completed",
-                          ).length,
-                          color: "green",
-                        },
-                      ].map((filter) => (
+                          ),
+                          ...customOrders
+                        ];
+
+                        return [
+                          {
+                            value: "all",
+                            label: "All Orders",
+                            count: allOrders.length,
+                            color: "default",
+                          },
+                          {
+                            value: "pending",
+                            label: "Pending",
+                            count: allOrders.filter(order => order.status === "pending").length,
+                            color: "yellow",
+                          },
+                          {
+                            value: "processing",
+                            label: "Processing",
+                            count: allOrders.filter(order => order.status === "processing").length,
+                            color: "blue",
+                          },
+                          {
+                            value: "in-progress",
+                            label: "In Progress",
+                            count: allOrders.filter(order => order.status === "in-progress").length,
+                            color: "purple",
+                          },
+                          {
+                            value: "completed",
+                            label: "Completed",
+                            count: allOrders.filter(order => order.status === "completed").length,
+                            color: "green",
+                          },
+                        ];
+                      })().map((filter) => (
                         <Button
                           key={filter.value}
                           size="sm"
