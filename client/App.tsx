@@ -6,10 +6,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/hooks/useAuth";
-import { ServicesProvider } from "@/hooks/useServices";
-import { BundlesProvider } from "@/hooks/useBundles";
+import { UnifiedProductsProvider } from "@/hooks/useUnifiedProducts";
+import { UnifiedOrdersProvider } from "@/hooks/useUnifiedOrders";
+import { UserActivitiesProvider } from "@/hooks/useUserActivities";
+import { CommunicationsProvider } from "@/hooks/useCommunications";
 import { CartProvider } from "@/hooks/useCart";
-import { OrdersProvider } from "@/hooks/useOrders";
 import { ReferralsProvider } from "@/hooks/useReferrals";
 import { AppContent } from "@/components/AppContent";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -41,15 +42,17 @@ function AppProviders({ children }: { children: React.ReactNode }) {
           <QueryClientProvider client={queryClient}>
             <TooltipProvider>
               <AuthProvider>
-                <ServicesProvider>
-                  <BundlesProvider>
-                    <CartProvider>
-                      <OrdersProvider>
-                        <ReferralsProvider>{children}</ReferralsProvider>
-                      </OrdersProvider>
-                    </CartProvider>
-                  </BundlesProvider>
-                </ServicesProvider>
+                <UnifiedProductsProvider>
+                  <UnifiedOrdersProvider>
+                    <UserActivitiesProvider>
+                      <CommunicationsProvider>
+                        <CartProvider>
+                          <ReferralsProvider>{children}</ReferralsProvider>
+                        </CartProvider>
+                      </CommunicationsProvider>
+                    </UserActivitiesProvider>
+                  </UnifiedOrdersProvider>
+                </UnifiedProductsProvider>
               </AuthProvider>
             </TooltipProvider>
           </QueryClientProvider>
