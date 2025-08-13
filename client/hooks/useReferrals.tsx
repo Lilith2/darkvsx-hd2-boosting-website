@@ -132,9 +132,19 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
   };
 
   const getUserCredits = async (): Promise<number> => {
-    if (!user?.id) return 0;
+    if (!user?.id) {
+      console.warn("getUserCredits: No user ID available");
+      return 0;
+    }
 
     try {
+      // Check if user is authenticated
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) {
+        console.warn("getUserCredits: User not authenticated");
+        return 0;
+      }
+
       const { data: profileData, error } = await supabase
         .from("profiles")
         .select("credit_balance")
@@ -142,12 +152,18 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (error) {
-        if (
-          error.code === "PGRST116" ||
-          error.message?.includes("column") ||
-          error.message?.includes("does not exist")
-        ) {
-          return 0; // Column doesn't exist yet
+        // Handle specific known errors
+        if (error.code === "PGRST116") {
+          console.warn("getUserCredits: No rows returned (user profile not found)");
+          return 0;
+        }
+        if (error.message?.includes("column") || error.message?.includes("does not exist")) {
+          console.warn("getUserCredits: Credit balance column does not exist");
+          return 0;
+        }
+        if (error.message?.includes("JWT")) {
+          console.warn("getUserCredits: Authentication issue");
+          return 0;
         }
         throw error;
       }
@@ -155,6 +171,12 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       return parseFloat(String(profileData?.credit_balance || 0));
     } catch (err: any) {
       console.error("Error fetching user credits:", err?.message || err);
+
+      // If it's a network error, provide more specific info
+      if (err?.message?.includes("Failed to fetch")) {
+        console.error("Network error - check internet connection and Supabase configuration");
+      }
+
       return 0;
     }
   };
