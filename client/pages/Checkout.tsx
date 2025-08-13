@@ -69,9 +69,15 @@ export default function Checkout() {
 
   const subtotal = getCartTotal();
   const discount = referralDiscount; // Only referral discount affects tax calculation
-  const tax = (subtotal - discount) * PAYMENT_CONSTANTS.TAX_RATE; // Sales tax on amount after referral discount only
-  const subtotalAfterTax = subtotal - discount + tax;
-  const total = Math.max(0, subtotalAfterTax - referralCreditsApplied); // Credits applied after tax
+  const amountAfterDiscount = subtotal - discount;
+
+  // Check if order will be fully paid with credits
+  const willBeFullyPaidWithCredits = useReferralCredits && referralCreditsApplied >= amountAfterDiscount;
+
+  // Only apply tax if there will be a payment (not fully covered by credits)
+  const tax = willBeFullyPaidWithCredits ? 0 : amountAfterDiscount * PAYMENT_CONSTANTS.TAX_RATE;
+  const subtotalAfterTax = amountAfterDiscount + tax;
+  const total = Math.max(0, subtotalAfterTax - referralCreditsApplied);
 
   // Fetch user's available credits
   useEffect(() => {
