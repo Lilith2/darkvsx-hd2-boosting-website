@@ -282,6 +282,7 @@ export default function CustomOrder() {
         badge: "Custom",
         active: true,
         orders: 0,
+        createdAt: new Date().toISOString(),
         customOrderData: {
           items: orderItems,
           notes: orderNotes,
