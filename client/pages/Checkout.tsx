@@ -67,9 +67,10 @@ export default function Checkout() {
   });
 
   const subtotal = getCartTotal();
-  const discount = referralDiscount + referralCreditsApplied;
-  const tax = (subtotal - discount) * 0.08; // 8% tax on discounted amount
-  const total = Math.max(0, subtotal - discount + tax); // Ensure total is never negative
+  const discount = referralDiscount; // Only referral discount affects tax calculation
+  const tax = (subtotal - discount) * 0.08; // 8% tax on amount after referral discount only
+  const subtotalAfterTax = subtotal - discount + tax;
+  const total = Math.max(0, subtotalAfterTax - referralCreditsApplied); // Credits applied after tax
 
   // Fetch user's available referral credits
   useEffect(() => {
