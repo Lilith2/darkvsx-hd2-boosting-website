@@ -109,6 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               email: newProfile.email || "",
               role: (newProfile.role as "user" | "admin") || "user",
               discord_username: newProfile.discord_username || undefined,
+              created_at: newProfile.created_at || undefined,
             });
           }
         }
@@ -120,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: profile.email || "",
           role: (profile.role as "user" | "admin") || "user",
           discord_username: profile.discord_username || undefined,
+          created_at: profile.created_at || undefined,
         });
       }
     } catch (error) {
