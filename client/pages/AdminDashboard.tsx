@@ -1311,8 +1311,8 @@ export default function AdminDashboard() {
                       </h3>
                       <p className="text-muted-foreground">
                         {orderFilter === "all"
-                          ? `When customers place ${orderTypeFilter} orders, they will appear here.`
-                          : `No ${orderTypeFilter} orders with ${orderFilter} status found. Try selecting a different filter.`}
+                          ? "When customers place orders, they will appear here."
+                          : `No orders with ${orderFilter} status found. Try selecting a different filter.`}
                       </p>
                     </div>
                   ) : (
