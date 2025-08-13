@@ -6,7 +6,7 @@ While the starter comes with a express server, only create endpoint when strictl
 
 ## Tech Stack
 
-- **Frontend**: React 18 + React Router 6 (spa) + TypeScript + Vite + TailwindCSS 3
+- **Frontend**: React 18 + Next.js (file-based routing) + TypeScript + TailwindCSS 3
 - **Backend**: Express server integrated with Vite dev server
 - **Testing**: Vitest
 - **UI**: Radix UI + TailwindCSS 3 + Lucide React icons
