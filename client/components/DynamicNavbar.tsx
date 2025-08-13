@@ -47,6 +47,9 @@ import {
   ExternalLink,
   ChevronDown,
   Activity,
+  TrendingUp,
+  HelpCircle,
+  MessageSquare,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
