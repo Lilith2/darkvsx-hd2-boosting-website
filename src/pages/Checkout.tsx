@@ -69,7 +69,7 @@ export default function Checkout() {
 
   const subtotal = getCartTotal();
   const discount = referralDiscount; // Only referral discount affects tax calculation
-  const tax = (subtotal - discount) * 0.08; // 8% tax on amount after referral discount only
+  const tax = (subtotal - discount) * PAYMENT_CONSTANTS.TAX_RATE; // Sales tax on amount after referral discount only
   const subtotalAfterTax = subtotal - discount + tax;
   const total = Math.max(0, subtotalAfterTax - referralCreditsApplied); // Credits applied after tax
 
