@@ -1376,9 +1376,11 @@ export default function AdminDashboard() {
                                   </p>
                                   <p className="font-medium">
                                     {new Date(
-                                      orderTypeFilter === "custom"
+                                      orderTypeFilter === "custom" && "created_at" in order
                                         ? order.created_at
-                                        : order.createdAt,
+                                        : "createdAt" in order
+                                          ? order.createdAt
+                                          : new Date().toISOString(),
                                     ).toLocaleDateString()}
                                   </p>
                                 </div>
