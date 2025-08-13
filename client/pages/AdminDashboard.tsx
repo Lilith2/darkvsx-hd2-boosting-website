@@ -1234,16 +1234,12 @@ export default function AdminDashboard() {
                             color: "yellow",
                           },
                           {
-                            value: "processing",
-                            label: "Processing",
-                            count: allOrders.filter(order => order.status === "processing").length,
+                            value: "active",
+                            label: "Active",
+                            count: allOrders.filter(order =>
+                              order.status === "processing" || order.status === "in-progress"
+                            ).length,
                             color: "blue",
-                          },
-                          {
-                            value: "in-progress",
-                            label: "In Progress",
-                            count: allOrders.filter(order => order.status === "in-progress").length,
-                            color: "purple",
                           },
                           {
                             value: "completed",
