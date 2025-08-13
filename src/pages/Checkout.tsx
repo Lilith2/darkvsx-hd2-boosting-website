@@ -35,7 +35,7 @@ import {
   Gift,
   DollarSign,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { REFERRAL_CONFIG } from "@/lib/config";
 import { useEffect } from "react";
