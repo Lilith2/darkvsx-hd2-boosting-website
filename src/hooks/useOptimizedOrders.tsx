@@ -151,7 +151,7 @@ function mapOrderFromSupabase(data: any): Order {
     ip_address: data.ip_address,
     referral_code: data.referral_code,
     referral_discount: data.referral_discount,
-    referral_credits_used: data.credits_used,
+    credits_used: data.credits_used,
   };
 }
 
