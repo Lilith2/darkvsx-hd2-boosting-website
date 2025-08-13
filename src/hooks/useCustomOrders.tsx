@@ -197,7 +197,7 @@ export function useCustomOrders() {
 
       toast({
         title: "Order Created",
-        description: `Custom order ${(orderResult as any).order_number || (orderResult as any).id} has been created successfully.`,
+        description: `Custom order ${orderResult.order_number || orderResult.id} has been created successfully.`,
       });
 
       // Refresh orders
