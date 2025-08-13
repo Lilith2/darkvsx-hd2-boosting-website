@@ -47,31 +47,23 @@ export default function App({ Component, pageProps }: AppProps) {
           <QueryClientProvider client={queryClient}>
             <TooltipProvider>
               <AuthProvider>
-                <UnifiedProductsProvider>
-                  <UnifiedOrdersProvider>
-                    <UserActivitiesProvider>
-                      <CommunicationsProvider>
-                        <BundlesProvider>
-                          <ServicesProvider>
-                            <OrdersProvider>
-                              <CartProvider>
-                                <ReferralsProvider>
-                                  <AppContent>
-                                    <Layout>
-                                      <Component {...pageProps} />
-                                      <Toaster />
-                                      <Sonner />
-                                    </Layout>
-                                  </AppContent>
-                                </ReferralsProvider>
-                              </CartProvider>
-                            </OrdersProvider>
-                          </ServicesProvider>
-                        </BundlesProvider>
-                      </CommunicationsProvider>
-                    </UserActivitiesProvider>
-                  </UnifiedOrdersProvider>
-                </UnifiedProductsProvider>
+                <ServicesProvider>
+                  <BundlesProvider>
+                    <CartProvider>
+                      <OrdersProvider>
+                        <ReferralsProvider>
+                          <AppContent>
+                            <Layout>
+                              <Component {...pageProps} />
+                              <Toaster />
+                              <Sonner />
+                            </Layout>
+                          </AppContent>
+                        </ReferralsProvider>
+                      </OrdersProvider>
+                    </CartProvider>
+                  </BundlesProvider>
+                </ServicesProvider>
               </AuthProvider>
             </TooltipProvider>
           </QueryClientProvider>
