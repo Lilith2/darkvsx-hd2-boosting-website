@@ -89,6 +89,7 @@ import {
   User,
   X,
   Filter,
+  Info,
 } from "lucide-react";
 
 export default function AdminDashboard() {
