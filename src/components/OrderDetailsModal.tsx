@@ -22,12 +22,49 @@ import {
   Clock,
   Hash,
 } from "lucide-react";
-import { Order, CustomOrder } from "@/lib/types";
+// Define flexible order types that handle both database and transformed formats
+interface FlexibleOrder {
+  id: string;
+  // Handle both naming conventions
+  customer_name?: string;
+  customerName?: string;
+  customer_email?: string;
+  customerEmail?: string;
+  customer_discord?: string;
+  status: string;
+  total_amount?: number;
+  totalAmount?: number;
+  services?: any;
+  items?: any;
+  notes?: string;
+  special_instructions?: string;
+  created_at?: string;
+  createdAt?: string;
+  updated_at?: string;
+  updatedAt?: string;
+  completed_at?: string;
+  // Payment related
+  paymentStatus?: string;
+  payment_status?: string;
+  transactionId?: string;
+  transaction_id?: string;
+  // Referral related
+  referralCode?: string;
+  referral_code?: string;
+  referralDiscount?: number;
+  referral_discount?: number;
+  creditsUsed?: number;
+  credits_used?: number;
+  // IP and other
+  ipAddress?: string;
+  ip_address?: string;
+  [key: string]: any; // Allow additional properties
+}
 
 interface OrderDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  order: Order | CustomOrder | null;
+  order: FlexibleOrder | null;
   orderType: "regular" | "custom";
 }
 
