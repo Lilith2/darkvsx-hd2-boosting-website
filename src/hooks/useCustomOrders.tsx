@@ -158,6 +158,9 @@ export function useCustomOrders() {
     special_instructions?: string;
     customer_email?: string;
     customer_discord?: string;
+    referralCode?: string;
+    referralDiscount?: number;
+    userId?: string | null;
   }) => {
     try {
       const totalAmount = orderData.items.reduce(
@@ -166,14 +169,23 @@ export function useCustomOrders() {
       );
 
       // Create the main order
+      const customOrderData: any = {
+        user_id: orderData.userId,
+        total_amount: totalAmount,
+        special_instructions: orderData.special_instructions,
+        customer_email: orderData.customer_email,
+        customer_discord: orderData.customer_discord,
+      };
+
+      // Add referral information if provided
+      if (orderData.referralCode) {
+        customOrderData.referral_code = orderData.referralCode;
+        customOrderData.referral_discount = orderData.referralDiscount || 0;
+      }
+
       const { data: orderResult, error: orderError } = await supabase
         .from("custom_orders")
-        .insert({
-          total_amount: totalAmount,
-          special_instructions: orderData.special_instructions,
-          customer_email: orderData.customer_email,
-          customer_discord: orderData.customer_discord,
-        })
+        .insert(customOrderData)
         .select()
         .single();
 
