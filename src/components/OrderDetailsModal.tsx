@@ -272,7 +272,7 @@ export function OrderDetailsModal({
                 {orderType === "regular" ? "Services" : "Items"}
               </h3>
               <div className="space-y-2">
-                {isRegularOrder(order) && order.services && (
+                {isRegularOrder() && order.services && (
                   <div className="space-y-2">
                     {Array.isArray(order.services)
                       ? order.services.map((service: any, index: number) => (
@@ -316,7 +316,7 @@ export function OrderDetailsModal({
                   </div>
                 )}
 
-                {isCustomOrder(order) && order.items && (
+                {isCustomOrder() && order.items && (
                   <div className="space-y-2">
                     {Array.isArray(order.items)
                       ? order.items.map((item: any, index: number) => (
