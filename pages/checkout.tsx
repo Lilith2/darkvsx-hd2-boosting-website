@@ -264,6 +264,9 @@ export default function Checkout() {
               customOrderData.special_instructions || orderNotes,
             customer_email: user?.email || guestInfo.email,
             customer_discord: customOrderData.customer_discord,
+            userId: user?.id || null,
+            referralCode: referralCode || undefined,
+            referralDiscount: referralDiscount || undefined,
           });
         }
 
