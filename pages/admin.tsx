@@ -1477,6 +1477,13 @@ export default function AdminDashboard() {
           onSave={handleSavePricing}
           pricing={isEditingPricing}
         />
+
+        <OrderDetailsModal
+          isOpen={isOrderDetailsModalOpen}
+          onClose={() => setIsOrderDetailsModalOpen(false)}
+          order={selectedOrderForDetails}
+          orderType={orderDetailsType}
+        />
       </div>
     </div>
   );
