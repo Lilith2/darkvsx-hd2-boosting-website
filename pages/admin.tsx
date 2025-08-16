@@ -1125,7 +1125,18 @@ export default function AdminDashboard() {
           </TabsContent>
 
           {/* Orders Tab */}
-          <TabsContent value="orders" className="space-y-6">
+          <TabsContent value="orders">
+            <EnhancedOrdersTable
+              orders={orders}
+              customOrders={customOrders}
+              onUpdateOrderStatus={updateOrderStatus}
+              loading={loading || customOrdersLoading}
+              onRefresh={() => window.location.reload()}
+            />
+          </TabsContent>
+
+          {/* Placeholder - will be removed */}
+          <TabsContent value="orders-old" className="space-y-6">
             <Card className="border border-border/50">
               <CardHeader>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
