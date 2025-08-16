@@ -94,14 +94,58 @@ export function OrderDetailsModal({
     }).format(numAmount);
   };
 
-  // Type guards to check if it's a regular order or custom order
-  const isRegularOrder = (order: Order | CustomOrder): order is Order => {
-    return orderType === "regular" || "services" in order;
+  // Helper functions to safely get property values
+  const getCustomerName = (order: FlexibleOrder) => {
+    return order.customer_name || order.customerName || "N/A";
   };
 
-  const isCustomOrder = (order: Order | CustomOrder): order is CustomOrder => {
-    return orderType === "custom" || "items" in order;
+  const getCustomerEmail = (order: FlexibleOrder) => {
+    return order.customer_email || order.customerEmail || "N/A";
   };
+
+  const getTotalAmount = (order: FlexibleOrder) => {
+    return order.total_amount || order.totalAmount || 0;
+  };
+
+  const getCreatedAt = (order: FlexibleOrder) => {
+    return order.created_at || order.createdAt || "";
+  };
+
+  const getUpdatedAt = (order: FlexibleOrder) => {
+    return order.updated_at || order.updatedAt;
+  };
+
+  const getPaymentStatus = (order: FlexibleOrder) => {
+    return order.paymentStatus || order.payment_status;
+  };
+
+  const getTransactionId = (order: FlexibleOrder) => {
+    return order.transactionId || order.transaction_id;
+  };
+
+  const getReferralCode = (order: FlexibleOrder) => {
+    return order.referralCode || order.referral_code;
+  };
+
+  const getReferralDiscount = (order: FlexibleOrder) => {
+    return order.referralDiscount || order.referral_discount;
+  };
+
+  const getCreditsUsed = (order: FlexibleOrder) => {
+    return order.creditsUsed || order.credits_used;
+  };
+
+  const getIpAddress = (order: FlexibleOrder) => {
+    return order.ipAddress || order.ip_address;
+  };
+
+  const getNotes = (order: FlexibleOrder) => {
+    return orderType === "regular" ? order.notes : order.special_instructions;
+  };
+
+  // Type guards to check if it's a regular order or custom order
+  const isRegularOrder = () => orderType === "regular" || "services" in order;
+  const isCustomOrder = () => orderType === "custom" || "items" in order;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
