@@ -1412,6 +1412,19 @@ export default function AdminDashboard() {
                               size="sm"
                               variant="outline"
                               onClick={() => {
+                                setSelectedOrderForDetails(order);
+                                setOrderDetailsType("regular");
+                                setIsOrderDetailsModalOpen(true);
+                              }}
+                              className="text-xs"
+                            >
+                              <User className="h-3 w-3 mr-1" />
+                              View Details
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
                                 const newStatus =
                                   order.status === "pending"
                                     ? "processing"
