@@ -99,111 +99,53 @@ export default function Checkout() {
       return;
     }
 
-    // Check if code format is valid (HD2BOOST-XXXXXX)
-    if (!code.match(REFERRAL_CONFIG.codeFormat)) {
-      toast({
-        title: "Invalid referral code",
-        description: "Please enter a valid referral code format.",
-        variant: "destructive",
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+
+      // Use the secure database function to validate the referral code
+      const { data, error } = await supabase.rpc('validate_referral_code', {
+        code: code.trim(),
+        user_id: user?.id || null
       });
-      return;
-    }
 
-    // Check if user is trying to use their own code (multiple methods for security)
-    if (user?.id) {
-      const userCodeFromId = `HD2BOOST-${user.id.slice(-6)}`;
-      const userCodeFromIdUpper = `HD2BOOST-${user.id.slice(-6).toUpperCase()}`;
-
-      if (
-        code === userCodeFromId ||
-        code === userCodeFromIdUpper ||
-        code.includes(user.id.slice(-6))
-      ) {
+      if (error) {
+        console.error('Error validating referral code:', error);
         toast({
-          title: "Invalid referral code",
-          description: "You cannot use your own referral code.",
+          title: "Error",
+          description: "Could not validate referral code. Please try again.",
           variant: "destructive",
         });
         return;
       }
 
-      // Also check by querying the database to find who owns this code
-      try {
-        const { supabase } = await import("@/integrations/supabase/client");
-        const codeUserId = code.replace("HD2BOOST-", "");
+      const validation = data as { valid: boolean; error?: string; referrer_id?: string; code?: string };
 
-        // Check if this code belongs to the current user
-        const { data: profiles, error } = await supabase
-          .from("profiles")
-          .select("id")
-          .ilike("id", `%${codeUserId}`)
-          .limit(1);
-
-        if (
-          !error &&
-          profiles &&
-          profiles.length > 0 &&
-          profiles[0].id === user.id
-        ) {
-          toast({
-            title: "Invalid referral code",
-            description: "You cannot use your own referral code.",
-            variant: "destructive",
-          });
-          return;
-        }
-      } catch (err) {
-        console.warn("Could not verify code ownership:", err);
-        // Continue with other checks
+      if (!validation.valid) {
+        toast({
+          title: "Invalid referral code",
+          description: validation.error || "Please enter a valid referral code.",
+          variant: "destructive",
+        });
+        setReferralDiscount(0);
+        return;
       }
+
+      // Apply 10% discount for valid referral code
+      const discountAmount = subtotal * REFERRAL_CONFIG.customerDiscount;
+      setReferralDiscount(discountAmount);
+      toast({
+        title: "Referral code applied!",
+        description: `You saved $${discountAmount.toFixed(2)} with the referral code.`,
+      });
+
+    } catch (err) {
+      console.error('Unexpected error validating referral code:', err);
+      toast({
+        title: "Error",
+        description: "Could not validate referral code. Please try again.",
+        variant: "destructive",
+      });
     }
-
-    // Check if user has already used a referral code before (if authenticated)
-    if (user?.id) {
-      try {
-        const { supabase } = await import("@/integrations/supabase/client");
-        const { data: existingReferrals, error } = await supabase
-          .from("user_referral_usage")
-          .select("id")
-          .eq("user_id", user.id)
-          .limit(1);
-
-        if (error) {
-          // If it's a table not found error, continue with the referral
-          if (
-            error.code === "PGRST116" ||
-            error.message?.includes("relation") ||
-            error.message?.includes("does not exist")
-          ) {
-            console.warn(
-              "User referral usage table not found, allowing referral to proceed",
-            );
-          } else {
-            console.error("Error checking existing referrals:", error);
-            // Continue anyway for unknown errors
-          }
-        } else if (existingReferrals && existingReferrals.length > 0) {
-          toast({
-            title: "Already used referral",
-            description:
-              "You have already used a referral code before. Each user can only use one referral code.",
-            variant: "destructive",
-          });
-          return;
-        }
-      } catch (err) {
-        console.warn("Could not check referral history:", err);
-        // Continue anyway if there's an error checking
-      }
-    }
-
-    // Apply 10% discount for valid referral code
-    const discountAmount = subtotal * REFERRAL_CONFIG.customerDiscount;
-    setReferralDiscount(discountAmount);
-    toast({
-      title: "Referral code applied!",
-      description: `You saved $${discountAmount.toFixed(2)} with the referral code.`,
-    });
   };
 
   const handleCreditsToggle = (checked: boolean) => {
