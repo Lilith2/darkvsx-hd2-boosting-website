@@ -440,15 +440,14 @@ export function OrderDetailsModal({
                 Additional Information
               </h3>
               <div className="space-y-4">
-                {((isRegularOrder(order) && order.notes) ||
-                  (isCustomOrder(order) && order.special_instructions)) && (
+                {getNotes(order) && (
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">
                       {orderType === "regular" ? "Notes" : "Special Instructions"}
                     </p>
                     <div className="p-3 bg-muted/50 rounded-lg">
                       <p className="text-sm">
-                        {isRegularOrder(order) ? order.notes : order.special_instructions}
+                        {getNotes(order)}
                       </p>
                     </div>
                   </div>
@@ -461,18 +460,18 @@ export function OrderDetailsModal({
                       <Calendar className="h-3 w-3" />
                       Created At
                     </p>
-                    <p className="text-sm">{formatDate(order.created_at || order.createdAt || "")}</p>
+                    <p className="text-sm">{formatDate(getCreatedAt(order))}</p>
                   </div>
-                  {order.updated_at && (
+                  {getUpdatedAt(order) && (
                     <div className="space-y-2">
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         Last Updated
                       </p>
-                      <p className="text-sm">{formatDate(order.updated_at)}</p>
+                      <p className="text-sm">{formatDate(getUpdatedAt(order))}</p>
                     </div>
                   )}
-                  {isCustomOrder(order) && order.completed_at && (
+                  {isCustomOrder() && order.completed_at && (
                     <div className="space-y-2">
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
                         <Clock className="h-3 w-3" />
