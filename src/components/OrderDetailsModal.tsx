@@ -415,7 +415,7 @@ export function OrderDetailsModal({
                       <div className="space-y-2">
                         <p className="text-sm text-muted-foreground">Referral Discount</p>
                         <p className="text-green-600">
-                          -{formatCurrency(getReferralDiscount(order))}
+                          -{formatCurrency(getReferralDiscount(order) || 0)}
                         </p>
                       </div>
                     )}
@@ -423,7 +423,7 @@ export function OrderDetailsModal({
                       <div className="space-y-2">
                         <p className="text-sm text-muted-foreground">Credits Used</p>
                         <p className="text-blue-600">
-                          {formatCurrency(getCreditsUsed(order))}
+                          {formatCurrency(getCreditsUsed(order) || 0)}
                         </p>
                       </div>
                     )}
@@ -468,7 +468,7 @@ export function OrderDetailsModal({
                         <Clock className="h-3 w-3" />
                         Last Updated
                       </p>
-                      <p className="text-sm">{formatDate(getUpdatedAt(order))}</p>
+                      <p className="text-sm">{formatDate(getUpdatedAt(order) || "")}</p>
                     </div>
                   )}
                   {isCustomOrder() && order.completed_at && (
