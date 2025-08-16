@@ -1413,7 +1413,7 @@ export default function AdminDashboard() {
                               variant="outline"
                               onClick={() => {
                                 setSelectedOrderForDetails(order);
-                                setOrderDetailsType("regular");
+                                setOrderDetailsType(orderTypeFilter === "custom" ? "custom" : "regular");
                                 setIsOrderDetailsModalOpen(true);
                               }}
                               className="text-xs"
