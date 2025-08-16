@@ -391,7 +391,7 @@ export function OrderDetailsModal({
             <Separator />
 
             {/* Payment Information */}
-            {isRegularOrder(order) && (
+            {isRegularOrder() && (
               <>
                 <div className="space-y-3">
                   <h3 className="font-semibold text-lg flex items-center gap-2">
@@ -399,31 +399,31 @@ export function OrderDetailsModal({
                     Payment Information
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
-                    {order.transactionId && (
+                    {getTransactionId(order) && (
                       <div className="space-y-2">
                         <p className="text-sm text-muted-foreground">Transaction ID</p>
-                        <p className="font-mono text-sm">{order.transactionId}</p>
+                        <p className="font-mono text-sm">{getTransactionId(order)}</p>
                       </div>
                     )}
-                    {order.referralCode && (
+                    {getReferralCode(order) && (
                       <div className="space-y-2">
                         <p className="text-sm text-muted-foreground">Referral Code</p>
-                        <p className="font-mono text-sm">{order.referralCode}</p>
+                        <p className="font-mono text-sm">{getReferralCode(order)}</p>
                       </div>
                     )}
-                    {order.referralDiscount && (
+                    {getReferralDiscount(order) && (
                       <div className="space-y-2">
                         <p className="text-sm text-muted-foreground">Referral Discount</p>
                         <p className="text-green-600">
-                          -{formatCurrency(order.referralDiscount)}
+                          -{formatCurrency(getReferralDiscount(order))}
                         </p>
                       </div>
                     )}
-                    {order.creditsUsed && (
+                    {getCreditsUsed(order) && (
                       <div className="space-y-2">
                         <p className="text-sm text-muted-foreground">Credits Used</p>
                         <p className="text-blue-600">
-                          {formatCurrency(order.creditsUsed)}
+                          {formatCurrency(getCreditsUsed(order))}
                         </p>
                       </div>
                     )}
