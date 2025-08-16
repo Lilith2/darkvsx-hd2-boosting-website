@@ -191,29 +191,29 @@ export function OrderDetailsModal({
                     <span className="capitalize">{order.status.replace("_", " ")}</span>
                   </Badge>
                 </div>
-                {isRegularOrder(order) && "paymentStatus" in order && (
+                {isRegularOrder() && getPaymentStatus(order) && (
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">Payment Status</p>
                     <Badge
                       variant="outline"
                       className={
-                        order.paymentStatus === "paid"
+                        getPaymentStatus(order) === "paid"
                           ? "border-green-500/50 text-green-600"
-                          : order.paymentStatus === "pending"
+                          : getPaymentStatus(order) === "pending"
                           ? "border-yellow-500/50 text-yellow-600"
                           : "border-red-500/50 text-red-600"
                       }
                     >
-                      {order.paymentStatus === "paid"
+                      {getPaymentStatus(order) === "paid"
                         ? "Paid"
-                        : "Payment " + order.paymentStatus}
+                        : "Payment " + getPaymentStatus(order)}
                     </Badge>
                   </div>
                 )}
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">Total Amount</p>
                   <p className="font-semibold text-green-600">
-                    {formatCurrency(order.total_amount || order.totalAmount || 0)}
+                    {formatCurrency(getTotalAmount(order))}
                   </p>
                 </div>
               </div>
