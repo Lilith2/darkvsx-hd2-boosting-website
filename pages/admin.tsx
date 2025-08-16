@@ -1419,7 +1419,7 @@ export default function AdminDashboard() {
                               }}
                               className="text-xs"
                             >
-                              <User className="h-3 w-3 mr-1" />
+                              <Info className="h-3 w-3 mr-1" />
                               View Details
                             </Button>
                             <Button
