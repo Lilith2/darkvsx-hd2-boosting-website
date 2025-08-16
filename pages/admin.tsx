@@ -42,6 +42,15 @@ const SimpleCustomOrders = dynamic(
     loading: () => <LoadingSpinner className="p-4" />,
   },
 );
+const OrderDetailsModal = dynamic(
+  () =>
+    import("@/components/OrderDetailsModal").then((mod) => ({
+      default: mod.OrderDetailsModal,
+    })),
+  {
+    loading: () => <LoadingSpinner className="p-4" />,
+  },
+);
 import { Button } from "@/components/ui/button";
 import {
   Card,
