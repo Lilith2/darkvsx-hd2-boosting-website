@@ -232,17 +232,17 @@ export function OrderDetailsModal({
                   <User className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="text-sm text-muted-foreground">Customer Name</p>
-                    <p>{order.customer_name || order.customerName || "N/A"}</p>
+                    <p>{getCustomerName(order)}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <div>
                     <p className="text-sm text-muted-foreground">Email</p>
-                    <p>{order.customer_email || order.customerEmail || "N/A"}</p>
+                    <p>{getCustomerEmail(order)}</p>
                   </div>
                 </div>
-                {isCustomOrder(order) && order.customer_discord && (
+                {isCustomOrder() && order.customer_discord && (
                   <div className="flex items-center gap-2">
                     <Hash className="h-4 w-4 text-muted-foreground" />
                     <div>
@@ -251,12 +251,12 @@ export function OrderDetailsModal({
                     </div>
                   </div>
                 )}
-                {isRegularOrder(order) && order.ipAddress && (
+                {isRegularOrder() && getIpAddress(order) && (
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <p className="text-sm text-muted-foreground">IP Address</p>
-                      <p className="font-mono text-sm">{order.ipAddress}</p>
+                      <p className="font-mono text-sm">{getIpAddress(order)}</p>
                     </div>
                   </div>
                 )}
