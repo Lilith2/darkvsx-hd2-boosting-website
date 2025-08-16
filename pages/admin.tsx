@@ -51,6 +51,15 @@ const OrderDetailsModal = dynamic(
     loading: () => <LoadingSpinner className="p-4" />,
   },
 );
+const EnhancedOrdersTable = dynamic(
+  () =>
+    import("@/components/admin/EnhancedOrdersTable").then((mod) => ({
+      default: mod.EnhancedOrdersTable,
+    })),
+  {
+    loading: () => <LoadingSpinner className="p-4" />,
+  },
+);
 import { Button } from "@/components/ui/button";
 import {
   Card,
