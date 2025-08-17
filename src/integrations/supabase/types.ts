@@ -1007,6 +1007,30 @@ export type Database = {
           most_popular_category?: string;
         }[];
       };
+      validate_referral_code: {
+        Args: {
+          code: string;
+          user_id: string | null;
+        };
+        Returns: {
+          valid: boolean;
+          error?: string;
+          referrer_id?: string;
+          code?: string;
+        };
+      };
+      apply_referral_discount: {
+        Args: {
+          order_id: string;
+          referral_code: string;
+          user_id: string | null;
+        };
+        Returns: {
+          success: boolean;
+          discount_amount?: number;
+          error?: string;
+        };
+      };
     };
     Enums: {};
     CompositeTypes: {};
