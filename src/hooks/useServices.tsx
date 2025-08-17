@@ -88,7 +88,7 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
         | "Super Credits"
         | "Promotions") || "Level Boost",
     createdAt: service.created_at || "",
-    orders: service.orders_count || 0,
+    orders_count: service.orders_count || 0,
   });
 
   const refreshServices = async () => {
