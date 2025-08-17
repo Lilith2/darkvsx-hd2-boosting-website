@@ -433,6 +433,9 @@ export default function AdminDashboard() {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
+            {/* Database Status Card */}
+            <DatabaseStatus />
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <TopServicesCard
                 topServices={services.slice(0, 5).map(service => ({
