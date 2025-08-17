@@ -285,7 +285,7 @@ export default function OrderTracking() {
                       <div className="flex items-center">
                         <User className="w-4 h-4 mr-1 text-primary" />
                         <span className="font-medium text-primary">
-                          {order.assignedBooster}
+                          {normalizedOrder.assignedBooster}
                         </span>
                       </div>
                     </div>
