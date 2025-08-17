@@ -248,7 +248,11 @@ export default function AdminDashboard() {
 
         if (error) throw error;
 
-        // Optimistic update handled by React Query
+        setCustomPricing((prev) =>
+          prev.map((p) =>
+            p.id === isEditingPricing.id ? { ...p, ...pricingData } : p,
+          ),
+        );
 
         toast({
           title: "Pricing Updated",
@@ -263,7 +267,7 @@ export default function AdminDashboard() {
 
         if (error) throw error;
 
-        // Optimistic update handled by React Query
+        setCustomPricing((prev) => [...prev, data]);
 
         toast({
           title: "Pricing Added",
@@ -295,7 +299,7 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      // Optimistic update handled by React Query
+      setCustomPricing((prev) => prev.filter((p) => p.id !== id));
 
       toast({
         title: "Pricing Deleted",
@@ -321,7 +325,11 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      // Optimistic update handled by React Query
+      setCustomPricing((prev) =>
+        prev.map((p) =>
+          p.id === id ? { ...p, is_active: !currentStatus } : p,
+        ),
+      );
 
       toast({
         title: "Status Updated",
