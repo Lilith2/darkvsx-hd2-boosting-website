@@ -428,8 +428,8 @@ export default function AdminDashboard() {
                 topServices={services.slice(0, 5).map(service => ({
                   id: service.id,
                   name: service.title,
-                  revenue: service.price * (service.orders || 0),
-                  orderCount: service.orders || 0
+                  revenue: service.price * (service.orders_count || 0),
+                  orderCount: service.orders_count || 0
                 }))}
                 isLoading={loading || customOrdersLoading}
               />
