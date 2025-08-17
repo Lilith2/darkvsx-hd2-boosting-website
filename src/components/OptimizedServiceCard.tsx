@@ -102,7 +102,7 @@ export const OptimizedServiceCard = memo<OptimizedServiceCardProps>(
               <span>{service.duration}</span>
             </div>
             <div className="text-xs text-muted-foreground">
-              {service.orders} orders
+              {service.orders_count} orders
             </div>
           </div>
 
