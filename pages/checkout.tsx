@@ -67,6 +67,18 @@ export default function Checkout() {
     email: "",
   });
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to complete your checkout.",
+        variant: "destructive",
+      });
+      router.push("/login?redirect=/checkout");
+    }
+  }, [isAuthenticated, router, toast]);
+
   const subtotal = getCartTotal();
   const discount = referralDiscount; // Only referral discount affects tax calculation
   const tax = (subtotal - discount) * PAYMENT_CONSTANTS.TAX_RATE; // Sales tax on amount after referral discount only
