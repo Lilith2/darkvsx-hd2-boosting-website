@@ -425,16 +425,17 @@ export default function OrderTracking() {
                     <Textarea
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
-                      placeholder="Type your message to our support team..."
+                      placeholder={isCustomOrder ? "Messaging not available for custom orders yet..." : "Type your message to our support team..."}
                       rows={3}
+                      disabled={isCustomOrder}
                     />
                     <Button
                       onClick={sendMessage}
-                      disabled={!newMessage.trim()}
+                      disabled={!newMessage.trim() || isCustomOrder}
                       className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      Send Message
+                      {isCustomOrder ? "Not Available" : "Send Message"}
                     </Button>
                   </div>
                 </CardContent>
