@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useOrders, OrderData } from "@/hooks/useOrders";
+import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useReferrals } from "@/hooks/useReferrals";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,7 @@ import { getSiteUrl } from "@/lib/config";
 export default function Account() {
   const { user, logout, updateProfile } = useAuth();
   const { getUserOrders } = useOrders();
+  const { getUserCustomOrders } = useCustomOrders();
   const {
     stats: referralStats,
     loading: referralLoading,
@@ -79,7 +81,13 @@ export default function Account() {
   );
   const [copied, setCopied] = useState(false);
 
-  const userOrders = user ? getUserOrders(user.id) : [];
+  const userRegularOrders = user ? getUserOrders(user.id) : [];
+  const userCustomOrders = user ? getUserCustomOrders(user.id) : [];
+
+  // Combine both order types and sort by creation date
+  const userOrders = [...userRegularOrders, ...userCustomOrders].sort(
+    (a, b) => new Date(b.createdAt || b.created_at).getTime() - new Date(a.createdAt || a.created_at).getTime()
+  );
 
   // Calculate user statistics
   const totalSpent = userOrders.reduce(
