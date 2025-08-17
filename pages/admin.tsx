@@ -384,17 +384,11 @@ export default function AdminDashboard() {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <TopServicesCard
-                topServices={services.slice(0, 5).map(service => ({
-                  ...service,
-                  orders: service.orders_count || 0
-                }))}
+                topServices={services.slice(0, 5)}
                 isLoading={analytics.isLoading}
               />
               <RecentOrdersCard
-                recentOrders={[...orders, ...customOrders].slice(0, 5).map(order => ({
-                  ...order,
-                  orderType: order.orderType || (order.items ? "custom" : "regular")
-                }))}
+                recentOrders={[...orders, ...customOrders].slice(0, 5)}
                 isLoading={analytics.isLoading}
                 onOrderClick={(order, type) => {
                   setSelectedOrderForDetails(order);
