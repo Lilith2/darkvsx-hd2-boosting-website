@@ -791,7 +791,7 @@ export default function Account() {
                           </div>
                         </div>
 
-                        {order.progress && order.progress > 0 && (
+                        {('progress' in order && order.progress && order.progress > 0) && (
                           <div className="mb-3">
                             <div className="flex justify-between text-sm mb-1">
                               <span>Progress</span>
