@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useServices } from "@/hooks/useServices";
 import { useBundles } from "@/hooks/useBundles";
-import { useOrders } from "@/hooks/useOrders";
-import { useCustomOrders } from "@/hooks/useCustomOrders";
-import { useAdminAnalytics } from "@/hooks/useAdminAnalytics";
+import { useOptimizedAdminData } from "@/hooks/useOptimizedAdminData";
 import { useToast } from "@/hooks/use-toast";
 import dynamic from "next/dynamic";
 
-// Import new admin components
-import { AdminStatsCards } from "@/components/admin/AdminStatsCards";
+// Import optimized admin components
+import { OptimizedAdminStatsCards } from "@/components/admin/OptimizedAdminStatsCards";
+import { OptimizedAdminOrdersTable } from "@/components/admin/OptimizedAdminOrdersTable";
 import { TopServicesCard } from "@/components/admin/TopServicesCard";
 import { RecentOrdersCard } from "@/components/admin/RecentOrdersCard";
 import { AdminServicesTab } from "@/components/admin/AdminServicesTab";
