@@ -478,7 +478,7 @@ export default function OrderTracking() {
               <CardContent className="space-y-3">
                 <div>
                   <p className="text-sm text-muted-foreground">Name</p>
-                  <p className="font-medium">{order.customerName}</p>
+                  <p className="font-medium">{normalizedOrder.customerName}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Email</p>
