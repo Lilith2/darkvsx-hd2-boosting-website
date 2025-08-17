@@ -50,8 +50,7 @@ import {
   getStatusColor,
   formatCurrency,
   formatDate,
-  useOrderFilters,
-  useOrderSorting,
+  useOrderFiltersAndSorting,
   performanceMonitor,
   exportToCSV,
 } from "./utils";
@@ -247,17 +246,23 @@ export function OptimizedAdminOrdersTable({
     return [...regularOrders, ...customOrdersWithType];
   }, [orders, customOrders]);
 
-  // Use optimized filtering and sorting hooks
-  const { applyFilters } = useOrderFilters(allOrders);
-  const { applySorting } = useOrderSorting([]);
+  // Use optimized filtering and sorting hook
+  const { applyFiltersAndSorting } = useOrderFiltersAndSorting(allOrders);
 
   // Apply filters and sorting with performance monitoring
   const filteredAndSortedOrders = useMemo(() => {
     return performanceMonitor.measureFunction("filterAndSort", () => {
-      const filtered = applyFilters(searchTerm, statusFilter, orderTypeFilter, dateRange, amountRange);
-      return applySorting(sortBy, sortOrder, filtered);
+      return applyFiltersAndSorting(
+        searchTerm,
+        statusFilter,
+        orderTypeFilter,
+        dateRange,
+        amountRange,
+        sortBy,
+        sortOrder
+      );
     });
-  }, [applyFilters, applySorting, searchTerm, statusFilter, orderTypeFilter, dateRange, amountRange, sortBy, sortOrder]);
+  }, [applyFiltersAndSorting, searchTerm, statusFilter, orderTypeFilter, dateRange, amountRange, sortBy, sortOrder]);
 
   // Pagination
   const totalPages = Math.ceil(filteredAndSortedOrders.length / pageSize);

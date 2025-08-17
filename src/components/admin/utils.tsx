@@ -66,19 +66,22 @@ export const formatDate = (dateString: string) => {
   }
 };
 
-// Optimized filtering hook
-export const useOrderFilters = (allOrders: Order[]) => {
+// Optimized filtering and sorting functions
+export const useOrderFiltersAndSorting = (allOrders: Order[]) => {
   return useMemo(() => {
-    const applyFilters = (
+    const applyFiltersAndSorting = (
       searchTerm: string,
       statusFilter: string,
       orderTypeFilter: string,
       dateRange: string,
-      amountRange: string
+      amountRange: string,
+      sortBy: string,
+      sortOrder: "asc" | "desc"
     ) => {
       if (!allOrders?.length) return [];
 
-      return allOrders.filter(order => {
+      // First apply filters
+      let filtered = allOrders.filter(order => {
         // Search filter - optimized with early returns
         if (searchTerm) {
           const searchLower = searchTerm.toLowerCase();
@@ -100,7 +103,7 @@ export const useOrderFilters = (allOrders: Order[]) => {
           if (orderTypeFilter === "custom" && order.orderType !== "custom") return false;
         }
 
-        // Date range filter - optimized with Date reuse
+        // Date range filter
         if (dateRange !== "all") {
           const orderDate = new Date(orderHelpers.getCreatedAt(order));
           const now = new Date();
@@ -138,19 +141,9 @@ export const useOrderFilters = (allOrders: Order[]) => {
 
         return true;
       });
-    };
 
-    return { applyFilters };
-  }, [allOrders]);
-};
-
-// Optimized sorting hook
-export const useOrderSorting = (orders: Order[]) => {
-  return useMemo(() => {
-    const applySorting = (sortBy: string, sortOrder: "asc" | "desc") => {
-      if (!orders?.length) return [];
-
-      return [...orders].sort((a, b) => {
+      // Then apply sorting
+      return filtered.sort((a, b) => {
         let aValue: any;
         let bValue: any;
 
@@ -182,8 +175,8 @@ export const useOrderSorting = (orders: Order[]) => {
       });
     };
 
-    return { applySorting };
-  }, [orders]);
+    return { applyFiltersAndSorting };
+  }, [allOrders]);
 };
 
 // Performance monitoring utility
