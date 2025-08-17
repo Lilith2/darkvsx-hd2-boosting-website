@@ -297,7 +297,7 @@ export default function OrderTracking() {
                         Estimated Completion:
                       </span>
                       <span className="font-medium">
-                        {formatDate(order.estimatedCompletion)}
+                        {formatDate(normalizedOrder.estimatedCompletion)}
                       </span>
                     </div>
                   )}
