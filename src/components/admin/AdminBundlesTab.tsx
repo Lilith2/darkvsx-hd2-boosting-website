@@ -72,11 +72,11 @@ export function AdminBundlesTab({
                       </div>
                       <div className="text-right">
                         <div className="text-2xl font-bold text-primary">
-                          ${bundle.discountedPrice?.toFixed(2) || "0.00"}
+                          ${bundle.discounted_price?.toFixed(2) || "0.00"}
                         </div>
-                        {bundle.originalPrice && bundle.originalPrice > (bundle.discountedPrice || 0) && (
+                        {bundle.original_price && bundle.original_price > (bundle.discounted_price || 0) && (
                           <div className="text-sm text-muted-foreground line-through">
-                            ${bundle.originalPrice.toFixed(2)}
+                            ${bundle.original_price.toFixed(2)}
                           </div>
                         )}
                       </div>
