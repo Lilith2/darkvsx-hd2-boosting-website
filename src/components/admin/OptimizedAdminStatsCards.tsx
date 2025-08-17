@@ -253,7 +253,7 @@ export const OptimizedAdminStatsCards = memo(({
       {/* Total Revenue Card */}
       <StatCard
         title="Total Revenue"
-        value={formatCurrency(totalRevenue)}
+        value={formatCurrency(safeData.totalRevenue)}
         icon={<DollarSign className="h-4 w-4" />}
         description="Total revenue this period"
         trend={analyticsData.revenueGrowth !== 0 ? {
@@ -267,7 +267,7 @@ export const OptimizedAdminStatsCards = memo(({
       {/* Pending Orders Card */}
       <StatCard
         title="Pending Orders"
-        value={pendingOrdersCount}
+        value={safeData.pendingOrdersCount}
         icon={<ShoppingBag className="h-4 w-4" />}
         description="Orders awaiting processing"
         variant={analyticsData.hasPendingIssues ? "warning" : "default"}
@@ -276,7 +276,7 @@ export const OptimizedAdminStatsCards = memo(({
       {/* Active Services Card */}
       <StatCard
         title="Active Services"
-        value={activeServicesCount}
+        value={safeData.activeServicesCount}
         icon={<Package className="h-4 w-4" />}
         description="Currently available services"
         variant="success"
@@ -285,7 +285,7 @@ export const OptimizedAdminStatsCards = memo(({
       {/* Total Customers Card */}
       <StatCard
         title="Total Customers"
-        value={totalCustomersCount}
+        value={safeData.totalCustomersCount}
         icon={<Users className="h-4 w-4" />}
         description="Registered customers"
         trend={analyticsData.orderGrowth !== 0 ? {
