@@ -67,6 +67,22 @@ export interface Order extends BaseEntity {
   referral_credits_used?: number;
 }
 
+export interface CustomOrder extends BaseEntity {
+  user_id?: string;
+  order_number: string;
+  status: string;
+  total_amount: number;
+  currency: string;
+  items: any;
+  special_instructions?: string;
+  customer_email?: string;
+  customer_name?: string;
+  customer_discord?: string;
+  payment_status: string;
+  payment_id?: string;
+  completed_at?: string;
+}
+
 // Referral types
 export interface Referral extends BaseEntity {
   referrer_user_id: string;
