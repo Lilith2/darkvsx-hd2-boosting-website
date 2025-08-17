@@ -211,7 +211,7 @@ export default function Bundles() {
                       ${bundle.discounted_price}
                     </span>
                     <span className="text-lg text-muted-foreground line-through">
-                      ${bundle.originalPrice}
+                      ${bundle.original_price}
                     </span>
                     <Badge
                       variant="outline"
