@@ -161,6 +161,25 @@ export const OptimizedAdminStatsCards = memo(({
 }: OptimizedAdminStatsCardsProps) => {
   const endMeasure = performanceMonitor.measureRender("OptimizedAdminStatsCards");
 
+  // Validate and sanitize input data
+  const safeData = useMemo(() => {
+    const safeNumber = (value: number | undefined | null): number => {
+      return typeof value === 'number' && !isNaN(value) && isFinite(value) ? Math.max(0, value) : 0;
+    };
+
+    return {
+      totalRevenue: safeNumber(totalRevenue),
+      pendingOrdersCount: safeNumber(pendingOrdersCount),
+      activeServicesCount: safeNumber(activeServicesCount),
+      totalCustomersCount: safeNumber(totalCustomersCount),
+      completedOrdersCount: safeNumber(completedOrdersCount),
+      totalOrdersCount: safeNumber(totalOrdersCount),
+      previousRevenue: safeNumber(previousRevenue),
+      previousOrdersCount: safeNumber(previousOrdersCount),
+      avgOrderValue: safeNumber(avgOrderValue),
+    };
+  }, [totalRevenue, pendingOrdersCount, activeServicesCount, totalCustomersCount, completedOrdersCount, totalOrdersCount, previousRevenue, previousOrdersCount, avgOrderValue]);
+
   // Calculate trends and derived metrics
   const analyticsData = useMemo(() => {
     return performanceMonitor.measureFunction("calculateAnalytics", () => {
