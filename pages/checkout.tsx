@@ -255,12 +255,13 @@ export default function Checkout() {
       }
 
       // Process custom orders if any
+      let customOrderId = null;
       if (customOrderItems.length > 0) {
         for (const cartItem of customOrderItems) {
           const customOrderData = cartItem.service.customOrderData;
           if (!customOrderData) continue;
 
-          await createCustomOrder({
+          const customOrderResult = await createCustomOrder({
             items: customOrderData.items.map((item: any) => ({
               category: item.category,
               item_name: item.item_name,
@@ -277,11 +278,11 @@ export default function Checkout() {
             referralCode: referralCode || undefined,
             referralDiscount: referralDiscount || undefined,
           });
-        }
 
-        // If we only had custom orders, use the first custom order's ID
-        if (!orderId && customOrderItems.length > 0) {
-          orderId = `custom-${Date.now()}`;
+          // Capture the custom order ID from the first created order
+          if (!customOrderId && customOrderResult) {
+            customOrderId = customOrderResult.id;
+          }
         }
       }
 
