@@ -91,14 +91,14 @@ export function AdminBundlesTab({
                         Services included:
                       </div>
                       <div className="flex flex-wrap gap-1">
-                        {bundle.serviceIds?.slice(0, 3).map((serviceId, index) => (
+                        {bundle.services?.slice(0, 3).map((serviceId: any, index: number) => (
                           <Badge key={serviceId} variant="outline" className="text-xs">
                             Service {index + 1}
                           </Badge>
                         ))}
-                        {bundle.serviceIds && bundle.serviceIds.length > 3 && (
+                        {bundle.services && bundle.services.length > 3 && (
                           <Badge variant="outline" className="text-xs">
-                            +{bundle.serviceIds.length - 3} more
+                            +{bundle.services.length - 3} more
                           </Badge>
                         )}
                       </div>
