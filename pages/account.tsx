@@ -145,7 +145,7 @@ export default function Account() {
   // Generate recent activity from actual orders
   const recentActivity = userOrders.slice(0, 4).map((order) => {
     const isCustomOrder = 'order_number' in order;
-    const orderDate = isCustomOrder ? order.created_at : order.createdAt;
+    const orderDate = 'created_at' in order ? order.created_at : order.createdAt;
 
     let details = '';
     if (isCustomOrder) {
