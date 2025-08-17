@@ -7,7 +7,7 @@ interface RequestCache {
 export function useRequestDeduplication() {
   const pendingRequests = useRef<RequestCache>({});
 
-  const dedupe = useCallback(async <T>(
+  const dedupe = useCallback(async <T,>(
     key: string,
     requestFn: () => Promise<T>,
     cacheTime: number = 5000 // Cache for 5 seconds by default
