@@ -198,11 +198,15 @@ export default function OrderTracking() {
   };
 
   const getProgressPercentage = () => {
-    switch (order.status) {
+    if (!normalizedOrder) return 0;
+
+    switch (normalizedOrder.status) {
       case "pending":
         return 10;
+      case "processing":
+        return 25;
       case "in-progress":
-        return order.progress || 50;
+        return normalizedOrder.progress || 50;
       case "completed":
         return 100;
       case "cancelled":
