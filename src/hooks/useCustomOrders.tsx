@@ -54,6 +54,7 @@ export function useCustomOrders() {
       setLoading(true);
       setError(null);
 
+      // First try to fetch orders with items from the JSONB column
       const { data, error: fetchError } = await supabase
         .from("custom_orders")
         .select("*")
@@ -63,13 +64,43 @@ export function useCustomOrders() {
         throw fetchError;
       }
 
-      // Transform the data to match our interface
-      const transformedOrders: CustomOrder[] = (data || []).map(
-        (order: any) => ({
+      // Transform the data to match our interface and handle items properly
+      const transformedOrders: CustomOrder[] = [];
+
+      for (const order of data || []) {
+        let orderItems = [];
+
+        // Check if items are stored in the JSONB column
+        if (order.items && Array.isArray(order.items) && order.items.length > 0) {
+          orderItems = order.items;
+        } else {
+          // Fallback: try to fetch from custom_order_items table
+          try {
+            const { data: itemsData } = await supabase
+              .from("custom_order_items")
+              .select("*")
+              .eq("order_id", order.id);
+
+            orderItems = (itemsData || []).map((item: any) => ({
+              id: item.id,
+              category: item.category,
+              item_name: item.item_name,
+              quantity: item.quantity,
+              price_per_unit: parseFloat(item.price_per_unit),
+              total_price: parseFloat(item.total_price),
+              description: item.description || ""
+            }));
+          } catch (itemsError) {
+            console.warn("Could not fetch items for order:", order.id, itemsError);
+            orderItems = [];
+          }
+        }
+
+        transformedOrders.push({
           ...order,
-          items: order.items || [], // Use items from the jsonb column
-        }),
-      );
+          items: orderItems,
+        });
+      }
 
       setOrders(transformedOrders);
     } catch (err: any) {
