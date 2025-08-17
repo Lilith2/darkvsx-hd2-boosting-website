@@ -91,7 +91,10 @@ export default function Account() {
 
   // Calculate user statistics
   const totalSpent = userOrders.reduce(
-    (sum, order) => sum + order.totalAmount,
+    (sum, order) => {
+      const amount = 'total_amount' in order ? order.total_amount : order.totalAmount;
+      return sum + (amount || 0);
+    },
     0,
   );
   const completedOrders = userOrders.filter(
