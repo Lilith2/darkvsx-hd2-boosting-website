@@ -154,25 +154,35 @@ export default function OrderTracking() {
       // Custom order - normalize to match regular order structure
       return {
         ...orderData,
-        createdAt: orderData.created_at,
-        totalAmount: orderData.total_amount,
+        createdAt: orderData.created_at || new Date().toISOString(),
+        totalAmount: orderData.total_amount || 0,
         customerName: orderData.customer_name || 'Unknown Customer',
-        customerEmail: orderData.customer_email,
+        customerEmail: orderData.customer_email || 'Unknown Email',
         services: orderData.items?.map((item: any) => ({
           id: item.id || `item-${item.item_name}`,
-          name: `${item.quantity}x ${item.item_name}`,
-          price: item.total_price,
-          quantity: item.quantity
+          name: `${item.quantity || 1}x ${item.item_name || 'Unknown Item'}`,
+          price: item.total_price || 0,
+          quantity: item.quantity || 1
         })) || [],
         messages: [], // Custom orders don't have messages yet
         tracking: [], // Custom orders don't have tracking yet
         assignedBooster: null, // Custom orders don't have assigned boosters
-        progress: 0 // Custom orders don't track progress the same way
+        progress: 0, // Custom orders don't track progress the same way
+        paymentStatus: 'paid', // Custom orders are considered paid when created
+        notes: orderData.special_instructions || orderData.notes || null
       };
     }
 
-    // Regular order - return as is
-    return orderData;
+    // Regular order - ensure required properties exist
+    return {
+      ...orderData,
+      services: orderData.services || [],
+      messages: orderData.messages || [],
+      tracking: orderData.tracking || [],
+      customerName: orderData.customerName || 'Unknown Customer',
+      customerEmail: orderData.customerEmail || 'Unknown Email',
+      paymentStatus: orderData.paymentStatus || 'unknown'
+    };
   };
 
   const normalizedOrder = normalizeOrder(order);
