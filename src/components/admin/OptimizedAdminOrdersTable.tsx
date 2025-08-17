@@ -293,7 +293,7 @@ export function OptimizedAdminOrdersTable({
     if (selectedOrders.length === paginatedOrders.length) {
       setSelectedOrders([]);
     } else {
-      setSelectedOrders(paginatedOrders.map(order => order.id));
+      setSelectedOrders(paginatedOrders.map((order: any) => order.id));
     }
   }, [selectedOrders.length, paginatedOrders]);
 
