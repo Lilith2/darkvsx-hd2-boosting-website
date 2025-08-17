@@ -510,7 +510,7 @@ export default function AdminDashboard() {
                                 {bundle.name}
                               </CardTitle>
                               <p className="text-sm text-muted-foreground mt-1">
-                                {bundle.orders || 0} orders •{" "}
+                                {bundle.orders_count || 0} orders •{" "}
                                 {bundle.discount || 0}% discount
                               </p>
                             </div>
@@ -546,10 +546,10 @@ export default function AdminDashboard() {
                               <div className="flex items-baseline gap-2">
                                 <span className="text-2xl font-bold text-primary">
                                   $
-                                  {bundle.discountedPrice?.toFixed(2) || "0.00"}
+                                  {bundle.discounted_price?.toFixed(2) || "0.00"}
                                 </span>
                                 <span className="text-sm text-muted-foreground line-through">
-                                  ${bundle.originalPrice?.toFixed(2) || "0.00"}
+                                  ${bundle.original_price?.toFixed(2) || "0.00"}
                                 </span>
                               </div>
                               <span className="text-sm text-muted-foreground">
