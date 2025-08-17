@@ -806,14 +806,27 @@ export default function Account() {
                             {new Date(orderDate).toLocaleDateString()}
                           </span>
                           <div className="flex space-x-2">
+                            {/* Track Order - works for both regular and custom orders */}
                             <Link
-                              href={`/order/${order.id}`}
+                              href={`/order/${order.id}${isCustomOrder ? '?type=custom' : ''}`}
                               className="text-primary hover:underline"
                             >
                               Track Order
                             </Link>
                             {order.status === "completed" && (
-                              <Button size="sm" variant="outline">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const orderName = isCustomOrder
+                                    ? `Custom Order ${orderNumber}`
+                                    : serviceNames;
+                                  toast({
+                                    title: "Thank you for your feedback!",
+                                    description: `We'd love to hear about your experience with ${orderName}. Please contact us through Discord or email.`,
+                                  });
+                                }}
+                              >
                                 <Star className="w-3 h-3 mr-1" />
                                 Review
                               </Button>
