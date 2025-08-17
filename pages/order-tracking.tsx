@@ -188,7 +188,13 @@ export default function OrderTracking() {
   const normalizedOrder = normalizeOrder(order);
 
   const sendMessage = async () => {
-    if (!newMessage.trim() || !user || isCustomOrder) return; // Messages not supported for custom orders yet
+    if (!newMessage.trim() || !user) return;
+
+    if (isCustomOrder) {
+      // For custom orders, show a message that messaging isn't supported yet
+      console.log("Messaging not yet supported for custom orders");
+      return;
+    }
 
     try {
       await addOrderMessage(order.id, { from: "customer", message: newMessage });
