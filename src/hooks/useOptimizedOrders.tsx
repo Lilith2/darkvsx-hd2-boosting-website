@@ -1,168 +1,322 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { getCurrentIPAddress } from "./useIPAddress";
-import type { Order, OrderMessage, OrderTracking } from "./useOrders";
+import { useRequestDeduplication } from "./useRequestDeduplication";
+import { OrderData, Order, OrderMessage, OrderTracking } from "./useOrders";
 
-// Query keys for better cache management
-export const orderKeys = {
-  all: ["orders"] as const,
-  lists: () => [...orderKeys.all, "list"] as const,
-  list: (filters: Record<string, any>) =>
-    [...orderKeys.lists(), { filters }] as const,
-  details: () => [...orderKeys.all, "detail"] as const,
-  detail: (id: string) => [...orderKeys.details(), id] as const,
-  messages: (orderId: string) =>
-    [...orderKeys.all, "messages", orderId] as const,
-  tracking: (orderId: string) =>
-    [...orderKeys.all, "tracking", orderId] as const,
-};
+interface OrderFilters {
+  status?: string;
+  userId?: string;
+  dateRange?: {
+    startDate: string;
+    endDate: string;
+  };
+  search?: string;
+}
 
-// Optimized orders hook with React Query
-export function useOptimizedOrders() {
-  const queryClient = useQueryClient();
+interface PaginationOptions {
+  page: number;
+  pageSize: number;
+}
 
-  // Get all orders with optimized caching
-  const {
-    data: orders = [],
-    isLoading: loading,
-    error,
-  } = useQuery({
-    queryKey: orderKeys.lists(),
-    queryFn: async (): Promise<Order[]> => {
-      const { data, error } = await supabase
+interface OptimizedOrdersContextType {
+  orders: OrderData[];
+  loading: boolean;
+  error: string | null;
+  pagination: {
+    currentPage: number;
+    pageSize: number;
+    totalCount: number;
+    totalPages: number;
+  };
+  filters: OrderFilters;
+  
+  // Methods
+  fetchOrders: (options?: { filters?: OrderFilters; pagination?: PaginationOptions }) => Promise<void>;
+  setFilters: (filters: OrderFilters) => void;
+  setPage: (page: number) => void;
+  setPageSize: (pageSize: number) => void;
+  getOrder: (orderId: string) => Promise<OrderData | null>;
+  updateOrderStatus: (orderId: string, status: OrderData["status"]) => Promise<void>;
+  refreshCurrentPage: () => Promise<void>;
+}
+
+const OptimizedOrdersContext = createContext<OptimizedOrdersContextType | undefined>(undefined);
+
+export function OptimizedOrdersProvider({ children }: { children: React.ReactNode }) {
+  const [orders, setOrders] = useState<OrderData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    pageSize: 20,
+    totalCount: 0,
+    totalPages: 0,
+  });
+  const [filters, setFiltersState] = useState<OrderFilters>({});
+  
+  const { dedupe } = useRequestDeduplication();
+
+  // Transform database order to frontend format
+  const transformOrder = (
+    order: any,
+    messages: OrderMessage[] = [],
+    tracking: OrderTracking[] = [],
+  ): OrderData => ({
+    id: order.id,
+    userId: order.user_id,
+    customerEmail: order.customer_email,
+    customerName: order.customer_name,
+    services: order.services,
+    status: order.status,
+    totalAmount: parseFloat(Number(order.total_amount).toFixed(2)),
+    paymentStatus: order.payment_status,
+    createdAt: order.created_at,
+    updatedAt: order.updated_at,
+    progress: order.progress,
+    assignedBooster: order.assigned_booster,
+    estimatedCompletion: order.estimated_completion,
+    notes: order.notes,
+    transactionId: order.transaction_id || undefined,
+    ipAddress: order.ip_address || undefined,
+    referralCode: order.referral_code || undefined,
+    referralDiscount: order.referral_discount || undefined,
+    creditsUsed: order.credits_used || undefined,
+    referredByUserId: order.referred_by_user_id || undefined,
+    messages,
+    tracking,
+  });
+
+  const buildQuery = (filters: OrderFilters, pagination: PaginationOptions) => {
+    let query = supabase
+      .from("orders")
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: false });
+
+    // Apply filters
+    if (filters.status && filters.status !== "all") {
+      query = query.eq("status", filters.status);
+    }
+
+    if (filters.userId) {
+      query = query.eq("user_id", filters.userId);
+    }
+
+    if (filters.dateRange) {
+      query = query
+        .gte("created_at", filters.dateRange.startDate)
+        .lte("created_at", filters.dateRange.endDate);
+    }
+
+    if (filters.search) {
+      // Search in customer email, customer name, and order ID
+      query = query.or(
+        `customer_email.ilike.%${filters.search}%,customer_name.ilike.%${filters.search}%,id.ilike.%${filters.search}%`
+      );
+    }
+
+    // Apply pagination
+    const from = (pagination.page - 1) * pagination.pageSize;
+    const to = from + pagination.pageSize - 1;
+    query = query.range(from, to);
+
+    return query;
+  };
+
+  const fetchOrders = useCallback(async (options?: {
+    filters?: OrderFilters;
+    pagination?: PaginationOptions;
+  }) => {
+    const currentFilters = options?.filters || filters;
+    const currentPagination = options?.pagination || {
+      page: pagination.currentPage,
+      pageSize: pagination.pageSize,
+    };
+
+    const requestKey = `orders:${JSON.stringify(currentFilters)}:${currentPagination.page}:${currentPagination.pageSize}`;
+
+    try {
+      await dedupe(requestKey, async () => {
+        setLoading(true);
+        setError(null);
+
+        // Build and execute the optimized query
+        const query = buildQuery(currentFilters, currentPagination);
+        const { data: ordersData, error: ordersError, count } = await query;
+
+        if (ordersError) {
+          throw ordersError;
+        }
+
+        // Only fetch messages and tracking for the current page of orders
+        const orderIds = ordersData?.map((order) => order.id) || [];
+        
+        let messages: OrderMessage[] = [];
+        let tracking: OrderTracking[] = [];
+
+        if (orderIds.length > 0) {
+          const [messagesResult, trackingResult] = await Promise.all([
+            supabase
+              .from("order_messages")
+              .select("*")
+              .in("order_id", orderIds)
+              .order("created_at", { ascending: true }),
+            supabase
+              .from("order_tracking")
+              .select("*")
+              .in("order_id", orderIds)
+              .order("created_at", { ascending: true }),
+          ]);
+
+          messages = messagesResult.data || [];
+          tracking = trackingResult.data || [];
+        }
+
+        // Transform orders with their related data
+        const transformedOrders = ordersData?.map((order) => {
+          const orderMessages = messages.filter((msg) => msg.order_id === order.id);
+          const orderTracking = tracking.filter((track) => track.order_id === order.id);
+          return transformOrder(order, orderMessages, orderTracking);
+        }) || [];
+
+        setOrders(transformedOrders);
+        setPagination({
+          currentPage: currentPagination.page,
+          pageSize: currentPagination.pageSize,
+          totalCount: count || 0,
+          totalPages: Math.ceil((count || 0) / currentPagination.pageSize),
+        });
+      });
+    } catch (err: any) {
+      console.error("Error fetching orders:", err);
+      setError(err.message || "Failed to fetch orders");
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, pagination.currentPage, pagination.pageSize, dedupe]);
+
+  const setFilters = useCallback((newFilters: OrderFilters) => {
+    setFiltersState(newFilters);
+    // Reset to first page when filters change
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  }, []);
+
+  const setPage = useCallback((page: number) => {
+    setPagination(prev => ({ ...prev, currentPage: page }));
+  }, []);
+
+  const setPageSize = useCallback((pageSize: number) => {
+    setPagination(prev => ({ 
+      ...prev, 
+      pageSize,
+      currentPage: 1, // Reset to first page when page size changes
+    }));
+  }, []);
+
+  const getOrder = useCallback(async (orderId: string): Promise<OrderData | null> => {
+    const requestKey = `order:${orderId}`;
+    
+    return dedupe(requestKey, async () => {
+      const { data: orderData, error: orderError } = await supabase
         .from("orders")
         .select("*")
-        .order("created_at", { ascending: false });
+        .eq("id", orderId)
+        .single();
 
-      if (error) {
-        console.error("Error fetching orders:", error);
-        throw new Error(error.message);
+      if (orderError || !orderData) {
+        return null;
       }
 
-      return data?.map(mapOrderFromSupabase) || [];
-    },
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-  });
-
-  // Add order mutation
-  const addOrderMutation = useMutation({
-    mutationFn: async (
-      orderData: Omit<Order, "id" | "created_at" | "updated_at">,
-    ) => {
-      const ipAddress = await getCurrentIPAddress();
-
-      const { data, error } = await supabase
-        .from("orders")
-        .insert([{ ...orderData, ip_address: ipAddress }])
-        .select()
-        .single();
-
-      if (error) throw error;
-      return mapOrderFromSupabase(data);
-    },
-    onSuccess: (newOrder) => {
-      queryClient.setQueryData<Order[]>(orderKeys.lists(), (old) =>
-        old ? [newOrder, ...old] : [newOrder],
-      );
-    },
-  });
-
-  // Update order status mutation
-  const updateOrderStatusMutation = useMutation({
-    mutationFn: async ({
-      id,
-      status,
-    }: {
-      id: string;
-      status: Order["status"];
-    }) => {
-      const { data, error } = await supabase
-        .from("orders")
-        .update({ status, updated_at: new Date().toISOString() })
-        .eq("id", id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return mapOrderFromSupabase(data);
-    },
-    onSuccess: (updatedOrder) => {
-      queryClient.setQueryData<Order[]>(
-        orderKeys.lists(),
-        (old) =>
-          old?.map((order) =>
-            order.id === updatedOrder.id ? updatedOrder : order,
-          ) || [],
-      );
-    },
-  });
-
-  // Get order messages with caching
-  const useOrderMessages = (orderId: string) => {
-    return useQuery({
-      queryKey: orderKeys.messages(orderId),
-      queryFn: async (): Promise<OrderMessage[]> => {
-        const { data, error } = await supabase
+      // Fetch messages and tracking for this specific order
+      const [messagesResult, trackingResult] = await Promise.all([
+        supabase
           .from("order_messages")
           .select("*")
           .eq("order_id", orderId)
-          .order("created_at", { ascending: true });
+          .order("created_at", { ascending: true }),
+        supabase
+          .from("order_tracking")
+          .select("*")
+          .eq("order_id", orderId)
+          .order("created_at", { ascending: true }),
+      ]);
 
-        if (error) throw error;
-        return data?.map(mapOrderMessageFromSupabase) || [];
-      },
-      enabled: !!orderId,
-      staleTime: 30 * 1000, // 30 seconds
+      const messages = messagesResult.data || [];
+      const tracking = trackingResult.data || [];
+
+      return transformOrder(orderData, messages, tracking);
     });
-  };
+  }, [dedupe]);
 
-  return {
+  const updateOrderStatus = useCallback(async (
+    orderId: string,
+    status: OrderData["status"]
+  ) => {
+    try {
+      const { error } = await supabase
+        .from("orders")
+        .update({ 
+          status,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId);
+
+      if (error) throw error;
+
+      // Update the local state optimistically
+      setOrders(prev => prev.map(order => 
+        order.id === orderId 
+          ? { ...order, status, updatedAt: new Date().toISOString() }
+          : order
+      ));
+    } catch (err: any) {
+      console.error("Error updating order status:", err);
+      throw err;
+    }
+  }, []);
+
+  const refreshCurrentPage = useCallback(() => {
+    return fetchOrders();
+  }, [fetchOrders]);
+
+  const contextValue = useMemo(() => ({
     orders,
     loading,
-    error: error?.message || null,
-    addOrder: addOrderMutation.mutateAsync,
-    updateOrderStatus: updateOrderStatusMutation.mutateAsync,
-    useOrderMessages,
-    // Expose query client for advanced cache management
-    invalidateOrders: () =>
-      queryClient.invalidateQueries({ queryKey: orderKeys.all }),
-  };
+    error,
+    pagination,
+    filters,
+    fetchOrders,
+    setFilters,
+    setPage,
+    setPageSize,
+    getOrder,
+    updateOrderStatus,
+    refreshCurrentPage,
+  }), [
+    orders,
+    loading,
+    error,
+    pagination,
+    filters,
+    fetchOrders,
+    setFilters,
+    setPage,
+    setPageSize,
+    getOrder,
+    updateOrderStatus,
+    refreshCurrentPage,
+  ]);
+
+  return (
+    <OptimizedOrdersContext.Provider value={contextValue}>
+      {children}
+    </OptimizedOrdersContext.Provider>
+  );
 }
 
-// Helper function to map Supabase data to Order interface
-function mapOrderFromSupabase(data: any): Order {
-  return {
-    id: data.id,
-    user_id: data.user_id,
-    customer_email: data.customer_email,
-    customer_name: data.customer_name,
-    services: data.services || [],
-    status: data.status,
-    total_amount: data.total_amount,
-    payment_status: data.payment_status,
-    created_at: data.created_at,
-    updated_at: data.updated_at,
-    progress: data.progress,
-    assigned_booster: data.assigned_booster,
-    estimated_completion: data.estimated_completion,
-    notes: data.notes,
-    transaction_id: data.transaction_id,
-    ip_address: data.ip_address,
-    referral_code: data.referral_code,
-    referral_discount: data.referral_discount,
-    credits_used: data.credits_used,
-  };
-}
-
-// Helper function to map Supabase data to OrderMessage interface
-function mapOrderMessageFromSupabase(data: any): OrderMessage {
-  return {
-    id: data.id,
-    order_id: data.order_id || "",
-    from: data.from,
-    message: data.message,
-    is_read: data.is_read ?? false,
-    created_at: data.created_at || new Date().toISOString(),
-  };
+export function useOptimizedOrders() {
+  const context = useContext(OptimizedOrdersContext);
+  if (context === undefined) {
+    throw new Error("useOptimizedOrders must be used within an OptimizedOrdersProvider");
+  }
+  return context;
 }
