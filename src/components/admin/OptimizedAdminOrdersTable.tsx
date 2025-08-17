@@ -64,150 +64,168 @@ interface OptimizedAdminOrdersTableProps {
 }
 
 // Memoized order row component for performance
-const OrderRow = memo(({ 
-  order, 
-  isSelected, 
-  onSelect, 
-  onStatusUpdate, 
-  onViewDetails 
-}: {
-  order: Order;
-  isSelected: boolean;
-  onSelect: (id: string) => void;
-  onStatusUpdate: (id: string, status: string) => void;
-  onViewDetails: (order: Order) => void;
-}) => {
-  const handleSelect = useCallback(() => onSelect(order.id), [onSelect, order.id]);
-  const handleView = useCallback(() => onViewDetails(order), [onViewDetails, order]);
-  
-  const handleStatusUpdate = useCallback((status: string) => {
-    onStatusUpdate(order.id, status);
-  }, [onStatusUpdate, order.id]);
+const OrderRow = memo(
+  ({
+    order,
+    isSelected,
+    onSelect,
+    onStatusUpdate,
+    onViewDetails,
+  }: {
+    order: Order;
+    isSelected: boolean;
+    onSelect: (id: string) => void;
+    onStatusUpdate: (id: string, status: string) => void;
+    onViewDetails: (order: Order) => void;
+  }) => {
+    const handleSelect = useCallback(
+      () => onSelect(order.id),
+      [onSelect, order.id],
+    );
+    const handleView = useCallback(
+      () => onViewDetails(order),
+      [onViewDetails, order],
+    );
 
-  return (
-    <TableRow className="hover:bg-muted/50">
-      <TableCell>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleSelect}
-          className="h-8 w-8 p-0"
-        >
-          {isSelected ? (
-            <CheckSquare className="h-4 w-4" />
-          ) : (
-            <Square className="h-4 w-4" />
-          )}
-        </Button>
-      </TableCell>
-      <TableCell className="font-mono">
-        #{order.id.slice(-6)}
-      </TableCell>
-      <TableCell>
-        <div>
-          <div className="font-medium">{orderHelpers.getCustomerName(order)}</div>
-          <div className="text-sm text-muted-foreground">
-            {orderHelpers.getCustomerEmail(order)}
+    const handleStatusUpdate = useCallback(
+      (status: string) => {
+        onStatusUpdate(order.id, status);
+      },
+      [onStatusUpdate, order.id],
+    );
+
+    return (
+      <TableRow className="hover:bg-muted/50">
+        <TableCell>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleSelect}
+            className="h-8 w-8 p-0"
+          >
+            {isSelected ? (
+              <CheckSquare className="h-4 w-4" />
+            ) : (
+              <Square className="h-4 w-4" />
+            )}
+          </Button>
+        </TableCell>
+        <TableCell className="font-mono">#{order.id.slice(-6)}</TableCell>
+        <TableCell>
+          <div>
+            <div className="font-medium">
+              {orderHelpers.getCustomerName(order)}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {orderHelpers.getCustomerEmail(order)}
+            </div>
           </div>
-        </div>
-      </TableCell>
-      <TableCell>
-        <Badge className={getStatusColor(order.status)}>
-          {order.status.replace("_", " ").replace("-", " ")}
-        </Badge>
-      </TableCell>
-      <TableCell>
-        <Badge variant="outline">
-          {order.orderType === "custom" ? "Custom" : "Regular"}
-        </Badge>
-      </TableCell>
-      <TableCell className="font-semibold">
-        {formatCurrency(orderHelpers.getTotalAmount(order))}
-      </TableCell>
-      <TableCell>
-        {formatDate(orderHelpers.getCreatedAt(order))}
-      </TableCell>
-      <TableCell>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleView}>
-              <Eye className="h-4 w-4 mr-2" />
-              View Details
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleStatusUpdate("processing")}>
-              Mark Processing
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleStatusUpdate("completed")}>
-              Mark Completed
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </TableCell>
-    </TableRow>
-  );
-});
+        </TableCell>
+        <TableCell>
+          <Badge className={getStatusColor(order.status)}>
+            {order.status.replace("_", " ").replace("-", " ")}
+          </Badge>
+        </TableCell>
+        <TableCell>
+          <Badge variant="outline">
+            {order.orderType === "custom" ? "Custom" : "Regular"}
+          </Badge>
+        </TableCell>
+        <TableCell className="font-semibold">
+          {formatCurrency(orderHelpers.getTotalAmount(order))}
+        </TableCell>
+        <TableCell>{formatDate(orderHelpers.getCreatedAt(order))}</TableCell>
+        <TableCell>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleView}>
+                <Eye className="h-4 w-4 mr-2" />
+                View Details
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => handleStatusUpdate("processing")}
+              >
+                Mark Processing
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleStatusUpdate("completed")}>
+                Mark Completed
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TableCell>
+      </TableRow>
+    );
+  },
+);
 
 OrderRow.displayName = "OrderRow";
 
 // Memoized order card component for performance
-const OrderCard = memo(({ 
-  order, 
-  onViewDetails 
-}: {
-  order: Order;
-  onViewDetails: (order: Order) => void;
-}) => {
-  const handleView = useCallback(() => onViewDetails(order), [onViewDetails, order]);
+const OrderCard = memo(
+  ({
+    order,
+    onViewDetails,
+  }: {
+    order: Order;
+    onViewDetails: (order: Order) => void;
+  }) => {
+    const handleView = useCallback(
+      () => onViewDetails(order),
+      [onViewDetails, order],
+    );
 
-  return (
-    <div className="border rounded-lg p-4 space-y-3 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="font-mono font-medium">#{order.id.slice(-6)}</div>
-          <Badge className={`${getStatusColor(order.status)} text-xs`}>
-            {order.status.replace("_", " ").replace("-", " ")}
-          </Badge>
+    return (
+      <div className="border rounded-lg p-4 space-y-3 hover:shadow-md transition-shadow">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="font-mono font-medium">#{order.id.slice(-6)}</div>
+            <Badge className={`${getStatusColor(order.status)} text-xs`}>
+              {order.status.replace("_", " ").replace("-", " ")}
+            </Badge>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleView}>
+                <Eye className="h-4 w-4 mr-2" />
+                View Details
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleView}>
-              <Eye className="h-4 w-4 mr-2" />
-              View Details
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+
+        <div className="space-y-2 text-sm">
+          <div className="flex items-center gap-2">
+            <User className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">
+              {orderHelpers.getCustomerName(order)}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <span className="font-semibold text-primary">
+              {formatCurrency(orderHelpers.getTotalAmount(order))}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            <span>{formatDate(orderHelpers.getCreatedAt(order))}</span>
+          </div>
+        </div>
       </div>
-      
-      <div className="space-y-2 text-sm">
-        <div className="flex items-center gap-2">
-          <User className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">{orderHelpers.getCustomerName(order)}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-          <span className="font-semibold text-primary">
-            {formatCurrency(orderHelpers.getTotalAmount(order))}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4 text-muted-foreground" />
-          <span>{formatDate(orderHelpers.getCreatedAt(order))}</span>
-        </div>
-      </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
 OrderCard.displayName = "OrderCard";
 
@@ -219,7 +237,9 @@ export function OptimizedAdminOrdersTable({
   onRefresh,
 }: OptimizedAdminOrdersTableProps) {
   // Performance monitoring
-  const endMeasure = performanceMonitor.measureRender("OptimizedAdminOrdersTable");
+  const endMeasure = performanceMonitor.measureRender(
+    "OptimizedAdminOrdersTable",
+  );
 
   // Filter and sort state
   const [searchTerm, setSearchTerm] = useState("");
@@ -237,12 +257,20 @@ export function OptimizedAdminOrdersTable({
   // Modal state
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalOrderType, setModalOrderType] = useState<"regular" | "custom">("regular");
+  const [modalOrderType, setModalOrderType] = useState<"regular" | "custom">(
+    "regular",
+  );
 
   // Combine orders with orderType metadata
   const allOrders = useMemo(() => {
-    const regularOrders = orders.map(order => ({ ...order, orderType: "regular" as const }));
-    const customOrdersWithType = customOrders.map(order => ({ ...order, orderType: "custom" as const }));
+    const regularOrders = orders.map((order) => ({
+      ...order,
+      orderType: "regular" as const,
+    }));
+    const customOrdersWithType = customOrders.map((order) => ({
+      ...order,
+      orderType: "custom" as const,
+    }));
     return [...regularOrders, ...customOrdersWithType];
   }, [orders, customOrders]);
 
@@ -259,10 +287,19 @@ export function OptimizedAdminOrdersTable({
         dateRange,
         amountRange,
         sortBy,
-        sortOrder
+        sortOrder,
       );
     });
-  }, [applyFiltersAndSorting, searchTerm, statusFilter, orderTypeFilter, dateRange, amountRange, sortBy, sortOrder]);
+  }, [
+    applyFiltersAndSorting,
+    searchTerm,
+    statusFilter,
+    orderTypeFilter,
+    dateRange,
+    amountRange,
+    sortBy,
+    sortOrder,
+  ]);
 
   // Pagination
   const totalPages = Math.ceil(filteredAndSortedOrders.length / pageSize);
@@ -272,20 +309,23 @@ export function OptimizedAdminOrdersTable({
   }, [filteredAndSortedOrders, currentPage, pageSize]);
 
   // Event handlers - all memoized for performance
-  const handleSort = useCallback((column: string) => {
-    if (sortBy === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(column);
-      setSortOrder("asc");
-    }
-  }, [sortBy, sortOrder]);
+  const handleSort = useCallback(
+    (column: string) => {
+      if (sortBy === column) {
+        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      } else {
+        setSortBy(column);
+        setSortOrder("asc");
+      }
+    },
+    [sortBy, sortOrder],
+  );
 
   const handleSelectOrder = useCallback((orderId: string) => {
-    setSelectedOrders(prev => 
-      prev.includes(orderId) 
-        ? prev.filter(id => id !== orderId)
-        : [...prev, orderId]
+    setSelectedOrders((prev) =>
+      prev.includes(orderId)
+        ? prev.filter((id) => id !== orderId)
+        : [...prev, orderId],
     );
   }, []);
 
@@ -297,12 +337,15 @@ export function OptimizedAdminOrdersTable({
     }
   }, [selectedOrders.length, paginatedOrders]);
 
-  const handleBulkStatusUpdate = useCallback((status: string) => {
-    selectedOrders.forEach(orderId => {
-      onUpdateOrderStatus(orderId, status);
-    });
-    setSelectedOrders([]);
-  }, [selectedOrders, onUpdateOrderStatus]);
+  const handleBulkStatusUpdate = useCallback(
+    (status: string) => {
+      selectedOrders.forEach((orderId) => {
+        onUpdateOrderStatus(orderId, status);
+      });
+      setSelectedOrders([]);
+    },
+    [selectedOrders, onUpdateOrderStatus],
+  );
 
   const handleExport = useCallback(() => {
     exportToCSV(filteredAndSortedOrders, "admin-orders");
@@ -338,7 +381,7 @@ export function OptimizedAdminOrdersTable({
             {filteredAndSortedOrders.length} of {allOrders.length} orders
           </Badge>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
@@ -346,14 +389,10 @@ export function OptimizedAdminOrdersTable({
             onClick={onRefresh}
             disabled={loading}
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-          >
+
+          <Button variant="outline" size="sm" onClick={handleExport}>
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
@@ -455,13 +494,19 @@ export function OptimizedAdminOrdersTable({
               <DropdownMenuContent>
                 <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleBulkStatusUpdate("processing")}>
+                <DropdownMenuItem
+                  onClick={() => handleBulkStatusUpdate("processing")}
+                >
                   Mark as Processing
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleBulkStatusUpdate("in-progress")}>
+                <DropdownMenuItem
+                  onClick={() => handleBulkStatusUpdate("in-progress")}
+                >
                   Mark as In Progress
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleBulkStatusUpdate("completed")}>
+                <DropdownMenuItem
+                  onClick={() => handleBulkStatusUpdate("completed")}
+                >
                   Mark as Completed
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -577,10 +622,13 @@ export function OptimizedAdminOrdersTable({
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">
               Showing {(currentPage - 1) * pageSize + 1} to{" "}
-              {Math.min(currentPage * pageSize, filteredAndSortedOrders.length)} of{" "}
-              {filteredAndSortedOrders.length} orders
+              {Math.min(currentPage * pageSize, filteredAndSortedOrders.length)}{" "}
+              of {filteredAndSortedOrders.length} orders
             </span>
-            <Select value={pageSize.toString()} onValueChange={(value) => setPageSize(Number(value))}>
+            <Select
+              value={pageSize.toString()}
+              onValueChange={(value) => setPageSize(Number(value))}
+            >
               <SelectTrigger className="w-20">
                 <SelectValue />
               </SelectTrigger>
@@ -608,7 +656,9 @@ export function OptimizedAdminOrdersTable({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              onClick={() =>
+                setCurrentPage(Math.min(totalPages, currentPage + 1))
+              }
               disabled={currentPage === totalPages}
             >
               Next

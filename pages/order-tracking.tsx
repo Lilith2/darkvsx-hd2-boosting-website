@@ -41,12 +41,12 @@ export default function OrderTracking() {
   const { user } = useAuth();
 
   // Determine if this is a custom order
-  const isCustomOrder = type === 'custom';
+  const isCustomOrder = type === "custom";
 
   // Get the appropriate order
   const [order, setOrder] = useState(() => {
     if (isCustomOrder) {
-      return customOrders.find(o => o.id === orderId) || null;
+      return customOrders.find((o) => o.id === orderId) || null;
     }
     return getOrder(orderId || "");
   });
@@ -58,7 +58,7 @@ export default function OrderTracking() {
     if (orderId) {
       let foundOrder;
       if (isCustomOrder) {
-        foundOrder = customOrders.find(o => o.id === orderId) || null;
+        foundOrder = customOrders.find((o) => o.id === orderId) || null;
       } else {
         foundOrder = getOrder(orderId);
       }
@@ -72,7 +72,16 @@ export default function OrderTracking() {
         setIsInitialLoad(false);
       }
     }
-  }, [orderId, isCustomOrder, getOrder, orders, customOrders, loading, customLoading, isInitialLoad]);
+  }, [
+    orderId,
+    isCustomOrder,
+    getOrder,
+    orders,
+    customOrders,
+    loading,
+    customLoading,
+    isInitialLoad,
+  ]);
 
   // Show loading state while orders are being fetched
   const isLoading = isCustomOrder ? customLoading : loading;
@@ -156,20 +165,21 @@ export default function OrderTracking() {
         ...orderData,
         createdAt: orderData.created_at || new Date().toISOString(),
         totalAmount: orderData.total_amount || 0,
-        customerName: orderData.customer_name || 'Unknown Customer',
-        customerEmail: orderData.customer_email || 'Unknown Email',
-        services: orderData.items?.map((item: any) => ({
-          id: item.id || `item-${item.item_name}`,
-          name: `${item.quantity || 1}x ${item.item_name || 'Unknown Item'}`,
-          price: item.total_price || 0,
-          quantity: item.quantity || 1
-        })) || [],
+        customerName: orderData.customer_name || "Unknown Customer",
+        customerEmail: orderData.customer_email || "Unknown Email",
+        services:
+          orderData.items?.map((item: any) => ({
+            id: item.id || `item-${item.item_name}`,
+            name: `${item.quantity || 1}x ${item.item_name || "Unknown Item"}`,
+            price: item.total_price || 0,
+            quantity: item.quantity || 1,
+          })) || [],
         messages: [], // Custom orders don't have messages yet
         tracking: [], // Custom orders don't have tracking yet
         assignedBooster: null, // Custom orders don't have assigned boosters
         progress: 0, // Custom orders don't track progress the same way
-        paymentStatus: 'paid', // Custom orders are considered paid when created
-        notes: orderData.special_instructions || orderData.notes || null
+        paymentStatus: "paid", // Custom orders are considered paid when created
+        notes: orderData.special_instructions || orderData.notes || null,
       };
     }
 
@@ -179,9 +189,9 @@ export default function OrderTracking() {
       services: orderData.services || [],
       messages: orderData.messages || [],
       tracking: orderData.tracking || [],
-      customerName: orderData.customerName || 'Unknown Customer',
-      customerEmail: orderData.customerEmail || 'Unknown Email',
-      paymentStatus: orderData.paymentStatus || 'unknown'
+      customerName: orderData.customerName || "Unknown Customer",
+      customerEmail: orderData.customerEmail || "Unknown Email",
+      paymentStatus: orderData.paymentStatus || "unknown",
     };
   };
 
@@ -196,7 +206,8 @@ export default function OrderTracking() {
             <AlertCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">Invalid Order Data</h2>
             <p className="text-muted-foreground mb-6">
-              Unable to load order information. Please try again or contact support.
+              Unable to load order information. Please try again or contact
+              support.
             </p>
             <Link href="/account">
               <Button variant="outline" className="hover:bg-primary/10">
@@ -220,7 +231,10 @@ export default function OrderTracking() {
     }
 
     try {
-      await addOrderMessage(order.id, { from: "customer", message: newMessage });
+      await addOrderMessage(order.id, {
+        from: "customer",
+        message: newMessage,
+      });
       setNewMessage("");
       // Update local order state after message is sent
       const updatedOrder = getOrder(order.id);
@@ -272,19 +286,23 @@ export default function OrderTracking() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-2">
-                {isCustomOrder ? normalizedOrder?.order_number || `Order #${order.id}` : `Order #${order.id.slice(-6)}`}
+                {isCustomOrder
+                  ? normalizedOrder?.order_number || `Order #${order.id}`
+                  : `Order #${order.id.slice(-6)}`}
               </h1>
               <p className="text-muted-foreground">
-                Placed on {formatDate(normalizedOrder?.createdAt || '')}
+                Placed on {formatDate(normalizedOrder?.createdAt || "")}
               </p>
             </div>
 
             <div className="mt-4 md:mt-0">
               <Badge
-                className={`text-sm px-3 py-1 ${getStatusColor(normalizedOrder?.status || '')}`}
+                className={`text-sm px-3 py-1 ${getStatusColor(normalizedOrder?.status || "")}`}
               >
-                {getStatusIcon(normalizedOrder?.status || '')}
-                <span className="ml-2 capitalize">{normalizedOrder?.status}</span>
+                {getStatusIcon(normalizedOrder?.status || "")}
+                <span className="ml-2 capitalize">
+                  {normalizedOrder?.status}
+                </span>
               </Badge>
             </div>
           </div>
@@ -448,7 +466,11 @@ export default function OrderTracking() {
                     <Textarea
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
-                      placeholder={isCustomOrder ? "Messaging not available for custom orders yet..." : "Type your message to our support team..."}
+                      placeholder={
+                        isCustomOrder
+                          ? "Messaging not available for custom orders yet..."
+                          : "Type your message to our support team..."
+                      }
                       rows={3}
                       disabled={isCustomOrder}
                     />
@@ -504,7 +526,7 @@ export default function OrderTracking() {
                         : "text-yellow-700 border-yellow-200"
                     }
                   >
-                    Payment: {normalizedOrder.paymentStatus || 'Unknown'}
+                    Payment: {normalizedOrder.paymentStatus || "Unknown"}
                   </Badge>
                 </div>
               </CardContent>

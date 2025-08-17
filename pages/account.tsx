@@ -87,20 +87,18 @@ export default function Account() {
   // Combine both order types and sort by creation date
   const userOrders = [...userRegularOrders, ...userCustomOrders].sort(
     (a, b) => {
-      const dateA = 'created_at' in a ? a.created_at : a.createdAt;
-      const dateB = 'created_at' in b ? b.created_at : b.createdAt;
+      const dateA = "created_at" in a ? a.created_at : a.createdAt;
+      const dateB = "created_at" in b ? b.created_at : b.createdAt;
       return new Date(dateB).getTime() - new Date(dateA).getTime();
-    }
+    },
   );
 
   // Calculate user statistics
-  const totalSpent = userOrders.reduce(
-    (sum, order) => {
-      const amount = 'total_amount' in order ? order.total_amount : order.totalAmount;
-      return sum + (amount || 0);
-    },
-    0,
-  );
+  const totalSpent = userOrders.reduce((sum, order) => {
+    const amount =
+      "total_amount" in order ? order.total_amount : order.totalAmount;
+    return sum + (amount || 0);
+  }, 0);
   const completedOrders = userOrders.filter(
     (order) => order.status === "completed",
   ).length;
@@ -144,16 +142,17 @@ export default function Account() {
 
   // Generate recent activity from actual orders
   const recentActivity = userOrders.slice(0, 4).map((order) => {
-    const isCustomOrder = 'order_number' in order;
-    const orderDate = 'created_at' in order ? order.created_at : order.createdAt;
+    const isCustomOrder = "order_number" in order;
+    const orderDate =
+      "created_at" in order ? order.created_at : order.createdAt;
 
-    let details = '';
+    let details = "";
     if (isCustomOrder) {
       const items = order.items || [];
       if (items.length > 0) {
-        details = `Custom Order: ${items.map(item => `${item.quantity}x ${item.item_name}`).join(', ')}`;
+        details = `Custom Order: ${items.map((item) => `${item.quantity}x ${item.item_name}`).join(", ")}`;
       } else {
-        details = 'Custom Order';
+        details = "Custom Order";
       }
     } else {
       details = order.services.map((s) => s.name).join(", ");
@@ -169,11 +168,13 @@ export default function Account() {
 
   // Generate favorite services from completed orders
   const favoriteServices = (() => {
-    const completedOrders = userOrders.filter((order) => order.status === "completed");
+    const completedOrders = userOrders.filter(
+      (order) => order.status === "completed",
+    );
     const serviceCount: Record<string, number> = {};
 
     completedOrders.forEach((order) => {
-      const isCustomOrder = 'order_number' in order;
+      const isCustomOrder = "order_number" in order;
       if (isCustomOrder) {
         // For custom orders, count items
         const items = order.items || [];
@@ -195,7 +196,7 @@ export default function Account() {
       .map(([name, count]) => {
         // Find the most recent order that contains this service/item
         const relevantOrders = userOrders.filter((order) => {
-          const isCustomOrder = 'order_number' in order;
+          const isCustomOrder = "order_number" in order;
           if (isCustomOrder) {
             const items = order.items || [];
             return items.some((item) => `${item.item_name} (Custom)` === name);
@@ -205,18 +206,22 @@ export default function Account() {
         });
 
         const mostRecentOrder = relevantOrders.sort((a, b) => {
-          const dateA = 'created_at' in a ? a.created_at : a.createdAt;
-          const dateB = 'created_at' in b ? b.created_at : b.createdAt;
+          const dateA = "created_at" in a ? a.created_at : a.createdAt;
+          const dateB = "created_at" in b ? b.created_at : b.createdAt;
           return new Date(dateB).getTime() - new Date(dateA).getTime();
         })[0];
 
         const lastUsed = mostRecentOrder
-          ? ('created_at' in mostRecentOrder ? mostRecentOrder.created_at : mostRecentOrder.createdAt)
+          ? "created_at" in mostRecentOrder
+            ? mostRecentOrder.created_at
+            : mostRecentOrder.createdAt
           : new Date().toISOString();
 
         return {
           name,
-          category: name.includes('(Custom)') ? "Custom Order" : "Boosting Service",
+          category: name.includes("(Custom)")
+            ? "Custom Order"
+            : "Boosting Service",
           lastUsed,
           count,
         };
@@ -744,96 +749,108 @@ export default function Account() {
                   <div className="space-y-4">
                     {userOrders.map((order) => {
                       // Check if it's a custom order (has order_number) or regular order
-                      const isCustomOrder = 'order_number' in order;
-                      const orderNumber = isCustomOrder ? order.order_number : `#${order.id.slice(-6)}`;
-                      const orderAmount = isCustomOrder ? order.total_amount : order.totalAmount;
-                      const orderDate = 'created_at' in order ? order.created_at : order.createdAt;
+                      const isCustomOrder = "order_number" in order;
+                      const orderNumber = isCustomOrder
+                        ? order.order_number
+                        : `#${order.id.slice(-6)}`;
+                      const orderAmount = isCustomOrder
+                        ? order.total_amount
+                        : order.totalAmount;
+                      const orderDate =
+                        "created_at" in order
+                          ? order.created_at
+                          : order.createdAt;
 
                       // Get service names for display
-                      let serviceNames = '';
+                      let serviceNames = "";
                       if (isCustomOrder) {
                         // For custom orders, show item summary
                         const items = order.items || [];
                         if (items.length > 0) {
-                          serviceNames = `Custom Order: ${items.map(item => `${item.quantity}x ${item.item_name}`).join(', ')}`;
+                          serviceNames = `Custom Order: ${items.map((item) => `${item.quantity}x ${item.item_name}`).join(", ")}`;
                         } else {
-                          serviceNames = 'Custom Order';
+                          serviceNames = "Custom Order";
                         }
                       } else {
                         // For regular orders, show service names
-                        serviceNames = order.services.map((s) => s.name).join(", ");
+                        serviceNames = order.services
+                          .map((s) => s.name)
+                          .join(", ");
                       }
 
                       return (
-                      <div
-                        key={order.id}
-                        className="border border-border rounded-lg p-4 hover:border-primary/30 transition-colors"
-                      >
-                        <div className="flex items-center justify-between mb-3">
-                          <div>
-                            <h3 className="font-medium">
-                              {orderNumber}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              {serviceNames}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <Badge className={getStatusColor(order.status)}>
-                              {getStatusIcon(order.status)}
-                              <span className="ml-1 capitalize">
-                                {order.status}
-                              </span>
-                            </Badge>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              ${orderAmount}
-                            </p>
-                          </div>
-                        </div>
-
-                        {('progress' in order && order.progress && order.progress > 0) && (
-                          <div className="mb-3">
-                            <div className="flex justify-between text-sm mb-1">
-                              <span>Progress</span>
-                              <span>{order.progress}%</span>
+                        <div
+                          key={order.id}
+                          className="border border-border rounded-lg p-4 hover:border-primary/30 transition-colors"
+                        >
+                          <div className="flex items-center justify-between mb-3">
+                            <div>
+                              <h3 className="font-medium">{orderNumber}</h3>
+                              <p className="text-sm text-muted-foreground">
+                                {serviceNames}
+                              </p>
                             </div>
-                            <Progress value={order.progress} className="h-2" />
+                            <div className="text-right">
+                              <Badge className={getStatusColor(order.status)}>
+                                {getStatusIcon(order.status)}
+                                <span className="ml-1 capitalize">
+                                  {order.status}
+                                </span>
+                              </Badge>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                ${orderAmount}
+                              </p>
+                            </div>
                           </div>
-                        )}
 
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">
-                            {new Date(orderDate).toLocaleDateString()}
-                          </span>
-                          <div className="flex space-x-2">
-                            {/* Track Order - works for both regular and custom orders */}
-                            <Link
-                              href={`/order/${order.id}${isCustomOrder ? '?type=custom' : ''}`}
-                              className="text-primary hover:underline"
-                            >
-                              Track Order
-                            </Link>
-                            {order.status === "completed" && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  const orderName = isCustomOrder
-                                    ? `Custom Order ${orderNumber}`
-                                    : serviceNames;
-                                  toast({
-                                    title: "Thank you for your feedback!",
-                                    description: `We'd love to hear about your experience with ${orderName}. Please contact us through Discord or email.`,
-                                  });
-                                }}
-                              >
-                                <Star className="w-3 h-3 mr-1" />
-                                Review
-                              </Button>
+                          {"progress" in order &&
+                            order.progress &&
+                            order.progress > 0 && (
+                              <div className="mb-3">
+                                <div className="flex justify-between text-sm mb-1">
+                                  <span>Progress</span>
+                                  <span>{order.progress}%</span>
+                                </div>
+                                <Progress
+                                  value={order.progress}
+                                  className="h-2"
+                                />
+                              </div>
                             )}
+
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              {new Date(orderDate).toLocaleDateString()}
+                            </span>
+                            <div className="flex space-x-2">
+                              {/* Track Order - works for both regular and custom orders */}
+                              <Link
+                                href={`/order/${order.id}${isCustomOrder ? "?type=custom" : ""}`}
+                                className="text-primary hover:underline"
+                              >
+                                Track Order
+                              </Link>
+                              {order.status === "completed" && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    const orderName = isCustomOrder
+                                      ? `Custom Order ${orderNumber}`
+                                      : serviceNames;
+                                    toast({
+                                      title: "Thank you for your feedback!",
+                                      description: `We'd love to hear about your experience with ${orderName}. Please contact us through Discord or email.`,
+                                    });
+                                  }}
+                                >
+                                  <Star className="w-3 h-3 mr-1" />
+                                  Review
+                                </Button>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
                       );
                     })}
                   </div>
