@@ -173,72 +173,13 @@ export default function AdminDashboard() {
   const [isOrderDetailsModalOpen, setIsOrderDetailsModalOpen] = useState(false);
   const [orderDetailsType, setOrderDetailsType] = useState<"regular" | "custom">("regular");
 
-  // Analytics calculations - combine both regular orders and custom orders
-  const regularOrdersRevenue = orders
-    .filter((order) => order.paymentStatus === "paid")
-    .reduce((sum, order) => sum + order.totalAmount, 0);
-
-  const customOrdersRevenue = customOrders
-    .filter((order) => order.status === "completed")
-    .reduce((sum, order) => sum + order.total_amount, 0);
-
-  const totalRevenue = parseFloat(
-    (regularOrdersRevenue + customOrdersRevenue).toFixed(2),
-  );
-
-  const regularPendingOrders = orders.filter(
-    (order) => order.status === "pending",
-  ).length;
-
-  const customPendingOrders = customOrders.filter(
-    (order) => order.status === "pending",
-  ).length;
-
-  const pendingOrders = regularPendingOrders + customPendingOrders;
-
-  const activeServices = services.filter((service) => service.active).length;
-
-  // Combine customers from both regular orders and custom orders
-  const regularOrderCustomers = new Set(orders.map((order) => order.userId));
-  const customOrderCustomers = new Set(
-    customOrders.map((order) => order.user_id),
-  );
-  const allCustomers = new Set([
-    ...Array.from(regularOrderCustomers),
-    ...Array.from(customOrderCustomers),
-  ]);
-  const totalCustomers = allCustomers.size;
-
-  // Combine and sort recent orders from both types
-  const allRecentOrders = [
-    ...orders.map((order) => ({
-      ...order,
-      type: "regular" as const,
-      createdAt: order.createdAt,
-    })),
-    ...customOrders.map((order) => ({
-      id: order.id,
-      customerName: order.customer_email || "Custom Order Customer",
-      customerEmail: order.customer_email || "",
-      totalAmount: order.total_amount,
-      status: order.status,
-      createdAt: order.created_at,
-      type: "custom" as const,
-      services: order.items.map((item) => ({
-        id: item.id,
-        name: item.item_name,
-        price: item.price_per_unit,
-        quantity: item.quantity,
-      })),
-    })),
-  ];
-
-  const recentOrders = allRecentOrders
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    )
-    .slice(0, 5);
+  // Use analytics hook
+  const analytics = useAdminAnalytics({
+    orders,
+    customOrders,
+    loading,
+    customOrdersLoading,
+  });
 
   // Filter orders based on selected filter and type
   const getFilteredOrders = () => {
