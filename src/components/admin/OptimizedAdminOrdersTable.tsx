@@ -621,7 +621,7 @@ export function OptimizedAdminOrdersTable({
       <OrderDetailsModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        order={selectedOrder}
+        order={selectedOrder as any}
         orderType={modalOrderType}
       />
     </div>
