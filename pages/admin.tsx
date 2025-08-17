@@ -384,7 +384,12 @@ export default function AdminDashboard() {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <TopServicesCard
-                topServices={services.slice(0, 5)}
+                topServices={services.slice(0, 5).map(service => ({
+                  id: service.id,
+                  name: service.title,
+                  revenue: service.price * (service.orders_count || 0),
+                  orderCount: service.orders_count || 0
+                }))}
                 isLoading={analytics.isLoading}
               />
               <RecentOrdersCard
