@@ -84,6 +84,22 @@ export default function Account() {
   const userRegularOrders = user ? getUserOrders(user.id) : [];
   const userCustomOrders = user ? getUserCustomOrders(user.id) : [];
 
+  // Add error boundary for order data
+  const safeUserOrders = React.useMemo(() => {
+    try {
+      return [...userRegularOrders, ...userCustomOrders].sort(
+        (a, b) => {
+          const dateA = "created_at" in a ? a.created_at : a.createdAt;
+          const dateB = "created_at" in b ? b.created_at : b.createdAt;
+          return new Date(dateB).getTime() - new Date(dateA).getTime();
+        },
+      );
+    } catch (error) {
+      console.error("Error processing user orders:", error);
+      return [];
+    }
+  }, [userRegularOrders, userCustomOrders]);
+
   // Combine both order types and sort by creation date
   const userOrders = [...userRegularOrders, ...userCustomOrders].sort(
     (a, b) => {
