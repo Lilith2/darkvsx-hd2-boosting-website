@@ -291,7 +291,7 @@ export default function OrderTracking() {
                     </div>
                   )}
 
-                  {order.estimatedCompletion && (
+                  {normalizedOrder.estimatedCompletion && (
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
                         Estimated Completion:
