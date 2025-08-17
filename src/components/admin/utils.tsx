@@ -3,14 +3,14 @@ import { useMemo } from "react";
 // Shared order interface
 export interface Order {
   id: string;
-  customer_name?: string;
+  customer_name?: string | null;
   customerName?: string;
-  customer_email?: string;
+  customer_email?: string | null;
   customerEmail?: string;
   status: string;
   total_amount?: number;
   totalAmount?: number;
-  created_at?: string;
+  created_at?: string | null;
   createdAt?: string;
   payment_status?: string;
   paymentStatus?: string;
