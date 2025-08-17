@@ -110,30 +110,31 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboard() {
-  // Use optimized data management
+  // Temporarily use legacy hooks to debug
   const {
-    orders,
-    customOrders,
     services,
-    bundles,
-    customPricing,
-    analytics,
-    isLoading,
-    errors,
-    hasErrors,
-    updateOrderStatus,
-    invalidateAll,
-  } = useOptimizedAdminData();
-
-  // Legacy service/bundle management (can be optimized later)
-  const {
     addService,
     updateService,
     deleteService,
     toggleServiceStatus,
   } = useServices();
-  const { addBundle, updateBundle, deleteBundle, toggleBundleStatus } =
+  const { bundles, addBundle, updateBundle, deleteBundle, toggleBundleStatus } =
     useBundles();
+  const {
+    orders,
+    updateOrderStatus,
+    addOrderMessage,
+    assignBooster,
+    updateOrderProgress,
+    loading,
+    error,
+  } = useOrders();
+  const {
+    orders: customOrders,
+    stats: customOrderStats,
+    loading: customOrdersLoading,
+    error: customOrdersError,
+  } = useCustomOrders();
   const { toast } = useToast();
 
   // Custom pricing is now handled by optimized hook
@@ -333,40 +334,47 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Debug Info */}
-        {hasErrors && (
+        {(error || customOrdersError) && (
           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
             <h3 className="font-semibold text-red-600 mb-2">
               Database Connection Error
             </h3>
-            {errors.orders && (
-              <p className="text-sm text-red-600">Orders: {errors.orders}</p>
+            {error && (
+              <p className="text-sm text-red-600">Regular Orders: {error}</p>
             )}
-            {errors.customOrders && (
-              <p className="text-sm text-red-600">Custom Orders: {errors.customOrders}</p>
-            )}
-            {errors.services && (
-              <p className="text-sm text-red-600">Services: {errors.services}</p>
+            {customOrdersError && (
+              <p className="text-sm text-red-600">
+                Custom Orders: {customOrdersError}
+              </p>
             )}
           </div>
         )}
 
-        {isLoading && (
+        {(loading || customOrdersLoading) && (
           <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-            <p className="text-blue-600">Loading admin data...</p>
+            <p className="text-blue-600">
+              Loading{" "}
+              {loading && customOrdersLoading
+                ? "all orders"
+                : loading
+                  ? "regular orders"
+                  : "custom orders"}
+              ...
+            </p>
           </div>
         )}
 
         {/* Stats Grid */}
         <div className="mb-8">
           <OptimizedAdminStatsCards
-            totalRevenue={analytics.totalRevenue}
-            pendingOrdersCount={analytics.pendingOrdersCount}
-            activeServicesCount={analytics.activeServicesCount}
-            totalCustomersCount={analytics.totalCustomersCount}
-            completedOrdersCount={analytics.completedOrdersCount}
-            totalOrdersCount={analytics.totalOrdersCount}
-            avgOrderValue={analytics.avgOrderValue}
-            isLoading={analytics.isLoading}
+            totalRevenue={[...orders, ...customOrders].reduce((sum, order) => sum + (order.total_amount || order.totalAmount || 0), 0)}
+            pendingOrdersCount={[...orders, ...customOrders].filter(order => order.status === "pending").length}
+            activeServicesCount={services.filter(service => service.active !== false).length}
+            totalCustomersCount={new Set([...orders, ...customOrders].map(order => order.customer_email || order.customerEmail).filter(Boolean)).size}
+            completedOrdersCount={[...orders, ...customOrders].filter(order => order.status === "completed").length}
+            totalOrdersCount={orders.length + customOrders.length}
+            avgOrderValue={orders.length + customOrders.length > 0 ? ([...orders, ...customOrders].reduce((sum, order) => sum + (order.total_amount || order.totalAmount || 0), 0) / (orders.length + customOrders.length)) : 0}
+            isLoading={loading || customOrdersLoading}
           />
         </div>
 
@@ -408,7 +416,7 @@ export default function AdminDashboard() {
           <TabsContent value="services" className="space-y-6">
             <AdminServicesTab
               services={services}
-              loading={isLoading}
+              loading={loading}
               onAddService={handleAddService}
               onEditService={handleEditService}
               onDeleteService={handleDeleteService}
@@ -695,8 +703,8 @@ export default function AdminDashboard() {
               orders={orders}
               customOrders={customOrders}
               onUpdateOrderStatus={updateOrderStatus}
-              loading={isLoading}
-              onRefresh={invalidateAll}
+              loading={loading || customOrdersLoading}
+              onRefresh={() => window.location.reload()}
             />
           </TabsContent>
 
