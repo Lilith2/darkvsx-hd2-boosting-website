@@ -116,28 +116,39 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         console.warn("Failed to fetch custom orders:", customOrdersResult.reason);
       }
 
-      // Calculate referral stats from orders with referral codes
+      // Calculate referral stats from both regular and custom orders
       const userReferralCode = `HD2BOOST-${user.id.slice(-6)}`;
-      const referralOrders =
-        ordersData?.filter(
-          (order) => order.referral_code === userReferralCode,
-        ) || [];
 
-      const totalReferred = referralOrders.length;
-      const totalEarned = referralOrders
+      const referralOrders = ordersData.filter(
+        (order) => order.referral_code === userReferralCode,
+      );
+
+      const referralCustomOrders = customOrdersData.filter(
+        (order) => order.referral_code === userReferralCode,
+      );
+
+      const allReferralOrders = [
+        ...referralOrders.map(o => ({ ...o, source: 'regular' })),
+        ...referralCustomOrders.map(o => ({ ...o, source: 'custom' }))
+      ];
+
+      const totalReferred = allReferralOrders.length;
+
+      const totalEarned = allReferralOrders
         .filter((order) => order.status === "completed")
         .reduce((sum, order) => {
           // Calculate 5% commission from order total
-          const commission = order.total_amount * 0.05;
+          const commission = parseFloat(String(order.total_amount || 0)) * 0.05;
           return sum + commission;
         }, 0);
-      const pendingEarnings = referralOrders
+
+      const pendingEarnings = allReferralOrders
         .filter(
           (order) =>
             order.status === "pending" || order.status === "processing",
         )
         .reduce((sum, order) => {
-          const commission = order.total_amount * 0.05;
+          const commission = parseFloat(String(order.total_amount || 0)) * 0.05;
           return sum + commission;
         }, 0);
 
@@ -145,7 +156,7 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         totalReferred,
         totalEarned,
         pendingEarnings,
-        creditBalance: parseFloat(String(creditBalance)) || 0,
+        creditBalance,
       });
     } catch (err: any) {
       console.error("Error fetching referral stats:", err);
