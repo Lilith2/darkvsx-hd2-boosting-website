@@ -345,12 +345,12 @@ export default function OrderTracking() {
                   <div className="flex items-center">
                     <MessageSquare className="w-5 h-5 mr-2" />
                     Messages
-                    {order.messages.filter(
+                    {(normalizedOrder.messages || []).filter(
                       (m) => !m.isRead && m.from !== "customer",
                     ).length > 0 && (
                       <Badge className="ml-2 bg-red-500/20 text-red-700">
                         {
-                          order.messages.filter(
+                          (normalizedOrder.messages || []).filter(
                             (m) => !m.isRead && m.from !== "customer",
                           ).length
                         }{" "}
