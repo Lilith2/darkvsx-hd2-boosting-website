@@ -319,6 +319,7 @@ export default function Checkout() {
         router.push(`/order-confirmation?orderId=${customOrderId}&type=custom${paymentDetails?.id ? `&paymentId=${paymentDetails.id}` : ''}`);
       } else {
         // Fallback to account page if no order ID available
+        console.warn("No order ID available for redirect, going to account page");
         router.push("/account");
       }
     } catch (error: any) {
