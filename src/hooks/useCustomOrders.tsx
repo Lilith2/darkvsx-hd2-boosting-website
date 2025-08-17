@@ -219,11 +219,24 @@ export function useCustomOrders() {
       return orderResult;
     } catch (err: any) {
       console.error("Error creating custom order:", err);
-      const errorMessage =
-        err?.message ||
-        err?.error_description ||
-        JSON.stringify(err) ||
-        "Failed to create custom order";
+
+      // Properly extract error message from different error types
+      let errorMessage = "Failed to create custom order";
+
+      if (err?.message) {
+        errorMessage = err.message;
+      } else if (err?.error_description) {
+        errorMessage = err.error_description;
+      } else if (err?.details) {
+        errorMessage = err.details;
+      } else if (err?.hint) {
+        errorMessage = err.hint;
+      } else if (typeof err === 'string') {
+        errorMessage = err;
+      } else if (err?.code) {
+        errorMessage = `Database error (${err.code}): ${err.message || 'Unknown error'}`;
+      }
+
       toast({
         title: "Error",
         description: errorMessage,
