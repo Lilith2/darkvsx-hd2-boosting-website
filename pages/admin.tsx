@@ -3,8 +3,14 @@ import { useServices } from "@/hooks/useServices";
 import { useBundles } from "@/hooks/useBundles";
 import { useOrders } from "@/hooks/useOrders";
 import { useCustomOrders } from "@/hooks/useCustomOrders";
+import { useAdminAnalytics } from "@/hooks/useAdminAnalytics";
 import { useToast } from "@/hooks/use-toast";
 import dynamic from "next/dynamic";
+
+// Import new admin components
+import { AdminStatsCards } from "@/components/admin/AdminStatsCards";
+import { TopServicesCard } from "@/components/admin/TopServicesCard";
+import { RecentOrdersCard } from "@/components/admin/RecentOrdersCard";
 
 import { LoadingSpinner } from "../components/LoadingSpinner";
 
