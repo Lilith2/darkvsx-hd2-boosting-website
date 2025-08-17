@@ -218,15 +218,7 @@ export const OptimizedAdminStatsCards = memo(({
         hasNegativeGrowth,
       };
     });
-  }, [
-    totalRevenue,
-    previousRevenue,
-    totalOrdersCount,
-    previousOrdersCount,
-    avgOrderValue,
-    completedOrdersCount,
-    pendingOrdersCount,
-  ]);
+  }, [safeData]);
 
   React.useEffect(() => {
     return endMeasure;
