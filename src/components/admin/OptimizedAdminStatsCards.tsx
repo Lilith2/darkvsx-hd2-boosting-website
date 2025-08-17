@@ -184,27 +184,27 @@ export const OptimizedAdminStatsCards = memo(({
   const analyticsData = useMemo(() => {
     return performanceMonitor.measureFunction("calculateAnalytics", () => {
       // Revenue trend calculation
-      const revenueGrowth = previousRevenue > 0 
-        ? ((totalRevenue - previousRevenue) / previousRevenue) * 100 
+      const revenueGrowth = safeData.previousRevenue > 0
+        ? ((safeData.totalRevenue - safeData.previousRevenue) / safeData.previousRevenue) * 100
         : 0;
 
-      // Orders trend calculation  
-      const orderGrowth = previousOrdersCount > 0
-        ? ((totalOrdersCount - previousOrdersCount) / previousOrdersCount) * 100
+      // Orders trend calculation
+      const orderGrowth = safeData.previousOrdersCount > 0
+        ? ((safeData.totalOrdersCount - safeData.previousOrdersCount) / safeData.previousOrdersCount) * 100
         : 0;
 
       // Calculate average order value if not provided
-      const calculatedAvgOrderValue = avgOrderValue || (
-        totalOrdersCount > 0 ? totalRevenue / totalOrdersCount : 0
+      const calculatedAvgOrderValue = safeData.avgOrderValue || (
+        safeData.totalOrdersCount > 0 ? safeData.totalRevenue / safeData.totalOrdersCount : 0
       );
 
       // Completion rate
-      const completionRate = totalOrdersCount > 0 
-        ? (completedOrdersCount / totalOrdersCount) * 100 
+      const completionRate = safeData.totalOrdersCount > 0
+        ? (safeData.completedOrdersCount / safeData.totalOrdersCount) * 100
         : 0;
 
       // Determine warning states
-      const hasPendingIssues = pendingOrdersCount > 10;
+      const hasPendingIssues = safeData.pendingOrdersCount > 10;
       const hasLowCompletionRate = completionRate < 80;
       const hasNegativeGrowth = revenueGrowth < -5;
 
