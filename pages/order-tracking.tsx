@@ -92,7 +92,7 @@ export default function OrderTracking() {
     );
   }
 
-  if (!order || !normalizedOrder) {
+  if (!order) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
         <Card className="w-full max-w-md">
