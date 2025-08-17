@@ -67,29 +67,53 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
-      // Fetch user's credit balance
-      const { data: profileData, error: creditsError } = await supabase
-        .from("profiles")
-        .select("credit_balance")
-        .eq("id", user.id)
-        .single();
+      // Fetch user's credit balance with better error handling
+      let creditBalance = 0;
+      try {
+        const { data: profileData, error: creditsError } = await supabase
+          .from("profiles")
+          .select("credit_balance")
+          .eq("id", user.id)
+          .single();
 
-      // Fetch orders that used referral codes (simple tracking)
-      const { data: ordersData, error: ordersError } = await supabase
-        .from("orders")
-        .select("referral_code, credits_used, total_amount, status")
-        .not("referral_code", "is", null);
+        if (creditsError) {
+          if (
+            creditsError.code === "PGRST116" ||
+            creditsError.message?.includes("column") ||
+            creditsError.message?.includes("does not exist")
+          ) {
+            console.warn("Credit balance column not found - using 0");
+          } else {
+            console.error("Error fetching credit balance:", creditsError);
+          }
+        } else {
+          creditBalance = parseFloat(String(profileData?.credit_balance || 0));
+        }
+      } catch (err) {
+        console.warn("Failed to fetch credit balance:", err);
+      }
 
-      const creditBalance = profileData?.credit_balance || 0;
+      // Fetch orders that used referral codes (including custom orders)
+      const [ordersResult, customOrdersResult] = await Promise.allSettled([
+        supabase
+          .from("orders")
+          .select("referral_code, credits_used, total_amount, status")
+          .not("referral_code", "is", null),
+        supabase
+          .from("custom_orders")
+          .select("referral_code, total_amount, status")
+          .not("referral_code", "is", null)
+      ]);
 
-      // Handle credit_balance column not existing
-      if (
-        creditsError &&
-        (creditsError.code === "PGRST116" ||
-          creditsError.message?.includes("column") ||
-          creditsError.message?.includes("does not exist"))
-      ) {
-        console.warn("Credit balance column not found - using 0");
+      const ordersData = ordersResult.status === 'fulfilled' ? ordersResult.value.data || [] : [];
+      const customOrdersData = customOrdersResult.status === 'fulfilled' ? customOrdersResult.value.data || [] : [];
+
+      // Log any errors but don't fail completely
+      if (ordersResult.status === 'rejected') {
+        console.warn("Failed to fetch regular orders:", ordersResult.reason);
+      }
+      if (customOrdersResult.status === 'rejected') {
+        console.warn("Failed to fetch custom orders:", customOrdersResult.reason);
       }
 
       // Calculate referral stats from orders with referral codes
