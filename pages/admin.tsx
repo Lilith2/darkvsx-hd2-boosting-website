@@ -744,7 +744,9 @@ export default function AdminDashboard() {
             <EnhancedOrdersTable
               orders={orders}
               customOrders={customOrders}
-              onUpdateOrderStatus={updateOrderStatus}
+              onUpdateOrderStatus={(orderId: string, status: string) => {
+                updateOrderStatus(orderId, status as "pending" | "processing" | "in-progress" | "completed" | "cancelled");
+              }}
               loading={loading || customOrdersLoading}
               onRefresh={() => window.location.reload()}
             />
