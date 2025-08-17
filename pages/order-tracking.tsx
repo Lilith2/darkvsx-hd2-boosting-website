@@ -464,7 +464,7 @@ export default function OrderTracking() {
                         : "text-yellow-700 border-yellow-200"
                     }
                   >
-                    Payment: {order.paymentStatus}
+                    Payment: {normalizedOrder.paymentStatus || 'Unknown'}
                   </Badge>
                 </div>
               </CardContent>
