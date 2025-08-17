@@ -1,9 +1,16 @@
 import { useState, useEffect, useMemo } from "react";
 import { Order, CustomOrder } from "@/lib/types";
 
+interface Service {
+  id: string;
+  name: string;
+  active: boolean;
+}
+
 interface UseAdminAnalyticsProps {
   orders: Order[];
   customOrders: CustomOrder[];
+  services?: Service[];
   loading: boolean;
   customOrdersLoading: boolean;
 }
