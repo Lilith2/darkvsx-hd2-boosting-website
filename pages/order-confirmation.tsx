@@ -182,6 +182,20 @@ export default function OrderConfirmation() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Breadcrumb Navigation */}
+        <nav className="mb-6">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <Link href="/" className="hover:text-foreground transition-colors">
+              Home
+            </Link>
+            <span>→</span>
+            <Link href="/cart" className="hover:text-foreground transition-colors">
+              Cart
+            </Link>
+            <span>→</span>
+            <span className="text-foreground font-medium">Order Confirmation</span>
+          </div>
+        </nav>
         {/* Success Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
