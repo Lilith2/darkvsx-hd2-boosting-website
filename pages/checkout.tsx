@@ -390,6 +390,20 @@ export default function Checkout() {
     });
   };
 
+  // Show loading while checking authentication
+  if (!isAuthenticated) {
+    return (
+      <div className="bg-background py-12 min-h-[calc(100vh-8rem)]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <span className="ml-2">Checking authentication...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <PayPalScriptProvider
       options={{
