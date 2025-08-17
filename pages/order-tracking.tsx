@@ -318,7 +318,7 @@ export default function OrderTracking() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {order.tracking.map((event, index) => (
+                  {(normalizedOrder.tracking || []).map((event, index) => (
                     <div key={index} className="flex items-start space-x-4">
                       <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
