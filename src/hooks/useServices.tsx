@@ -99,7 +99,6 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       const { data, error: fetchError } = await supabase
         .from("services")
         .select("*")
-        .eq("active", true)
         .order("created_at", { ascending: false });
 
       if (fetchError) {
