@@ -543,7 +543,7 @@ export function OptimizedAdminOrdersTable({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedOrders.map((order) => (
+              {paginatedOrders.map((order: any) => (
                 <OrderRow
                   key={order.id}
                   order={order}
