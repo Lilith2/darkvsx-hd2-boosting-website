@@ -175,7 +175,7 @@ export default function Account() {
 
   // Generate favorite services from completed orders
   const favoriteServices = (() => {
-    const completedOrders = userOrders.filter(
+    const completedOrders = safeUserOrders.filter(
       (order) => order.status === "completed",
     );
     const serviceCount: Record<string, number> = {};
@@ -202,7 +202,7 @@ export default function Account() {
       .slice(0, 3)
       .map(([name, count]) => {
         // Find the most recent order that contains this service/item
-        const relevantOrders = userOrders.filter((order) => {
+        const relevantOrders = safeUserOrders.filter((order) => {
           const isCustomOrder = "order_number" in order;
           if (isCustomOrder) {
             const items = order.items || [];
