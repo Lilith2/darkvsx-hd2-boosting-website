@@ -484,7 +484,7 @@ export default function OrderTracking() {
                   <p className="text-sm text-muted-foreground">Email</p>
                   <p className="font-medium">{normalizedOrder.customerEmail}</p>
                 </div>
-                {order.notes && (
+                {normalizedOrder.notes && (
                   <div>
                     <p className="text-sm text-muted-foreground">
                       Special Notes
