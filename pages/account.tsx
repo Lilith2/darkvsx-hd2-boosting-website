@@ -192,19 +192,35 @@ export default function Account() {
     return Object.entries(serviceCount)
       .sort(([, a], [, b]) => b - a)
       .slice(0, 3)
-      .map(([name, count]) => ({
-        name,
-        category: "Boosting Service",
-        lastUsed:
-          userOrders
-            .filter((order) => order.services.some((s) => s.name === name))
-            .sort(
-              (a, b) =>
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime(),
-            )[0]?.createdAt || new Date().toISOString(),
-        count,
-      }));
+      .map(([name, count]) => {
+        // Find the most recent order that contains this service/item
+        const relevantOrders = userOrders.filter((order) => {
+          const isCustomOrder = 'order_number' in order;
+          if (isCustomOrder) {
+            const items = order.items || [];
+            return items.some((item) => `${item.item_name} (Custom)` === name);
+          } else {
+            return order.services.some((s) => s.name === name);
+          }
+        });
+
+        const mostRecentOrder = relevantOrders.sort((a, b) => {
+          const dateA = 'created_at' in a ? a.created_at : a.createdAt;
+          const dateB = 'created_at' in b ? b.created_at : b.createdAt;
+          return new Date(dateB).getTime() - new Date(dateA).getTime();
+        })[0];
+
+        const lastUsed = mostRecentOrder
+          ? ('created_at' in mostRecentOrder ? mostRecentOrder.created_at : mostRecentOrder.createdAt)
+          : new Date().toISOString();
+
+        return {
+          name,
+          category: name.includes('(Custom)') ? "Custom Order" : "Boosting Service",
+          lastUsed,
+          count,
+        };
+      });
   })();
 
   const getStatusColor = (status: OrderData["status"]) => {
