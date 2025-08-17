@@ -127,7 +127,7 @@ export default function Checkout() {
         return;
       }
 
-      const validation = data as { valid: boolean; error?: string; referrer_id?: string; code?: string };
+      const validation = data as any as { valid: boolean; error?: string; referrer_id?: string; code?: string };
 
       if (!validation.valid) {
         toast({
