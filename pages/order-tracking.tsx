@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useOrders } from "@/hooks/useOrders";
+import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,27 +35,44 @@ import {
 
 export default function OrderTracking() {
   const router = useRouter();
-  const { orderId } = router.query as { orderId: string };
+  const { orderId, type } = router.query as { orderId: string; type?: string };
   const { getOrder, addOrderMessage, orders, loading } = useOrders();
+  const { orders: customOrders, loading: customLoading } = useCustomOrders();
   const { user } = useAuth();
-  const [order, setOrder] = useState(getOrder(orderId || ""));
+
+  // Determine if this is a custom order
+  const isCustomOrder = type === 'custom';
+
+  // Get the appropriate order
+  const [order, setOrder] = useState(() => {
+    if (isCustomOrder) {
+      return customOrders.find(o => o.id === orderId) || null;
+    }
+    return getOrder(orderId || "");
+  });
   const [newMessage, setNewMessage] = useState("");
   const [showMessages, setShowMessages] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     if (orderId) {
-      const foundOrder = getOrder(orderId);
+      let foundOrder;
+      if (isCustomOrder) {
+        foundOrder = customOrders.find(o => o.id === orderId) || null;
+      } else {
+        foundOrder = getOrder(orderId);
+      }
       setOrder(foundOrder);
 
       // If we still haven't found the order and we're not loading, mark as not found
-      if (!foundOrder && !loading && !isInitialLoad) {
+      const isLoading = isCustomOrder ? customLoading : loading;
+      if (!foundOrder && !isLoading && !isInitialLoad) {
         setIsInitialLoad(false);
       } else if (foundOrder && isInitialLoad) {
         setIsInitialLoad(false);
       }
     }
-  }, [orderId, getOrder, orders, loading, isInitialLoad]);
+  }, [orderId, isCustomOrder, getOrder, orders, customOrders, loading, customLoading, isInitialLoad]);
 
   // Show loading state while orders are being fetched
   if (loading && isInitialLoad) {
