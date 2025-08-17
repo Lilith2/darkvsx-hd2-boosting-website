@@ -452,7 +452,7 @@ export default function OrderTracking() {
 
                 <div className="flex justify-between items-center font-semibold">
                   <span>Total</span>
-                  <span>${order.totalAmount.toFixed(2)}</span>
+                  <span>${(normalizedOrder.totalAmount || 0).toFixed(2)}</span>
                 </div>
 
                 <div className="pt-2">
