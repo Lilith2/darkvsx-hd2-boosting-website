@@ -38,7 +38,7 @@ export default function Bundles() {
       title: bundle.name,
       description: bundle.description,
       price: bundle.discountedPrice,
-      originalPrice: bundle.originalPrice,
+      originalPrice: bundle.original_price,
       duration: bundle.duration,
       difficulty: "Bundle",
       features: bundle.features || [],
