@@ -195,8 +195,8 @@ export function EnhancedOrdersTable({
           bValue = b.status;
           break;
         default:
-          aValue = a[sortBy];
-          bValue = b[sortBy];
+          aValue = (a as any)[sortBy];
+          bValue = (b as any)[sortBy];
       }
 
       if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
