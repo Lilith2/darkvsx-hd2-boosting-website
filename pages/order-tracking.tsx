@@ -232,18 +232,20 @@ export default function OrderTracking() {
 
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Order #{order.id}</h1>
+              <h1 className="text-3xl font-bold mb-2">
+                {isCustomOrder ? normalizedOrder?.order_number || `Order #${order.id}` : `Order #${order.id.slice(-6)}`}
+              </h1>
               <p className="text-muted-foreground">
-                Placed on {formatDate(order.createdAt)}
+                Placed on {formatDate(normalizedOrder?.createdAt || '')}
               </p>
             </div>
 
             <div className="mt-4 md:mt-0">
               <Badge
-                className={`text-sm px-3 py-1 ${getStatusColor(order.status)}`}
+                className={`text-sm px-3 py-1 ${getStatusColor(normalizedOrder?.status || '')}`}
               >
-                {getStatusIcon(order.status)}
-                <span className="ml-2 capitalize">{order.status}</span>
+                {getStatusIcon(normalizedOrder?.status || '')}
+                <span className="ml-2 capitalize">{normalizedOrder?.status}</span>
               </Badge>
             </div>
           </div>
