@@ -372,7 +372,7 @@ export default function OrderTracking() {
               {showMessages && (
                 <CardContent>
                   <div className="space-y-4 max-h-60 overflow-y-auto mb-4">
-                    {order.messages.length === 0 ? (
+                    {(normalizedOrder.messages || []).length === 0 ? (
                       <p className="text-sm text-muted-foreground text-center py-4">
                         No messages yet. Send a message to communicate with our
                         team.
