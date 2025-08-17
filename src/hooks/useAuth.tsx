@@ -239,23 +239,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
-  const isAuthenticated = user !== null;
+  // Memoize expensive computations
+  const isAuthenticated = Boolean(user);
   const isAdmin = user?.role === "admin";
 
+  // Memoize callback functions to prevent unnecessary rerenders
+  const memoizedLogin = useCallback(login, []);
+  const memoizedRegister = useCallback(register, []);
+  const memoizedLogout = useCallback(logout, []);
+  const memoizedResendConfirmation = useCallback(resendConfirmation, []);
+  const memoizedUpdateProfile = useCallback(updateProfile, []);
+
+  // Memoize context value to prevent unnecessary rerenders
+  const contextValue = useMemo(() => ({
+    user,
+    loading,
+    login: memoizedLogin,
+    register: memoizedRegister,
+    logout: memoizedLogout,
+    resendConfirmation: memoizedResendConfirmation,
+    updateProfile: memoizedUpdateProfile,
+    isAuthenticated,
+    isAdmin,
+  }), [user, loading, memoizedLogin, memoizedRegister, memoizedLogout, memoizedResendConfirmation, memoizedUpdateProfile, isAuthenticated, isAdmin]);
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        login,
-        register,
-        logout,
-        resendConfirmation,
-        updateProfile,
-        isAuthenticated,
-        isAdmin,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
