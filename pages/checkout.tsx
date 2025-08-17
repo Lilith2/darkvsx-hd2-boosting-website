@@ -62,10 +62,6 @@ export default function Checkout() {
   const [useReferralCredits, setUseReferralCredits] = useState(false);
   const [referralCreditsApplied, setReferralCreditsApplied] = useState(0);
   const [availableCredits, setAvailableCredits] = useState(0);
-  const [guestInfo, setGuestInfo] = useState({
-    name: "",
-    email: "",
-  });
 
   // Redirect to login if not authenticated
   useEffect(() => {
