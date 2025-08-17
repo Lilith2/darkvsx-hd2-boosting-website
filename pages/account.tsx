@@ -731,7 +731,7 @@ export default function Account() {
                       const isCustomOrder = 'order_number' in order;
                       const orderNumber = isCustomOrder ? order.order_number : `#${order.id.slice(-6)}`;
                       const orderAmount = isCustomOrder ? order.total_amount : order.totalAmount;
-                      const orderDate = isCustomOrder ? order.created_at : order.createdAt;
+                      const orderDate = 'created_at' in order ? order.created_at : order.createdAt;
 
                       // Get service names for display
                       let serviceNames = '';
