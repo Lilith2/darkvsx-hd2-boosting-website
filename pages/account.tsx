@@ -739,7 +739,7 @@ export default function Account() {
                 </div>
               </CardHeader>
               <CardContent>
-                {userOrders.length === 0 ? (
+                {safeUserOrders.length === 0 ? (
                   <div className="text-center py-12">
                     <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
                     <h3 className="text-lg font-semibold mb-2">
@@ -754,7 +754,7 @@ export default function Account() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {userOrders.map((order) => {
+                    {safeUserOrders.map((order) => {
                       // Check if it's a custom order (has order_number) or regular order
                       const isCustomOrder = "order_number" in order;
                       const orderNumber = isCustomOrder
