@@ -4,11 +4,12 @@ import { Badge } from "@/components/ui/badge";
 import { Activity, Package, DollarSign } from "lucide-react";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import { Order, CustomOrder } from "@/lib/types";
+import { OrderData } from "@/hooks/useOrders";
 
 interface RecentOrdersCardProps {
-  recentOrders: (Order | CustomOrder)[];
+  recentOrders: (OrderData | CustomOrder)[];
   isLoading: boolean;
-  onOrderClick?: (order: Order | CustomOrder, type: "regular" | "custom") => void;
+  onOrderClick?: (order: OrderData | CustomOrder, type: "regular" | "custom") => void;
 }
 
 export function RecentOrdersCard({
