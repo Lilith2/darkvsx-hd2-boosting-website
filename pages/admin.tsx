@@ -208,47 +208,6 @@ export default function AdminDashboard() {
 
   const filteredOrders = getFilteredOrders();
 
-  // Calculate actual top performing services from both regular and custom orders
-  const topServices = (() => {
-    const serviceStats = new Map();
-
-    // Count actual regular orders for each service
-    orders.forEach((order) => {
-      order.services.forEach((service) => {
-        const current = serviceStats.get(service.name) || {
-          name: service.name,
-          orders: 0,
-          revenue: 0,
-          id: service.id,
-          type: "regular",
-        };
-        current.orders += service.quantity || 1;
-        current.revenue += (service.price || 0) * (service.quantity || 1);
-        serviceStats.set(service.name, current);
-      });
-    });
-
-    // Count custom orders as "custom order items"
-    customOrders.forEach((order) => {
-      order.items.forEach((item) => {
-        const serviceName = `${item.category}: ${item.item_name}`;
-        const current = serviceStats.get(serviceName) || {
-          name: serviceName,
-          orders: 0,
-          revenue: 0,
-          id: item.id,
-          type: "custom",
-        };
-        current.orders += item.quantity;
-        current.revenue += item.total_price;
-        serviceStats.set(serviceName, current);
-      });
-    });
-
-    return Array.from(serviceStats.values())
-      .sort((a, b) => b.orders - a.orders)
-      .slice(0, 5);
-  })();
 
   // Service management functions
   const handleAddService = () => {
