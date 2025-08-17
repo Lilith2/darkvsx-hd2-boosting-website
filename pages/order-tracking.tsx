@@ -277,7 +277,7 @@ export default function OrderTracking() {
                   </div>
                   <Progress value={getProgressPercentage()} className="h-3" />
 
-                  {order.assignedBooster && (
+                  {normalizedOrder.assignedBooster && (
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
                         Assigned Booster:
