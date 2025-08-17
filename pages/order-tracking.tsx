@@ -75,7 +75,8 @@ export default function OrderTracking() {
   }, [orderId, isCustomOrder, getOrder, orders, customOrders, loading, customLoading, isInitialLoad]);
 
   // Show loading state while orders are being fetched
-  if (loading && isInitialLoad) {
+  const isLoading = isCustomOrder ? customLoading : loading;
+  if (isLoading && isInitialLoad) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
         <Card className="w-full max-w-md">
