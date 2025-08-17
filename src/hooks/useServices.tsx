@@ -28,7 +28,7 @@ export interface ServiceData {
     | "Super Credits"
     | "Promotions";
   createdAt: string;
-  orders: number;
+  orders_count: number;
   customOrderData?: {
     items: Array<{
       category: string;
