@@ -177,6 +177,7 @@ export default function AdminDashboard() {
   const analytics = useAdminAnalytics({
     orders,
     customOrders,
+    services,
     loading,
     customOrdersLoading,
   });
