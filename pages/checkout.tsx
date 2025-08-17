@@ -279,9 +279,12 @@ export default function Checkout() {
             referralDiscount: referralDiscount || undefined,
           });
 
+          console.log("Custom order created:", customOrderResult);
+
           // Capture the custom order ID from the first created order
           if (!customOrderId && customOrderResult) {
             customOrderId = customOrderResult.id;
+            console.log("Captured custom order ID:", customOrderId);
           }
         }
       }
