@@ -17,16 +17,16 @@ export interface BundleData {
   name: string;
   description: string;
   services: string[];
-  originalPrice: number;
-  discountedPrice: number;
+  original_price: number;
+  discounted_price: number;
   discount: number;
   duration: string;
   popular?: boolean;
   badge?: string;
   features: string[];
   active: boolean;
-  createdAt: string;
-  orders: number;
+  created_at: string;
+  orders_count: number;
 }
 
 interface BundlesContextType {
@@ -54,16 +54,16 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
     name: bundle.name || "",
     description: bundle.description || "",
     services: bundle.services || [],
-    originalPrice: Number(bundle.original_price) || 0,
-    discountedPrice: Number(bundle.discounted_price) || 0,
+    original_price: Number(bundle.original_price) || 0,
+    discounted_price: Number(bundle.discounted_price) || 0,
     discount: bundle.discount || 0,
     duration: bundle.duration || "",
     popular: bundle.popular || false,
     badge: bundle.badge || undefined,
     features: bundle.features || [],
     active: bundle.active ?? true,
-    createdAt: bundle.created_at || "",
-    orders: bundle.orders_count || 0,
+    created_at: bundle.created_at || "",
+    orders_count: bundle.orders_count || 0,
   });
 
   const refreshBundles = async () => {
