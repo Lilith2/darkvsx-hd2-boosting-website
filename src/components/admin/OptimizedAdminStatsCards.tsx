@@ -310,7 +310,7 @@ export const OptimizedAdminStatsCards = memo(({
           {/* Total Orders */}
           <StatCard
             title="Total Orders"
-            value={totalOrdersCount}
+            value={safeData.totalOrdersCount}
             icon={<ShoppingBag className="h-4 w-4" />}
             description="All orders processed"
             trend={analyticsData.orderGrowth !== 0 ? {
