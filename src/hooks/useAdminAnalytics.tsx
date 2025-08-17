@@ -83,16 +83,8 @@ export function useAdminAnalytics({
     ).length;
     const pendingOrdersCount = pendingRegularOrders + pendingCustomOrders;
 
-    // Count unique active services
-    const activeServicesSet = new Set<string>();
-    orders.forEach((order) => {
-      if (order.services) {
-        order.services.forEach((service) => {
-          activeServicesSet.add(service.id);
-        });
-      }
-    });
-    const activeServicesCount = activeServicesSet.size;
+    // Count active services
+    const activeServicesCount = services.filter((service) => service.active).length;
 
     // Count unique customers
     const customerEmails = new Set<string>();
