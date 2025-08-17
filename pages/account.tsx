@@ -139,12 +139,29 @@ export default function Account() {
   }, [user?.id]);
 
   // Generate recent activity from actual orders
-  const recentActivity = userOrders.slice(0, 4).map((order) => ({
-    action: order.status === "completed" ? "Order completed" : "Order placed",
-    details: order.services.map((s) => s.name).join(", "),
-    time: new Date(order.createdAt).toLocaleDateString(),
-    icon: order.status === "completed" ? CheckCircle : Package,
-  }));
+  const recentActivity = userOrders.slice(0, 4).map((order) => {
+    const isCustomOrder = 'order_number' in order;
+    const orderDate = isCustomOrder ? order.created_at : order.createdAt;
+
+    let details = '';
+    if (isCustomOrder) {
+      const items = order.items || [];
+      if (items.length > 0) {
+        details = `Custom Order: ${items.map(item => `${item.quantity}x ${item.item_name}`).join(', ')}`;
+      } else {
+        details = 'Custom Order';
+      }
+    } else {
+      details = order.services.map((s) => s.name).join(", ");
+    }
+
+    return {
+      action: order.status === "completed" ? "Order completed" : "Order placed",
+      details,
+      time: new Date(orderDate).toLocaleDateString(),
+      icon: order.status === "completed" ? CheckCircle : Package,
+    };
+  });
 
   // Generate favorite services from completed orders
   const favoriteServices = (() => {
