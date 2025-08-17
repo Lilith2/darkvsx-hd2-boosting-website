@@ -59,6 +59,7 @@ export default function Checkout() {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [referralCode, setReferralCode] = useState("");
   const [referralDiscount, setReferralDiscount] = useState(0);
+  const [guestInfo, setGuestInfo] = useState({ name: "", email: "" });
   const [useReferralCredits, setUseReferralCredits] = useState(false);
   const [referralCreditsApplied, setReferralCreditsApplied] = useState(0);
   const [availableCredits, setAvailableCredits] = useState(0);
