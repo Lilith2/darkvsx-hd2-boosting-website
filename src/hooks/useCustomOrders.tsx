@@ -406,6 +406,11 @@ export function useCustomOrders() {
     };
   }, []);
 
+  // Function to get custom orders for a specific user
+  const getUserCustomOrders = (userId: string): CustomOrder[] => {
+    return orders.filter((order) => order.user_id === userId);
+  };
+
   return {
     orders,
     stats,
@@ -416,6 +421,7 @@ export function useCustomOrders() {
     updateDeliveryStatus,
     updateAdminNotes,
     deleteOrder,
+    getUserCustomOrders,
     refetch: () => {
       fetchOrders();
       fetchStats();
