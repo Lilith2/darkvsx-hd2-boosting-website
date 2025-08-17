@@ -86,7 +86,11 @@ export default function Account() {
 
   // Combine both order types and sort by creation date
   const userOrders = [...userRegularOrders, ...userCustomOrders].sort(
-    (a, b) => new Date(b.createdAt || b.created_at).getTime() - new Date(a.createdAt || a.created_at).getTime()
+    (a, b) => {
+      const dateA = 'created_at' in a ? a.created_at : a.createdAt;
+      const dateB = 'created_at' in b ? b.created_at : b.createdAt;
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    }
   );
 
   // Calculate user statistics
