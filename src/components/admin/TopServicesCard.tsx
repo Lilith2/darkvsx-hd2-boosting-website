@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Star, Package } from "lucide-react";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "../../../components/LoadingSpinner";
 
 interface TopService {
   id: string;
