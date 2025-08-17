@@ -165,17 +165,25 @@ export default function Account() {
 
   // Generate favorite services from completed orders
   const favoriteServices = (() => {
-    const completedOrderServices = userOrders
-      .filter((order) => order.status === "completed")
-      .flatMap((order) => order.services);
+    const completedOrders = userOrders.filter((order) => order.status === "completed");
+    const serviceCount: Record<string, number> = {};
 
-    const serviceCount = completedOrderServices.reduce(
-      (acc, service) => {
-        acc[service.name] = (acc[service.name] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
+    completedOrders.forEach((order) => {
+      const isCustomOrder = 'order_number' in order;
+      if (isCustomOrder) {
+        // For custom orders, count items
+        const items = order.items || [];
+        items.forEach((item) => {
+          const itemName = `${item.item_name} (Custom)`;
+          serviceCount[itemName] = (serviceCount[itemName] || 0) + 1;
+        });
+      } else {
+        // For regular orders, count services
+        order.services.forEach((service) => {
+          serviceCount[service.name] = (serviceCount[service.name] || 0) + 1;
+        });
+      }
+    });
 
     return Object.entries(serviceCount)
       .sort(([, a], [, b]) => b - a)
