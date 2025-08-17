@@ -61,8 +61,8 @@ const OrderDetailsModal = dynamic(
 );
 const EnhancedOrdersTable = dynamic(
   () =>
-    import("@/components/admin/OptimizedAdminOrdersTable").then((mod) => ({
-      default: mod.OptimizedAdminOrdersTable,
+    import("@/components/admin/EnhancedOrdersTable").then((mod) => ({
+      default: mod.EnhancedOrdersTable,
     })),
   {
     loading: () => <LoadingSpinner className="p-4" />,
