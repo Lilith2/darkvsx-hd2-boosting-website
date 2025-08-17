@@ -46,7 +46,7 @@ export default function Bundles() {
       popular: bundle.popular ?? false,
       category: "Level Boost" as const,
       createdAt: bundle.created_at || new Date().toISOString(),
-      orders: bundle.orders_count || 0,
+      orders_count: bundle.orders_count || 0,
     };
 
     addToCart(bundleService);
