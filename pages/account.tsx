@@ -100,17 +100,8 @@ export default function Account() {
     }
   }, [userRegularOrders, userCustomOrders]);
 
-  // Combine both order types and sort by creation date
-  const userOrders = [...userRegularOrders, ...userCustomOrders].sort(
-    (a, b) => {
-      const dateA = "created_at" in a ? a.created_at : a.createdAt;
-      const dateB = "created_at" in b ? b.created_at : b.createdAt;
-      return new Date(dateB).getTime() - new Date(dateA).getTime();
-    },
-  );
-
-  // Calculate user statistics
-  const totalSpent = userOrders.reduce((sum, order) => {
+  // Calculate user statistics using safe data
+  const totalSpent = safeUserOrders.reduce((sum, order) => {
     const amount =
       "total_amount" in order ? order.total_amount : order.totalAmount;
     return sum + (amount || 0);
