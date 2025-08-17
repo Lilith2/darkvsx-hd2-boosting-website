@@ -33,6 +33,7 @@ interface AdminAnalytics {
 export function useAdminAnalytics({
   orders,
   customOrders,
+  services = [],
   loading,
   customOrdersLoading,
 }: UseAdminAnalyticsProps): AdminAnalytics {
