@@ -58,9 +58,13 @@ export default function OrderConfirmation() {
     if (orderId) {
       let foundOrder;
       if (isCustomOrder) {
+        console.log("Searching for custom order with ID:", orderId, "in", customOrders.length, "orders");
         foundOrder = customOrders.find((o) => o.id === orderId) || null;
+        console.log("Custom order found:", foundOrder);
       } else {
+        console.log("Searching for regular order with ID:", orderId);
         foundOrder = getOrder(orderId);
+        console.log("Regular order found:", foundOrder);
       }
       setOrder(foundOrder);
 
