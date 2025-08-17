@@ -431,11 +431,11 @@ export default function AdminDashboard() {
                   revenue: service.price * (service.orders_count || 0),
                   orderCount: service.orders_count || 0
                 }))}
-                isLoading={analytics.isLoading}
+                isLoading={loading || customOrdersLoading}
               />
               <RecentOrdersCard
                 recentOrders={[...orders, ...customOrders].slice(0, 5)}
-                isLoading={analytics.isLoading}
+                isLoading={loading || customOrdersLoading}
                 onOrderClick={(order, type) => {
                   setSelectedOrderForDetails(order);
                   setOrderDetailsType(type);
