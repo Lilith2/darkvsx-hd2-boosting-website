@@ -46,8 +46,11 @@ export default function OrderConfirmation() {
   const isCustomOrder = type === "custom";
 
   useEffect(() => {
+    console.log("Order confirmation page - orderId:", orderId, "type:", type, "isCustomOrder:", isCustomOrder);
+
     // Redirect to account page if no order ID provided
     if (!orderId && !isLoading) {
+      console.log("No order ID provided, redirecting to account");
       router.push('/account');
       return;
     }
