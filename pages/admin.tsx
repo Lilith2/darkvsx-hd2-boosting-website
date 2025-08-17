@@ -475,126 +475,13 @@ export default function AdminDashboard() {
 
           {/* Services Tab */}
           <TabsContent value="services" className="space-y-6">
-            <Card className="border border-border/50">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center">
-                    <Settings className="w-5 h-5 mr-2" />
-                    Manage Services ({services.length})
-                  </CardTitle>
-                  <CardDescription>
-                    Add, edit, or disable boosting services
-                  </CardDescription>
-                </div>
-                <Button
-                  onClick={handleAddService}
-                  className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Service
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {services.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Settings className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                    <h3 className="text-lg font-semibold mb-2">
-                      No services yet
-                    </h3>
-                    <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                      Create your first boosting service to start accepting
-                      orders from customers.
-                    </p>
-                    <Button
-                      onClick={handleAddService}
-                      className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Your First Service
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {services.map((service) => (
-                      <Card
-                        key={service.id}
-                        className="border border-border/30 hover:border-primary/30 transition-colors"
-                      >
-                        <CardHeader className="pb-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <CardTitle className="text-lg">
-                                {service.title}
-                              </CardTitle>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {service.orders} orders • {service.category}
-                              </p>
-                            </div>
-                            <div className="flex flex-col items-end space-y-1">
-                              <Badge
-                                variant={
-                                  service.active ? "default" : "secondary"
-                                }
-                                className="cursor-pointer"
-                                onClick={() => toggleServiceStatus(service.id)}
-                              >
-                                {service.active ? "Active" : "Inactive"}
-                              </Badge>
-                              {service.popular && (
-                                <Badge variant="outline" className="text-xs">
-                                  Popular
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-3">
-                            <div className="flex justify-between items-center">
-                              <span className="text-2xl font-bold text-primary">
-                                ${service.price}
-                              </span>
-                              <span className="text-sm text-muted-foreground">
-                                {service.difficulty}
-                              </span>
-                            </div>
-
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                              {service.description}
-                            </p>
-
-                            <div className="flex justify-between text-xs text-muted-foreground">
-                              <span>Duration: {service.duration}</span>
-                              <span>{service.features.length} features</span>
-                            </div>
-
-                            <div className="flex space-x-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleEditService(service)}
-                                className="flex-1"
-                              >
-                                <Edit className="w-3 h-3 mr-1" />
-                                Edit
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleDeleteService(service.id)}
-                                className="text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <AdminServicesTab
+              services={services}
+              loading={loading}
+              onAddService={handleAddService}
+              onEditService={handleEditService}
+              onDeleteService={handleDeleteService}
+            />
           </TabsContent>
 
           {/* Bundles Tab */}
