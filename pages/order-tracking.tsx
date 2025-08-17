@@ -187,6 +187,29 @@ export default function OrderTracking() {
 
   const normalizedOrder = normalizeOrder(order);
 
+  // If we couldn't normalize the order data, show error
+  if (!normalizedOrder) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-8 text-center">
+            <AlertCircle className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Invalid Order Data</h2>
+            <p className="text-muted-foreground mb-6">
+              Unable to load order information. Please try again or contact support.
+            </p>
+            <Link href="/account">
+              <Button variant="outline" className="hover:bg-primary/10">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Account
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const sendMessage = async () => {
     if (!newMessage.trim() || !user) return;
 
