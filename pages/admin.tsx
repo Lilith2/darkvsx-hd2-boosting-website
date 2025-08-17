@@ -61,8 +61,8 @@ const OrderDetailsModal = dynamic(
 );
 const EnhancedOrdersTable = dynamic(
   () =>
-    import("@/components/admin/EnhancedOrdersTable").then((mod) => ({
-      default: mod.EnhancedOrdersTable,
+    import("@/components/admin/OptimizedAdminOrdersTable").then((mod) => ({
+      default: mod.OptimizedAdminOrdersTable,
     })),
   {
     loading: () => <LoadingSpinner className="p-4" />,
@@ -110,106 +110,45 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboard() {
+  // Use optimized data management
   const {
+    orders,
+    customOrders,
     services,
+    bundles,
+    customPricing,
+    analytics,
+    isLoading,
+    errors,
+    hasErrors,
+    updateOrderStatus,
+    invalidateAll,
+  } = useOptimizedAdminData();
+
+  // Legacy service/bundle management (can be optimized later)
+  const {
     addService,
     updateService,
     deleteService,
     toggleServiceStatus,
   } = useServices();
-  const { bundles, addBundle, updateBundle, deleteBundle, toggleBundleStatus } =
+  const { addBundle, updateBundle, deleteBundle, toggleBundleStatus } =
     useBundles();
-  const {
-    orders,
-    updateOrderStatus,
-    addOrderMessage,
-    assignBooster,
-    updateOrderProgress,
-    loading,
-    error,
-  } = useOrders();
-  const {
-    orders: customOrders,
-    stats: customOrderStats,
-    loading: customOrdersLoading,
-    error: customOrdersError,
-  } = useCustomOrders();
   const { toast } = useToast();
 
-  // Fetch custom pricing data
-  useEffect(() => {
-    const fetchCustomPricing = async () => {
-      try {
-        const { supabase } = await import("@/integrations/supabase/client");
-        const { data, error } = await supabase
-          .from("custom_pricing")
-          .select("*")
-          .order("category", { ascending: true });
-
-        if (error) {
-          console.error("Error fetching custom pricing:", error);
-        } else {
-          setCustomPricing(data || []);
-        }
-      } catch (err) {
-        console.error("Error fetching custom pricing:", err);
-      }
-    };
-
-    fetchCustomPricing();
-  }, []);
+  // Custom pricing is now handled by optimized hook
 
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
   const [selectedBundle, setSelectedBundle] = useState<any>(null);
-  const [orderFilter, setOrderFilter] = useState<string>("all"); // all, pending, processing, in-progress, completed
-  const [orderTypeFilter, setOrderTypeFilter] = useState<string>("regular"); // regular, custom
-  const [customPricing, setCustomPricing] = useState<any[]>([]);
   const [isEditingPricing, setIsEditingPricing] = useState<any>(null);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
-  const [selectedOrderForResume, setSelectedOrderForResume] =
-    useState<any>(null);
-  const [isOrderResumeModalOpen, setIsOrderResumeModalOpen] = useState(false);
   const [selectedOrderForDetails, setSelectedOrderForDetails] = useState<any>(null);
   const [isOrderDetailsModalOpen, setIsOrderDetailsModalOpen] = useState(false);
   const [orderDetailsType, setOrderDetailsType] = useState<"regular" | "custom">("regular");
 
-  // Use analytics hook
-  const analytics = useAdminAnalytics({
-    orders,
-    customOrders,
-    services,
-    loading,
-    customOrdersLoading,
-  });
-
-  // Filter orders based on selected filter and type
-  const getFilteredOrders = () => {
-    if (orderTypeFilter === "custom") {
-      return customOrders
-        .filter((order) => {
-          if (orderFilter === "all") return true;
-          return order.status === orderFilter;
-        })
-        .sort(
-          (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-        );
-    } else {
-      return orders
-        .filter((order) => {
-          if (orderFilter === "all") return true;
-          return order.status === orderFilter;
-        })
-        .sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        );
-    }
-  };
-
-  const filteredOrders = getFilteredOrders();
+  // Analytics are now provided by optimized hook - no additional processing needed
 
 
   // Service management functions
@@ -285,11 +224,7 @@ export default function AdminDashboard() {
 
         if (error) throw error;
 
-        setCustomPricing((prev) =>
-          prev.map((p) =>
-            p.id === isEditingPricing.id ? { ...p, ...pricingData } : p,
-          ),
-        );
+        // Optimistic update handled by React Query
 
         toast({
           title: "Pricing Updated",
@@ -304,7 +239,7 @@ export default function AdminDashboard() {
 
         if (error) throw error;
 
-        setCustomPricing((prev) => [...prev, data]);
+        // Optimistic update handled by React Query
 
         toast({
           title: "Pricing Added",
@@ -336,7 +271,7 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      setCustomPricing((prev) => prev.filter((p) => p.id !== id));
+      // Optimistic update handled by React Query
 
       toast({
         title: "Pricing Deleted",
@@ -362,11 +297,7 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      setCustomPricing((prev) =>
-        prev.map((p) =>
-          p.id === id ? { ...p, is_active: !currentStatus } : p,
-        ),
-      );
+      // Optimistic update handled by React Query
 
       toast({
         title: "Status Updated",
@@ -402,43 +333,39 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Debug Info */}
-        {(error || customOrdersError) && (
+        {hasErrors && (
           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
             <h3 className="font-semibold text-red-600 mb-2">
               Database Connection Error
             </h3>
-            {error && (
-              <p className="text-sm text-red-600">Regular Orders: {error}</p>
+            {errors.orders && (
+              <p className="text-sm text-red-600">Orders: {errors.orders}</p>
             )}
-            {customOrdersError && (
-              <p className="text-sm text-red-600">
-                Custom Orders: {customOrdersError}
-              </p>
+            {errors.customOrders && (
+              <p className="text-sm text-red-600">Custom Orders: {errors.customOrders}</p>
+            )}
+            {errors.services && (
+              <p className="text-sm text-red-600">Services: {errors.services}</p>
             )}
           </div>
         )}
 
-        {(loading || customOrdersLoading) && (
+        {isLoading && (
           <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-            <p className="text-blue-600">
-              Loading{" "}
-              {loading && customOrdersLoading
-                ? "all orders"
-                : loading
-                  ? "regular orders"
-                  : "custom orders"}
-              ...
-            </p>
+            <p className="text-blue-600">Loading admin data...</p>
           </div>
         )}
 
         {/* Stats Grid */}
         <div className="mb-8">
-          <AdminStatsCards
+          <OptimizedAdminStatsCards
             totalRevenue={analytics.totalRevenue}
             pendingOrdersCount={analytics.pendingOrdersCount}
             activeServicesCount={analytics.activeServicesCount}
             totalCustomersCount={analytics.totalCustomersCount}
+            completedOrdersCount={analytics.completedOrdersCount}
+            totalOrdersCount={analytics.totalOrdersCount}
+            avgOrderValue={analytics.avgOrderValue}
             isLoading={analytics.isLoading}
           />
         </div>
@@ -457,11 +384,11 @@ export default function AdminDashboard() {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <TopServicesCard
-                topServices={analytics.topServices}
+                topServices={services.slice(0, 5)}
                 isLoading={analytics.isLoading}
               />
               <RecentOrdersCard
-                recentOrders={analytics.recentOrders}
+                recentOrders={[...orders, ...customOrders].slice(0, 5)}
                 isLoading={analytics.isLoading}
                 onOrderClick={(order, type) => {
                   setSelectedOrderForDetails(order);
@@ -476,7 +403,7 @@ export default function AdminDashboard() {
           <TabsContent value="services" className="space-y-6">
             <AdminServicesTab
               services={services}
-              loading={loading}
+              loading={isLoading}
               onAddService={handleAddService}
               onEditService={handleEditService}
               onDeleteService={handleDeleteService}
@@ -763,8 +690,8 @@ export default function AdminDashboard() {
               orders={orders}
               customOrders={customOrders}
               onUpdateOrderStatus={updateOrderStatus}
-              loading={loading || customOrdersLoading}
-              onRefresh={() => window.location.reload()}
+              loading={isLoading}
+              onRefresh={invalidateAll}
             />
           </TabsContent>
 
