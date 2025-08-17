@@ -12,6 +12,7 @@ import { OptimizedAdminStatsCards } from "@/components/admin/OptimizedAdminStats
 import { OptimizedAdminOrdersTable } from "@/components/admin/OptimizedAdminOrdersTable";
 import { TopServicesCard } from "@/components/admin/TopServicesCard";
 import { RecentOrdersCard } from "@/components/admin/RecentOrdersCard";
+import { DatabaseStatus } from "@/components/admin/DatabaseStatus";
 import { AdminServicesTab } from "@/components/admin/AdminServicesTab";
 import { AdminBundlesTab } from "@/components/admin/AdminBundlesTab";
 import { AdminPricingTab } from "@/components/admin/AdminPricingTab";
