@@ -52,7 +52,7 @@ const fetchServices = async () => {
     const { data, error } = await supabase
       .from("services")
       .select("*")
-      .order("name", { ascending: true });
+      .order("title", { ascending: true });
 
     if (error) throw error;
     return data || [];
