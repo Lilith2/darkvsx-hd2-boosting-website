@@ -10,7 +10,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "../../../components/LoadingSpinner";
 
 interface AdminStatsCardsProps {
   totalRevenue: number;
