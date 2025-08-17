@@ -61,7 +61,7 @@ export function AdminServicesTab({
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h3 className="font-semibold text-lg mb-1">
-                          {service.name}
+                          {service.title}
                         </h3>
                         <Badge
                           variant={service.active ? "default" : "secondary"}
