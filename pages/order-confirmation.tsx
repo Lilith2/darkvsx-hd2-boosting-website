@@ -68,10 +68,11 @@ export default function OrderConfirmation() {
       }
       setOrder(foundOrder);
 
-      // If we still haven't found the order and we're not loading, mark as not found
+      // If we still haven't found the order and we're not loading, try direct database query
       const isLoading = isCustomOrder ? customLoading : loading;
       if (!foundOrder && !isLoading && !isInitialLoad) {
-        setIsInitialLoad(false);
+        console.log("Order not found in hooks, trying direct database query...");
+        fetchOrderDirectly();
       } else if (foundOrder && isInitialLoad) {
         setIsInitialLoad(false);
       }
@@ -86,6 +87,55 @@ export default function OrderConfirmation() {
     customLoading,
     isInitialLoad,
   ]);
+
+  const fetchOrderDirectly = async () => {
+    if (!orderId) return;
+
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+
+      if (isCustomOrder) {
+        const { data, error } = await supabase
+          .from("custom_orders")
+          .select("*")
+          .eq("id", orderId)
+          .single();
+
+        if (data && !error) {
+          console.log("Found custom order via direct query:", data);
+          setOrder(data);
+          setIsInitialLoad(false);
+          return;
+        }
+      } else {
+        const { data, error } = await supabase
+          .from("orders")
+          .select("*")
+          .eq("id", orderId)
+          .single();
+
+        if (data && !error) {
+          console.log("Found regular order via direct query:", data);
+          // Transform the data to match the expected format
+          const transformedOrder = {
+            ...data,
+            services: data.services || [],
+            messages: [],
+            tracking: [],
+          };
+          setOrder(transformedOrder);
+          setIsInitialLoad(false);
+          return;
+        }
+      }
+
+      console.log("Order not found even with direct query");
+      setIsInitialLoad(false);
+    } catch (error) {
+      console.error("Error with direct order query:", error);
+      setIsInitialLoad(false);
+    }
+  };
 
   // Show loading state while orders are being fetched
   const isLoading = isCustomOrder ? customLoading : loading;
