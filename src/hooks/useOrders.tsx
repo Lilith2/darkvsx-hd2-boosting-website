@@ -155,7 +155,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
     referralCreditsUsed: order.credits_used
       ? parseFloat(Number(order.credits_used).toFixed(2))
       : undefined,
-    referredByUserId: order.referred_by_user_id || undefined,
+    referredByUserId: undefined, // This column doesn't exist yet in the database
     messages: messages.map((msg) => ({
       id: msg.id,
       from: msg.from as "customer" | "admin" | "booster",
