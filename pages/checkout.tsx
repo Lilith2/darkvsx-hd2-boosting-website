@@ -307,11 +307,13 @@ export default function Checkout() {
         description: `${orderMessage}. ${paymentMessage}`,
       });
 
-      // Redirect to appropriate page
+      // Redirect to order confirmation page
       if (regularOrderItems.length > 0) {
-        router.push(`/order/${orderId}`);
+        router.push(`/order-confirmation?orderId=${orderId}${paymentDetails?.id ? `&paymentId=${paymentDetails.id}` : ''}`);
       } else {
-        router.push("/account"); // Redirect to account page for custom orders
+        // For custom orders, use the first custom order ID
+        const customOrderId = customOrderItems.length > 0 ? customOrderItems[0].orderId : orderId;
+        router.push(`/order-confirmation?orderId=${customOrderId}&type=custom${paymentDetails?.id ? `&paymentId=${paymentDetails.id}` : ''}`);
       }
     } catch (error: any) {
       console.error("Error creating order:", error);
