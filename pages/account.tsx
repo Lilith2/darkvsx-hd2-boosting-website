@@ -694,7 +694,29 @@ export default function Account() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {userOrders.map((order) => (
+                    {userOrders.map((order) => {
+                      // Check if it's a custom order (has order_number) or regular order
+                      const isCustomOrder = 'order_number' in order;
+                      const orderNumber = isCustomOrder ? order.order_number : `#${order.id.slice(-6)}`;
+                      const orderAmount = isCustomOrder ? order.total_amount : order.totalAmount;
+                      const orderDate = isCustomOrder ? order.created_at : order.createdAt;
+
+                      // Get service names for display
+                      let serviceNames = '';
+                      if (isCustomOrder) {
+                        // For custom orders, show item summary
+                        const items = order.items || [];
+                        if (items.length > 0) {
+                          serviceNames = `Custom Order: ${items.map(item => `${item.quantity}x ${item.item_name}`).join(', ')}`;
+                        } else {
+                          serviceNames = 'Custom Order';
+                        }
+                      } else {
+                        // For regular orders, show service names
+                        serviceNames = order.services.map((s) => s.name).join(", ");
+                      }
+
+                      return (
                       <div
                         key={order.id}
                         className="border border-border rounded-lg p-4 hover:border-primary/30 transition-colors"
@@ -702,10 +724,10 @@ export default function Account() {
                         <div className="flex items-center justify-between mb-3">
                           <div>
                             <h3 className="font-medium">
-                              Order #{order.id.slice(-6)}
+                              {orderNumber}
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                              {order.services.map((s) => s.name).join(", ")}
+                              {serviceNames}
                             </p>
                           </div>
                           <div className="text-right">
@@ -716,7 +738,7 @@ export default function Account() {
                               </span>
                             </Badge>
                             <p className="text-sm text-muted-foreground mt-1">
-                              ${order.totalAmount}
+                              ${orderAmount}
                             </p>
                           </div>
                         </div>
@@ -733,7 +755,7 @@ export default function Account() {
 
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-muted-foreground">
-                            {new Date(order.createdAt).toLocaleDateString()}
+                            {new Date(orderDate).toLocaleDateString()}
                           </span>
                           <div className="flex space-x-2">
                             <Link
@@ -751,7 +773,8 @@ export default function Account() {
                           </div>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
