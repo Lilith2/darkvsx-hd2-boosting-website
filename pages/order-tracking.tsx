@@ -490,7 +490,7 @@ export default function OrderTracking() {
                       Special Notes
                     </p>
                     <p className="font-medium text-sm bg-muted p-2 rounded">
-                      {order.notes}
+                      {normalizedOrder.notes}
                     </p>
                   </div>
                 )}
