@@ -137,7 +137,30 @@ export default function AdminDashboard() {
   } = useCustomOrders();
   const { toast } = useToast();
 
-  // Custom pricing is now handled by optimized hook
+  // Fetch custom pricing data
+  const [customPricing, setCustomPricing] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchCustomPricing = async () => {
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase
+          .from("custom_pricing")
+          .select("*")
+          .order("category", { ascending: true });
+
+        if (error) {
+          console.error("Error fetching custom pricing:", error);
+        } else {
+          setCustomPricing(data || []);
+        }
+      } catch (err) {
+        console.error("Error fetching custom pricing:", err);
+      }
+    };
+
+    fetchCustomPricing();
+  }, []);
 
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
