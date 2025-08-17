@@ -459,7 +459,7 @@ export default function OrderTracking() {
                   <Badge
                     variant="outline"
                     className={
-                      order.paymentStatus === "paid"
+                      normalizedOrder.paymentStatus === "paid"
                         ? "text-green-700 border-green-200"
                         : "text-yellow-700 border-yellow-200"
                     }
