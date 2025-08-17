@@ -288,7 +288,7 @@ export const OptimizedAdminStatsCards = memo(({
       />
 
       {/* Additional Analytics Row (if we have the data) */}
-      {(totalOrdersCount > 0 || analyticsData.calculatedAvgOrderValue > 0) && (
+      {(safeData.totalOrdersCount > 0 || analyticsData.calculatedAvgOrderValue > 0) && (
         <>
           {/* Average Order Value */}
           <StatCard
