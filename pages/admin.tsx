@@ -453,120 +453,19 @@ export default function AdminDashboard() {
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Top Services */}
-              <Card className="border border-border/50">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Star className="w-5 h-5 mr-2" />
-                    Top Performing Services
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {topServices.length === 0 ? (
-                      <p className="text-muted-foreground text-center py-8">
-                        No services available
-                      </p>
-                    ) : (
-                      topServices.map((service, index) => (
-                        <div
-                          key={service.id}
-                          className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
-                        >
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                              <span className="text-sm font-bold text-primary">
-                                {index + 1}
-                              </span>
-                            </div>
-                            <div>
-                              <p className="font-medium">{service.name}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {service.orders} orders
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-bold text-primary">
-                              ${service.revenue.toFixed(2)}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Total Revenue
-                            </p>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Recent Activity */}
-              <Card className="border border-border/50">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Activity className="w-5 h-5 mr-2" />
-                    Recent Orders
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {recentOrders.length === 0 ? (
-                      <p className="text-muted-foreground text-center py-8">
-                        No recent orders
-                      </p>
-                    ) : (
-                      recentOrders.map((order) => (
-                        <div
-                          key={order.id}
-                          className="flex items-center justify-between p-3 border border-border/30 rounded-lg"
-                        >
-                          <div className="flex items-center space-x-3">
-                            <div
-                              className={`w-2 h-2 rounded-full ${order.type === "custom" ? "bg-purple-500" : "bg-primary"}`}
-                            ></div>
-                            <div>
-                              <p className="text-sm font-medium">
-                                {order.type === "custom" ? "Custom " : ""}Order{" "}
-                                {order.id.slice(0, 8)}...
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {order.customerName}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="flex items-center gap-1 mb-1">
-                              <Badge
-                                className={
-                                  order.status === "pending"
-                                    ? "bg-yellow-500/20 text-yellow-700"
-                                    : order.status === "completed"
-                                      ? "bg-green-500/20 text-green-700"
-                                      : "bg-blue-500/20 text-blue-700"
-                                }
-                              >
-                                {order.status}
-                              </Badge>
-                              {order.type === "custom" && (
-                                <Badge
-                                  variant="outline"
-                                  className="text-xs bg-purple-100 text-purple-700"
-                                >
-                                  Custom
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-sm font-medium">
-                              ${order.totalAmount}
-                            </p>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+              <TopServicesCard
+                topServices={analytics.topServices}
+                isLoading={analytics.isLoading}
+              />
+              <RecentOrdersCard
+                recentOrders={analytics.recentOrders}
+                isLoading={analytics.isLoading}
+                onOrderClick={(order, type) => {
+                  setSelectedOrderForDetails(order);
+                  setOrderDetailsType(type);
+                  setIsOrderDetailsModalOpen(true);
+                }}
+              />
             </div>
           </TabsContent>
 
