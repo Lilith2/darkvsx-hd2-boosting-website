@@ -400,13 +400,22 @@ export default function AdminDashboard() {
         {/* Stats Grid */}
         <div className="mb-8">
           <OptimizedAdminStatsCards
-            totalRevenue={[...orders, ...customOrders].reduce((sum, order) => sum + (order.total_amount || order.totalAmount || 0), 0)}
+            totalRevenue={[...orders, ...customOrders].reduce((sum, order) => {
+              const amount = 'totalAmount' in order ? order.totalAmount : order.total_amount;
+              return sum + (amount || 0);
+            }, 0)}
             pendingOrdersCount={[...orders, ...customOrders].filter(order => order.status === "pending").length}
             activeServicesCount={services.filter(service => service.active !== false).length}
-            totalCustomersCount={new Set([...orders, ...customOrders].map(order => order.customer_email || order.customerEmail).filter(Boolean)).size}
+            totalCustomersCount={new Set([...orders, ...customOrders].map(order => {
+              const email = 'customerEmail' in order ? order.customerEmail : order.customer_email;
+              return email;
+            }).filter(Boolean)).size}
             completedOrdersCount={[...orders, ...customOrders].filter(order => order.status === "completed").length}
             totalOrdersCount={orders.length + customOrders.length}
-            avgOrderValue={orders.length + customOrders.length > 0 ? ([...orders, ...customOrders].reduce((sum, order) => sum + (order.total_amount || order.totalAmount || 0), 0) / (orders.length + customOrders.length)) : 0}
+            avgOrderValue={orders.length + customOrders.length > 0 ? ([...orders, ...customOrders].reduce((sum, order) => {
+              const amount = 'totalAmount' in order ? order.totalAmount : order.total_amount;
+              return sum + (amount || 0);
+            }, 0) / (orders.length + customOrders.length)) : 0}
             isLoading={loading || customOrdersLoading}
           />
         </div>
