@@ -1135,7 +1135,6 @@ export default function AdminDashboard() {
             />
           </TabsContent>
 
-          {/* Placeholder - will be removed */}
           <TabsContent value="orders-old" className="space-y-6">
             <Card className="border border-border/50">
               <CardHeader>
