@@ -24,19 +24,19 @@ export function RecentOrdersCard({
     }).format(amount);
   };
 
-  const getOrderTotal = (order: Order | CustomOrder) => {
+  const getOrderTotal = (order: OrderData | CustomOrder) => {
     if ("totalAmount" in order) {
       return order.totalAmount || 0;
     }
     return order.total_amount || 0;
   };
 
-  const getOrderDate = (order: Order | CustomOrder) => {
+  const getOrderDate = (order: OrderData | CustomOrder) => {
     const date = "createdAt" in order ? order.createdAt : order.created_at;
     return new Date(date).toLocaleDateString();
   };
 
-  const getCustomerInfo = (order: Order | CustomOrder) => {
+  const getCustomerInfo = (order: OrderData | CustomOrder) => {
     if ("customerEmail" in order) {
       return {
         name: order.customerName || "Unknown Customer",
@@ -64,7 +64,7 @@ export function RecentOrdersCard({
     }
   };
 
-  const getOrderType = (order: Order | CustomOrder): "regular" | "custom" => {
+  const getOrderType = (order: OrderData | CustomOrder): "regular" | "custom" => {
     return "customerEmail" in order ? "regular" : "custom";
   };
 
