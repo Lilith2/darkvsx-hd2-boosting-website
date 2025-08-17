@@ -146,8 +146,39 @@ export default function OrderTracking() {
     }
   };
 
+  // Helper function to normalize order data for display
+  const normalizeOrder = (orderData: any) => {
+    if (!orderData) return null;
+
+    if (isCustomOrder) {
+      // Custom order - normalize to match regular order structure
+      return {
+        ...orderData,
+        createdAt: orderData.created_at,
+        totalAmount: orderData.total_amount,
+        customerName: orderData.customer_name || 'Unknown Customer',
+        customerEmail: orderData.customer_email,
+        services: orderData.items?.map((item: any) => ({
+          id: item.id || `item-${item.item_name}`,
+          name: `${item.quantity}x ${item.item_name}`,
+          price: item.total_price,
+          quantity: item.quantity
+        })) || [],
+        messages: [], // Custom orders don't have messages yet
+        tracking: [], // Custom orders don't have tracking yet
+        assignedBooster: null, // Custom orders don't have assigned boosters
+        progress: 0 // Custom orders don't track progress the same way
+      };
+    }
+
+    // Regular order - return as is
+    return orderData;
+  };
+
+  const normalizedOrder = normalizeOrder(order);
+
   const sendMessage = async () => {
-    if (!newMessage.trim() || !user) return;
+    if (!newMessage.trim() || !user || isCustomOrder) return; // Messages not supported for custom orders yet
 
     try {
       await addOrderMessage(order.id, { from: "customer", message: newMessage });
