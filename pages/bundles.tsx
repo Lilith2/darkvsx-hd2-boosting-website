@@ -37,7 +37,7 @@ export default function Bundles() {
       id: bundle.id,
       title: bundle.name,
       description: bundle.description,
-      price: bundle.discountedPrice,
+      price: bundle.discounted_price,
       originalPrice: bundle.original_price,
       duration: bundle.duration,
       difficulty: "Bundle",
@@ -208,7 +208,7 @@ export default function Bundles() {
 
                   <div className="flex items-baseline gap-3 mt-4">
                     <span className="text-4xl font-bold bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">
-                      ${bundle.discountedPrice}
+                      ${bundle.discounted_price}
                     </span>
                     <span className="text-lg text-muted-foreground line-through">
                       ${bundle.originalPrice}
