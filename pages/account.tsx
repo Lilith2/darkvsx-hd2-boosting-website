@@ -106,13 +106,13 @@ export default function Account() {
       "total_amount" in order ? order.total_amount : order.totalAmount;
     return sum + (amount || 0);
   }, 0);
-  const completedOrders = userOrders.filter(
+  const completedOrders = safeUserOrders.filter(
     (order) => order.status === "completed",
   ).length;
-  const activeOrders = userOrders.filter((order) =>
+  const activeOrders = safeUserOrders.filter((order) =>
     ["pending", "processing", "in-progress"].includes(order.status),
   ).length;
-  const totalOrders = userOrders.length;
+  const totalOrders = safeUserOrders.length;
   const joinDate = user?.created_at ? new Date(user.created_at) : new Date();
 
   const [accountData, setAccountData] = useState({
