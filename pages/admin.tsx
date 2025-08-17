@@ -11,6 +11,9 @@ import dynamic from "next/dynamic";
 import { AdminStatsCards } from "@/components/admin/AdminStatsCards";
 import { TopServicesCard } from "@/components/admin/TopServicesCard";
 import { RecentOrdersCard } from "@/components/admin/RecentOrdersCard";
+import { AdminServicesTab } from "@/components/admin/AdminServicesTab";
+import { AdminBundlesTab } from "@/components/admin/AdminBundlesTab";
+import { AdminPricingTab } from "@/components/admin/AdminPricingTab";
 
 import { LoadingSpinner } from "../components/LoadingSpinner";
 
