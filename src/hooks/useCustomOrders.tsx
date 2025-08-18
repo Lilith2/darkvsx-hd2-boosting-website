@@ -119,7 +119,16 @@ export function useCustomOrders() {
 
       // Check if it's a network error (Failed to fetch)
       if (err?.message?.includes("Failed to fetch") || err?.name === "TypeError") {
-        // Network error - try a simple connection test
+        // Network error - try retry mechanism
+        if (retryCount < 2) {
+          console.log("Retrying custom orders fetch in 1 second...");
+          setTimeout(() => {
+            fetchOrders(retryCount + 1);
+          }, 1000);
+          return;
+        }
+
+        // After retries failed, try a simple connection test
         try {
           const testResponse = await fetch("/api/ping");
           if (testResponse.ok) {
