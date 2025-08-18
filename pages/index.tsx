@@ -167,7 +167,7 @@ export default function Index() {
               <Button
                 size="lg"
                 variant="outline"
-                className="text-lg px-8 py-6 border-primary/20 hover:bg-primary/10 group"
+                className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 border-primary/20 hover:bg-primary/10 group w-full sm:w-auto"
                 asChild
               >
                 <a
