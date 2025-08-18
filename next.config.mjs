@@ -29,7 +29,21 @@ const nextConfig = {
   },
   experimental: {
     scrollRestoration: true,
+    optimizeCss: true,
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
   },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  swcMinify: true,
+  productionBrowserSourceMaps: false,
   transpilePackages: [
     "@supabase/supabase-js",
     "@supabase/auth-js",
