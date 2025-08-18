@@ -104,7 +104,11 @@ export default function Index() {
       <div className="bg-gradient-to-br from-background via-background to-background/80">
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+      <section
+        className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16"
+        role="banner"
+        aria-labelledby="hero-heading"
+      >
         {/* Background Effects */}
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5"></div>
         <div className="absolute inset-0">
