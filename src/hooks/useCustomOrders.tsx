@@ -55,13 +55,18 @@ export function useCustomOrders() {
       setLoading(true);
       setError(null);
 
+      console.log("Fetching custom orders...");
+
       // First try to fetch orders with items from the JSONB column
       const { data, error: fetchError } = await supabase
         .from("custom_orders")
         .select("*")
         .order("created_at", { ascending: false });
 
+      console.log("Custom orders fetch result:", { data, error: fetchError });
+
       if (fetchError) {
+        console.error("Supabase fetch error:", fetchError);
         throw fetchError;
       }
 
