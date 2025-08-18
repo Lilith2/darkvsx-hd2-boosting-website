@@ -100,7 +100,13 @@ export function OptimizedOrdersProvider({
     referralDiscount: order.referral_discount || undefined,
     creditsUsed: order.credits_used || undefined,
     referredByUserId: order.referred_by_user_id || undefined,
-    messages,
+    messages: messages.map((msg: any) => ({
+      id: msg.id,
+      from: msg.from as "customer" | "admin" | "booster",
+      message: msg.message,
+      timestamp: msg.created_at || msg.timestamp,
+      isRead: msg.is_read ?? msg.isRead ?? false,
+    })),
     tracking,
   });
 
