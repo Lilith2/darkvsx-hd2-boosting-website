@@ -310,25 +310,13 @@ export default function AdminDashboard() {
   const handleDeleteService = async (id: string) => {
     if (!confirm("Are you sure you want to delete this service?")) return;
 
-    const service = services.find(s => s.id === id);
-    const operationId = addOperation({
-      type: 'service',
-      description: `Deleting ${service?.title || 'service'}`,
-    });
-
     try {
-      updateOperation(operationId, { status: 'running', progress: 50 });
       await deleteService(id);
-      updateOperation(operationId, { status: 'success', progress: 100 });
       toast({
         title: "Success",
         description: "Service deleted successfully.",
       });
     } catch (error) {
-      updateOperation(operationId, {
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
       toast({
         title: "Error",
         description: "Failed to delete service.",
