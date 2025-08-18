@@ -37,7 +37,7 @@ export function OrderSummary({
           <Package className="w-6 h-6 mr-3 text-primary" />
           Order Total
           <Badge variant="secondary" className="ml-3">
-            {cartItems.length} item{cartItems.length !== 1 ? 's' : ''}
+            {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}
           </Badge>
         </CardTitle>
       </CardHeader>
@@ -53,7 +53,9 @@ export function OrderSummary({
                 <Sparkles className="w-4 h-4 mr-1" />
                 Referral Discount (10%)
               </span>
-              <span className="font-medium">-${referralDiscount.toFixed(2)}</span>
+              <span className="font-medium">
+                -${referralDiscount.toFixed(2)}
+              </span>
             </div>
           )}
           {referralCreditsApplied > 0 && (
@@ -62,7 +64,9 @@ export function OrderSummary({
                 <Sparkles className="w-4 h-4 mr-1" />
                 Credits Applied
               </span>
-              <span className="font-medium">-${referralCreditsApplied.toFixed(2)}</span>
+              <span className="font-medium">
+                -${referralCreditsApplied.toFixed(2)}
+              </span>
             </div>
           )}
           <div className="flex justify-between text-sm text-muted-foreground">

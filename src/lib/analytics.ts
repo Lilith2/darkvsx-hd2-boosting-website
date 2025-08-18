@@ -40,7 +40,7 @@ function collectMetrics() {
     const navigation = performance.getEntriesByType(
       "navigation",
     )[0] as PerformanceNavigationTiming;
-    
+
     if (!navigation) {
       console.warn("Navigation timing not available");
       return;
@@ -126,7 +126,9 @@ function sendMetrics(metrics: Partial<PerformanceMetrics>) {
         load_time: Math.round(metrics.loadTime || 0),
         dom_content_loaded: Math.round(metrics.domContentLoaded || 0),
         first_contentful_paint: Math.round(metrics.firstContentfulPaint || 0),
-        largest_contentful_paint: Math.round(metrics.largestContentfulPaint || 0),
+        largest_contentful_paint: Math.round(
+          metrics.largestContentfulPaint || 0,
+        ),
         cumulative_layout_shift: metrics.cumulativeLayoutShift || 0,
         first_input_delay: Math.round(metrics.firstInputDelay || 0),
       });
@@ -254,19 +256,22 @@ export function initializeAnalytics() {
         try {
           // Filter out HMR-related errors and fetch errors from external services
           const reason = event.reason;
-          if (reason && typeof reason === 'object') {
-            const message = reason.message || '';
-            
+          if (reason && typeof reason === "object") {
+            const message = reason.message || "";
+
             // Skip HMR and development-related errors
-            if (message.includes('Loading CSS chunk') || 
-                message.includes('Loading chunk') ||
-                message.includes('hmr') ||
-                message.includes('fullstory') ||
-                message.includes('Failed to fetch') && process.env.NODE_ENV === 'development') {
+            if (
+              message.includes("Loading CSS chunk") ||
+              message.includes("Loading chunk") ||
+              message.includes("hmr") ||
+              message.includes("fullstory") ||
+              (message.includes("Failed to fetch") &&
+                process.env.NODE_ENV === "development")
+            ) {
               return;
             }
           }
-          
+
           trackError(new Error(event.reason), "unhandled_promise_rejection");
         } catch (error) {
           console.warn("Failed to track promise rejection:", error);

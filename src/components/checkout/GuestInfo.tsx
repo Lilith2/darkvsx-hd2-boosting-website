@@ -53,7 +53,9 @@ export function GuestInfo({
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="guest-name" className="text-base font-medium">Full Name *</Label>
+                <Label htmlFor="guest-name" className="text-base font-medium">
+                  Full Name *
+                </Label>
                 <Input
                   id="guest-name"
                   placeholder="Enter your full name"
@@ -66,7 +68,9 @@ export function GuestInfo({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="guest-email" className="text-base font-medium">Email Address *</Label>
+                <Label htmlFor="guest-email" className="text-base font-medium">
+                  Email Address *
+                </Label>
                 <Input
                   id="guest-email"
                   type="email"
@@ -98,7 +102,10 @@ export function GuestInfo({
 
         {/* Order Notes Section */}
         <div className="space-y-3 pt-4 border-t border-border/50">
-          <Label htmlFor="order-notes" className="flex items-center text-base font-medium">
+          <Label
+            htmlFor="order-notes"
+            className="flex items-center text-base font-medium"
+          >
             <MessageSquare className="w-5 h-5 mr-2 text-primary" />
             Order Notes (Optional)
           </Label>
@@ -112,7 +119,8 @@ export function GuestInfo({
             className="resize-none"
           />
           <p className="text-sm text-muted-foreground">
-            💡 Include Discord username, preferred hours, or any specific requirements
+            💡 Include Discord username, preferred hours, or any specific
+            requirements
           </p>
         </div>
       </CardContent>

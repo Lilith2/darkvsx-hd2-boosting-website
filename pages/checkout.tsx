@@ -157,7 +157,10 @@ export default function Checkout() {
   const handleCreditsToggle = (checked: boolean) => {
     setUseAvailableCredits(checked);
     if (checked && availableCredits > 0) {
-      const maxApplicable = subtotal - promoDiscount + (subtotal - promoDiscount) * PAYMENT_CONSTANTS.TAX_RATE;
+      const maxApplicable =
+        subtotal -
+        promoDiscount +
+        (subtotal - promoDiscount) * PAYMENT_CONSTANTS.TAX_RATE;
       const creditsToApply = Math.min(availableCredits, maxApplicable);
       setCreditsApplied(creditsToApply);
 
@@ -203,8 +206,12 @@ export default function Checkout() {
         }
       }
 
-      const customOrderItems = cartItems.filter((item) => item.service.customOrderData);
-      const regularOrderItems = cartItems.filter((item) => !item.service.customOrderData);
+      const customOrderItems = cartItems.filter(
+        (item) => item.service.customOrderData,
+      );
+      const regularOrderItems = cartItems.filter(
+        (item) => !item.service.customOrderData,
+      );
 
       let orderId = null;
 
@@ -252,7 +259,8 @@ export default function Checkout() {
               total_price: item.total_price,
               description: item.description,
             })),
-            special_instructions: customOrderData.special_instructions || orderNotes,
+            special_instructions:
+              customOrderData.special_instructions || orderNotes,
             customer_email: user?.email || guestInfo.email,
             customer_name: user?.username || guestInfo.name,
             customer_discord: customOrderData.customer_discord,
@@ -344,7 +352,8 @@ export default function Checkout() {
     console.error("PayPal payment error:", error);
     toast({
       title: "Payment failed",
-      description: "There was an error processing your PayPal payment. Please try again.",
+      description:
+        "There was an error processing your PayPal payment. Please try again.",
       variant: "destructive",
     });
   };
@@ -353,7 +362,8 @@ export default function Checkout() {
     console.log("PayPal payment cancelled:", data);
     toast({
       title: "Payment cancelled",
-      description: "You cancelled the PayPal payment. Your order was not placed.",
+      description:
+        "You cancelled the PayPal payment. Your order was not placed.",
     });
   };
 
@@ -401,14 +411,19 @@ export default function Checkout() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between py-6">
               <div className="flex items-center space-x-4">
-                <Link href="/cart" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  href="/cart"
+                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                >
                   <ArrowLeft className="w-5 h-5 mr-2" />
                   Back to Cart
                 </Link>
                 <Separator orientation="vertical" className="h-6" />
                 <div>
                   <h1 className="text-3xl font-bold">Checkout</h1>
-                  <p className="text-muted-foreground">Complete your secure order</p>
+                  <p className="text-muted-foreground">
+                    Complete your secure order
+                  </p>
                 </div>
               </div>
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
@@ -430,22 +445,29 @@ export default function Checkout() {
                     <ShoppingCart className="w-5 h-5 mr-3" />
                     Order Items
                     <Badge variant="secondary" className="ml-3">
-                      {cartItems.length} item{cartItems.length !== 1 ? 's' : ''}
+                      {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}
                     </Badge>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {cartItems.map((item) => (
-                    <div key={item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                    <div
+                      key={item.id}
+                      className="flex items-center space-x-4 p-4 border rounded-lg"
+                    >
                       <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                         <Package className="w-6 h-6 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold">{item.service.title}</h4>
-                        <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Quantity: {item.quantity}
+                        </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-lg">${(item.service.price * item.quantity).toFixed(2)}</p>
+                        <p className="font-bold text-lg">
+                          ${(item.service.price * item.quantity).toFixed(2)}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -468,7 +490,9 @@ export default function Checkout() {
                     </Label>
                     <div className="p-3 bg-muted rounded-lg">
                       <p className="font-medium">{user?.email}</p>
-                      <p className="text-sm text-muted-foreground">Order updates will be sent here</p>
+                      <p className="text-sm text-muted-foreground">
+                        Order updates will be sent here
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -511,7 +535,9 @@ export default function Checkout() {
                       <Input
                         id="promo-code"
                         value={promoCode}
-                        onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                        onChange={(e) =>
+                          setPromoCode(e.target.value.toUpperCase())
+                        }
                         placeholder="Enter promo code"
                         className="flex-1"
                       />
@@ -528,7 +554,8 @@ export default function Checkout() {
                         <div className="flex items-center space-x-2">
                           <CheckCircle className="w-4 h-4 text-green-600" />
                           <span className="text-sm text-green-700 dark:text-green-400">
-                            Promo code applied! You saved ${promoDiscount.toFixed(2)}
+                            Promo code applied! You saved $
+                            {promoDiscount.toFixed(2)}
                           </span>
                         </div>
                       </div>
@@ -543,7 +570,9 @@ export default function Checkout() {
                           <DollarSign className="w-4 h-4 mr-2" />
                           Available Credits
                         </Label>
-                        <span className="font-bold text-green-600">${availableCredits.toFixed(2)}</span>
+                        <span className="font-bold text-green-600">
+                          ${availableCredits.toFixed(2)}
+                        </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Checkbox
@@ -551,7 +580,9 @@ export default function Checkout() {
                           checked={useAvailableCredits}
                           onCheckedChange={handleCreditsToggle}
                         />
-                        <Label htmlFor="use-credits">Use available credits</Label>
+                        <Label htmlFor="use-credits">
+                          Use available credits
+                        </Label>
                       </div>
                       {creditsApplied > 0 && (
                         <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -583,7 +614,9 @@ export default function Checkout() {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span>Subtotal</span>
-                      <span className="font-medium">${subtotal.toFixed(2)}</span>
+                      <span className="font-medium">
+                        ${subtotal.toFixed(2)}
+                      </span>
                     </div>
                     {promoDiscount > 0 && (
                       <div className="flex justify-between text-green-600">
@@ -620,16 +653,24 @@ export default function Checkout() {
                       <Checkbox
                         id="terms"
                         checked={agreeToTerms}
-                        onCheckedChange={(checked) => setAgreeToTerms(checked as boolean)}
+                        onCheckedChange={(checked) =>
+                          setAgreeToTerms(checked as boolean)
+                        }
                       />
                       <div className="text-sm">
                         <label htmlFor="terms" className="cursor-pointer">
                           I agree to the{" "}
-                          <Link href="/terms" className="text-primary hover:underline">
+                          <Link
+                            href="/terms"
+                            className="text-primary hover:underline"
+                          >
                             Terms of Service
                           </Link>{" "}
                           and{" "}
-                          <Link href="/privacy" className="text-primary hover:underline">
+                          <Link
+                            href="/privacy"
+                            className="text-primary hover:underline"
+                          >
                             Privacy Policy
                           </Link>
                         </label>
