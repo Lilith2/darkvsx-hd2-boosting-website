@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useCart } from "@/hooks/useCart";
+import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
 import { useOrders } from "@/hooks/useOrders";
 import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useAuth } from "@/hooks/useAuth";

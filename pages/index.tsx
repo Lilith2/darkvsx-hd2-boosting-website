@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { SEOHead } from "../components/SEOHead";
 import { useServices } from "@/hooks/useServices";
-import { useCart } from "@/hooks/useCart";
+import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
