@@ -50,7 +50,7 @@ export function PaymentForm({
             <Checkbox
               id="terms"
               checked={agreeToTerms}
-              onCheckedChange={onAgreeToTermsChange}
+              onCheckedChange={(checked) => onAgreeToTermsChange(checked as boolean)}
               disabled={disabled}
               className="mt-1"
             />
