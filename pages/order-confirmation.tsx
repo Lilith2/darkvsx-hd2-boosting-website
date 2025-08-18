@@ -31,10 +31,11 @@ import {
 
 export default function OrderConfirmation() {
   const router = useRouter();
-  const { orderId, type, paymentId } = router.query as { 
-    orderId: string; 
-    type?: string; 
+  const { orderId, type, paymentId, sendEmail } = router.query as {
+    orderId: string;
+    type?: string;
     paymentId?: string;
+    sendEmail?: string;
   };
   const { getOrder, orders, loading } = useOrders();
   const { orders: customOrders, loading: customLoading } = useCustomOrders();
