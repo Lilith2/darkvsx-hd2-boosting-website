@@ -125,7 +125,7 @@ export default function Index() {
 
             <h1
               id="hero-heading"
-              className="text-5xl md:text-7xl font-bold mb-8 leading-tight"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-8 leading-tight"
             >
               <span className="bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                 HELLDIVERS II
