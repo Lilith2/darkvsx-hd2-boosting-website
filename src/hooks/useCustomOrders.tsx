@@ -50,12 +50,17 @@ export function useCustomOrders() {
   const { toast } = useToast();
 
   // Fetch custom orders - using dynamic query to avoid type errors
-  const fetchOrders = async () => {
+  const fetchOrders = async (retryCount = 0) => {
     try {
       setLoading(true);
       setError(null);
 
-      console.log("Fetching custom orders...");
+      console.log("Fetching custom orders... (attempt", retryCount + 1, ")");
+
+      // Test Supabase client initialization
+      if (!supabase) {
+        throw new Error("Supabase client not initialized");
+      }
 
       // First try to fetch orders with items from the JSONB column
       const { data, error: fetchError } = await supabase
