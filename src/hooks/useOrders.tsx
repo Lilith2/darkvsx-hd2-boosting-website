@@ -38,11 +38,11 @@ export interface Order {
 
 export interface OrderMessage {
   id: string;
-  order_id: string;
+  order_id: string | null;
   from: string;
   message: string;
-  created_at: string;
-  is_read: boolean;
+  created_at: string | null;
+  is_read: boolean | null;
 }
 
 export interface OrderTracking {
