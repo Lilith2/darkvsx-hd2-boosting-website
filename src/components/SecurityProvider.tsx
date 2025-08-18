@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, ReactNode } from "react";
-import { initializeSecurity, auditLogger, rateLimiter } from "@/lib/security";
+import { initializeSecurity, security } from "@/lib/security";
 
 interface SecurityContextType {
   checkRateLimit: (
