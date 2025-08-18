@@ -32,7 +32,7 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client-no-realtime";
 
 interface CustomPricing {
   id: string;
