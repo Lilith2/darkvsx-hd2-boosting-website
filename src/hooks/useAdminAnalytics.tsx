@@ -89,8 +89,8 @@ export function useAdminAnalytics({
     // Count unique customers
     const customerEmails = new Set<string>();
     orders.forEach((order) => {
-      if (order.customer_email) {
-        customerEmails.add(order.customer_email);
+      if ((order as any).customer_email) {
+        customerEmails.add((order as any).customer_email);
       }
     });
     customOrders.forEach((order) => {
