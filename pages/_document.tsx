@@ -4,6 +4,13 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
+        {/* Remove FOUC by not hiding body initially */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            body { display: block !important; }
+            [data-next-hide-fouc] { display: none !important; }
+          `
+        }} />
         {/* Preconnect to optimize external font loading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
