@@ -22,6 +22,7 @@ export interface CustomOrder {
   items: CustomOrderItem[];
   special_instructions?: string;
   customer_email?: string;
+  customer_name?: string;
   customer_discord?: string;
   payment_intent_id?: string;
   delivery_status: "not_started" | "in_progress" | "completed" | "failed";
