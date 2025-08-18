@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
+import Head from "next/head";
 import { useBundles } from "@/hooks/useBundles";
 import { useCart } from "@/hooks/useCart";
 import { useToast } from "@/hooks/use-toast";
