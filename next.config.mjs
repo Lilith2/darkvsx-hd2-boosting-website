@@ -63,14 +63,6 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
   },
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    },
-  },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
