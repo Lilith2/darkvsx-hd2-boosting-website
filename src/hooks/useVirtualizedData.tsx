@@ -226,7 +226,7 @@ export function useVirtualizedData({
 // Hook for optimized table operations
 export function useOptimizedTable<T = any>(
   data: T[],
-  options: VirtualizedDataOptions = {},
+  options: Omit<VirtualizedDataOptions, 'data'> = {},
 ) {
   const virtualized = useVirtualizedData({ data, ...options });
 
