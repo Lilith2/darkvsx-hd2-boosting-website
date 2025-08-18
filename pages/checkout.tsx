@@ -603,7 +603,7 @@ export default function Checkout() {
             {/* Right Column - Payment Summary */}
             <div className="space-y-6">
               {/* Order Summary */}
-              <Card className="sticky top-8">
+              <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <CreditCard className="w-5 h-5 mr-3" />
