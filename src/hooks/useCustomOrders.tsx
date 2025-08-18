@@ -189,6 +189,7 @@ export function useCustomOrders() {
     }>;
     special_instructions?: string;
     customer_email?: string;
+    customer_name?: string;
     customer_discord?: string;
     referralCode?: string;
     referralDiscount?: number;
