@@ -16,26 +16,30 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
-  ShoppingCart,
   ArrowLeft,
+  ShoppingCart,
+  User,
+  Mail,
+  MessageSquare,
+  CreditCard,
   Shield,
   CheckCircle,
-  Clock,
   Package,
-  Star,
+  Tag,
+  DollarSign,
   Lock,
-  CreditCard,
   Sparkles,
+  Clock,
 } from "lucide-react";
 import Link from "next/link";
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
-import { OrderSummary } from "@/components/checkout/OrderSummary";
-import { GuestInfo } from "@/components/checkout/GuestInfo";
-import { ReferralSection } from "@/components/checkout/ReferralSection";
-import { PaymentForm } from "@/components/checkout/PaymentForm";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const PAYPAL_CLIENT_ID =
   process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ||
@@ -53,14 +57,14 @@ export default function Checkout() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
   const [agreeToTerms, setAgreeToTerms] = useState(false);
-  const [referralCode, setReferralCode] = useState("");
-  const [referralDiscount, setReferralDiscount] = useState(0);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState(0);
   const [guestInfo, setGuestInfo] = useState({ name: "", email: "" });
-  const [useReferralCredits, setUseReferralCredits] = useState(false);
-  const [referralCreditsApplied, setReferralCreditsApplied] = useState(0);
+  const [useCredits, setUseCredits] = useState(false);
+  const [creditsApplied, setCreditsApplied] = useState(0);
   const [availableCredits, setAvailableCredits] = useState(0);
 
-  // Redirect to login if not authenticated
+  // Redirect if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
       toast({
@@ -73,10 +77,10 @@ export default function Checkout() {
   }, [isAuthenticated, router, toast]);
 
   const subtotal = getCartTotal();
-  const discount = referralDiscount;
+  const discount = promoDiscount;
   const tax = (subtotal - discount) * PAYMENT_CONSTANTS.TAX_RATE;
   const subtotalAfterTax = subtotal - discount + tax;
-  const total = Math.max(0, subtotalAfterTax - referralCreditsApplied);
+  const total = Math.max(0, subtotalAfterTax - creditsApplied);
 
   // Fetch user's available credits
   useEffect(() => {
@@ -98,9 +102,9 @@ export default function Checkout() {
     fetchCredits();
   }, [user?.id, getUserCredits]);
 
-  const validateReferralCode = async (code: string) => {
+  const validatePromoCode = async (code: string) => {
     if (!code.trim()) {
-      setReferralDiscount(0);
+      setPromoDiscount(0);
       return;
     }
 
@@ -113,10 +117,10 @@ export default function Checkout() {
       });
 
       if (error) {
-        console.error("Error validating referral code:", error);
+        console.error("Error validating promo code:", error);
         toast({
           title: "Error",
-          description: "Could not validate referral code. Please try again.",
+          description: "Could not validate promo code. Please try again.",
           variant: "destructive",
         });
         return;
@@ -126,53 +130,49 @@ export default function Checkout() {
 
       if (!validation.valid) {
         toast({
-          title: "Invalid referral code",
-          description:
-            validation.error || "Please enter a valid referral code.",
+          title: "Invalid promo code",
+          description: validation.error || "Please enter a valid promo code.",
           variant: "destructive",
         });
-        setReferralDiscount(0);
+        setPromoDiscount(0);
         return;
       }
 
       const discountAmount = subtotal * REFERRAL_CONFIG.customerDiscount;
-      setReferralDiscount(discountAmount);
+      setPromoDiscount(discountAmount);
       toast({
-        title: "Referral code applied!",
-        description: `You saved $${discountAmount.toFixed(2)} with the referral code.`,
+        title: "Promo code applied!",
+        description: `You saved $${discountAmount.toFixed(2)} with the promo code.`,
       });
     } catch (err) {
-      console.error("Unexpected error validating referral code:", err);
+      console.error("Unexpected error validating promo code:", err);
       toast({
         title: "Error",
-        description: "Could not validate referral code. Please try again.",
+        description: "Could not validate promo code. Please try again.",
         variant: "destructive",
       });
     }
   };
 
   const handleCreditsToggle = (checked: boolean) => {
-    setUseReferralCredits(checked);
+    setUseCredits(checked);
     if (checked && availableCredits > 0) {
-      const maxApplicable =
-        subtotal -
-        referralDiscount +
-        (subtotal - referralDiscount) * PAYMENT_CONSTANTS.TAX_RATE;
+      const maxApplicable = subtotal - promoDiscount + (subtotal - promoDiscount) * PAYMENT_CONSTANTS.TAX_RATE;
       const creditsToApply = Math.min(availableCredits, maxApplicable);
-      setReferralCreditsApplied(creditsToApply);
+      setCreditsApplied(creditsToApply);
 
       toast({
         title: "Credits applied!",
         description: `You saved $${creditsToApply.toFixed(2)} using your credits.`,
       });
     } else {
-      setReferralCreditsApplied(0);
+      setCreditsApplied(0);
     }
   };
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <div className="w-24 h-24 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Package className="w-12 h-12 text-muted-foreground" />
@@ -196,19 +196,15 @@ export default function Checkout() {
     setIsProcessing(true);
 
     try {
-      if (useReferralCredits && referralCreditsApplied > 0) {
-        const success = await useCredits(referralCreditsApplied);
+      if (useCredits && creditsApplied > 0) {
+        const success = await useCredits(creditsApplied);
         if (!success) {
           throw new Error("Failed to use credits");
         }
       }
 
-      const customOrderItems = cartItems.filter(
-        (item) => item.service.customOrderData,
-      );
-      const regularOrderItems = cartItems.filter(
-        (item) => !item.service.customOrderData,
-      );
+      const customOrderItems = cartItems.filter((item) => item.service.customOrderData);
+      const regularOrderItems = cartItems.filter((item) => !item.service.customOrderData);
 
       let orderId = null;
 
@@ -235,9 +231,9 @@ export default function Checkout() {
             paymentDetails?.id ||
             paymentData?.orderID ||
             `credits-${Date.now()}`,
-          referralCode: referralCode || undefined,
-          referralDiscount: referralDiscount || undefined,
-          referralCreditsUsed: referralCreditsApplied || undefined,
+          referralCode: promoCode || undefined,
+          referralDiscount: promoDiscount || undefined,
+          referralCreditsUsed: creditsApplied || undefined,
         });
       }
 
@@ -256,14 +252,13 @@ export default function Checkout() {
               total_price: item.total_price,
               description: item.description,
             })),
-            special_instructions:
-              customOrderData.special_instructions || orderNotes,
+            special_instructions: customOrderData.special_instructions || orderNotes,
             customer_email: user?.email || guestInfo.email,
             customer_name: user?.username || guestInfo.name,
             customer_discord: customOrderData.customer_discord,
             userId: user?.id || null,
-            referralCode: referralCode || undefined,
-            referralDiscount: referralDiscount || undefined,
+            referralCode: promoCode || undefined,
+            referralDiscount: promoDiscount || undefined,
           });
 
           if (!customOrderId && customOrderResult) {
@@ -349,8 +344,7 @@ export default function Checkout() {
     console.error("PayPal payment error:", error);
     toast({
       title: "Payment failed",
-      description:
-        "There was an error processing your PayPal payment. Please try again.",
+      description: "There was an error processing your PayPal payment. Please try again.",
       variant: "destructive",
     });
   };
@@ -359,8 +353,7 @@ export default function Checkout() {
     console.log("PayPal payment cancelled:", data);
     toast({
       title: "Payment cancelled",
-      description:
-        "You cancelled the PayPal payment. Your order was not placed.",
+      description: "You cancelled the PayPal payment. Your order was not placed.",
     });
   };
 
@@ -383,7 +376,7 @@ export default function Checkout() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="min-h-screen bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -402,308 +395,309 @@ export default function Checkout() {
         intent: "capture",
       }}
     >
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="min-h-screen bg-background">
         {/* Header */}
-        <div className="border-b border-border/50 bg-card/50 backdrop-blur-sm">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="border-b bg-card/80 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between py-6">
               <div className="flex items-center space-x-4">
-                <Link
-                  href="/cart"
-                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
-                >
-                  <ArrowLeft className="w-5 h-5 mr-2 transition-transform group-hover:-translate-x-1" />
+                <Link href="/cart" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
+                  <ArrowLeft className="w-5 h-5 mr-2" />
                   Back to Cart
                 </Link>
                 <Separator orientation="vertical" className="h-6" />
                 <div>
-                  <h1 className="text-2xl font-bold">Secure Checkout</h1>
-                  <p className="text-sm text-muted-foreground">
-                    Complete your order safely and securely
-                  </p>
+                  <h1 className="text-3xl font-bold">Checkout</h1>
+                  <p className="text-muted-foreground">Complete your secure order</p>
                 </div>
               </div>
-              <div className="hidden md:flex items-center space-x-2 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Shield className="w-4 h-4 text-green-500" />
-                <span>256-bit SSL Encrypted</span>
+                <span>Secure Checkout</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Left Column - Order Details */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Order Summary Card */}
-              <Card className="border-0 shadow-sm bg-card/50 backdrop-blur-sm">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center text-xl">
-                    <ShoppingCart className="w-6 h-6 mr-3 text-primary" />
-                    Order Summary
+            <div className="space-y-8">
+              {/* Order Items */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <ShoppingCart className="w-5 h-5 mr-3" />
+                    Order Items
                     <Badge variant="secondary" className="ml-3">
-                      {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}
+                      {cartItems.length} item{cartItems.length !== 1 ? 's' : ''}
                     </Badge>
                   </CardTitle>
-                  <CardDescription>
-                    Review your selected services before checkout
-                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {cartItems.map((item, index) => (
-                    <div key={item.id}>
-                      <div className="flex items-start space-x-4 p-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
-                        <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
-                          <Star className="w-8 h-8 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-lg mb-1">
-                            {item.service.title}
-                          </h4>
-                          <div className="flex items-center space-x-3 mb-2">
-                            <Badge variant="outline" className="text-xs">
-                              <Clock className="w-3 h-3 mr-1" />
-                              {item.service.duration || "24-48h"}
-                            </Badge>
-                            <Badge variant="outline" className="text-xs">
-                              {item.service.difficulty || "Professional"}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            Quantity: {item.quantity}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-primary">
-                            ${(item.service.price * item.quantity).toFixed(2)}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            ${item.service.price} each
-                          </p>
-                        </div>
+                  {cartItems.map((item) => (
+                    <div key={item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <Package className="w-6 h-6 text-primary" />
                       </div>
-                      {index < cartItems.length - 1 && (
-                        <Separator className="my-4" />
-                      )}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold">{item.service.title}</h4>
+                        <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-lg">${(item.service.price * item.quantity).toFixed(2)}</p>
+                      </div>
                     </div>
                   ))}
                 </CardContent>
               </Card>
 
-              {/* Guest Information */}
-              <GuestInfo
-                guestInfo={guestInfo}
-                onGuestInfoChange={setGuestInfo}
-                orderNotes={orderNotes}
-                onOrderNotesChange={setOrderNotes}
-                isAuthenticated={isAuthenticated}
-                userEmail={user?.email}
-                disabled={isProcessing}
-              />
+              {/* Customer Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <User className="w-5 h-5 mr-3" />
+                    Customer Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="flex items-center">
+                      <Mail className="w-4 h-4 mr-2" />
+                      Email Address
+                    </Label>
+                    <div className="p-3 bg-muted rounded-lg">
+                      <p className="font-medium">{user?.email}</p>
+                      <p className="text-sm text-muted-foreground">Order updates will be sent here</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-              {/* Referral Section */}
-              <ReferralSection
-                referralCode={referralCode}
-                onReferralCodeChange={(code) =>
-                  setReferralCode(code.toUpperCase())
-                }
-                onValidateReferral={validateReferralCode}
-                useReferralCredits={useReferralCredits}
-                onUseReferralCreditsChange={handleCreditsToggle}
-                availableCredits={availableCredits}
-                referralCreditsApplied={referralCreditsApplied}
-                onCreditsAppliedChange={setReferralCreditsApplied}
-                isAuthenticated={isAuthenticated}
-                disabled={isProcessing}
-              />
-            </div>
+              {/* Order Notes */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <MessageSquare className="w-5 h-5 mr-3" />
+                    Order Notes
+                  </CardTitle>
+                  <CardDescription>
+                    Any special instructions for your boosting service
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Textarea
+                    value={orderNotes}
+                    onChange={(e) => setOrderNotes(e.target.value)}
+                    placeholder="Include your Discord username, preferred gaming hours, or any specific requirements..."
+                    rows={4}
+                  />
+                </CardContent>
+              </Card>
 
-            {/* Right Column - Payment */}
-            <div className="space-y-6">
-              {/* Enhanced Order Total Card */}
-              <Card className="border-0 shadow-lg bg-card backdrop-blur-sm overflow-hidden">
-                {/* Header with better styling */}
-                <CardHeader className="pb-3 border-b border-border/20">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center text-xl font-semibold">
-                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mr-3">
-                        <CreditCard className="w-5 h-5 text-primary" />
+              {/* Promo Code & Credits */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Tag className="w-5 h-5 mr-3" />
+                    Promo Code & Credits
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Promo Code */}
+                  <div className="space-y-3">
+                    <Label htmlFor="promo-code">Promo Code</Label>
+                    <div className="flex space-x-2">
+                      <Input
+                        id="promo-code"
+                        value={promoCode}
+                        onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                        placeholder="Enter promo code"
+                        className="flex-1"
+                      />
+                      <Button
+                        onClick={() => validatePromoCode(promoCode)}
+                        variant="outline"
+                        disabled={!promoCode.trim()}
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                    {promoDiscount > 0 && (
+                      <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                          <span className="text-sm text-green-700 dark:text-green-400">
+                            Promo code applied! You saved ${promoDiscount.toFixed(2)}
+                          </span>
+                        </div>
                       </div>
-                      Order Summary
-                    </CardTitle>
-                    {(referralDiscount > 0 || referralCreditsApplied > 0) && (
-                      <Badge variant="secondary">
-                        <Sparkles className="w-3 h-3 mr-1" />
-                        Savings Applied
-                      </Badge>
                     )}
                   </div>
-                </CardHeader>
 
-                <CardContent className="p-6 space-y-4">
-                  {/* Order Items Summary */}
-                  <div className="bg-muted/30 rounded-xl p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Order Items</span>
-                      <Badge variant="outline" className="text-xs">
-                        {cartItems.length} item{cartItems.length !== 1 ? 's' : ''}
-                      </Badge>
-                    </div>
-                    <div className="space-y-2">
-                      {cartItems.slice(0, 2).map((item, index) => (
-                        <div key={item.id} className="flex justify-between text-sm">
-                          <span className="truncate flex-1 mr-2">{item.service.title}</span>
-                          <span className="font-medium">${(item.service.price * item.quantity).toFixed(2)}</span>
-                        </div>
-                      ))}
-                      {cartItems.length > 2 && (
-                        <div className="text-xs text-muted-foreground text-center pt-1">
-                          +{cartItems.length - 2} more item{cartItems.length - 2 !== 1 ? 's' : ''}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Pricing Breakdown */}
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center py-2">
-                      <span className="text-base font-medium">Subtotal</span>
-                      <span className="text-lg font-semibold">${subtotal.toFixed(2)}</span>
-                    </div>
-
-                    {/* Savings Section */}
-                    {(referralDiscount > 0 || referralCreditsApplied > 0) && (
-                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border border-green-200/50 dark:border-green-800/50 rounded-xl p-4 space-y-3">
-                        <div className="flex items-center space-x-2 mb-3">
-                          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                            <Sparkles className="w-3 h-3 text-white" />
-                          </div>
-                          <span className="font-semibold text-green-800 dark:text-green-200">Your Savings</span>
-                        </div>
-
-                        {referralDiscount > 0 && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-green-700 dark:text-green-300">Referral Discount (10%)</span>
-                            <span className="font-bold text-green-600 dark:text-green-400">-${referralDiscount.toFixed(2)}</span>
-                          </div>
-                        )}
-
-                        {referralCreditsApplied > 0 && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-green-700 dark:text-green-300">Credits Applied</span>
-                            <span className="font-bold text-green-600 dark:text-green-400">-${referralCreditsApplied.toFixed(2)}</span>
-                          </div>
-                        )}
-
-                        <div className="pt-2 border-t border-green-200/50 dark:border-green-800/50">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm font-semibold text-green-800 dark:text-green-200">Total Saved</span>
-                            <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                              -${(referralDiscount + referralCreditsApplied).toFixed(2)}
+                  {/* Credits */}
+                  {availableCredits > 0 && (
+                    <div className="space-y-3 pt-4 border-t">
+                      <div className="flex items-center justify-between">
+                        <Label className="flex items-center">
+                          <DollarSign className="w-4 h-4 mr-2" />
+                          Available Credits
+                        </Label>
+                        <span className="font-bold text-green-600">${availableCredits.toFixed(2)}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="use-credits"
+                          checked={useCredits}
+                          onCheckedChange={handleCreditsToggle}
+                        />
+                        <Label htmlFor="use-credits">Use available credits</Label>
+                      </div>
+                      {creditsApplied > 0 && (
+                        <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                          <div className="flex items-center space-x-2">
+                            <CheckCircle className="w-4 h-4 text-blue-600" />
+                            <span className="text-sm text-blue-700 dark:text-blue-400">
+                              Applied ${creditsApplied.toFixed(2)} in credits!
                             </span>
                           </div>
                         </div>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column - Payment Summary */}
+            <div className="space-y-6">
+              {/* Order Summary */}
+              <Card className="sticky top-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <CreditCard className="w-5 h-5 mr-3" />
+                    Order Summary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span>Subtotal</span>
+                      <span className="font-medium">${subtotal.toFixed(2)}</span>
+                    </div>
+                    {promoDiscount > 0 && (
+                      <div className="flex justify-between text-green-600">
+                        <span className="flex items-center">
+                          <Sparkles className="w-4 h-4 mr-1" />
+                          Promo Discount
+                        </span>
+                        <span>-${promoDiscount.toFixed(2)}</span>
                       </div>
                     )}
-
-                    <div className="flex justify-between items-center text-sm text-muted-foreground py-1">
-                      <span>Tax (8%)</span>
-                      <span className="font-medium">${tax.toFixed(2)}</span>
-                    </div>
-
-                    <Separator className="my-4" />
-
-                    {/* Final Total */}
-                    <div className="bg-muted/50 rounded-xl p-4">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <span className="text-lg font-semibold">Total</span>
-                          {(referralDiscount > 0 || referralCreditsApplied > 0) && (
-                            <div className="text-xs text-muted-foreground line-through">
-                              ${(subtotal + tax).toFixed(2)}
-                            </div>
-                          )}
-                        </div>
-                        <div className="text-right">
-                          <span className="text-3xl font-bold text-primary">${total.toFixed(2)}</span>
-                          <div className="text-xs text-muted-foreground">USD</div>
-                        </div>
+                    {creditsApplied > 0 && (
+                      <div className="flex justify-between text-blue-600">
+                        <span className="flex items-center">
+                          <DollarSign className="w-4 h-4 mr-1" />
+                          Credits Applied
+                        </span>
+                        <span>-${creditsApplied.toFixed(2)}</span>
                       </div>
-
-                      {total <= 0 && (
-                        <div className="mt-3 flex items-center justify-center space-x-2 text-green-600">
-                          <CheckCircle className="w-4 h-4" />
-                          <span className="text-sm font-semibold">Fully covered by credits!</span>
-                        </div>
-                      )}
+                    )}
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>Tax (8%)</span>
+                      <span>${tax.toFixed(2)}</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between text-xl font-bold">
+                      <span>Total</span>
+                      <span className="text-primary">${total.toFixed(2)}</span>
                     </div>
                   </div>
 
-                  {/* Payment Section */}
+                  {/* Terms Agreement */}
                   <div className="pt-4 space-y-4">
-                    {total <= 0 ? (
-                      <div className="space-y-4">
-                        <div className="bg-gradient-to-r from-green-50 via-emerald-50 to-green-50 dark:from-green-950/20 dark:via-emerald-950/20 dark:to-green-950/20 border-2 border-green-200 dark:border-green-800 p-6 rounded-2xl">
-                          <div className="text-center space-y-3">
-                            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
-                              <CheckCircle className="w-8 h-8 text-green-600" />
-                            </div>
-                            <div>
-                              <h3 className="text-lg font-bold text-green-800 dark:text-green-200">
-                                🎉 Order Fully Covered!
-                              </h3>
-                              <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                                Your credits cover the entire order amount.
-                              </p>
-                              <p className="text-xs text-green-600 dark:text-green-400 mt-2">
-                                No additional payment required - just confirm below!
-                              </p>
-                            </div>
-                          </div>
-                        </div>
+                    <div className="flex items-start space-x-2">
+                      <Checkbox
+                        id="terms"
+                        checked={agreeToTerms}
+                        onCheckedChange={(checked) => setAgreeToTerms(checked as boolean)}
+                      />
+                      <div className="text-sm">
+                        <label htmlFor="terms" className="cursor-pointer">
+                          I agree to the{" "}
+                          <Link href="/terms" className="text-primary hover:underline">
+                            Terms of Service
+                          </Link>{" "}
+                          and{" "}
+                          <Link href="/privacy" className="text-primary hover:underline">
+                            Privacy Policy
+                          </Link>
+                        </label>
+                      </div>
+                    </div>
 
-                        <Button
-                          onClick={handleCreditOnlyPayment}
-                          disabled={isProcessing || !agreeToTerms}
-                          className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white h-14 text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                        >
-                          {isProcessing ? (
-                            <>
-                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
-                              Processing Your Order...
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle className="w-6 h-6 mr-3" />
-                              Confirm Order - $0.00
-                            </>
-                          )}
-                        </Button>
+                    {/* Payment Buttons */}
+                    {agreeToTerms ? (
+                      <div className="space-y-3">
+                        {total <= 0 ? (
+                          <Button
+                            onClick={handleCreditOnlyPayment}
+                            disabled={isProcessing}
+                            className="w-full h-12 text-lg bg-green-600 hover:bg-green-700"
+                          >
+                            {isProcessing ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                                Processing Order...
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle className="w-5 h-5 mr-2" />
+                                Complete Order - Free!
+                              </>
+                            )}
+                          </Button>
+                        ) : (
+                          <div className="space-y-3">
+                            <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                              <div className="flex items-center space-x-2 text-sm">
+                                <Shield className="w-4 h-4 text-blue-600" />
+                                <span className="text-blue-700 dark:text-blue-300">
+                                  Secure payment processed by PayPal
+                                </span>
+                              </div>
+                            </div>
+                            <PayPalButtons
+                              style={{
+                                layout: "vertical",
+                                color: "blue",
+                                shape: "rect",
+                                label: "paypal",
+                                height: 50,
+                              }}
+                              createOrder={createPayPalOrder}
+                              onApprove={async (data, actions) => {
+                                if (actions.order) {
+                                  const details = await actions.order.capture();
+                                  handlePayPalSuccess(details, data);
+                                }
+                              }}
+                              onError={handlePayPalError}
+                              onCancel={handlePayPalCancel}
+                              disabled={isProcessing}
+                            />
+                          </div>
+                        )}
                       </div>
                     ) : (
-                      <PaymentForm
-                        total={total}
-                        agreeToTerms={agreeToTerms}
-                        onAgreeToTermsChange={setAgreeToTerms}
-                        onPayPalApprove={async (data, actions) => {
-                          if (actions.order) {
-                            const details = await actions.order.capture();
-                            handlePayPalSuccess(details, data);
-                          }
-                        }}
-                        onPayPalError={handlePayPalError}
-                        isProcessing={isProcessing}
-                        disabled={
-                          !agreeToTerms ||
-                          (!isAuthenticated &&
-                            (!guestInfo.name || !guestInfo.email))
-                        }
-                      />
+                      <Button disabled className="w-full h-12">
+                        Please accept the terms to continue
+                      </Button>
                     )}
 
-                    {isProcessing && total > 0 && (
-                      <div className="text-center py-4">
-                        <div className="inline-flex items-center space-x-2 text-sm text-muted-foreground">
+                    {isProcessing && (
+                      <div className="text-center py-2">
+                        <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
                           <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                           <span>Processing your order...</span>
                         </div>
@@ -713,53 +707,31 @@ export default function Checkout() {
                 </CardContent>
               </Card>
 
-              {/* Enhanced Security Features */}
-              <Card className="border-0 shadow-sm bg-card/80 backdrop-blur-sm">
-                <CardHeader className="pb-4">
+              {/* Security Features */}
+              <Card>
+                <CardHeader>
                   <CardTitle className="text-lg flex items-center">
-                    <div className="w-8 h-8 bg-green-500/10 rounded-full flex items-center justify-center mr-3">
-                      <Shield className="w-4 h-4 text-green-600" />
-                    </div>
+                    <Shield className="w-5 h-5 mr-2 text-green-500" />
                     Security & Trust
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3 text-sm">
-                      <div className="w-8 h-8 bg-green-500/10 rounded-full flex items-center justify-center">
-                        <Lock className="w-4 h-4 text-green-600" />
-                      </div>
-                      <div>
-                        <span className="font-medium">256-bit SSL Encryption</span>
-                        <p className="text-xs text-muted-foreground">Bank-level security</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-3 text-sm">
-                      <div className="w-8 h-8 bg-blue-500/10 rounded-full flex items-center justify-center">
-                        <Shield className="w-4 h-4 text-blue-600" />
-                      </div>
-                      <div>
-                        <span className="font-medium">PayPal Buyer Protection</span>
-                        <p className="text-xs text-muted-foreground">Full purchase protection</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-3 text-sm">
-                      <div className="w-8 h-8 bg-yellow-500/10 rounded-full flex items-center justify-center">
-                        <CheckCircle className="w-4 h-4 text-yellow-600" />
-                      </div>
-                      <div>
-                        <span className="font-medium">Account Safety Guaranteed</span>
-                        <p className="text-xs text-muted-foreground">100% secure boosting</p>
-                      </div>
-                    </div>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center space-x-3 text-sm">
+                    <Lock className="w-4 h-4 text-green-600" />
+                    <span>256-bit SSL encryption</span>
                   </div>
-
-                  <div className="pt-2 border-t border-border/50">
+                  <div className="flex items-center space-x-3 text-sm">
+                    <CheckCircle className="w-4 h-4 text-blue-600" />
+                    <span>PayPal Buyer Protection</span>
+                  </div>
+                  <div className="flex items-center space-x-3 text-sm">
+                    <Shield className="w-4 h-4 text-yellow-600" />
+                    <span>Account Safety Guaranteed</span>
+                  </div>
+                  <div className="pt-2 border-t">
                     <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
                       <Clock className="w-3 h-3" />
-                      <span>Trusted by 10,000+ customers</span>
+                      <span>Trusted by thousands of customers</span>
                     </div>
                   </div>
                 </CardContent>
