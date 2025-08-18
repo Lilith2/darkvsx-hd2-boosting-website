@@ -656,7 +656,7 @@ export default function AdminDashboard() {
                             : [],
                           special_instructions: order.special_instructions,
                           customer_email: order.customer_email,
-                          customer_name: order.customer_name,
+                          customer_name: (order as any).customer_name || order.customer_email || "Unknown",
                           customer_discord: order.customer_discord,
                           payment_intent_id: order.payment_intent_id,
                           delivery_status:
