@@ -78,10 +78,12 @@ export default function OrderConfirmation() {
       if (!foundOrder && !isLoading && !isInitialLoad) {
         console.log("Order not found in hooks, trying direct database query...");
         fetchOrderDirectly();
-      } else if (foundOrder && isInitialLoad && !emailAttempted) {
+      } else if (foundOrder && isInitialLoad && !emailAttempted && sendEmail === "true") {
         setIsInitialLoad(false);
-        // Send confirmation email for new orders
+        // Send confirmation email for new orders (only when explicitly requested)
         sendConfirmationEmail(foundOrder);
+      } else if (foundOrder && isInitialLoad) {
+        setIsInitialLoad(false);
       }
     }
   }, [
