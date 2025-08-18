@@ -993,8 +993,17 @@ export default function AdminDashboard() {
               <OrdersTableLoadingSkeleton />
             ) : (
               <EnhancedOrdersTable
-                orders={orders}
-                customOrders={customOrders}
+                orders={orders.map((order: any) => ({
+                  ...order,
+                  created_at: order.created_at || order.createdAt,
+                  updated_at: order.updated_at || order.updatedAt,
+                }))}
+                customOrders={customOrders.map((order: any) => ({
+                  ...order,
+                  customer_email: order.customer_email || '',
+                  created_at: order.created_at || order.createdAt,
+                  updated_at: order.updated_at || order.updatedAt,
+                }))}
                 onUpdateOrderStatus={updateOrderStatus}
                 loading={isLoading}
                 onRefresh={() => invalidateAll()}
