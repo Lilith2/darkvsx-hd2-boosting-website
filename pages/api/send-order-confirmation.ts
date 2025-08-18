@@ -32,7 +32,19 @@ export default async function handler(
 
     // Validate required fields
     if (!emailData.customerEmail || !emailData.orderNumber || !emailData.items) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({
+        error: 'Missing required fields',
+        details: 'customerEmail, orderNumber, and items are required'
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailData.customerEmail)) {
+      return res.status(400).json({
+        error: 'Invalid email format',
+        details: `Email '${emailData.customerEmail}' is not valid`
+      });
     }
 
     // Create SMTP transporter
