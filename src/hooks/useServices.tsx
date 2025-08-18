@@ -96,9 +96,27 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
+      // Optimized query with selective fields and better ordering
       const { data, error: fetchError } = await supabase
         .from("services")
-        .select("*")
+        .select(`
+          id,
+          title,
+          description,
+          price,
+          original_price,
+          duration,
+          difficulty,
+          features,
+          active,
+          popular,
+          category,
+          created_at,
+          orders_count
+        `)
+        .eq("active", true) // Only fetch active services for better performance
+        .order("popular", { ascending: false })
+        .order("orders_count", { ascending: false })
         .order("created_at", { ascending: false });
 
       if (fetchError) {
