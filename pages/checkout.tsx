@@ -521,9 +521,9 @@ export default function Checkout() {
             {/* Right Column - Payment */}
             <div className="space-y-6">
               {/* Enhanced Order Total Card */}
-              <Card className="border-0 shadow-xl bg-gradient-to-br from-white via-blue-50/50 to-indigo-50/30 dark:from-card dark:via-card/80 dark:to-card/60 backdrop-blur-sm sticky top-8 overflow-hidden">
+              <Card className="border-0 shadow-lg bg-card backdrop-blur-sm sticky top-8 overflow-hidden">
                 {/* Header with better styling */}
-                <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-primary/10 border-b border-border/20">
+                <CardHeader className="pb-3 border-b border-border/20">
                   <div className="flex items-center justify-between">
                     <CardTitle className="flex items-center text-xl font-semibold">
                       <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mr-3">
@@ -532,7 +532,7 @@ export default function Checkout() {
                       Order Summary
                     </CardTitle>
                     {(referralDiscount > 0 || referralCreditsApplied > 0) && (
-                      <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                      <Badge variant="secondary">
                         <Sparkles className="w-3 h-3 mr-1" />
                         Savings Applied
                       </Badge>
@@ -540,7 +540,7 @@ export default function Checkout() {
                   </div>
                 </CardHeader>
 
-                <CardContent className="p-6 space-y-6">
+                <CardContent className="p-6 space-y-4">
                   {/* Order Items Summary */}
                   <div className="bg-muted/30 rounded-xl p-4">
                     <div className="flex items-center justify-between mb-3">
@@ -614,7 +614,7 @@ export default function Checkout() {
                     <Separator className="my-4" />
 
                     {/* Final Total */}
-                    <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl p-4">
+                    <div className="bg-muted/50 rounded-xl p-4">
                       <div className="flex justify-between items-center">
                         <div>
                           <span className="text-lg font-semibold">Total</span>
@@ -714,7 +714,7 @@ export default function Checkout() {
               </Card>
 
               {/* Enhanced Security Features */}
-              <Card className="border-0 shadow-lg bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-card/80 dark:to-card/60 backdrop-blur-sm">
+              <Card className="border-0 shadow-sm bg-card/80 backdrop-blur-sm">
                 <CardHeader className="pb-4">
                   <CardTitle className="text-lg flex items-center">
                     <div className="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-xl flex items-center justify-center mr-3">
