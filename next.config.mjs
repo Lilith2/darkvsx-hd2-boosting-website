@@ -6,13 +6,9 @@ const nextConfig = {
   compress: true,
   output: "standalone", // Enable standalone output for proper page routing
   generateEtags: true,
-  swcMinify: true, // Enable SWC minification for better performance
   experimental: {
     scrollRestoration: true,
     optimizeCss: true, // Enable CSS optimization
-    newNextLinkBehavior: true, // Use new Link behavior for better performance
-    legacyBrowsers: false, // Disable legacy browser support for smaller bundles
-    browsersListForSwc: true, // Use browserslist for SWC
   },
   allowedDevOrigins: [
     "1c1d42e681804164827111b263e5941f-c903eba0dff24a369b0e80752.fly.dev",
@@ -87,7 +83,7 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     loader: 'default',
-    quality: 85, // Optimize quality vs file size
+    // Quality is handled by the default loader
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
@@ -96,8 +92,6 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
   // Bundle analyzer when needed
   bundlePagesRouterDependencies: true,
-  // Optimize build output
-  optimizeFonts: true,
   transpilePackages: [
     "@supabase/supabase-js",
     "@supabase/auth-js",
