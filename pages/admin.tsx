@@ -13,6 +13,15 @@ import { RecentOrdersCard } from "@/components/admin/RecentOrdersCard";
 // These are now lazy loaded above
 
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import {
+  AdminDashboardLoadingState,
+  ServicesTabLoadingSkeleton,
+  BundlesTabLoadingSkeleton,
+  OrdersTableLoadingSkeleton,
+  PricingTabLoadingSkeleton,
+  OverviewCardsLoadingSkeleton,
+} from "@/components/admin/AdminLoadingStates";
+import { AdminPerformanceMonitor } from "@/components/admin/AdminPerformanceMonitor";
 
 // Lazy load components with better loading states
 const ServiceModal = dynamic(
@@ -161,6 +170,10 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboard() {
+  // Early loading state - show full loading dashboard
+  if (isLoading && orders.length === 0 && services.length === 0) {
+    return <AdminDashboardLoadingState />;
+  }
   // Use optimized hooks for better performance
   const {
     orders,
@@ -187,6 +200,15 @@ export default function AdminDashboard() {
     useBundles();
   const { toast } = useToast();
 
+  // Performance and loading state management
+  const [currentTab, setCurrentTab] = useState("overview");
+  const [loadingStates, setLoadingStates] = useState({
+    services: false,
+    bundles: false,
+    orders: false,
+    pricing: false,
+  });
+
   // Custom pricing data is now handled by useOptimizedAdminData
   const [localCustomPricing, setLocalCustomPricing] = useState<any[]>([]);
 
@@ -207,6 +229,35 @@ export default function AdminDashboard() {
   const [orderDetailsType, setOrderDetailsType] = useState<
     "regular" | "custom"
   >("regular");
+
+  // Track tab changes for loading optimization
+  const handleTabChange = useCallback((value: string) => {
+    setCurrentTab(value);
+
+    // Preload data for the selected tab if needed
+    switch (value) {
+      case "services":
+        if (services.length === 0) {
+          setLoadingStates(prev => ({ ...prev, services: true }));
+        }
+        break;
+      case "bundles":
+        if (bundles.length === 0) {
+          setLoadingStates(prev => ({ ...prev, bundles: true }));
+        }
+        break;
+      case "orders":
+        if (orders.length === 0 && customOrders.length === 0) {
+          setLoadingStates(prev => ({ ...prev, orders: true }));
+        }
+        break;
+      case "pricing":
+        if (localCustomPricing.length === 0) {
+          setLoadingStates(prev => ({ ...prev, pricing: true }));
+        }
+        break;
+    }
+  }, [services, bundles, orders, customOrders, localCustomPricing]);
 
   // Analytics are now provided by optimized hook - no additional processing needed
 
@@ -457,7 +508,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Main Content - Simplified Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs defaultValue="overview" className="space-y-6" onValueChange={handleTabChange}>
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
@@ -468,186 +519,201 @@ export default function AdminDashboard() {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <TopServicesCard
-                topServices={services.slice(0, 5).map((service) => ({
-                  id: service.id,
-                  name: service.title,
-                  revenue: service.price * (service.orders_count || 0),
-                  orderCount: service.orders_count || 0,
-                }))}
-                isLoading={isLoading}
-              />
-              <RecentOrdersCard
-                recentOrders={[...orders, ...customOrders].slice(0, 5)}
-                isLoading={isLoading}
-                onOrderClick={(order, type) => {
-                  setSelectedOrderForDetails(order);
-                  setOrderDetailsType(type);
-                  setIsOrderDetailsModalOpen(true);
-                }}
-              />
-            </div>
+            {isLoading ? (
+              <OverviewCardsLoadingSkeleton />
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <TopServicesCard
+                  topServices={services.slice(0, 5).map((service) => ({
+                    id: service.id,
+                    name: service.title,
+                    revenue: service.price * (service.orders_count || 0),
+                    orderCount: service.orders_count || 0,
+                  }))}
+                  isLoading={isLoading}
+                />
+                <RecentOrdersCard
+                  recentOrders={[...orders, ...customOrders].slice(0, 5)}
+                  isLoading={isLoading}
+                  onOrderClick={(order, type) => {
+                    setSelectedOrderForDetails(order);
+                    setOrderDetailsType(type);
+                    setIsOrderDetailsModalOpen(true);
+                  }}
+                />
+              </div>
+            )}
           </TabsContent>
 
           {/* Services Tab */}
           <TabsContent value="services" className="space-y-6">
-            <AdminServicesTab
-              services={services}
-              loading={isLoading}
-              onAddService={handleAddService}
-              onEditService={handleEditService}
-              onDeleteService={handleDeleteService}
-            />
+            {isLoading && currentTab === "services" ? (
+              <ServicesTabLoadingSkeleton />
+            ) : (
+              <AdminServicesTab
+                services={services}
+                loading={isLoading}
+                onAddService={handleAddService}
+                onEditService={handleEditService}
+                onDeleteService={handleDeleteService}
+              />
+            )}
           </TabsContent>
 
           {/* Bundles Tab */}
           <TabsContent value="bundles" className="space-y-6">
-            <Card className="border border-border/50">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center">
-                    <Package className="w-5 h-5 mr-2" />
-                    Manage Bundles ({bundles.length})
-                  </CardTitle>
-                  <CardDescription>
-                    Create and manage service bundle packages
-                  </CardDescription>
-                </div>
-                <Button
-                  onClick={handleAddBundle}
-                  className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Bundle
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {bundles.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                    <h3 className="text-lg font-semibold mb-2">
-                      No bundles yet
-                    </h3>
-                    <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                      Create your first service bundle to offer discounted
-                      packages to customers.
-                    </p>
-                    <Button
-                      onClick={handleAddBundle}
-                      className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Your First Bundle
-                    </Button>
+            {isLoading && currentTab === "bundles" ? (
+              <BundlesTabLoadingSkeleton />
+            ) : (
+              <Card className="border border-border/50">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center">
+                      <Package className="w-5 h-5 mr-2" />
+                      Manage Bundles ({bundles.length})
+                    </CardTitle>
+                    <CardDescription>
+                      Create and manage service bundle packages
+                    </CardDescription>
                   </div>
-                ) : (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {bundles.map((bundle) => (
-                      <Card
-                        key={bundle.id}
-                        className="border border-border/30 hover:border-primary/30 transition-colors"
+                  <Button
+                    onClick={handleAddBundle}
+                    className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Bundle
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  {bundles.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                      <h3 className="text-lg font-semibold mb-2">
+                        No bundles yet
+                      </h3>
+                      <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                        Create your first service bundle to offer discounted
+                        packages to customers.
+                      </p>
+                      <Button
+                        onClick={handleAddBundle}
+                        className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
                       >
-                        <CardHeader className="pb-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <CardTitle className="text-lg">
-                                {bundle.name}
-                              </CardTitle>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {bundle.orders_count || 0} orders •{" "}
-                                {bundle.discount || 0}% discount
-                              </p>
-                            </div>
-                            <div className="flex flex-col items-end space-y-1">
-                              <Badge
-                                variant={
-                                  bundle.active ? "default" : "secondary"
-                                }
-                                className="cursor-pointer"
-                                onClick={() => toggleBundleStatus(bundle.id)}
-                              >
-                                {bundle.active ? "Active" : "Inactive"}
-                              </Badge>
-                              {bundle.popular && (
-                                <Badge variant="outline" className="text-xs">
-                                  Popular
-                                </Badge>
-                              )}
-                              {bundle.badge && (
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Your First Bundle
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      {bundles.map((bundle) => (
+                        <Card
+                          key={bundle.id}
+                          className="border border-border/30 hover:border-primary/30 transition-colors"
+                        >
+                          <CardHeader className="pb-3">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <CardTitle className="text-lg">
+                                  {bundle.name}
+                                </CardTitle>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {bundle.orders_count || 0} orders •{" "}
+                                  {bundle.discount || 0}% discount
+                                </p>
+                              </div>
+                              <div className="flex flex-col items-end space-y-1">
                                 <Badge
-                                  variant="outline"
-                                  className="text-xs bg-primary/10"
+                                  variant={
+                                    bundle.active ? "default" : "secondary"
+                                  }
+                                  className="cursor-pointer"
+                                  onClick={() => toggleBundleStatus(bundle.id)}
                                 >
-                                  {bundle.badge}
+                                  {bundle.active ? "Active" : "Inactive"}
                                 </Badge>
-                              )}
+                                {bundle.popular && (
+                                  <Badge variant="outline" className="text-xs">
+                                    Popular
+                                  </Badge>
+                                )}
+                                {bundle.badge && (
+                                  <Badge
+                                    variant="outline"
+                                    className="text-xs bg-primary/10"
+                                  >
+                                    {bundle.badge}
+                                  </Badge>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-3">
-                            <div className="flex justify-between items-center">
-                              <div className="flex items-baseline gap-2">
-                                <span className="text-2xl font-bold text-primary">
-                                  $
-                                  {bundle.discounted_price?.toFixed(2) ||
-                                    "0.00"}
-                                </span>
-                                <span className="text-sm text-muted-foreground line-through">
-                                  ${bundle.original_price?.toFixed(2) || "0.00"}
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3">
+                              <div className="flex justify-between items-center">
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-2xl font-bold text-primary">
+                                    $
+                                    {bundle.discounted_price?.toFixed(2) ||
+                                      "0.00"}
+                                  </span>
+                                  <span className="text-sm text-muted-foreground line-through">
+                                    ${bundle.original_price?.toFixed(2) || "0.00"}
+                                  </span>
+                                </div>
+                                <span className="text-sm text-muted-foreground">
+                                  {bundle.duration || "N/A"}
                                 </span>
                               </div>
-                              <span className="text-sm text-muted-foreground">
-                                {bundle.duration || "N/A"}
-                              </span>
-                            </div>
 
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                              {bundle.description}
-                            </p>
+                              <p className="text-sm text-muted-foreground line-clamp-2">
+                                {bundle.description}
+                              </p>
 
-                            <div className="flex justify-between text-xs text-muted-foreground">
-                              <span>
-                                {bundle.services?.length || 0} services
-                              </span>
-                              <span>
-                                {bundle.features?.length || 0} features
-                              </span>
-                            </div>
+                              <div className="flex justify-between text-xs text-muted-foreground">
+                                <span>
+                                  {bundle.services?.length || 0} services
+                                </span>
+                                <span>
+                                  {bundle.features?.length || 0} features
+                                </span>
+                              </div>
 
-                            <div className="flex space-x-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleEditBundle(bundle)}
-                                className="flex-1"
-                              >
-                                <Edit className="w-3 h-3 mr-1" />
-                                Edit
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleDeleteBundle(bundle.id)}
-                                className="text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
+                              <div className="flex space-x-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleEditBundle(bundle)}
+                                  className="flex-1"
+                                >
+                                  <Edit className="w-3 h-3 mr-1" />
+                                  Edit
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleDeleteBundle(bundle.id)}
+                                  className="text-destructive hover:text-destructive"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Custom Pricing Tab */}
           <TabsContent value="pricing" className="space-y-6">
-            <Card className="border border-border/50">
+            {isLoading && currentTab === "pricing" ? (
+              <PricingTabLoadingSkeleton />
+            ) : (
+              <Card className="border border-border/50">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center">
@@ -773,18 +839,23 @@ export default function AdminDashboard() {
                   </div>
                 )}
               </CardContent>
-            </Card>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Orders Tab */}
           <TabsContent value="orders">
-            <EnhancedOrdersTable
-              orders={orders}
-              customOrders={customOrders}
-              onUpdateOrderStatus={updateOrderStatus}
-              loading={isLoading}
-              onRefresh={() => invalidateAll()}
-            />
+            {isLoading && currentTab === "orders" ? (
+              <OrdersTableLoadingSkeleton />
+            ) : (
+              <EnhancedOrdersTable
+                orders={orders}
+                customOrders={customOrders}
+                onUpdateOrderStatus={updateOrderStatus}
+                loading={isLoading}
+                onRefresh={() => invalidateAll()}
+              />
+            )}
           </TabsContent>
         </Tabs>
 
@@ -816,6 +887,9 @@ export default function AdminDashboard() {
           order={selectedOrderForDetails}
           orderType={orderDetailsType}
         />
+
+        {/* Performance Monitor - Only in development */}
+        <AdminPerformanceMonitor />
       </div>
     </div>
   );
