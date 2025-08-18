@@ -22,6 +22,7 @@ import {
   OverviewCardsLoadingSkeleton,
 } from "@/components/admin/AdminLoadingStates";
 import { AdminPerformanceMonitor } from "@/components/admin/AdminPerformanceMonitor";
+import { AdminOperationTracker, useAdminOperations } from "@/components/admin/AdminOperationTracker";
 
 // Lazy load components with better loading states
 const ServiceModal = dynamic(
@@ -200,6 +201,15 @@ export default function AdminDashboard() {
     useBundles();
   const { toast } = useToast();
 
+  // Operation tracking
+  const {
+    operations,
+    addOperation,
+    updateOperation,
+    retryOperation,
+    cancelOperation,
+  } = useAdminOperations();
+
   // Performance and loading state management
   const [currentTab, setCurrentTab] = useState("overview");
   const [loadingStates, setLoadingStates] = useState({
@@ -261,7 +271,7 @@ export default function AdminDashboard() {
 
   // Analytics are now provided by optimized hook - no additional processing needed
 
-  // Service management functions
+  // Service management functions with operation tracking
   const handleAddService = () => {
     setEditingService(null);
     setIsServiceModalOpen(true);
@@ -272,21 +282,70 @@ export default function AdminDashboard() {
     setIsServiceModalOpen(true);
   };
 
-  const handleSaveService = (serviceData: any) => {
-    if (editingService) {
-      updateService(editingService.id, serviceData);
-    } else {
-      addService(serviceData);
+  const handleSaveService = async (serviceData: any) => {
+    const operationId = addOperation({
+      type: 'service',
+      description: editingService ? `Updating ${serviceData.title}` : `Creating ${serviceData.title}`,
+    });
+
+    try {
+      updateOperation(operationId, { status: 'running', progress: 50 });
+
+      if (editingService) {
+        await updateService(editingService.id, serviceData);
+      } else {
+        await addService(serviceData);
+      }
+
+      updateOperation(operationId, { status: 'success', progress: 100 });
+      toast({
+        title: "Success",
+        description: `Service ${editingService ? 'updated' : 'created'} successfully.`,
+      });
+    } catch (error) {
+      updateOperation(operationId, {
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      toast({
+        title: "Error",
+        description: `Failed to ${editingService ? 'update' : 'create'} service.`,
+        variant: "destructive",
+      });
     }
   };
 
-  const handleDeleteService = (id: string) => {
-    if (confirm("Are you sure you want to delete this service?")) {
-      deleteService(id);
+  const handleDeleteService = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this service?")) return;
+
+    const service = services.find(s => s.id === id);
+    const operationId = addOperation({
+      type: 'service',
+      description: `Deleting ${service?.title || 'service'}`,
+    });
+
+    try {
+      updateOperation(operationId, { status: 'running', progress: 50 });
+      await deleteService(id);
+      updateOperation(operationId, { status: 'success', progress: 100 });
+      toast({
+        title: "Success",
+        description: "Service deleted successfully.",
+      });
+    } catch (error) {
+      updateOperation(operationId, {
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      toast({
+        title: "Error",
+        description: "Failed to delete service.",
+        variant: "destructive",
+      });
     }
   };
 
-  // Bundle management functions
+  // Bundle management functions with operation tracking
   const handleAddBundle = () => {
     setSelectedBundle(null);
     setIsBundleModalOpen(true);
@@ -297,17 +356,66 @@ export default function AdminDashboard() {
     setIsBundleModalOpen(true);
   };
 
-  const handleSaveBundle = (bundleData: any) => {
-    if (selectedBundle) {
-      updateBundle(selectedBundle.id, bundleData);
-    } else {
-      addBundle(bundleData);
+  const handleSaveBundle = async (bundleData: any) => {
+    const operationId = addOperation({
+      type: 'bundle',
+      description: selectedBundle ? `Updating ${bundleData.name}` : `Creating ${bundleData.name}`,
+    });
+
+    try {
+      updateOperation(operationId, { status: 'running', progress: 50 });
+
+      if (selectedBundle) {
+        await updateBundle(selectedBundle.id, bundleData);
+      } else {
+        await addBundle(bundleData);
+      }
+
+      updateOperation(operationId, { status: 'success', progress: 100 });
+      toast({
+        title: "Success",
+        description: `Bundle ${selectedBundle ? 'updated' : 'created'} successfully.`,
+      });
+    } catch (error) {
+      updateOperation(operationId, {
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      toast({
+        title: "Error",
+        description: `Failed to ${selectedBundle ? 'update' : 'create'} bundle.`,
+        variant: "destructive",
+      });
     }
   };
 
-  const handleDeleteBundle = (id: string) => {
-    if (confirm("Are you sure you want to delete this bundle?")) {
-      deleteBundle(id);
+  const handleDeleteBundle = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this bundle?")) return;
+
+    const bundle = bundles.find(b => b.id === id);
+    const operationId = addOperation({
+      type: 'bundle',
+      description: `Deleting ${bundle?.name || 'bundle'}`,
+    });
+
+    try {
+      updateOperation(operationId, { status: 'running', progress: 50 });
+      await deleteBundle(id);
+      updateOperation(operationId, { status: 'success', progress: 100 });
+      toast({
+        title: "Success",
+        description: "Bundle deleted successfully.",
+      });
+    } catch (error) {
+      updateOperation(operationId, {
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+      toast({
+        title: "Error",
+        description: "Failed to delete bundle.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -323,9 +431,16 @@ export default function AdminDashboard() {
   };
 
   const handleSavePricing = async (pricingData: any) => {
+    const operationId = addOperation({
+      type: 'pricing',
+      description: isEditingPricing ? `Updating ${pricingData.item_name}` : `Creating ${pricingData.item_name}`,
+    });
+
     try {
+      updateOperation(operationId, { status: 'running', progress: 25 });
       const { supabase } = await import("@/integrations/supabase/client");
 
+      updateOperation(operationId, { progress: 50 });
       if (isEditingPricing) {
         const { error } = await supabase
           .from("custom_pricing")
@@ -340,9 +455,11 @@ export default function AdminDashboard() {
           ),
         );
 
+        updateOperation(operationId, { progress: 75 });
         // Invalidate the optimized cache
         invalidateAll();
 
+        updateOperation(operationId, { status: 'success', progress: 100 });
         toast({
           title: "Pricing Updated",
           description: "Custom pricing has been updated successfully.",
@@ -358,9 +475,11 @@ export default function AdminDashboard() {
 
         setLocalCustomPricing((prev) => [...prev, data]);
 
+        updateOperation(operationId, { progress: 75 });
         // Invalidate the optimized cache
         invalidateAll();
 
+        updateOperation(operationId, { status: 'success', progress: 100 });
         toast({
           title: "Pricing Added",
           description: "New custom pricing has been added successfully.",
@@ -371,6 +490,10 @@ export default function AdminDashboard() {
       setIsEditingPricing(null);
     } catch (error) {
       console.error("Error saving pricing:", error);
+      updateOperation(operationId, {
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       toast({
         title: "Error",
         description: "Failed to save pricing. Please try again.",
@@ -382,7 +505,14 @@ export default function AdminDashboard() {
   const handleDeletePricing = async (id: string) => {
     if (!confirm("Are you sure you want to delete this item?")) return;
 
+    const pricing = localCustomPricing.find(p => p.id === id);
+    const operationId = addOperation({
+      type: 'pricing',
+      description: `Deleting ${pricing?.item_name || 'pricing item'}`,
+    });
+
     try {
+      updateOperation(operationId, { status: 'running', progress: 50 });
       const { supabase } = await import("@/integrations/supabase/client");
       const { error } = await supabase
         .from("custom_pricing")
@@ -396,12 +526,17 @@ export default function AdminDashboard() {
       // Invalidate the optimized cache
       invalidateAll();
 
+      updateOperation(operationId, { status: 'success', progress: 100 });
       toast({
         title: "Pricing Deleted",
         description: "Custom pricing has been deleted successfully.",
       });
     } catch (error) {
       console.error("Error deleting pricing:", error);
+      updateOperation(operationId, {
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
       toast({
         title: "Error",
         description: "Failed to delete pricing. Please try again.",
@@ -890,6 +1025,13 @@ export default function AdminDashboard() {
 
         {/* Performance Monitor - Only in development */}
         <AdminPerformanceMonitor />
+
+        {/* Operation Tracker */}
+        <AdminOperationTracker
+          operations={operations}
+          onRetryOperation={retryOperation}
+          onCancelOperation={cancelOperation}
+        />
       </div>
     </div>
   );
