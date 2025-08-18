@@ -1,10 +1,10 @@
-import React, { memo, useMemo, useState, useCallback } from 'react';
-import { useOptimizedTable } from '@/hooks/useVirtualizedData';
-import { orderHelpers, getStatusColor } from './utils';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { memo, useMemo, useState, useCallback } from "react";
+import { useOptimizedTable } from "@/hooks/useVirtualizedData";
+import { orderHelpers, getStatusColor } from "./utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -12,17 +12,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { AdminTableSkeleton } from './AdminTableSkeleton';
-import { Search, Filter, SortAsc, SortDesc, Eye, MoreHorizontal } from 'lucide-react';
-import { format } from 'date-fns';
+} from "@/components/ui/select";
+import { AdminTableSkeleton } from "./AdminTableSkeleton";
+import {
+  Search,
+  Filter,
+  SortAsc,
+  SortDesc,
+  Eye,
+  MoreHorizontal,
+} from "lucide-react";
+import { format } from "date-fns";
 
 interface VirtualizedOrdersTableProps {
   orders: any[];
@@ -32,80 +39,87 @@ interface VirtualizedOrdersTableProps {
   onStatusUpdate?: (orderId: string, status: string) => void;
 }
 
-const OrderRow = memo(({ 
-  order, 
-  onSelect, 
-  onStatusUpdate 
-}: { 
-  order: any; 
-  onSelect?: (order: any) => void;
-  onStatusUpdate?: (orderId: string, status: string) => void;
-}) => {
-  const handleStatusChange = useCallback((newStatus: string) => {
-    onStatusUpdate?.(order.id, newStatus);
-  }, [order.id, onStatusUpdate]);
+const OrderRow = memo(
+  ({
+    order,
+    onSelect,
+    onStatusUpdate,
+  }: {
+    order: any;
+    onSelect?: (order: any) => void;
+    onStatusUpdate?: (orderId: string, status: string) => void;
+  }) => {
+    const handleStatusChange = useCallback(
+      (newStatus: string) => {
+        onStatusUpdate?.(order.id, newStatus);
+      },
+      [order.id, onStatusUpdate],
+    );
 
-  return (
-    <TableRow 
-      className="h-[60px]" 
-      style={{ 
-        transform: `translateY(${order.virtualStart}px)`,
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-      }}
-    >
-      <TableCell className="font-mono text-xs">
-        {order.id.slice(-8)}
-      </TableCell>
-      <TableCell>
-        <div>
-          <div className="font-medium">{orderHelpers.getCustomerName(order)}</div>
-          <div className="text-sm text-muted-foreground">{orderHelpers.getCustomerEmail(order)}</div>
-        </div>
-      </TableCell>
-      <TableCell>
-        <Select value={order.status} onValueChange={handleStatusChange}>
-          <SelectTrigger className="w-auto">
-            <Badge className={getStatusColor(order.status)}>
-              {order.status}
-            </Badge>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="processing">Processing</SelectItem>
-            <SelectItem value="in-progress">In Progress</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
-          </SelectContent>
-        </Select>
-      </TableCell>
-      <TableCell className="font-mono">
-        ${orderHelpers.getTotalAmount(order).toFixed(2)}
-      </TableCell>
-      <TableCell className="text-sm">
-        {format(new Date(orderHelpers.getCreatedAt(order)), 'MMM d, yyyy')}
-      </TableCell>
-      <TableCell>
-        <Badge variant={order.orderType === 'custom' ? 'secondary' : 'default'}>
-          {order.orderType === 'custom' ? 'Custom' : 'Standard'}
-        </Badge>
-      </TableCell>
-      <TableCell>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onSelect?.(order)}
-        >
-          <Eye className="w-4 h-4" />
-        </Button>
-      </TableCell>
-    </TableRow>
-  );
-});
+    return (
+      <TableRow
+        className="h-[60px]"
+        style={{
+          transform: `translateY(${order.virtualStart}px)`,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+        }}
+      >
+        <TableCell className="font-mono text-xs">
+          {order.id.slice(-8)}
+        </TableCell>
+        <TableCell>
+          <div>
+            <div className="font-medium">
+              {orderHelpers.getCustomerName(order)}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {orderHelpers.getCustomerEmail(order)}
+            </div>
+          </div>
+        </TableCell>
+        <TableCell>
+          <Select value={order.status} onValueChange={handleStatusChange}>
+            <SelectTrigger className="w-auto">
+              <Badge className={getStatusColor(order.status)}>
+                {order.status}
+              </Badge>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="processing">Processing</SelectItem>
+              <SelectItem value="in-progress">In Progress</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+        </TableCell>
+        <TableCell className="font-mono">
+          ${orderHelpers.getTotalAmount(order).toFixed(2)}
+        </TableCell>
+        <TableCell className="text-sm">
+          {format(new Date(orderHelpers.getCreatedAt(order)), "MMM d, yyyy")}
+        </TableCell>
+        <TableCell>
+          <Badge
+            variant={order.orderType === "custom" ? "secondary" : "default"}
+          >
+            {order.orderType === "custom" ? "Custom" : "Standard"}
+          </Badge>
+        </TableCell>
+        <TableCell>
+          <Button variant="ghost" size="sm" onClick={() => onSelect?.(order)}>
+            <Eye className="w-4 h-4" />
+          </Button>
+        </TableCell>
+      </TableRow>
+    );
+  },
+);
 
-OrderRow.displayName = 'OrderRow';
+OrderRow.displayName = "OrderRow";
 
 export default function VirtualizedOrdersTable({
   orders = [],
@@ -116,21 +130,21 @@ export default function VirtualizedOrdersTable({
 }: VirtualizedOrdersTableProps) {
   // Combine and normalize order data
   const normalizedOrders = useMemo(() => {
-    const regularOrders = orders.map(order => ({
+    const regularOrders = orders.map((order) => ({
       ...order,
-      orderType: 'regular' as const,
+      orderType: "regular" as const,
     }));
-    
-    const normalizedCustomOrders = customOrders.map(order => ({
+
+    const normalizedCustomOrders = customOrders.map((order) => ({
       ...order,
-      orderType: 'custom' as const,
+      orderType: "custom" as const,
     }));
-    
+
     return [...regularOrders, ...normalizedCustomOrders];
   }, [orders, customOrders]);
 
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
 
   // Set up virtualized table
   const {
@@ -154,29 +168,38 @@ export default function VirtualizedOrdersTable({
   });
 
   // Handle status filter
-  const handleStatusFilter = useCallback((status: string) => {
-    setStatusFilter(status);
-    if (status === 'all') {
-      removeFilter('status');
-    } else {
-      addFilter({ field: 'status', value: status });
-    }
-  }, [addFilter, removeFilter]);
+  const handleStatusFilter = useCallback(
+    (status: string) => {
+      setStatusFilter(status);
+      if (status === "all") {
+        removeFilter("status");
+      } else {
+        addFilter({ field: "status", value: status });
+      }
+    },
+    [addFilter, removeFilter],
+  );
 
   // Handle type filter
-  const handleTypeFilter = useCallback((type: string) => {
-    setTypeFilter(type);
-    if (type === 'all') {
-      removeFilter('orderType');
-    } else {
-      addFilter({ field: 'orderType', value: type });
-    }
-  }, [addFilter, removeFilter]);
+  const handleTypeFilter = useCallback(
+    (type: string) => {
+      setTypeFilter(type);
+      if (type === "all") {
+        removeFilter("orderType");
+      } else {
+        addFilter({ field: "orderType", value: type });
+      }
+    },
+    [addFilter, removeFilter],
+  );
 
   // Handle sorting
-  const handleSort = useCallback((field: string) => {
-    addSort({ field, direction: 'asc' });
-  }, [addSort]);
+  const handleSort = useCallback(
+    (field: string) => {
+      addSort({ field, direction: "asc" });
+    },
+    [addSort],
+  );
 
   if (isLoading) {
     return <AdminTableSkeleton rows={10} columns={7} />;
@@ -187,9 +210,7 @@ export default function VirtualizedOrdersTable({
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Orders ({filteredCount.toLocaleString()})</span>
-          {shouldVirtualize && (
-            <Badge variant="outline">Virtualized</Badge>
-          )}
+          {shouldVirtualize && <Badge variant="outline">Virtualized</Badge>}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -205,7 +226,7 @@ export default function VirtualizedOrdersTable({
                 className="pl-9 w-64"
               />
             </div>
-            
+
             <Select value={statusFilter} onValueChange={handleStatusFilter}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="All Statuses" />
@@ -231,7 +252,7 @@ export default function VirtualizedOrdersTable({
               </SelectContent>
             </Select>
 
-            {(statusFilter !== 'all' || typeFilter !== 'all' || searchTerm) && (
+            {(statusFilter !== "all" || typeFilter !== "all" || searchTerm) && (
               <Button variant="outline" onClick={clearFilters}>
                 Clear Filters
               </Button>
@@ -246,28 +267,46 @@ export default function VirtualizedOrdersTable({
               <TableHeader>
                 <TableRow>
                   <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort('id')} className="h-auto p-0 font-semibold">
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleSort("id")}
+                      className="h-auto p-0 font-semibold"
+                    >
                       Order ID
-                      {sorts.find(s => s.field === 'id') && (
-                        sorts.find(s => s.field === 'id')?.direction === 'asc' ? 
-                        <SortAsc className="ml-1 w-3 h-3" /> : 
-                        <SortDesc className="ml-1 w-3 h-3" />
-                      )}
+                      {sorts.find((s) => s.field === "id") &&
+                        (sorts.find((s) => s.field === "id")?.direction ===
+                        "asc" ? (
+                          <SortAsc className="ml-1 w-3 h-3" />
+                        ) : (
+                          <SortDesc className="ml-1 w-3 h-3" />
+                        ))}
                     </Button>
                   </TableHead>
                   <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort('customer_email')} className="h-auto p-0 font-semibold">
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleSort("customer_email")}
+                      className="h-auto p-0 font-semibold"
+                    >
                       Customer
                     </Button>
                   </TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort('total_amount')} className="h-auto p-0 font-semibold">
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleSort("total_amount")}
+                      className="h-auto p-0 font-semibold"
+                    >
                       Amount
                     </Button>
                   </TableHead>
                   <TableHead>
-                    <Button variant="ghost" onClick={() => handleSort('created_at')} className="h-auto p-0 font-semibold">
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleSort("created_at")}
+                      className="h-auto p-0 font-semibold"
+                    >
                       Date
                     </Button>
                   </TableHead>
@@ -276,16 +315,13 @@ export default function VirtualizedOrdersTable({
                 </TableRow>
               </TableHeader>
             </Table>
-            
-            <div
-              ref={parentRef}
-              className="h-[600px] overflow-auto"
-            >
+
+            <div ref={parentRef} className="h-[600px] overflow-auto">
               <div
                 style={{
                   height: `${totalSize}px`,
-                  width: '100%',
-                  position: 'relative',
+                  width: "100%",
+                  position: "relative",
                 }}
               >
                 <Table>
@@ -335,7 +371,7 @@ export default function VirtualizedOrdersTable({
         {/* Statistics */}
         <div className="text-sm text-muted-foreground">
           Showing {filteredCount} of {totalCount} orders
-          {shouldVirtualize && ' (virtualized for performance)'}
+          {shouldVirtualize && " (virtualized for performance)"}
         </div>
       </CardContent>
     </Card>

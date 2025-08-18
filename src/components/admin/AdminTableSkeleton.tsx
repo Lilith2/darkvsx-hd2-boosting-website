@@ -14,10 +14,10 @@ interface AdminTableSkeletonProps {
   showActions?: boolean;
 }
 
-export function AdminTableSkeleton({ 
-  rows = 8, 
-  columns = 6, 
-  showActions = true 
+export function AdminTableSkeleton({
+  rows = 8,
+  columns = 6,
+  showActions = true,
 }: AdminTableSkeletonProps) {
   return (
     <div className="space-y-4">
@@ -52,14 +52,18 @@ export function AdminTableSkeleton({
               <TableRow key={rowIndex}>
                 {Array.from({ length: columns }, (_, colIndex) => (
                   <TableCell key={colIndex}>
-                    <Skeleton 
+                    <Skeleton
                       className={cn(
                         "h-4",
-                        colIndex === 0 ? "w-24" : // ID column
-                        colIndex === 1 ? "w-32" : // Name/Email column
-                        colIndex === 2 ? "w-20" : // Status column
-                        colIndex === 3 ? "w-16" : // Amount column
-                        "w-24" // Default
+                        colIndex === 0
+                          ? "w-24" // ID column
+                          : colIndex === 1
+                            ? "w-32" // Name/Email column
+                            : colIndex === 2
+                              ? "w-20" // Status column
+                              : colIndex === 3
+                                ? "w-16" // Amount column
+                                : "w-24", // Default
                       )}
                     />
                   </TableCell>
@@ -109,9 +113,9 @@ export function AdminStatsCardsSkeleton() {
   );
 }
 
-export function AdminCardSkeleton({ 
-  children, 
-  ...props 
+export function AdminCardSkeleton({
+  children,
+  ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div className="rounded-lg border bg-card p-6" {...props}>

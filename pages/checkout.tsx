@@ -113,13 +113,13 @@ export default function Checkout() {
       const { supabase } = await import("@/integrations/supabase/client");
 
       // Use the secure database function to validate the referral code
-      const { data, error } = await supabase.rpc('validate_referral_code', {
+      const { data, error } = await supabase.rpc("validate_referral_code", {
         code: code.trim(),
-        user_id: user?.id || null
+        user_id: user?.id || null,
       });
 
       if (error) {
-        console.error('Error validating referral code:', error);
+        console.error("Error validating referral code:", error);
         toast({
           title: "Error",
           description: "Could not validate referral code. Please try again.",
@@ -133,7 +133,8 @@ export default function Checkout() {
       if (!validation.valid) {
         toast({
           title: "Invalid referral code",
-          description: validation.error || "Please enter a valid referral code.",
+          description:
+            validation.error || "Please enter a valid referral code.",
           variant: "destructive",
         });
         setReferralDiscount(0);
@@ -147,9 +148,8 @@ export default function Checkout() {
         title: "Referral code applied!",
         description: `You saved $${discountAmount.toFixed(2)} with the referral code.`,
       });
-
     } catch (err) {
-      console.error('Unexpected error validating referral code:', err);
+      console.error("Unexpected error validating referral code:", err);
       toast({
         title: "Error",
         description: "Could not validate referral code. Please try again.",
@@ -312,13 +312,19 @@ export default function Checkout() {
 
       // Redirect to order confirmation page BEFORE clearing cart to avoid flash
       if (regularOrderItems.length > 0) {
-        router.push(`/order-confirmation?orderId=${orderId}&sendEmail=true${paymentDetails?.id ? `&paymentId=${paymentDetails.id}` : ''}`);
+        router.push(
+          `/order-confirmation?orderId=${orderId}&sendEmail=true${paymentDetails?.id ? `&paymentId=${paymentDetails.id}` : ""}`,
+        );
       } else if (customOrderId) {
         // For custom orders, use the captured custom order ID
-        router.push(`/order-confirmation?orderId=${customOrderId}&type=custom&sendEmail=true${paymentDetails?.id ? `&paymentId=${paymentDetails.id}` : ''}`);
+        router.push(
+          `/order-confirmation?orderId=${customOrderId}&type=custom&sendEmail=true${paymentDetails?.id ? `&paymentId=${paymentDetails.id}` : ""}`,
+        );
       } else {
         // Fallback to account page if no order ID available
-        console.warn("No order ID available for redirect, going to account page");
+        console.warn(
+          "No order ID available for redirect, going to account page",
+        );
         router.push("/account");
       }
 
@@ -340,10 +346,10 @@ export default function Checkout() {
         errorMessage = error.details;
       } else if (error?.hint) {
         errorMessage = error.hint;
-      } else if (typeof error === 'string') {
+      } else if (typeof error === "string") {
         errorMessage = error;
       } else if (error?.code) {
-        errorMessage = `Database error (${error.code}): ${error.message || 'Unknown error'}`;
+        errorMessage = `Database error (${error.code}): ${error.message || "Unknown error"}`;
       }
 
       toast({

@@ -17,42 +17,110 @@ import { RecentOrdersCard } from "@/components/admin/RecentOrdersCard";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 
 // Lazy load components with better loading states
-const ServiceModal = dynamic(() => import("@/components/ServiceModal").then(mod => ({ default: mod.ServiceModal })), {
-  loading: () => <LoadingSpinner className="p-4" />,
-});
+const ServiceModal = dynamic(
+  () =>
+    import("@/components/ServiceModal").then((mod) => ({
+      default: mod.ServiceModal,
+    })),
+  {
+    loading: () => <LoadingSpinner className="p-4" />,
+  },
+);
 
-const BundleModal = dynamic(() => import("@/components/BundleModal").then(mod => ({ default: mod.BundleModal })), {
-  loading: () => <LoadingSpinner className="p-4" />,
-});
+const BundleModal = dynamic(
+  () =>
+    import("@/components/BundleModal").then((mod) => ({
+      default: mod.BundleModal,
+    })),
+  {
+    loading: () => <LoadingSpinner className="p-4" />,
+  },
+);
 
-const PricingModal = dynamic(() => import("@/components/PricingModal").then(mod => ({ default: mod.PricingModal })), {
-  loading: () => <LoadingSpinner className="p-4" />,
-});
+const PricingModal = dynamic(
+  () =>
+    import("@/components/PricingModal").then((mod) => ({
+      default: mod.PricingModal,
+    })),
+  {
+    loading: () => <LoadingSpinner className="p-4" />,
+  },
+);
 
-const OrderDetailsModal = dynamic(() => import("@/components/OrderDetailsModal").then(mod => ({ default: mod.OrderDetailsModal })), {
-  loading: () => <LoadingSpinner className="p-4" />,
-});
+const OrderDetailsModal = dynamic(
+  () =>
+    import("@/components/OrderDetailsModal").then((mod) => ({
+      default: mod.OrderDetailsModal,
+    })),
+  {
+    loading: () => <LoadingSpinner className="p-4" />,
+  },
+);
 
 // Lazy load tab content to improve initial page load
-const AdminServicesTabLazy = dynamic(() => import("@/components/admin/AdminServicesTab").then(mod => ({ default: mod.AdminServicesTab })), {
-  loading: () => <div className="p-8"><LoadingSpinner /></div>,
-});
+const AdminServicesTabLazy = dynamic(
+  () =>
+    import("@/components/admin/AdminServicesTab").then((mod) => ({
+      default: mod.AdminServicesTab,
+    })),
+  {
+    loading: () => (
+      <div className="p-8">
+        <LoadingSpinner />
+      </div>
+    ),
+  },
+);
 
-const AdminBundlesTabLazy = dynamic(() => import("@/components/admin/AdminBundlesTab").then(mod => ({ default: mod.AdminBundlesTab })), {
-  loading: () => <div className="p-8"><LoadingSpinner /></div>,
-});
+const AdminBundlesTabLazy = dynamic(
+  () =>
+    import("@/components/admin/AdminBundlesTab").then((mod) => ({
+      default: mod.AdminBundlesTab,
+    })),
+  {
+    loading: () => (
+      <div className="p-8">
+        <LoadingSpinner />
+      </div>
+    ),
+  },
+);
 
-const AdminPricingTabLazy = dynamic(() => import("@/components/admin/AdminPricingTab").then(mod => ({ default: mod.AdminPricingTab })), {
-  loading: () => <div className="p-8"><LoadingSpinner /></div>,
-});
+const AdminPricingTabLazy = dynamic(
+  () =>
+    import("@/components/admin/AdminPricingTab").then((mod) => ({
+      default: mod.AdminPricingTab,
+    })),
+  {
+    loading: () => (
+      <div className="p-8">
+        <LoadingSpinner />
+      </div>
+    ),
+  },
+);
 
-const VirtualizedOrdersTable = dynamic(() => import("@/components/admin/VirtualizedOrdersTable"), {
-  loading: () => <div className="p-8"><LoadingSpinner /></div>,
-});
+const VirtualizedOrdersTable = dynamic(
+  () => import("@/components/admin/VirtualizedOrdersTable"),
+  {
+    loading: () => (
+      <div className="p-8">
+        <LoadingSpinner />
+      </div>
+    ),
+  },
+);
 
-const SimpleCustomOrders = dynamic(() => import("@/components/SimpleCustomOrders"), {
-  loading: () => <div className="p-8"><LoadingSpinner /></div>,
-});
+const SimpleCustomOrders = dynamic(
+  () => import("@/components/SimpleCustomOrders"),
+  {
+    loading: () => (
+      <div className="p-8">
+        <LoadingSpinner />
+      </div>
+    ),
+  },
+);
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -153,12 +221,14 @@ export default function AdminDashboard() {
   const [selectedBundle, setSelectedBundle] = useState<any>(null);
   const [isEditingPricing, setIsEditingPricing] = useState<any>(null);
   const [isPricingModalOpen, setIsPricingModalOpen] = useState(false);
-  const [selectedOrderForDetails, setSelectedOrderForDetails] = useState<any>(null);
+  const [selectedOrderForDetails, setSelectedOrderForDetails] =
+    useState<any>(null);
   const [isOrderDetailsModalOpen, setIsOrderDetailsModalOpen] = useState(false);
-  const [orderDetailsType, setOrderDetailsType] = useState<"regular" | "custom">("regular");
+  const [orderDetailsType, setOrderDetailsType] = useState<
+    "regular" | "custom"
+  >("regular");
 
   // Analytics are now provided by optimized hook - no additional processing needed
-
 
   // Service management functions
   const handleAddService = () => {
@@ -384,21 +454,49 @@ export default function AdminDashboard() {
         <div className="mb-8">
           <OptimizedAdminStatsCards
             totalRevenue={[...orders, ...customOrders].reduce((sum, order) => {
-              const amount = 'totalAmount' in order ? order.totalAmount : order.total_amount;
+              const amount =
+                "totalAmount" in order ? order.totalAmount : order.total_amount;
               return sum + (amount || 0);
             }, 0)}
-            pendingOrdersCount={[...orders, ...customOrders].filter(order => order.status === "pending").length}
-            activeServicesCount={services.filter(service => service.active !== false).length}
-            totalCustomersCount={new Set([...orders, ...customOrders].map(order => {
-              const email = 'customerEmail' in order ? order.customerEmail : order.customer_email;
-              return email;
-            }).filter(Boolean)).size}
-            completedOrdersCount={[...orders, ...customOrders].filter(order => order.status === "completed").length}
+            pendingOrdersCount={
+              [...orders, ...customOrders].filter(
+                (order) => order.status === "pending",
+              ).length
+            }
+            activeServicesCount={
+              services.filter((service) => service.active !== false).length
+            }
+            totalCustomersCount={
+              new Set(
+                [...orders, ...customOrders]
+                  .map((order) => {
+                    const email =
+                      "customerEmail" in order
+                        ? order.customerEmail
+                        : order.customer_email;
+                    return email;
+                  })
+                  .filter(Boolean),
+              ).size
+            }
+            completedOrdersCount={
+              [...orders, ...customOrders].filter(
+                (order) => order.status === "completed",
+              ).length
+            }
             totalOrdersCount={orders.length + customOrders.length}
-            avgOrderValue={orders.length + customOrders.length > 0 ? ([...orders, ...customOrders].reduce((sum, order) => {
-              const amount = 'totalAmount' in order ? order.totalAmount : order.total_amount;
-              return sum + (amount || 0);
-            }, 0) / (orders.length + customOrders.length)) : 0}
+            avgOrderValue={
+              orders.length + customOrders.length > 0
+                ? [...orders, ...customOrders].reduce((sum, order) => {
+                    const amount =
+                      "totalAmount" in order
+                        ? order.totalAmount
+                        : order.total_amount;
+                    return sum + (amount || 0);
+                  }, 0) /
+                  (orders.length + customOrders.length)
+                : 0
+            }
             isLoading={loading || customOrdersLoading}
           />
         </div>
@@ -415,14 +513,13 @@ export default function AdminDashboard() {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
-
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <TopServicesCard
-                topServices={services.slice(0, 5).map(service => ({
+                topServices={services.slice(0, 5).map((service) => ({
                   id: service.id,
                   name: service.title,
                   revenue: service.price * (service.orders_count || 0),
-                  orderCount: service.orders_count || 0
+                  orderCount: service.orders_count || 0,
                 }))}
                 isLoading={loading || customOrdersLoading}
               />
@@ -539,7 +636,8 @@ export default function AdminDashboard() {
                               <div className="flex items-baseline gap-2">
                                 <span className="text-2xl font-bold text-primary">
                                   $
-                                  {bundle.discounted_price?.toFixed(2) || "0.00"}
+                                  {bundle.discounted_price?.toFixed(2) ||
+                                    "0.00"}
                                 </span>
                                 <span className="text-sm text-muted-foreground line-through">
                                   ${bundle.original_price?.toFixed(2) || "0.00"}
@@ -729,13 +827,20 @@ export default function AdminDashboard() {
               orders={orders}
               customOrders={customOrders}
               onUpdateOrderStatus={(orderId: string, status: string) => {
-                updateOrderStatus(orderId, status as "pending" | "processing" | "in-progress" | "completed" | "cancelled");
+                updateOrderStatus(
+                  orderId,
+                  status as
+                    | "pending"
+                    | "processing"
+                    | "in-progress"
+                    | "completed"
+                    | "cancelled",
+                );
               }}
               loading={loading || customOrdersLoading}
               onRefresh={() => window.location.reload()}
             />
           </TabsContent>
-
         </Tabs>
 
         {/* Modals */}
