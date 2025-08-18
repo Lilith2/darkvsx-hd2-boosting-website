@@ -1,322 +1,271 @@
-import DOMPurify from "dompurify";
-import { z } from "zod";
+// Security utilities for input validation, sanitization, and protection
+import DOMPurify from 'dompurify';
 
-// Content Security Policy helpers
-export const CSP_NONCES = {
-  style: crypto.randomUUID(),
-  script: crypto.randomUUID(),
-};
+export const security = {
+  // Input validation
+  validateEmail: (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email) && email.length <= 254;
+  },
 
-// Input sanitization
-export function sanitizeHTML(input: string): string {
-  return DOMPurify.sanitize(input, {
-    ALLOWED_TAGS: ["b", "i", "em", "strong", "p", "br"],
-    ALLOWED_ATTR: [],
-  });
-}
-
-export function sanitizeText(input: string): string {
-  return input.replace(/[<>'"&]/g, (char) => {
-    const entities: Record<string, string> = {
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#x27;",
-      "&": "&amp;",
-    };
-    return entities[char] || char;
-  });
-}
-
-// Email validation with additional security checks
-export const emailSchema = z
-  .string()
-  .email("Invalid email format")
-  .min(5, "Email too short")
-  .max(254, "Email too long")
-  .refine((email) => {
-    // Check for common malicious patterns
-    const maliciousPatterns = [
-      /javascript:/i,
-      /<script/i,
-      /eval\(/i,
-      /\bexec\b/i,
-    ];
-    return !maliciousPatterns.some((pattern) => pattern.test(email));
-  }, "Invalid email format");
-
-// Password validation schema
-export const passwordSchema = z
-  .string()
-  .min(8, "Password must be at least 8 characters")
-  .max(128, "Password too long")
-  .regex(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-    "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
-  );
-
-// Phone number validation
-export const phoneSchema = z
-  .string()
-  .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format")
-  .optional();
-
-// Order amount validation
-export const orderAmountSchema = z
-  .number()
-  .min(0.01, "Amount must be positive")
-  .max(10000, "Amount too high")
-  .refine((amount) => {
-    // Check for reasonable decimal places
-    return (amount * 100) % 1 === 0;
-  }, "Invalid amount format");
-
-// Rate limiting utilities
-class RateLimiter {
-  private attempts: Map<string, { count: number; resetTime: number }> =
-    new Map();
-
-  check(key: string, maxAttempts: number, windowMs: number): boolean {
-    const now = Date.now();
-    const attempt = this.attempts.get(key);
-
-    if (!attempt || now > attempt.resetTime) {
-      this.attempts.set(key, { count: 1, resetTime: now + windowMs });
-      return true;
+  validatePassword: (password: string): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    if (password.length < 8) {
+      errors.push('Password must be at least 8 characters long');
     }
+    if (password.length > 128) {
+      errors.push('Password must be less than 128 characters');
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Password must contain at least one uppercase letter');
+    }
+    if (!/[a-z]/.test(password)) {
+      errors.push('Password must contain at least one lowercase letter');
+    }
+    if (!/[0-9]/.test(password)) {
+      errors.push('Password must contain at least one number');
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      errors.push('Password must contain at least one special character');
+    }
+    
+    return { isValid: errors.length === 0, errors };
+  },
 
-    if (attempt.count >= maxAttempts) {
+  validateDiscordTag: (tag: string): boolean => {
+    // Discord username format: username or username#discriminator
+    const discordRegex = /^[a-zA-Z0-9._]{2,32}(#[0-9]{4})?$/;
+    return discordRegex.test(tag);
+  },
+
+  // Input sanitization
+  sanitizeInput: (input: string): string => {
+    if (typeof input !== 'string') return '';
+    
+    // Remove null bytes and control characters
+    let sanitized = input.replace(/[\0\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+    
+    // Trim whitespace
+    sanitized = sanitized.trim();
+    
+    // Limit length to prevent DoS
+    sanitized = sanitized.substring(0, 10000);
+    
+    return sanitized;
+  },
+
+  sanitizeHtml: (html: string): string => {
+    if (typeof window === 'undefined') {
+      // Server-side: use a more restrictive approach
+      return html.replace(/<[^>]*>/g, '');
+    }
+    
+    // Client-side: use DOMPurify
+    return DOMPurify.sanitize(html, {
+      ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'br'],
+      ALLOWED_ATTR: ['href', 'target'],
+      ALLOW_DATA_ATTR: false
+    });
+  },
+
+  // Rate limiting helpers
+  createRateLimit: (maxRequests: number, windowMs: number) => {
+    const requests = new Map<string, number[]>();
+    
+    return (identifier: string): boolean => {
+      const now = Date.now();
+      const windowStart = now - windowMs;
+      
+      // Get existing requests for this identifier
+      const userRequests = requests.get(identifier) || [];
+      
+      // Remove old requests outside the window
+      const validRequests = userRequests.filter(time => time > windowStart);
+      
+      // Check if limit exceeded
+      if (validRequests.length >= maxRequests) {
+        return false;
+      }
+      
+      // Add current request
+      validRequests.push(now);
+      requests.set(identifier, validRequests);
+      
+      return true;
+    };
+  },
+
+  // CSRF protection
+  generateCSRFToken: (): string => {
+    const array = new Uint8Array(32);
+    if (typeof window !== 'undefined' && window.crypto) {
+      window.crypto.getRandomValues(array);
+    } else {
+      // Fallback for older browsers
+      for (let i = 0; i < array.length; i++) {
+        array[i] = Math.floor(Math.random() * 256);
+      }
+    }
+    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  },
+
+  validateCSRFToken: (token: string, expectedToken: string): boolean => {
+    if (!token || !expectedToken) return false;
+    return token === expectedToken;
+  },
+
+  // Content security
+  validateFileType: (file: File, allowedTypes: string[]): boolean => {
+    return allowedTypes.includes(file.type);
+  },
+
+  validateFileSize: (file: File, maxSizeBytes: number): boolean => {
+    return file.size <= maxSizeBytes;
+  },
+
+  // URL validation
+  validateURL: (url: string): boolean => {
+    try {
+      const urlObj = new URL(url);
+      return urlObj.protocol === 'https:' || urlObj.protocol === 'http:';
+    } catch {
       return false;
     }
+  },
 
-    attempt.count++;
+  // Secure local storage helpers
+  secureLocalStorage: {
+    set: (key: string, value: any, expirationHours: number = 24): void => {
+      if (typeof window === 'undefined') return;
+      
+      const item = {
+        value,
+        expiry: Date.now() + (expirationHours * 60 * 60 * 1000),
+        checksum: btoa(JSON.stringify(value)) // Simple integrity check
+      };
+      
+      try {
+        localStorage.setItem(key, JSON.stringify(item));
+      } catch (error) {
+        console.warn('Secure localStorage set failed:', error);
+      }
+    },
+
+    get: (key: string): any => {
+      if (typeof window === 'undefined') return null;
+      
+      try {
+        const item = localStorage.getItem(key);
+        if (!item) return null;
+        
+        const parsed = JSON.parse(item);
+        
+        // Check expiration
+        if (Date.now() > parsed.expiry) {
+          localStorage.removeItem(key);
+          return null;
+        }
+        
+        // Verify integrity
+        const expectedChecksum = btoa(JSON.stringify(parsed.value));
+        if (parsed.checksum !== expectedChecksum) {
+          localStorage.removeItem(key);
+          return null;
+        }
+        
+        return parsed.value;
+      } catch (error) {
+        console.warn('Secure localStorage get failed:', error);
+        return null;
+      }
+    },
+
+    remove: (key: string): void => {
+      if (typeof window === 'undefined') return;
+      localStorage.removeItem(key);
+    }
+  },
+
+  // Password strength checker
+  getPasswordStrength: (password: string): { score: number; feedback: string[] } => {
+    const feedback: string[] = [];
+    let score = 0;
+    
+    // Length check
+    if (password.length >= 8) score += 1;
+    else feedback.push('Use at least 8 characters');
+    
+    if (password.length >= 12) score += 1;
+    
+    // Character variety
+    if (/[a-z]/.test(password)) score += 1;
+    else feedback.push('Include lowercase letters');
+    
+    if (/[A-Z]/.test(password)) score += 1;
+    else feedback.push('Include uppercase letters');
+    
+    if (/[0-9]/.test(password)) score += 1;
+    else feedback.push('Include numbers');
+    
+    if (/[^a-zA-Z0-9]/.test(password)) score += 1;
+    else feedback.push('Include special characters');
+    
+    // Common patterns check
+    if (!/(.)\1{2,}/.test(password)) score += 1;
+    else feedback.push('Avoid repeated characters');
+    
+    if (!/123|abc|qwe|password|admin/i.test(password)) score += 1;
+    else feedback.push('Avoid common patterns');
+    
+    return { score: Math.min(score, 5), feedback };
+  },
+
+  // Environment variable validation
+  validateEnvVars: (): boolean => {
+    const requiredVars = [
+      'NEXT_PUBLIC_SUPABASE_URL',
+      'NEXT_PUBLIC_SUPABASE_ANON_KEY'
+    ];
+    
+    const missing = requiredVars.filter(varName => !process.env[varName]);
+    
+    if (missing.length > 0) {
+      console.error('Missing required environment variables:', missing);
+      return false;
+    }
+    
     return true;
   }
-
-  reset(key: string): void {
-    this.attempts.delete(key);
-  }
-}
-
-export const rateLimiter = new RateLimiter();
-
-// IP address validation
-export function isValidIP(ip: string): boolean {
-  const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
-  const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
-
-  return ipv4Regex.test(ip) || ipv6Regex.test(ip);
-}
-
-// Detect suspicious patterns in user input
-export function detectSuspiciousActivity(input: string): boolean {
-  const suspiciousPatterns = [
-    // SQL injection patterns
-    /union\s+select/i,
-    /drop\s+table/i,
-    /delete\s+from/i,
-    /insert\s+into/i,
-    /update\s+set/i,
-
-    // XSS patterns
-    /<script.*?>.*?<\/script>/i,
-    /javascript:/i,
-    /vbscript:/i,
-    /on\w+\s*=/i,
-
-    // Command injection
-    /\$\(/,
-    /`.*`/,
-    /\|\|/,
-    /&&/,
-
-    // Path traversal
-    /\.\.\//,
-    /\.\.\\\\/,
-
-    // Common attack vectors
-    /eval\s*\(/i,
-    /document\.cookie/i,
-    /window\.location/i,
-  ];
-
-  return suspiciousPatterns.some((pattern) => pattern.test(input));
-}
-
-// Secure token generation
-export function generateSecureToken(length: number = 32): string {
-  const array = new Uint8Array(length);
-  crypto.getRandomValues(array);
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
-    "",
-  );
-}
-
-// Content validation for orders
-export const orderValidationSchema = z.object({
-  customerName: z
-    .string()
-    .min(1, "Name required")
-    .max(100, "Name too long")
-    .refine((name) => !detectSuspiciousActivity(name), "Invalid name format"),
-
-  customerEmail: emailSchema,
-
-  services: z
-    .array(
-      z.object({
-        id: z.string().uuid("Invalid service ID"),
-        name: z.string().min(1).max(200),
-        price: orderAmountSchema,
-        quantity: z.number().int().min(1).max(100),
-      }),
-    )
-    .min(1, "At least one service required"),
-
-  totalAmount: orderAmountSchema,
-
-  notes: z
-    .string()
-    .max(1000, "Notes too long")
-    .optional()
-    .refine(
-      (notes) => !notes || !detectSuspiciousActivity(notes),
-      "Invalid notes content",
-    ),
-});
-
-// Audit logging
-interface AuditEvent {
-  type: "auth" | "order" | "admin" | "security";
-  action: string;
-  userId?: string;
-  ip?: string;
-  details?: Record<string, any>;
-  timestamp: Date;
-}
-
-class AuditLogger {
-  private events: AuditEvent[] = [];
-  private maxEvents = 1000;
-
-  log(event: Omit<AuditEvent, "timestamp">): void {
-    const fullEvent = {
-      ...event,
-      timestamp: new Date(),
-    };
-
-    this.events.push(fullEvent);
-
-    // Keep only recent events
-    if (this.events.length > this.maxEvents) {
-      this.events = this.events.slice(-this.maxEvents);
-    }
-
-    // In production, send to logging service
-    if (process.env.NODE_ENV === "production") {
-      this.sendToLoggingService(fullEvent);
-    } else {
-      console.log("Audit:", fullEvent);
-    }
-  }
-
-  private sendToLoggingService(event: AuditEvent): void {
-    // Implementation would send to your logging service
-    // e.g., Sentry, LogRocket, custom endpoint
-  }
-
-  getEvents(type?: AuditEvent["type"]): AuditEvent[] {
-    return type
-      ? this.events.filter((event) => event.type === type)
-      : this.events;
-  }
-}
-
-export const auditLogger = new AuditLogger();
-
-// Security headers validation
-export function validateSecurityHeaders(headers: Headers): boolean {
-  const requiredHeaders = [
-    "content-security-policy",
-    "x-content-type-options",
-    "x-frame-options",
-    "x-xss-protection",
-  ];
-
-  return requiredHeaders.every((header) => headers.has(header));
-}
-
-// Environment variable validation
-export function validateEnvironment(): void {
-  const requiredEnvVars = [
-    "NEXT_PUBLIC_SUPABASE_URL",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    "NEXT_PUBLIC_PAYPAL_CLIENT_ID",
-  ];
-
-  const missing = requiredEnvVars.filter((envVar) => {
-    const value =
-      typeof window !== "undefined"
-        ? (window as any).process?.env?.[envVar]
-        : process.env[envVar];
-    return !value;
-  });
-
-  if (missing.length > 0) {
-    console.warn("Missing environment variables:", missing);
-  }
-}
+};
 
 // Initialize security measures
-export function initializeSecurity(): void {
-  // Validate environment
-  validateEnvironment();
-
-  // Only run browser-specific code on client side
-  if (typeof window === "undefined") return;
-
-  // Set up global error handling for security events
-  window.addEventListener("error", (event) => {
-    auditLogger.log({
-      type: "security",
-      action: "javascript_error",
-      details: {
-        message: event.message,
-        filename: event.filename,
-        lineno: event.lineno,
-      },
-    });
-  });
-
-  // Monitor for suspicious DOM modifications
-  if (typeof MutationObserver !== "undefined") {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === "childList") {
-          mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === Node.ELEMENT_NODE) {
-              const element = node as Element;
-              if (
-                element.tagName === "SCRIPT" &&
-                !element.hasAttribute("nonce")
-              ) {
-                auditLogger.log({
-                  type: "security",
-                  action: "suspicious_script_injection",
-                  details: {
-                    outerHTML: element.outerHTML.substring(0, 200),
-                  },
-                });
-              }
-            }
-          });
-        }
-      });
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
+export const initializeSecurity = () => {
+  if (typeof window === 'undefined') return;
+  
+  // Disable right-click context menu in production
+  if (process.env.NODE_ENV === 'production') {
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+  }
+  
+  // Disable F12 and other dev tools shortcuts in production
+  if (process.env.NODE_ENV === 'production') {
+    document.addEventListener('keydown', (e) => {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+        (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+        (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+        (e.ctrlKey && e.key === 'U')
+      ) {
+        e.preventDefault();
+        return false;
+      }
     });
   }
-}
+  
+  // Console warning in production
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('🚨 Security Warning: Please do not paste or execute any code in this console. This could lead to unauthorized access to your account.');
+  }
+};
