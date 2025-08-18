@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useOrders } from "@/hooks/useOrders";
 import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useAuth } from "@/hooks/useAuth";
+import { sendOrderConfirmationEmail } from "@/lib/emailService";
 import { Button } from "@/components/ui/button";
 import {
   Card,
