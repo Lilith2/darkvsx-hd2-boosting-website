@@ -951,16 +951,6 @@ export default function AdminDashboard() {
           order={selectedOrderForDetails}
           orderType={orderDetailsType}
         />
-
-        {/* Performance Monitor - Only in development */}
-        <AdminPerformanceMonitor />
-
-        {/* Operation Tracker */}
-        <AdminOperationTracker
-          operations={operations}
-          onRetryOperation={retryOperation}
-          onCancelOperation={cancelOperation}
-        />
       </div>
     </div>
   );
