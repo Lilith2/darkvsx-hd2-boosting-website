@@ -95,6 +95,10 @@ const nextConfig = {
         tls: false,
         crypto: false,
       };
+
+      // Suppress the specific realtime-js critical dependency warning
+      config.module.unknownContextCritical = false;
+      config.module.exprContextCritical = false;
     }
 
     return config;
