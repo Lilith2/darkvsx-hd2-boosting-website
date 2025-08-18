@@ -5,10 +5,6 @@ const nextConfig = {
   trailingSlash: false,
   compress: true,
   output: "standalone", // Enable standalone output for proper page routing
-  trailingSlash: false,
-  generateBuildId: async () => {
-    return 'build-' + Date.now()
-  },
   generateEtags: true,
   experimental: {
     scrollRestoration: true,
