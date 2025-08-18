@@ -78,6 +78,8 @@ export default function OrderConfirmation() {
         fetchOrderDirectly();
       } else if (foundOrder && isInitialLoad) {
         setIsInitialLoad(false);
+        // Send confirmation email for new orders
+        sendConfirmationEmail(foundOrder);
       }
     }
   }, [
