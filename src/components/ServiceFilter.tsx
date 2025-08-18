@@ -11,7 +11,7 @@ interface ServiceFilterProps {
   serviceCounts: Record<string, number>;
 }
 
-export function ServiceFilter({ onFilterChange, activeFilter, serviceCounts }: ServiceFilterProps) {
+function ServiceFilter({ onFilterChange, activeFilter, serviceCounts }: ServiceFilterProps) {
   const categories: ServiceCategory[] = ['All', 'Level Boost', 'Medals', 'Samples', 'Super Credits', 'Promotions'];
 
   const getCategoryIcon = (category: ServiceCategory) => {
@@ -95,3 +95,5 @@ export function ServiceFilter({ onFilterChange, activeFilter, serviceCounts }: S
     </div>
   );
 }
+
+export default ServiceFilter;
