@@ -1,6 +1,6 @@
 import React, { ReactNode, createContext, useContext, useMemo } from "react";
 import { useServices, ServiceData, Service } from "@/hooks/useServices";
-import { useBundles, BundleData } from "@/hooks/useBundles";
+import { useBundles, BundleData, Bundle } from "@/hooks/useBundles";
 import { OptimizedCartProvider, useOptimizedCart } from "@/hooks/useOptimizedCart";
 
 interface CoreDataContextType {
