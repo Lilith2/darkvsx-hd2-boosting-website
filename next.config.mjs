@@ -4,7 +4,7 @@ const nextConfig = {
   poweredByHeader: false,
   trailingSlash: false,
   compress: true,
-  output: 'standalone', // Enable standalone output for proper page routing
+  output: "standalone", // Enable standalone output for proper page routing
   generateEtags: true,
   experimental: {
     scrollRestoration: true,
@@ -21,7 +21,7 @@ const nextConfig = {
     return {
       beforeFiles: [],
       afterFiles: [],
-      fallback: []
+      fallback: [],
     };
   },
   async headers() {
@@ -112,8 +112,8 @@ const nextConfig = {
           (data) => {
             delete data.dependencies[0].critical;
             return data;
-          }
-        )
+          },
+        ),
       );
     }
 

@@ -75,7 +75,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (loadingProfile) return; // Prevent duplicate calls
     setLoadingProfile(true);
     try {
-
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("*")
@@ -251,22 +250,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const memoizedUpdateProfile = useCallback(updateProfile, []);
 
   // Memoize context value to prevent unnecessary rerenders
-  const contextValue = useMemo(() => ({
-    user,
-    loading,
-    login: memoizedLogin,
-    register: memoizedRegister,
-    logout: memoizedLogout,
-    resendConfirmation: memoizedResendConfirmation,
-    updateProfile: memoizedUpdateProfile,
-    isAuthenticated,
-    isAdmin,
-  }), [user, loading, memoizedLogin, memoizedRegister, memoizedLogout, memoizedResendConfirmation, memoizedUpdateProfile, isAuthenticated, isAdmin]);
+  const contextValue = useMemo(
+    () => ({
+      user,
+      loading,
+      login: memoizedLogin,
+      register: memoizedRegister,
+      logout: memoizedLogout,
+      resendConfirmation: memoizedResendConfirmation,
+      updateProfile: memoizedUpdateProfile,
+      isAuthenticated,
+      isAdmin,
+    }),
+    [
+      user,
+      loading,
+      memoizedLogin,
+      memoizedRegister,
+      memoizedLogout,
+      memoizedResendConfirmation,
+      memoizedUpdateProfile,
+      isAuthenticated,
+      isAdmin,
+    ],
+  );
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 

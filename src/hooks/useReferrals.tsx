@@ -102,18 +102,27 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
         supabase
           .from("custom_orders")
           .select("referral_code, total_amount, status")
-          .not("referral_code", "is", null)
+          .not("referral_code", "is", null),
       ]);
 
-      const ordersData = ordersResult.status === 'fulfilled' ? ordersResult.value.data || [] : [];
-      const customOrdersData = customOrdersResult.status === 'fulfilled' ? customOrdersResult.value.data || [] : [];
+      const ordersData =
+        ordersResult.status === "fulfilled"
+          ? ordersResult.value.data || []
+          : [];
+      const customOrdersData =
+        customOrdersResult.status === "fulfilled"
+          ? customOrdersResult.value.data || []
+          : [];
 
       // Log any errors but don't fail completely
-      if (ordersResult.status === 'rejected') {
+      if (ordersResult.status === "rejected") {
         console.warn("Failed to fetch regular orders:", ordersResult.reason);
       }
-      if (customOrdersResult.status === 'rejected') {
-        console.warn("Failed to fetch custom orders:", customOrdersResult.reason);
+      if (customOrdersResult.status === "rejected") {
+        console.warn(
+          "Failed to fetch custom orders:",
+          customOrdersResult.reason,
+        );
       }
 
       // Calculate referral stats from both regular and custom orders
@@ -128,8 +137,8 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       );
 
       const allReferralOrders = [
-        ...referralOrders.map(o => ({ ...o, source: 'regular' })),
-        ...referralCustomOrders.map(o => ({ ...o, source: 'custom' }))
+        ...referralOrders.map((o) => ({ ...o, source: "regular" })),
+        ...referralCustomOrders.map((o) => ({ ...o, source: "custom" })),
       ];
 
       const totalReferred = allReferralOrders.length;

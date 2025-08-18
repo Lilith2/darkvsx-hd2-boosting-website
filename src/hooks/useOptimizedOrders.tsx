@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import { supabase } from "@/integrations/supabase/client-no-realtime";
 import { useRequestDeduplication } from "./useRequestDeduplication";
 import { OrderData, Order, OrderMessage, OrderTracking } from "./useOrders";
@@ -29,20 +35,32 @@ interface OptimizedOrdersContextType {
     totalPages: number;
   };
   filters: OrderFilters;
-  
+
   // Methods
-  fetchOrders: (options?: { filters?: OrderFilters; pagination?: PaginationOptions }) => Promise<void>;
+  fetchOrders: (options?: {
+    filters?: OrderFilters;
+    pagination?: PaginationOptions;
+  }) => Promise<void>;
   setFilters: (filters: OrderFilters) => void;
   setPage: (page: number) => void;
   setPageSize: (pageSize: number) => void;
   getOrder: (orderId: string) => Promise<OrderData | null>;
-  updateOrderStatus: (orderId: string, status: OrderData["status"]) => Promise<void>;
+  updateOrderStatus: (
+    orderId: string,
+    status: OrderData["status"],
+  ) => Promise<void>;
   refreshCurrentPage: () => Promise<void>;
 }
 
-const OptimizedOrdersContext = createContext<OptimizedOrdersContextType | undefined>(undefined);
+const OptimizedOrdersContext = createContext<
+  OptimizedOrdersContextType | undefined
+>(undefined);
 
-export function OptimizedOrdersProvider({ children }: { children: React.ReactNode }) {
+export function OptimizedOrdersProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +71,7 @@ export function OptimizedOrdersProvider({ children }: { children: React.ReactNod
     totalPages: 0,
   });
   const [filters, setFiltersState] = useState<OrderFilters>({});
-  
+
   const { dedupe } = useRequestDeduplication();
 
   // Transform database order to frontend format
@@ -110,7 +128,7 @@ export function OptimizedOrdersProvider({ children }: { children: React.ReactNod
     if (filters.search) {
       // Search in customer email, customer name, and order ID
       query = query.or(
-        `customer_email.ilike.%${filters.search}%,customer_name.ilike.%${filters.search}%,id.ilike.%${filters.search}%`
+        `customer_email.ilike.%${filters.search}%,customer_name.ilike.%${filters.search}%,id.ilike.%${filters.search}%`,
       );
     }
 
@@ -122,189 +140,205 @@ export function OptimizedOrdersProvider({ children }: { children: React.ReactNod
     return query;
   };
 
-  const fetchOrders = useCallback(async (options?: {
-    filters?: OrderFilters;
-    pagination?: PaginationOptions;
-  }) => {
-    const currentFilters = options?.filters || filters;
-    const currentPagination = options?.pagination || {
-      page: pagination.currentPage,
-      pageSize: pagination.pageSize,
-    };
+  const fetchOrders = useCallback(
+    async (options?: {
+      filters?: OrderFilters;
+      pagination?: PaginationOptions;
+    }) => {
+      const currentFilters = options?.filters || filters;
+      const currentPagination = options?.pagination || {
+        page: pagination.currentPage,
+        pageSize: pagination.pageSize,
+      };
 
-    const requestKey = `orders:${JSON.stringify(currentFilters)}:${currentPagination.page}:${currentPagination.pageSize}`;
+      const requestKey = `orders:${JSON.stringify(currentFilters)}:${currentPagination.page}:${currentPagination.pageSize}`;
 
-    try {
-      await dedupe(requestKey, async () => {
-        setLoading(true);
-        setError(null);
+      try {
+        await dedupe(requestKey, async () => {
+          setLoading(true);
+          setError(null);
 
-        // Build and execute the optimized query
-        const query = buildQuery(currentFilters, currentPagination);
-        const { data: ordersData, error: ordersError, count } = await query;
+          // Build and execute the optimized query
+          const query = buildQuery(currentFilters, currentPagination);
+          const { data: ordersData, error: ordersError, count } = await query;
 
-        if (ordersError) {
-          throw ordersError;
-        }
+          if (ordersError) {
+            throw ordersError;
+          }
 
-        // Only fetch messages and tracking for the current page of orders
-        const orderIds = ordersData?.map((order) => order.id) || [];
-        
-        let messages: OrderMessage[] = [];
-        let tracking: OrderTracking[] = [];
+          // Only fetch messages and tracking for the current page of orders
+          const orderIds = ordersData?.map((order) => order.id) || [];
 
-        if (orderIds.length > 0) {
-          const [messagesResult, trackingResult] = await Promise.all([
-            supabase
-              .from("order_messages")
-              .select("*")
-              .in("order_id", orderIds)
-              .order("created_at", { ascending: true }),
-            supabase
-              .from("order_tracking")
-              .select("*")
-              .in("order_id", orderIds)
-              .order("created_at", { ascending: true }),
-          ]);
+          let messages: OrderMessage[] = [];
+          let tracking: OrderTracking[] = [];
 
-          messages = messagesResult.data || [];
-          tracking = trackingResult.data || [];
-        }
+          if (orderIds.length > 0) {
+            const [messagesResult, trackingResult] = await Promise.all([
+              supabase
+                .from("order_messages")
+                .select("*")
+                .in("order_id", orderIds)
+                .order("created_at", { ascending: true }),
+              supabase
+                .from("order_tracking")
+                .select("*")
+                .in("order_id", orderIds)
+                .order("created_at", { ascending: true }),
+            ]);
 
-        // Transform orders with their related data
-        const transformedOrders = ordersData?.map((order) => {
-          const orderMessages = messages.filter((msg) => msg.order_id === order.id);
-          const orderTracking = tracking.filter((track) => track.order_id === order.id);
-          return transformOrder(order, orderMessages, orderTracking);
-        }) || [];
+            messages = messagesResult.data || [];
+            tracking = trackingResult.data || [];
+          }
 
-        setOrders(transformedOrders);
-        setPagination({
-          currentPage: currentPagination.page,
-          pageSize: currentPagination.pageSize,
-          totalCount: count || 0,
-          totalPages: Math.ceil((count || 0) / currentPagination.pageSize),
+          // Transform orders with their related data
+          const transformedOrders =
+            ordersData?.map((order) => {
+              const orderMessages = messages.filter(
+                (msg) => msg.order_id === order.id,
+              );
+              const orderTracking = tracking.filter(
+                (track) => track.order_id === order.id,
+              );
+              return transformOrder(order, orderMessages, orderTracking);
+            }) || [];
+
+          setOrders(transformedOrders);
+          setPagination({
+            currentPage: currentPagination.page,
+            pageSize: currentPagination.pageSize,
+            totalCount: count || 0,
+            totalPages: Math.ceil((count || 0) / currentPagination.pageSize),
+          });
         });
-      });
-    } catch (err: any) {
-      console.error("Error fetching orders:", err);
-      setError(err.message || "Failed to fetch orders");
-    } finally {
-      setLoading(false);
-    }
-  }, [filters, pagination.currentPage, pagination.pageSize, dedupe]);
+      } catch (err: any) {
+        console.error("Error fetching orders:", err);
+        setError(err.message || "Failed to fetch orders");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filters, pagination.currentPage, pagination.pageSize, dedupe],
+  );
 
   const setFilters = useCallback((newFilters: OrderFilters) => {
     setFiltersState(newFilters);
     // Reset to first page when filters change
-    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
   }, []);
 
   const setPage = useCallback((page: number) => {
-    setPagination(prev => ({ ...prev, currentPage: page }));
+    setPagination((prev) => ({ ...prev, currentPage: page }));
   }, []);
 
   const setPageSize = useCallback((pageSize: number) => {
-    setPagination(prev => ({ 
-      ...prev, 
+    setPagination((prev) => ({
+      ...prev,
       pageSize,
       currentPage: 1, // Reset to first page when page size changes
     }));
   }, []);
 
-  const getOrder = useCallback(async (orderId: string): Promise<OrderData | null> => {
-    const requestKey = `order:${orderId}`;
-    
-    return dedupe(requestKey, async () => {
-      const { data: orderData, error: orderError } = await supabase
-        .from("orders")
-        .select("*")
-        .eq("id", orderId)
-        .single();
+  const getOrder = useCallback(
+    async (orderId: string): Promise<OrderData | null> => {
+      const requestKey = `order:${orderId}`;
 
-      if (orderError || !orderData) {
-        return null;
+      return dedupe(requestKey, async () => {
+        const { data: orderData, error: orderError } = await supabase
+          .from("orders")
+          .select("*")
+          .eq("id", orderId)
+          .single();
+
+        if (orderError || !orderData) {
+          return null;
+        }
+
+        // Fetch messages and tracking for this specific order
+        const [messagesResult, trackingResult] = await Promise.all([
+          supabase
+            .from("order_messages")
+            .select("*")
+            .eq("order_id", orderId)
+            .order("created_at", { ascending: true }),
+          supabase
+            .from("order_tracking")
+            .select("*")
+            .eq("order_id", orderId)
+            .order("created_at", { ascending: true }),
+        ]);
+
+        const messages = messagesResult.data || [];
+        const tracking = trackingResult.data || [];
+
+        return transformOrder(orderData, messages, tracking);
+      });
+    },
+    [dedupe],
+  );
+
+  const updateOrderStatus = useCallback(
+    async (orderId: string, status: OrderData["status"]) => {
+      try {
+        const { error } = await supabase
+          .from("orders")
+          .update({
+            status,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", orderId);
+
+        if (error) throw error;
+
+        // Update the local state optimistically
+        setOrders((prev) =>
+          prev.map((order) =>
+            order.id === orderId
+              ? { ...order, status, updatedAt: new Date().toISOString() }
+              : order,
+          ),
+        );
+      } catch (err: any) {
+        console.error("Error updating order status:", err);
+        throw err;
       }
-
-      // Fetch messages and tracking for this specific order
-      const [messagesResult, trackingResult] = await Promise.all([
-        supabase
-          .from("order_messages")
-          .select("*")
-          .eq("order_id", orderId)
-          .order("created_at", { ascending: true }),
-        supabase
-          .from("order_tracking")
-          .select("*")
-          .eq("order_id", orderId)
-          .order("created_at", { ascending: true }),
-      ]);
-
-      const messages = messagesResult.data || [];
-      const tracking = trackingResult.data || [];
-
-      return transformOrder(orderData, messages, tracking);
-    });
-  }, [dedupe]);
-
-  const updateOrderStatus = useCallback(async (
-    orderId: string,
-    status: OrderData["status"]
-  ) => {
-    try {
-      const { error } = await supabase
-        .from("orders")
-        .update({ 
-          status,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", orderId);
-
-      if (error) throw error;
-
-      // Update the local state optimistically
-      setOrders(prev => prev.map(order => 
-        order.id === orderId 
-          ? { ...order, status, updatedAt: new Date().toISOString() }
-          : order
-      ));
-    } catch (err: any) {
-      console.error("Error updating order status:", err);
-      throw err;
-    }
-  }, []);
+    },
+    [],
+  );
 
   const refreshCurrentPage = useCallback(() => {
     return fetchOrders();
   }, [fetchOrders]);
 
-  const contextValue = useMemo(() => ({
-    orders,
-    loading,
-    error,
-    pagination,
-    filters,
-    fetchOrders,
-    setFilters,
-    setPage,
-    setPageSize,
-    getOrder,
-    updateOrderStatus,
-    refreshCurrentPage,
-  }), [
-    orders,
-    loading,
-    error,
-    pagination,
-    filters,
-    fetchOrders,
-    setFilters,
-    setPage,
-    setPageSize,
-    getOrder,
-    updateOrderStatus,
-    refreshCurrentPage,
-  ]);
+  const contextValue = useMemo(
+    () => ({
+      orders,
+      loading,
+      error,
+      pagination,
+      filters,
+      fetchOrders,
+      setFilters,
+      setPage,
+      setPageSize,
+      getOrder,
+      updateOrderStatus,
+      refreshCurrentPage,
+    }),
+    [
+      orders,
+      loading,
+      error,
+      pagination,
+      filters,
+      fetchOrders,
+      setFilters,
+      setPage,
+      setPageSize,
+      getOrder,
+      updateOrderStatus,
+      refreshCurrentPage,
+    ],
+  );
 
   return (
     <OptimizedOrdersContext.Provider value={contextValue}>
@@ -316,7 +350,9 @@ export function OptimizedOrdersProvider({ children }: { children: React.ReactNod
 export function useOptimizedOrders() {
   const context = useContext(OptimizedOrdersContext);
   if (context === undefined) {
-    throw new Error("useOptimizedOrders must be used within an OptimizedOrdersProvider");
+    throw new Error(
+      "useOptimizedOrders must be used within an OptimizedOrdersProvider",
+    );
   }
   return context;
 }

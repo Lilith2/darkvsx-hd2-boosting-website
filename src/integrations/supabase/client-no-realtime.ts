@@ -21,7 +21,7 @@ export const supabaseNoRealtime = createClient<Database>(
     },
     global: {
       headers: {
-        'X-Client-Info': 'helldivers2-boost-app-no-realtime',
+        "X-Client-Info": "helldivers2-boost-app-no-realtime",
       },
     },
   },

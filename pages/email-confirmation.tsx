@@ -184,7 +184,6 @@ export default function EmailConfirmation() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/50 p-4">
         <div className="w-full max-w-md">
-
           <Card className="border-border/50 shadow-xl">
             <CardContent className="p-6 text-center">
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -210,7 +209,9 @@ export default function EmailConfirmation() {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Check Your Email</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">
+            Check Your Email
+          </h1>
           <p className="text-muted-foreground">
             We've sent a confirmation link to <strong>{email}</strong>
           </p>
