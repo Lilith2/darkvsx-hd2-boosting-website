@@ -640,36 +640,42 @@ export default function Checkout() {
                   </div>
 
                   {/* Payment Section */}
-                  <div className="pt-6 space-y-4">
+                  <div className="pt-4 space-y-4">
                     {total <= 0 ? (
                       <div className="space-y-4">
-                        <div className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20 border border-green-200 dark:border-green-800 p-4 rounded-xl">
-                          <div className="flex items-center space-x-2 text-sm">
-                            <CheckCircle className="w-5 h-5 text-green-600" />
-                            <span className="text-green-700 dark:text-green-400 font-semibold">
-                              Order fully covered by credits!
-                            </span>
+                        <div className="bg-gradient-to-r from-green-50 via-emerald-50 to-green-50 dark:from-green-950/20 dark:via-emerald-950/20 dark:to-green-950/20 border-2 border-green-200 dark:border-green-800 p-6 rounded-2xl">
+                          <div className="text-center space-y-3">
+                            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                              <CheckCircle className="w-8 h-8 text-green-600" />
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-bold text-green-800 dark:text-green-200">
+                                🎉 Order Fully Covered!
+                              </h3>
+                              <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                                Your credits cover the entire order amount.
+                              </p>
+                              <p className="text-xs text-green-600 dark:text-green-400 mt-2">
+                                No additional payment required - just confirm below!
+                              </p>
+                            </div>
                           </div>
-                          <p className="text-xs text-green-600 dark:text-green-500 mt-2">
-                            No additional payment required. Click below to
-                            confirm your order.
-                          </p>
                         </div>
 
                         <Button
                           onClick={handleCreditOnlyPayment}
                           disabled={isProcessing || !agreeToTerms}
-                          className="w-full bg-green-600 hover:bg-green-700 text-white h-12 text-lg font-semibold"
+                          className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white h-14 text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
                         >
                           {isProcessing ? (
                             <>
-                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                              Processing Order...
+                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
+                              Processing Your Order...
                             </>
                           ) : (
                             <>
-                              <CheckCircle className="w-5 h-5 mr-2" />
-                              Confirm Order
+                              <CheckCircle className="w-6 h-6 mr-3" />
+                              Confirm Order - $0.00
                             </>
                           )}
                         </Button>
