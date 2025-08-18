@@ -52,35 +52,40 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <SecurityProvider>
-        <AccessibilityWrapper>
-          <SEOHead />
-          <QueryClientProvider client={queryClient}>
-            <TooltipProvider>
-              <AuthProvider>
-                <ServicesProvider>
-                  <BundlesProvider>
-                    <CartProvider>
-                      <OrdersProvider>
-                        <ReferralsProvider>
-                          <AppContent>
-                            <Layout>
-                              <Component {...pageProps} />
-                              <Toaster />
-                              <Sonner />
-                            </Layout>
-                          </AppContent>
-                        </ReferralsProvider>
-                      </OrdersProvider>
-                    </CartProvider>
-                  </BundlesProvider>
-                </ServicesProvider>
-              </AuthProvider>
-            </TooltipProvider>
-          </QueryClientProvider>
-        </AccessibilityWrapper>
-      </SecurityProvider>
-    </ErrorBoundary>
+    <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, viewport-fit=cover" />
+      </Head>
+      <ErrorBoundary>
+        <SecurityProvider>
+          <AccessibilityWrapper>
+            <SEOHead />
+            <QueryClientProvider client={queryClient}>
+              <TooltipProvider>
+                <AuthProvider>
+                  <ServicesProvider>
+                    <BundlesProvider>
+                      <CartProvider>
+                        <OrdersProvider>
+                          <ReferralsProvider>
+                            <AppContent>
+                              <Layout>
+                                <Component {...pageProps} />
+                                <Toaster />
+                                <Sonner />
+                              </Layout>
+                            </AppContent>
+                          </ReferralsProvider>
+                        </OrdersProvider>
+                      </CartProvider>
+                    </BundlesProvider>
+                  </ServicesProvider>
+                </AuthProvider>
+              </TooltipProvider>
+            </QueryClientProvider>
+          </AccessibilityWrapper>
+        </SecurityProvider>
+      </ErrorBoundary>
+    </>
   );
 }
