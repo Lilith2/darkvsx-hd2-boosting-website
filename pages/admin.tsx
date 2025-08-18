@@ -198,15 +198,6 @@ export default function AdminDashboard() {
     useBundles();
   const { toast } = useToast();
 
-  // Operation tracking
-  const {
-    operations,
-    addOperation,
-    updateOperation,
-    retryOperation,
-    cancelOperation,
-  } = useAdminOperations();
-
   // Performance and loading state management
   const [currentTab, setCurrentTab] = useState("overview");
   const [loadingStates, setLoadingStates] = useState({
