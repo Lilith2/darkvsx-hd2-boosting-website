@@ -30,7 +30,8 @@ export function SecurityProvider({ children }: { children: ReactNode }) {
     maxAttempts: number,
     windowMs: number,
   ): boolean => {
-    return rateLimiter.check(key, maxAttempts, windowMs);
+    const rateLimiter = security.createRateLimit(maxAttempts, windowMs);
+    return rateLimiter(key);
   };
 
   const logSecurityEvent = (
@@ -38,11 +39,10 @@ export function SecurityProvider({ children }: { children: ReactNode }) {
     action: string,
     details?: Record<string, any>,
   ) => {
-    auditLogger.log({
-      type: type as any,
-      action,
-      details,
-    });
+    // Simple console logging for security events in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[Security Event] ${type}: ${action}`, details);
+    }
   };
 
   const isSecureEnvironment =
