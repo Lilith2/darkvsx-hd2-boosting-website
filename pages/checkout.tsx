@@ -713,32 +713,54 @@ export default function Checkout() {
                 </CardContent>
               </Card>
 
-              {/* Security Features */}
-              <Card className="border-0 shadow-sm bg-card/30 backdrop-blur-sm">
-                <CardHeader className="pb-3">
+              {/* Enhanced Security Features */}
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-card/80 dark:to-card/60 backdrop-blur-sm">
+                <CardHeader className="pb-4">
                   <CardTitle className="text-lg flex items-center">
-                    <Shield className="w-5 h-5 mr-2 text-green-500" />
-                    Security & Protection
+                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-xl flex items-center justify-center mr-3">
+                      <Shield className="w-5 h-5 text-green-600" />
+                    </div>
+                    Security & Trust
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center space-x-3 text-sm">
-                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
-                      <Lock className="w-4 h-4 text-green-600" />
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className="flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200/50 dark:border-green-800/50">
+                      <div className="w-8 h-8 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                        <Lock className="w-4 h-4 text-green-600" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium">256-bit SSL Encryption</span>
+                        <p className="text-xs text-muted-foreground">Bank-level security</p>
+                      </div>
                     </div>
-                    <span>256-bit SSL encryption</span>
+
+                    <div className="flex items-center space-x-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200/50 dark:border-blue-800/50">
+                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+                        <Shield className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium">PayPal Buyer Protection</span>
+                        <p className="text-xs text-muted-foreground">Full purchase protection</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-200/50 dark:border-yellow-800/50">
+                      <div className="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-4 h-4 text-yellow-600" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium">Account Safety Guaranteed</span>
+                        <p className="text-xs text-muted-foreground">100% secure boosting</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-3 text-sm">
-                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
-                      <Shield className="w-4 h-4 text-blue-600" />
+
+                  <div className="pt-2 border-t border-border/50">
+                    <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
+                      <Clock className="w-3 h-3" />
+                      <span>Trusted by 10,000+ customers</span>
                     </div>
-                    <span>PayPal Buyer Protection</span>
-                  </div>
-                  <div className="flex items-center space-x-3 text-sm">
-                    <div className="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center">
-                      <CheckCircle className="w-4 h-4 text-yellow-600" />
-                    </div>
-                    <span>Account Safety Guaranteed</span>
                   </div>
                 </CardContent>
               </Card>
