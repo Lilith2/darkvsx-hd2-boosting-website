@@ -144,7 +144,10 @@ export default function OrderConfirmation() {
   };
 
   const sendConfirmationEmail = async (orderData: any) => {
+    if (emailAttempted) return; // Prevent duplicate attempts
+
     try {
+      setEmailAttempted(true);
       setEmailError(null);
 
       // Format order data for email
