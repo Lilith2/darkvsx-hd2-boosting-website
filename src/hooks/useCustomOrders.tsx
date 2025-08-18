@@ -207,6 +207,7 @@ export function useCustomOrders() {
         total_amount: totalAmount,
         special_instructions: orderData.special_instructions,
         customer_email: orderData.customer_email,
+        customer_name: orderData.customer_name,
         customer_discord: orderData.customer_discord,
       };
 
