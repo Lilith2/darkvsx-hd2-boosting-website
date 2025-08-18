@@ -337,30 +337,18 @@ export default function AdminDashboard() {
   };
 
   const handleSaveBundle = async (bundleData: any) => {
-    const operationId = addOperation({
-      type: 'bundle',
-      description: selectedBundle ? `Updating ${bundleData.name}` : `Creating ${bundleData.name}`,
-    });
-
     try {
-      updateOperation(operationId, { status: 'running', progress: 50 });
-
       if (selectedBundle) {
         await updateBundle(selectedBundle.id, bundleData);
       } else {
         await addBundle(bundleData);
       }
 
-      updateOperation(operationId, { status: 'success', progress: 100 });
       toast({
         title: "Success",
         description: `Bundle ${selectedBundle ? 'updated' : 'created'} successfully.`,
       });
     } catch (error) {
-      updateOperation(operationId, {
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
       toast({
         title: "Error",
         description: `Failed to ${selectedBundle ? 'update' : 'create'} bundle.`,
