@@ -1,7 +1,7 @@
 import { useRef, useCallback } from "react";
 
 interface RequestCache {
-  [key: string]: Promise<any>;
+  [key: string]: Promise<any> | undefined;
 }
 
 export function useRequestDeduplication() {
