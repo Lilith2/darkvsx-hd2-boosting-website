@@ -65,7 +65,7 @@ export function useAdminAnalytics({
 
     // Calculate total revenue
     const regularRevenue = orders.reduce((total, order) => {
-      return total + (order.totalAmount || 0);
+      return total + (order.total_amount || 0);
     }, 0);
 
     const customRevenue = customOrders.reduce((total, order) => {
