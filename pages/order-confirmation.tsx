@@ -51,19 +51,32 @@ export default function OrderConfirmation() {
   const isCustomOrder = type === "custom";
 
   useEffect(() => {
-    console.log("Order confirmation page - orderId:", orderId, "type:", type, "isCustomOrder:", isCustomOrder);
+    console.log(
+      "Order confirmation page - orderId:",
+      orderId,
+      "type:",
+      type,
+      "isCustomOrder:",
+      isCustomOrder,
+    );
 
     // Redirect to account page if no order ID provided
     if (!orderId && !isLoading) {
       console.log("No order ID provided, redirecting to account");
-      router.push('/account');
+      router.push("/account");
       return;
     }
 
     if (orderId) {
       let foundOrder;
       if (isCustomOrder) {
-        console.log("Searching for custom order with ID:", orderId, "in", customOrders.length, "orders");
+        console.log(
+          "Searching for custom order with ID:",
+          orderId,
+          "in",
+          customOrders.length,
+          "orders",
+        );
         foundOrder = customOrders.find((o) => o.id === orderId) || null;
         console.log("Custom order found:", foundOrder);
       } else {
@@ -76,9 +89,16 @@ export default function OrderConfirmation() {
       // If we still haven't found the order and we're not loading, try direct database query
       const isLoading = isCustomOrder ? customLoading : loading;
       if (!foundOrder && !isLoading && !isInitialLoad) {
-        console.log("Order not found in hooks, trying direct database query...");
+        console.log(
+          "Order not found in hooks, trying direct database query...",
+        );
         fetchOrderDirectly();
-      } else if (foundOrder && isInitialLoad && !emailAttempted && sendEmail === "true") {
+      } else if (
+        foundOrder &&
+        isInitialLoad &&
+        !emailAttempted &&
+        sendEmail === "true"
+      ) {
         setIsInitialLoad(false);
         // Send confirmation email for new orders (only when explicitly requested)
         sendConfirmationEmail(foundOrder);
@@ -154,11 +174,21 @@ export default function OrderConfirmation() {
       setEmailError(null);
 
       // Format order data for email
-      const orderNumber = isCustomOrder ? orderData.order_number : `#${orderData.id.slice(-6)}`;
-      const orderDate = isCustomOrder ? orderData.created_at : orderData.createdAt;
-      const orderAmount = isCustomOrder ? orderData.total_amount : orderData.totalAmount;
-      const customerEmail = isCustomOrder ? orderData.customer_email : orderData.customerEmail;
-      const customerName = isCustomOrder ? orderData.customer_name : orderData.customerName;
+      const orderNumber = isCustomOrder
+        ? orderData.order_number
+        : `#${orderData.id.slice(-6)}`;
+      const orderDate = isCustomOrder
+        ? orderData.created_at
+        : orderData.createdAt;
+      const orderAmount = isCustomOrder
+        ? orderData.total_amount
+        : orderData.totalAmount;
+      const customerEmail = isCustomOrder
+        ? orderData.customer_email
+        : orderData.customerEmail;
+      const customerName = isCustomOrder
+        ? orderData.customer_name
+        : orderData.customerName;
 
       // Prepare order items for email
       let emailItems = [];
@@ -180,7 +210,7 @@ export default function OrderConfirmation() {
 
       await sendOrderConfirmationEmail({
         customerEmail,
-        customerName: customerName || 'Valued Customer',
+        customerName: customerName || "Valued Customer",
         orderNumber,
         orderDate,
         orderTotal: orderAmount,
@@ -190,10 +220,10 @@ export default function OrderConfirmation() {
       });
 
       setEmailSent(true);
-      console.log('Order confirmation email sent successfully');
+      console.log("Order confirmation email sent successfully");
     } catch (error: any) {
-      console.error('Failed to send confirmation email:', error);
-      setEmailError(error.message || 'Failed to send confirmation email');
+      console.error("Failed to send confirmation email:", error);
+      setEmailError(error.message || "Failed to send confirmation email");
     }
   };
 
@@ -224,7 +254,8 @@ export default function OrderConfirmation() {
             <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
             <h2 className="text-xl font-semibold mb-2">Order Not Found</h2>
             <p className="text-muted-foreground mb-6">
-              We couldn't find the order you're looking for. It may have been deleted or you may not have permission to view it.
+              We couldn't find the order you're looking for. It may have been
+              deleted or you may not have permission to view it.
             </p>
             <div className="space-y-2">
               <Link href="/account">
@@ -246,10 +277,14 @@ export default function OrderConfirmation() {
   if (!order) return null;
 
   // Format order data for display
-  const orderNumber = isCustomOrder ? order.order_number : `#${order.id.slice(-6)}`;
+  const orderNumber = isCustomOrder
+    ? order.order_number
+    : `#${order.id.slice(-6)}`;
   const orderDate = isCustomOrder ? order.created_at : order.createdAt;
   const orderAmount = isCustomOrder ? order.total_amount : order.totalAmount;
-  const customerEmail = isCustomOrder ? order.customer_email : order.customerEmail;
+  const customerEmail = isCustomOrder
+    ? order.customer_email
+    : order.customerEmail;
   const customerName = isCustomOrder ? order.customer_name : order.customerName;
   const orderStatus = order.status;
 
@@ -258,11 +293,12 @@ export default function OrderConfirmation() {
   if (isCustomOrder) {
     orderItems = order.items || [];
   } else {
-    orderItems = order.services?.map(service => ({
-      name: service.name,
-      quantity: service.quantity,
-      price: service.price,
-    })) || [];
+    orderItems =
+      order.services?.map((service) => ({
+        name: service.name,
+        quantity: service.quantity,
+        price: service.price,
+      })) || [];
   }
 
   const getStatusColor = (status) => {
@@ -280,25 +316,25 @@ export default function OrderConfirmation() {
   };
 
   const shareOrder = async () => {
-    const shareText = `My ${isCustomOrder ? 'custom ' : ''}order ${orderNumber} has been confirmed! Total: $${orderAmount?.toFixed(2)}`;
-    
+    const shareText = `My ${isCustomOrder ? "custom " : ""}order ${orderNumber} has been confirmed! Total: $${orderAmount?.toFixed(2)}`;
+
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Order Confirmation',
+          title: "Order Confirmation",
           text: shareText,
           url: window.location.href,
         });
       } catch (err) {
-        console.log('Error sharing:', err);
+        console.log("Error sharing:", err);
       }
     } else {
       // Fallback to copying to clipboard
       try {
         await navigator.clipboard.writeText(shareText);
-        alert('Order details copied to clipboard!');
+        alert("Order details copied to clipboard!");
       } catch (err) {
-        console.log('Error copying to clipboard:', err);
+        console.log("Error copying to clipboard:", err);
       }
     }
   };
@@ -313,11 +349,16 @@ export default function OrderConfirmation() {
               Home
             </Link>
             <span>→</span>
-            <Link href="/cart" className="hover:text-foreground transition-colors">
+            <Link
+              href="/cart"
+              className="hover:text-foreground transition-colors"
+            >
               Cart
             </Link>
             <span>→</span>
-            <span className="text-foreground font-medium">Order Confirmation</span>
+            <span className="text-foreground font-medium">
+              Order Confirmation
+            </span>
           </div>
         </nav>
         {/* Success Header */}
@@ -329,7 +370,8 @@ export default function OrderConfirmation() {
             Order Confirmed!
           </h1>
           <p className="text-lg text-muted-foreground">
-            Thank you for your purchase. We've received your order and will begin processing it shortly.
+            Thank you for your purchase. We've received your order and will
+            begin processing it shortly.
           </p>
         </div>
 
@@ -346,13 +388,14 @@ export default function OrderConfirmation() {
                       Order {orderNumber}
                     </CardTitle>
                     <CardDescription>
-                      Placed on {new Date(orderDate).toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
+                      Placed on{" "}
+                      {new Date(orderDate).toLocaleDateString("en-US", {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
                     </CardDescription>
                   </div>
@@ -364,7 +407,10 @@ export default function OrderConfirmation() {
               <CardContent>
                 <div className="space-y-4">
                   {orderItems.map((item, index) => (
-                    <div key={index} className="flex justify-between items-center py-2">
+                    <div
+                      key={index}
+                      className="flex justify-between items-center py-2"
+                    >
                       <div>
                         <p className="font-medium">
                           {isCustomOrder ? item.item_name : item.name}
@@ -374,7 +420,11 @@ export default function OrderConfirmation() {
                         </p>
                       </div>
                       <p className="font-semibold">
-                        ${(isCustomOrder ? item.total_price : (item.price * item.quantity)).toFixed(2)}
+                        $
+                        {(isCustomOrder
+                          ? item.total_price
+                          : item.price * item.quantity
+                        ).toFixed(2)}
                       </p>
                     </div>
                   ))}
@@ -408,7 +458,9 @@ export default function OrderConfirmation() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Status:</span>
-                      <Badge className="bg-green-100 text-green-800">Paid</Badge>
+                      <Badge className="bg-green-100 text-green-800">
+                        Paid
+                      </Badge>
                     </div>
                   </div>
                 </CardContent>
@@ -463,7 +515,9 @@ export default function OrderConfirmation() {
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-bold text-muted-foreground">2</span>
+                      <span className="text-xs font-bold text-muted-foreground">
+                        2
+                      </span>
                     </div>
                     <div>
                       <p className="font-medium text-sm">Assignment</p>
@@ -474,7 +528,9 @@ export default function OrderConfirmation() {
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-bold text-muted-foreground">3</span>
+                      <span className="text-xs font-bold text-muted-foreground">
+                        3
+                      </span>
                     </div>
                     <div>
                       <p className="font-medium text-sm">Completion</p>
@@ -489,13 +545,15 @@ export default function OrderConfirmation() {
 
             {/* Actions */}
             <div className="space-y-3">
-              <Link href={`/order/${orderId}${isCustomOrder ? '?type=custom' : ''}`}>
+              <Link
+                href={`/order/${orderId}${isCustomOrder ? "?type=custom" : ""}`}
+              >
                 <Button className="w-full">
                   <Eye className="w-4 h-4 mr-2" />
                   Track Order
                 </Button>
               </Link>
-              
+
               <Link href="/account">
                 <Button variant="outline" className="w-full">
                   <User className="w-4 h-4 mr-2" />
@@ -523,24 +581,31 @@ export default function OrderConfirmation() {
           <Card className="mt-8">
             <CardContent className="p-6">
               <div className="flex items-center space-x-4">
-                <Mail className={`w-8 h-8 ${emailSent ? 'text-green-600' : emailError ? 'text-red-600' : 'text-blue-600'}`} />
+                <Mail
+                  className={`w-8 h-8 ${emailSent ? "text-green-600" : emailError ? "text-red-600" : "text-blue-600"}`}
+                />
                 <div className="flex-1">
                   <h3 className="font-semibold">
-                    {emailSent ? 'Confirmation Email Sent' : emailError ? 'Email Failed' : 'Sending Confirmation Email...'}
+                    {emailSent
+                      ? "Confirmation Email Sent"
+                      : emailError
+                        ? "Email Failed"
+                        : "Sending Confirmation Email..."}
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     {emailSent ? (
                       <>
-                        We've sent a confirmation email to <strong>{customerEmail}</strong> with your order details.
-                        If you don't see it in your inbox, please check your spam folder.
+                        We've sent a confirmation email to{" "}
+                        <strong>{customerEmail}</strong> with your order
+                        details. If you don't see it in your inbox, please check
+                        your spam folder.
                       </>
                     ) : emailError ? (
-                      <>
-                        Failed to send confirmation email: {emailError}
-                      </>
+                      <>Failed to send confirmation email: {emailError}</>
                     ) : (
                       <>
-                        Sending your order confirmation to <strong>{customerEmail}</strong>...
+                        Sending your order confirmation to{" "}
+                        <strong>{customerEmail}</strong>...
                       </>
                     )}
                   </p>

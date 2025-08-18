@@ -72,7 +72,11 @@ export function useCustomOrders() {
         let orderItems = [];
 
         // Check if items are stored in the JSONB column
-        if (order.items && Array.isArray(order.items) && order.items.length > 0) {
+        if (
+          order.items &&
+          Array.isArray(order.items) &&
+          order.items.length > 0
+        ) {
           orderItems = order.items;
         } else {
           // Fallback: try to fetch from custom_order_items table
@@ -89,10 +93,14 @@ export function useCustomOrders() {
               quantity: item.quantity,
               price_per_unit: parseFloat(item.price_per_unit),
               total_price: parseFloat(item.total_price),
-              description: item.description || ""
+              description: item.description || "",
             }));
           } catch (itemsError) {
-            console.warn("Could not fetch items for order:", order.id, itemsError);
+            console.warn(
+              "Could not fetch items for order:",
+              order.id,
+              itemsError,
+            );
             orderItems = [];
           }
         }
@@ -265,10 +273,10 @@ export function useCustomOrders() {
         errorMessage = err.details;
       } else if (err?.hint) {
         errorMessage = err.hint;
-      } else if (typeof err === 'string') {
+      } else if (typeof err === "string") {
         errorMessage = err;
       } else if (err?.code) {
-        errorMessage = `Database error (${err.code}): ${err.message || 'Unknown error'}`;
+        errorMessage = `Database error (${err.code}): ${err.message || "Unknown error"}`;
       }
 
       toast({

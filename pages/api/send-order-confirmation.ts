@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import nodemailer from 'nodemailer';
+import { NextApiRequest, NextApiResponse } from "next";
+import nodemailer from "nodemailer";
 
 interface OrderItem {
   name: string;
@@ -21,20 +21,24 @@ interface EmailData {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
     const emailData: EmailData = req.body;
 
     // Validate required fields
-    if (!emailData.customerEmail || !emailData.orderNumber || !emailData.items) {
+    if (
+      !emailData.customerEmail ||
+      !emailData.orderNumber ||
+      !emailData.items
+    ) {
       return res.status(400).json({
-        error: 'Missing required fields',
-        details: 'customerEmail, orderNumber, and items are required'
+        error: "Missing required fields",
+        details: "customerEmail, orderNumber, and items are required",
       });
     }
 
@@ -42,15 +46,15 @@ export default async function handler(
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailData.customerEmail)) {
       return res.status(400).json({
-        error: 'Invalid email format',
-        details: `Email '${emailData.customerEmail}' is not valid`
+        error: "Invalid email format",
+        details: `Email '${emailData.customerEmail}' is not valid`,
       });
     }
 
     // Create SMTP transporter
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '465'),
+      port: parseInt(process.env.SMTP_PORT || "465"),
       secure: true, // true for 465, false for other ports
       auth: {
         user: process.env.SMTP_USER,
@@ -72,32 +76,43 @@ export default async function handler(
     // Send email
     await transporter.sendMail(mailOptions);
 
-    res.status(200).json({ 
-      success: true, 
-      message: 'Order confirmation email sent successfully',
-      sentTo: emailData.customerEmail
+    res.status(200).json({
+      success: true,
+      message: "Order confirmation email sent successfully",
+      sentTo: emailData.customerEmail,
     });
-
   } catch (error: any) {
-    console.error('Email sending error:', error);
-    res.status(500).json({ 
-      error: 'Failed to send email', 
-      details: error.message 
+    console.error("Email sending error:", error);
+    res.status(500).json({
+      error: "Failed to send email",
+      details: error.message,
     });
   }
 }
 
 function generateOrderConfirmationHTML(data: EmailData): string {
-  const { customerName, orderNumber, orderDate, orderTotal, items, paymentId, isCustomOrder } = data;
+  const {
+    customerName,
+    orderNumber,
+    orderDate,
+    orderTotal,
+    items,
+    paymentId,
+    isCustomOrder,
+  } = data;
 
-  const itemsHTML = items.map(item => `
+  const itemsHTML = items
+    .map(
+      (item) => `
     <tr style="border-bottom: 1px solid #e5e7eb;">
       <td style="padding: 12px 0; color: #374151;">${item.name}</td>
       <td style="padding: 12px 0; text-align: center; color: #6b7280;">${item.quantity}</td>
       <td style="padding: 12px 0; text-align: right; color: #374151;">$${item.price.toFixed(2)}</td>
       <td style="padding: 12px 0; text-align: right; font-weight: 600; color: #111827;">$${item.total.toFixed(2)}</td>
     </tr>
-  `).join('');
+  `,
+    )
+    .join("");
 
   return `
     <!DOCTYPE html>
@@ -120,7 +135,7 @@ function generateOrderConfirmationHTML(data: EmailData): string {
         <div style="padding: 24px; text-align: center; background-color: #f0fdf4; border-bottom: 1px solid #e5e7eb;">
           <div style="display: inline-block; background-color: #22c55e; color: white; width: 48px; height: 48px; border-radius: 50%; line-height: 48px; font-size: 24px; margin-bottom: 16px;">✓</div>
           <h2 style="margin: 0 0 8px; color: #16a34a; font-size: 24px;">Order Confirmed!</h2>
-          <p style="margin: 0; color: #15803d; font-size: 16px;">Thank you for your purchase, ${customerName || 'Valued Customer'}!</p>
+          <p style="margin: 0; color: #15803d; font-size: 16px;">Thank you for your purchase, ${customerName || "Valued Customer"}!</p>
         </div>
 
         <!-- Order Details -->
@@ -135,25 +150,31 @@ function generateOrderConfirmationHTML(data: EmailData): string {
               </tr>
               <tr>
                 <td style="padding: 8px 0; color: #6b7280; font-weight: 500;">Order Date:</td>
-                <td style="padding: 8px 0; color: #111827; text-align: right;">${new Date(orderDate).toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
+                <td style="padding: 8px 0; color: #111827; text-align: right;">${new Date(
+                  orderDate,
+                ).toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
                 })}</td>
               </tr>
               <tr>
                 <td style="padding: 8px 0; color: #6b7280; font-weight: 500;">Order Type:</td>
-                <td style="padding: 8px 0; color: #111827; text-align: right;">${isCustomOrder ? 'Custom Order' : 'Standard Order'}</td>
+                <td style="padding: 8px 0; color: #111827; text-align: right;">${isCustomOrder ? "Custom Order" : "Standard Order"}</td>
               </tr>
-              ${paymentId ? `
+              ${
+                paymentId
+                  ? `
               <tr>
                 <td style="padding: 8px 0; color: #6b7280; font-weight: 500;">Payment ID:</td>
                 <td style="padding: 8px 0; color: #111827; font-family: monospace; font-size: 14px; text-align: right;">${paymentId}</td>
               </tr>
-              ` : ''}
+              `
+                  : ""
+              }
             </table>
           </div>
 
