@@ -4,6 +4,8 @@ const nextConfig = {
   poweredByHeader: false,
   trailingSlash: false,
   compress: true,
+  output: 'standalone', // Enable standalone output for proper page routing
+  generateEtags: true,
   allowedDevOrigins: [
     "1c1d42e681804164827111b263e5941f-c903eba0dff24a369b0e80752.fly.dev",
     "ef297b071d014482af49aab623b4cc88-c420d88334bd4335931373581.projects.builder.codes",
