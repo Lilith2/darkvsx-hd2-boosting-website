@@ -77,7 +77,7 @@ export default function OrderConfirmation() {
       if (!foundOrder && !isLoading && !isInitialLoad) {
         console.log("Order not found in hooks, trying direct database query...");
         fetchOrderDirectly();
-      } else if (foundOrder && isInitialLoad) {
+      } else if (foundOrder && isInitialLoad && !emailAttempted) {
         setIsInitialLoad(false);
         // Send confirmation email for new orders
         sendConfirmationEmail(foundOrder);
