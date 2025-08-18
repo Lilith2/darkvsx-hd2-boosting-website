@@ -107,7 +107,11 @@ export function OptimizedOrdersProvider({
       timestamp: msg.created_at || msg.timestamp,
       isRead: msg.is_read ?? msg.isRead ?? false,
     })),
-    tracking,
+    tracking: tracking.map((track: any) => ({
+      status: track.status,
+      timestamp: track.created_at || track.timestamp,
+      description: track.description,
+    })),
   });
 
   const buildQuery = (filters: OrderFilters, pagination: PaginationOptions) => {
