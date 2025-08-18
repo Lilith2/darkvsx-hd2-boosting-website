@@ -686,7 +686,12 @@ export default function AdminDashboard() {
               <ServicesTabLoadingSkeleton />
             ) : (
               <AdminServicesTabLazy
-                services={services}
+                services={services.map((service: any) => ({
+                  ...service,
+                  createdAt: service.created_at,
+                  originalPrice: service.original_price,
+                  features: service.features || [],
+                }))}
                 loading={isLoading}
                 onAddService={handleAddService}
                 onEditService={handleEditService}
