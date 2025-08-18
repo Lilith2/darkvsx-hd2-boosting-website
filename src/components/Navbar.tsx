@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { useCart } from "@/hooks/useCart";
+import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, User, LogIn, Menu, X } from "lucide-react";
 

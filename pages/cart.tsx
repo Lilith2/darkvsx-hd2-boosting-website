@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCart } from "@/hooks/useCart";
+import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
 import { PAYMENT_CONSTANTS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
