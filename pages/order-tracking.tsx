@@ -496,7 +496,7 @@ export default function OrderTracking() {
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {(normalizedOrder.services || []).map((service, index) => (
+                {(normalizedOrder.services || []).map((service: any, index: number) => (
                   <div key={index} className="flex justify-between items-start">
                     <div className="flex-1">
                       <p className="font-medium text-sm">{service.name}</p>
