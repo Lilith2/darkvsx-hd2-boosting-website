@@ -84,8 +84,8 @@ export interface OrderData {
     id: string;
     from: "customer" | "admin" | "booster";
     message: string;
-    timestamp: string;
-    isRead: boolean;
+    timestamp: string | null;
+    isRead: boolean | null;
   }[];
   tracking: {
     status: string;
