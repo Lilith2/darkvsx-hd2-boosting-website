@@ -371,10 +371,10 @@ export default function OrderConfirmation() {
                   <Mail className="w-4 h-4 text-muted-foreground" />
                   <span className="text-sm">{customerEmail}</span>
                 </div>
-                {user?.username && (
+                {customerName && (
                   <div className="flex items-center space-x-2">
                     <User className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">{user.username}</span>
+                    <span className="text-sm">{customerName}</span>
                   </div>
                 )}
               </CardContent>
