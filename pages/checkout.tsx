@@ -717,8 +717,8 @@ export default function Checkout() {
               <Card className="border-0 shadow-sm bg-card/80 backdrop-blur-sm">
                 <CardHeader className="pb-4">
                   <CardTitle className="text-lg flex items-center">
-                    <div className="w-10 h-10 bg-green-100 dark:bg-green-900/20 rounded-xl flex items-center justify-center mr-3">
-                      <Shield className="w-5 h-5 text-green-600" />
+                    <div className="w-8 h-8 bg-green-500/10 rounded-full flex items-center justify-center mr-3">
+                      <Shield className="w-4 h-4 text-green-600" />
                     </div>
                     Security & Trust
                   </CardTitle>
