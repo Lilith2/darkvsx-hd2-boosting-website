@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, Suspense, lazy } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -55,7 +55,12 @@ import {
   Square,
   Grid3X3,
   List,
+  Zap,
+  Info,
 } from "lucide-react";
+
+// Lazy load the virtualized table for better performance
+const VirtualizedOrdersTable = lazy(() => import("./VirtualizedOrdersTable"));
 
 interface Order {
   id: string;
@@ -98,7 +103,7 @@ export function EnhancedOrdersTable({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
-  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+  const [viewMode, setViewMode] = useState<"table" | "cards" | "virtualized">("table");
   const [dateRange, setDateRange] = useState("all");
   const [amountRange, setAmountRange] = useState("all");
 
@@ -113,6 +118,17 @@ export function EnhancedOrdersTable({
     const customOrdersWithType = customOrders.map(order => ({ ...order, orderType: "custom" }));
     return [...regularOrders, ...customOrdersWithType];
   }, [orders, customOrders]);
+
+  // Performance optimization: automatically switch to virtualized view for large datasets
+  const shouldUseVirtualization = allOrders.length > 100;
+  const isLargeDataset = allOrders.length > 50;
+
+  // Auto-switch to virtualized mode for large datasets
+  useEffect(() => {
+    if (shouldUseVirtualization && viewMode === "table") {
+      setViewMode("virtualized");
+    }
+  }, [shouldUseVirtualization, viewMode]);
 
   // Helper functions
   const getCustomerName = (order: Order) => order.customer_name || order.customerName || "N/A";
@@ -307,9 +323,22 @@ export function EnhancedOrdersTable({
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="flex items-center gap-4">
           <h2 className="text-2xl font-bold">Orders Management</h2>
-          <Badge variant="outline" className="text-sm">
-            {sortedOrders.length} of {allOrders.length} orders
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-sm">
+              {sortedOrders.length} of {allOrders.length} orders
+            </Badge>
+            {shouldUseVirtualization && (
+              <Badge variant="secondary" className="text-xs">
+                <Zap className="h-3 w-3 mr-1" />
+                Auto-optimized
+              </Badge>
+            )}
+            {isLargeDataset && viewMode !== "virtualized" && (
+              <Badge variant="outline" className="text-xs text-orange-600">
+                Consider virtualized view
+              </Badge>
+            )}
+          </div>
         </div>
         
         <div className="flex items-center gap-2">
@@ -346,6 +375,16 @@ export function EnhancedOrdersTable({
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
+            {isLargeDataset && (
+              <Button
+                variant={viewMode === "virtualized" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("virtualized")}
+                title="Virtualized view for better performance"
+              >
+                <Zap className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -448,6 +487,24 @@ export function EnhancedOrdersTable({
             </Button>
           </div>
         </div>
+      )}
+
+      {/* Virtualized View - For large datasets */}
+      {viewMode === "virtualized" && (
+        <Suspense fallback={
+          <div className="border rounded-lg p-8 text-center">
+            <div className="animate-spin h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading virtualized table...</p>
+          </div>
+        }>
+          <VirtualizedOrdersTable
+            orders={filteredOrders.filter(order => order.orderType === "regular")}
+            customOrders={filteredOrders.filter(order => order.orderType === "custom")}
+            isLoading={loading}
+            onOrderSelect={openOrderDetails}
+            onStatusUpdate={onUpdateOrderStatus}
+          />
+        </Suspense>
       )}
 
       {/* Table View */}
@@ -643,8 +700,28 @@ export function EnhancedOrdersTable({
         </div>
       )}
 
+      {/* Performance Notice */}
+      {viewMode === "table" && isLargeDataset && (
+        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center gap-2 text-sm text-yellow-800">
+            <Info className="h-4 w-4" />
+            <span>
+              Large dataset detected ({allOrders.length} orders).
+              Consider using{" "}
+              <button
+                onClick={() => setViewMode("virtualized")}
+                className="font-medium underline hover:no-underline"
+              >
+                virtualized view
+              </button>
+              {" "}for better performance.
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Pagination */}
-      {totalPages > 1 && (
+      {totalPages > 1 && viewMode !== "virtualized" && (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">
