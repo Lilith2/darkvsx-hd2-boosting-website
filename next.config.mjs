@@ -14,6 +14,13 @@ const nextConfig = {
     "*.fly.dev",
     "*.projects.builder.codes",
   ],
+  async rewrites() {
+    return {
+      beforeFiles: [],
+      afterFiles: [],
+      fallback: []
+    };
+  },
   async headers() {
     return [
       {
