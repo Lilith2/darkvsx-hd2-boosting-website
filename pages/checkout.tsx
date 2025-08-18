@@ -293,9 +293,6 @@ export default function Checkout() {
 
       // TODO: Add simple referral reward processing later if needed
 
-      // Clear cart
-      clearCart();
-
       const orderMessage =
         customOrderItems.length > 0 && regularOrderItems.length > 0
           ? "Your orders have been confirmed"
@@ -313,7 +310,7 @@ export default function Checkout() {
         description: `${orderMessage}. ${paymentMessage}`,
       });
 
-      // Redirect to order confirmation page
+      // Redirect to order confirmation page BEFORE clearing cart to avoid flash
       if (regularOrderItems.length > 0) {
         router.push(`/order-confirmation?orderId=${orderId}${paymentDetails?.id ? `&paymentId=${paymentDetails.id}` : ''}`);
       } else if (customOrderId) {
@@ -324,6 +321,11 @@ export default function Checkout() {
         console.warn("No order ID available for redirect, going to account page");
         router.push("/account");
       }
+
+      // Clear cart after redirect starts to prevent cart page flash
+      setTimeout(() => {
+        clearCart();
+      }, 100);
     } catch (error: any) {
       console.error("Error creating order:", error);
 
