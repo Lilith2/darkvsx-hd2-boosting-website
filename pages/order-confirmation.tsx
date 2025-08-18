@@ -142,6 +142,54 @@ export default function OrderConfirmation() {
     }
   };
 
+  const sendConfirmationEmail = async (orderData: any) => {
+    try {
+      setEmailError(null);
+
+      // Format order data for email
+      const orderNumber = isCustomOrder ? orderData.order_number : `#${orderData.id.slice(-6)}`;
+      const orderDate = isCustomOrder ? orderData.created_at : orderData.createdAt;
+      const orderAmount = isCustomOrder ? orderData.total_amount : orderData.totalAmount;
+      const customerEmail = isCustomOrder ? orderData.customer_email : orderData.customerEmail;
+      const customerName = isCustomOrder ? orderData.customer_name : orderData.customerName;
+
+      // Prepare order items for email
+      let emailItems = [];
+      if (isCustomOrder) {
+        emailItems = (orderData.items || []).map((item: any) => ({
+          name: item.item_name,
+          quantity: item.quantity,
+          price: item.price_per_unit,
+          total: item.total_price,
+        }));
+      } else {
+        emailItems = (orderData.services || []).map((service: any) => ({
+          name: service.name,
+          quantity: service.quantity,
+          price: service.price,
+          total: service.price * service.quantity,
+        }));
+      }
+
+      await sendOrderConfirmationEmail({
+        customerEmail,
+        customerName: customerName || 'Valued Customer',
+        orderNumber,
+        orderDate,
+        orderTotal: orderAmount,
+        items: emailItems,
+        paymentId: paymentId as string,
+        isCustomOrder,
+      });
+
+      setEmailSent(true);
+      console.log('Order confirmation email sent successfully');
+    } catch (error: any) {
+      console.error('Failed to send confirmation email:', error);
+      setEmailError(error.message || 'Failed to send confirmation email');
+    }
+  };
+
   // Show loading state while orders are being fetched
   const isLoading = isCustomOrder ? customLoading : loading;
   if (isLoading && isInitialLoad) {
