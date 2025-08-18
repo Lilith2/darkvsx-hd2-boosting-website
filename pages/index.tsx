@@ -136,7 +136,7 @@ export default function Index() {
               </span>
             </h1>
 
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 sm:mb-10 leading-relaxed px-4 sm:px-0">
               Boosting service with{" "}
               <span className="text-primary font-semibold">fast delivery</span>,
               <span className="text-primary font-semibold">
