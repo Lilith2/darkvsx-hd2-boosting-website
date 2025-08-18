@@ -41,7 +41,7 @@ export default function OrderConfirmation() {
   const { orders: customOrders, loading: customLoading } = useCustomOrders();
   const { user } = useAuth();
 
-  const [order, setOrder] = useState(null);
+  const [order, setOrder] = useState<any>(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [emailSent, setEmailSent] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
