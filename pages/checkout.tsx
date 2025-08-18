@@ -4,6 +4,7 @@ import { useCart } from "@/hooks/useCart";
 import { useOrders } from "@/hooks/useOrders";
 import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useAuth } from "@/hooks/useAuth";
+import { sendOrderConfirmationEmail } from "@/lib/emailService";
 import { useReferrals } from "@/hooks/useReferrals";
 import { useToast } from "@/hooks/use-toast";
 import { PAYMENT_CONSTANTS } from "@/lib/constants";
