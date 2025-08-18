@@ -147,10 +147,15 @@ export default function Index() {
               <Button
                 size="lg"
                 className="text-lg px-8 py-6 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-xl group"
+                aria-label="Start your Helldivers 2 boosting order now"
+                onClick={() => {
+                  const servicesSection = document.getElementById('services');
+                  servicesSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
               >
-                <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" aria-hidden="true" />
                 Start Your Order
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
               </Button>
               <Button
                 size="lg"
