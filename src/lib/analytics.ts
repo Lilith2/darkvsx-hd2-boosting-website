@@ -220,7 +220,7 @@ export function initializeAnalytics() {
 
   try {
     // Track performance metrics only if available
-    if (performance && performance.getEntriesByType) {
+    if (typeof performance !== 'undefined' && 'getEntriesByType' in performance) {
       trackPerformanceMetrics();
     }
 
