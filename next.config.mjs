@@ -85,7 +85,7 @@ const nextConfig = {
     "@supabase/realtime-js",
     "@supabase/functions-js",
   ],
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, webpack }) => {
     // Minimal webpack config to fix Supabase issues without breaking anything
     if (!isServer) {
       config.resolve.fallback = {
@@ -97,8 +97,15 @@ const nextConfig = {
       };
 
       // Suppress the specific realtime-js critical dependency warning
-      config.module.unknownContextCritical = false;
-      config.module.exprContextCritical = false;
+      config.plugins.push(
+        new webpack.ContextReplacementPlugin(
+          /\/node_modules\/@supabase\/realtime-js\/dist\/main\/lib\/websocket-factory\.js$/,
+          (data) => {
+            delete data.dependencies[0].critical;
+            return data;
+          }
+        )
+      );
     }
 
     return config;
