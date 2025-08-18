@@ -59,6 +59,9 @@ export function AccessibilityWrapper({ children }: AccessibilityWrapperProps) {
 
   // Focus management for modals and overlays
   useEffect(() => {
+    // Skip server-side execution
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         // Find the topmost modal or dialog
