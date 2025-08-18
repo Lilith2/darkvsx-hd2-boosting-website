@@ -218,6 +218,9 @@ export default function AdminDashboard() {
     pricing: false,
   });
 
+  // Custom pricing data - use local state for CRUD operations
+  const [localCustomPricing, setLocalCustomPricing] = useState<any[]>([]);
+
   // Modal state management
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
@@ -231,6 +234,15 @@ export default function AdminDashboard() {
   const [orderDetailsType, setOrderDetailsType] = useState<
     "regular" | "custom"
   >("regular");
+
+  // Sync optimized data with local state - use stable comparison to prevent infinite loops
+  useEffect(() => {
+    // Only update if the array length or content has actually changed
+    if (customPricing.length !== localCustomPricing.length ||
+        JSON.stringify(customPricing) !== JSON.stringify(localCustomPricing)) {
+      setLocalCustomPricing(customPricing);
+    }
+  }, [customPricing.length]); // Only depend on length to avoid infinite loops
 
   // Track tab changes for loading optimization
   const handleTabChange = useCallback((value: string) => {
