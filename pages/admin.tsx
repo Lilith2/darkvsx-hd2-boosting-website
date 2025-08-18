@@ -287,30 +287,18 @@ export default function AdminDashboard() {
   };
 
   const handleSaveService = async (serviceData: any) => {
-    const operationId = addOperation({
-      type: 'service',
-      description: editingService ? `Updating ${serviceData.title}` : `Creating ${serviceData.title}`,
-    });
-
     try {
-      updateOperation(operationId, { status: 'running', progress: 50 });
-
       if (editingService) {
         await updateService(editingService.id, serviceData);
       } else {
         await addService(serviceData);
       }
 
-      updateOperation(operationId, { status: 'success', progress: 100 });
       toast({
         title: "Success",
         description: `Service ${editingService ? 'updated' : 'created'} successfully.`,
       });
     } catch (error) {
-      updateOperation(operationId, {
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
       toast({
         title: "Error",
         description: `Failed to ${editingService ? 'update' : 'create'} service.`,
