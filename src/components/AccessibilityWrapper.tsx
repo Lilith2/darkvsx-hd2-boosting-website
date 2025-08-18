@@ -119,6 +119,9 @@ export function useFocusManagement() {
   };
 
   const announceToScreenReader = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+    // Skip server-side execution
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
     const announcement = document.createElement('div');
     announcement.setAttribute('aria-live', priority);
     announcement.setAttribute('aria-atomic', 'true');
