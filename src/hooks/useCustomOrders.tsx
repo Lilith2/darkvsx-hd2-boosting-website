@@ -69,7 +69,7 @@ export function useCustomOrders() {
       const transformedOrders: CustomOrder[] = [];
 
       for (const order of data || []) {
-        let orderItems = [];
+        let orderItems: any[] = [];
 
         // Check if items are stored in the JSONB column
         if (
