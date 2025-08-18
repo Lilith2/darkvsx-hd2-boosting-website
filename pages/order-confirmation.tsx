@@ -294,7 +294,7 @@ export default function OrderConfirmation() {
     orderItems = order.items || [];
   } else {
     orderItems =
-      order.services?.map((service) => ({
+      order.services?.map((service: any) => ({
         name: service.name,
         quantity: service.quantity,
         price: service.price,
