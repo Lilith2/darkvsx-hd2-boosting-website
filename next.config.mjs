@@ -6,6 +6,11 @@ const nextConfig = {
   compress: true,
   output: 'standalone', // Enable standalone output for proper page routing
   generateEtags: true,
+  experimental: {
+    scrollRestoration: true,
+    esmExternals: false, // Ensure proper SSR
+  },
+  swcMinify: true,
   allowedDevOrigins: [
     "1c1d42e681804164827111b263e5941f-c903eba0dff24a369b0e80752.fly.dev",
     "ef297b071d014482af49aab623b4cc88-c420d88334bd4335931373581.projects.builder.codes",
@@ -78,9 +83,6 @@ const nextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-  },
-  experimental: {
-    scrollRestoration: true,
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
