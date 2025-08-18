@@ -6,12 +6,15 @@ interface AccessibilityWrapperProps {
 
 export function AccessibilityWrapper({ children }: AccessibilityWrapperProps) {
   useEffect(() => {
+    // Skip server-side execution
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
     // Skip to main content functionality
     const skipLink = document.createElement('a');
     skipLink.href = '#main-content';
     skipLink.textContent = 'Skip to main content';
     skipLink.className = 'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded focus:z-50';
-    
+
     document.body.insertBefore(skipLink, document.body.firstChild);
 
     // Add main content landmark
