@@ -110,8 +110,24 @@ export function useCustomOrders() {
 
       setOrders(transformedOrders);
     } catch (err: any) {
-      console.error("Error fetching custom orders:", err?.message || err);
-      setError(err?.message || "Failed to fetch custom orders");
+      console.error("Error fetching custom orders:", err);
+
+      // Check if it's a network error (Failed to fetch)
+      if (err?.message?.includes("Failed to fetch") || err?.name === "TypeError") {
+        // Network error - try a simple connection test
+        try {
+          const testResponse = await fetch("/api/ping");
+          if (testResponse.ok) {
+            setError("Database connection issue. Please check your Supabase configuration.");
+          } else {
+            setError("Network connectivity issue. Please check your internet connection.");
+          }
+        } catch (networkErr) {
+          setError("Network connectivity issue. Please check your internet connection.");
+        }
+      } else {
+        setError(err?.message || "Failed to fetch custom orders");
+      }
     } finally {
       setLoading(false);
     }
