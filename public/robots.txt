@@ -1,14 +1,22 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+Allow: /bundles
+Allow: /contact
+Allow: /faq
+Allow: /custom-order
+Allow: /terms
+Allow: /privacy
+
+# Block admin and private pages
+Disallow: /admin
+Disallow: /admin-test
+Disallow: /account
+Disallow: /order/
+Disallow: /api/
+
+# Block authentication pages from search engines
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+
+Sitemap: https://helldivers2boost.com/sitemap.xml
