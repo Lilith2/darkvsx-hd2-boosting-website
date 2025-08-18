@@ -171,6 +171,8 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboard() {
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
+
   // Use optimized hooks for better performance
   const {
     orders,
@@ -185,11 +187,6 @@ export default function AdminDashboard() {
     updateOrderStatus,
     invalidateAll,
   } = useOptimizedAdminData();
-
-  // Early loading state - show full loading dashboard
-  if (isLoading && orders.length === 0 && services.length === 0) {
-    return <AdminDashboardLoadingState />;
-  }
 
   // Legacy hooks for service and bundle management (still needed for CRUD operations)
   const {
