@@ -109,10 +109,10 @@ export function useAdminAnalytics({
     const recentOrders = allOrders
       .sort((a, b) => {
         const dateA = new Date(
-          "createdAt" in a ? a.createdAt : a.created_at
+          ("createdAt" in a ? (a as any).createdAt : (a as any).created_at) || new Date()
         ).getTime();
         const dateB = new Date(
-          "createdAt" in b ? b.createdAt : b.created_at
+          ("createdAt" in b ? (b as any).createdAt : (b as any).created_at) || new Date()
         ).getTime();
         return dateB - dateA;
       })
