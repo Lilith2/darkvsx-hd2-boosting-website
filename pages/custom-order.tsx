@@ -216,6 +216,7 @@ export default function CustomOrder() {
         category: pricingItem.category || "",
         item_name: pricingItem.item_name || "",
         description: pricingItem.description || "",
+        price_per_unit: pricingItem.price_per_unit || 0,
       };
       setOrderItems(updatedItems);
     } else {
