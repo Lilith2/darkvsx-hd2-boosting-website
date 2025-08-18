@@ -19,6 +19,7 @@ import { SecurityProvider } from "@/components/SecurityProvider";
 import { Layout } from "@/components/Layout";
 import { AppContent } from "@/components/AppContent";
 import { initializeAnalytics } from "@/lib/analytics";
+import { initializeSecurity } from "@/lib/security";
 
 const queryClient = new QueryClient({
   defaultOptions: {
