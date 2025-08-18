@@ -360,25 +360,13 @@ export default function AdminDashboard() {
   const handleDeleteBundle = async (id: string) => {
     if (!confirm("Are you sure you want to delete this bundle?")) return;
 
-    const bundle = bundles.find(b => b.id === id);
-    const operationId = addOperation({
-      type: 'bundle',
-      description: `Deleting ${bundle?.name || 'bundle'}`,
-    });
-
     try {
-      updateOperation(operationId, { status: 'running', progress: 50 });
       await deleteBundle(id);
-      updateOperation(operationId, { status: 'success', progress: 100 });
       toast({
         title: "Success",
         description: "Bundle deleted successfully.",
       });
     } catch (error) {
-      updateOperation(operationId, {
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
       toast({
         title: "Error",
         description: "Failed to delete bundle.",
