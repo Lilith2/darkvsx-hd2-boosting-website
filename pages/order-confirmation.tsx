@@ -406,7 +406,7 @@ export default function OrderConfirmation() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {orderItems.map((item, index) => (
+                  {orderItems.map((item: any, index: number) => (
                     <div
                       key={index}
                       className="flex justify-between items-center py-2"
