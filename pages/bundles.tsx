@@ -80,7 +80,12 @@ export default function Bundles() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <>
+      <Head>
+        <title>Helldivers 2 Service Bundles - HelldiversBoost</title>
+        <meta name="description" content="Explore our curated service bundles for Helldivers 2 boosting services." />
+      </Head>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
       <div className="bg-gradient-to-r from-card to-card/80 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -331,7 +336,8 @@ export default function Bundles() {
           </Card>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
