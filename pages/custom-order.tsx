@@ -325,10 +325,11 @@ export default function CustomOrder() {
 
   const groupedPricing = pricing.reduce(
     (acc, item) => {
-      if (!acc[item.category]) {
-        acc[item.category] = [];
+      const category = item.category || "Other";
+      if (!acc[category]) {
+        acc[category] = [];
       }
-      acc[item.category].push(item);
+      acc[category]!.push(item);
       return acc;
     },
     {} as Record<string, CustomPricing[]>,
