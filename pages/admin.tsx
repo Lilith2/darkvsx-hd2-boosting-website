@@ -220,11 +220,7 @@ export default function AdminDashboard() {
   // Custom pricing data is now handled by useOptimizedAdminData
   const [localCustomPricing, setLocalCustomPricing] = useState<any[]>([]);
 
-  // Sync optimized data with local state for pricing management
-  useEffect(() => {
-    setLocalCustomPricing(customPricing);
-  }, [customPricing]);
-
+  // Modal state management
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
@@ -237,6 +233,11 @@ export default function AdminDashboard() {
   const [orderDetailsType, setOrderDetailsType] = useState<
     "regular" | "custom"
   >("regular");
+
+  // Sync optimized data with local state for pricing management
+  useEffect(() => {
+    setLocalCustomPricing(customPricing);
+  }, [customPricing]);
 
   // Track tab changes for loading optimization
   const handleTabChange = useCallback((value: string) => {
@@ -266,6 +267,11 @@ export default function AdminDashboard() {
         break;
     }
   }, [services, bundles, orders, customOrders, localCustomPricing]);
+
+  // EARLY RETURN AFTER ALL HOOKS - Show full loading dashboard for initial load
+  if (isLoading && orders.length === 0 && services.length === 0) {
+    return <AdminDashboardLoadingState />;
+  }
 
   // Analytics are now provided by optimized hook - no additional processing needed
 
