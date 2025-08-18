@@ -635,8 +635,10 @@ export default function AdminDashboard() {
                           ipAddress: order.ip_address,
                           referralCode: order.referral_code,
                           referralDiscount: order.referral_discount,
-                          referralCreditsUsed: (order as any).referral_credits_used || 0,
-                          referredByUserId: (order as any).referred_by_user_id || undefined,
+                          referralCreditsUsed:
+                            (order as any).referral_credits_used || 0,
+                          referredByUserId:
+                            (order as any).referred_by_user_id || undefined,
                           messages: [],
                           tracking: [],
                         }) as any,
@@ -656,7 +658,10 @@ export default function AdminDashboard() {
                             : [],
                           special_instructions: order.special_instructions,
                           customer_email: order.customer_email,
-                          customer_name: (order as any).customer_name || order.customer_email || "Unknown",
+                          customer_name:
+                            (order as any).customer_name ||
+                            order.customer_email ||
+                            "Unknown",
                           customer_discord: order.customer_discord,
                           payment_intent_id: order.payment_intent_id,
                           delivery_status:
@@ -1000,7 +1005,7 @@ export default function AdminDashboard() {
                 }))}
                 customOrders={customOrders.map((order: any) => ({
                   ...order,
-                  customer_email: order.customer_email || '',
+                  customer_email: order.customer_email || "",
                   created_at: order.created_at || order.createdAt,
                   updated_at: order.updated_at || order.updatedAt,
                 }))}
