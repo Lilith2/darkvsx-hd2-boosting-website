@@ -1,14 +1,19 @@
 import React, { ReactNode, createContext, useContext, useMemo } from "react";
 import { useServices, ServiceData, Service } from "@/hooks/useServices";
 import { useBundles, BundleData, Bundle } from "@/hooks/useBundles";
-import { OptimizedCartProvider, useOptimizedCart } from "@/hooks/useOptimizedCart";
+import {
+  OptimizedCartProvider,
+  useOptimizedCart,
+} from "@/hooks/useOptimizedCart";
 
 interface CoreDataContextType {
   services: {
     services: ServiceData[];
     loading: boolean;
     refreshServices: () => Promise<void>;
-    addService: (service: Omit<Service, "id" | "created_at" | "updated_at">) => Promise<void>;
+    addService: (
+      service: Omit<Service, "id" | "created_at" | "updated_at">,
+    ) => Promise<void>;
     updateService: (id: string, updates: Partial<Service>) => Promise<void>;
     deleteService: (id: string) => Promise<void>;
   };
@@ -16,7 +21,9 @@ interface CoreDataContextType {
     bundles: BundleData[];
     loading: boolean;
     refreshBundles: () => Promise<void>;
-    addBundle: (bundle: Omit<Bundle, "id" | "created_at" | "updated_at">) => Promise<void>;
+    addBundle: (
+      bundle: Omit<Bundle, "id" | "created_at" | "updated_at">,
+    ) => Promise<void>;
     updateBundle: (id: string, updates: Partial<Bundle>) => Promise<void>;
     deleteBundle: (id: string) => Promise<void>;
   };
@@ -31,7 +38,9 @@ interface CoreDataContextType {
   };
 }
 
-const CoreDataContext = createContext<CoreDataContextType | undefined>(undefined);
+const CoreDataContext = createContext<CoreDataContextType | undefined>(
+  undefined,
+);
 
 function CoreDataProviderInner({ children }: { children: ReactNode }) {
   const services = useServices();
@@ -39,33 +48,36 @@ function CoreDataProviderInner({ children }: { children: ReactNode }) {
   const cart = useOptimizedCart();
 
   // Memoize the context value to prevent unnecessary rerenders
-  const contextValue = useMemo(() => ({
-    services: {
-      services: services.services,
-      loading: services.loading,
-      refreshServices: services.refreshServices,
-      addService: services.addService,
-      updateService: services.updateService,
-      deleteService: services.deleteService,
-    },
-    bundles: {
-      bundles: bundles.bundles,
-      loading: bundles.loading,
-      refreshBundles: bundles.refreshBundles,
-      addBundle: bundles.addBundle,
-      updateBundle: bundles.updateBundle,
-      deleteBundle: bundles.deleteBundle,
-    },
-    cart: {
-      items: cart.items,
-      addItem: cart.addItem,
-      removeItem: cart.removeItem,
-      updateQuantity: cart.updateQuantity,
-      clearCart: cart.clearCart,
-      total: cart.total,
-      itemCount: cart.itemCount,
-    },
-  }), [services, bundles, cart]);
+  const contextValue = useMemo(
+    () => ({
+      services: {
+        services: services.services,
+        loading: services.loading,
+        refreshServices: services.refreshServices,
+        addService: services.addService,
+        updateService: services.updateService,
+        deleteService: services.deleteService,
+      },
+      bundles: {
+        bundles: bundles.bundles,
+        loading: bundles.loading,
+        refreshBundles: bundles.refreshBundles,
+        addBundle: bundles.addBundle,
+        updateBundle: bundles.updateBundle,
+        deleteBundle: bundles.deleteBundle,
+      },
+      cart: {
+        items: cart.items,
+        addItem: cart.addItem,
+        removeItem: cart.removeItem,
+        updateQuantity: cart.updateQuantity,
+        clearCart: cart.clearCart,
+        total: cart.total,
+        itemCount: cart.itemCount,
+      },
+    }),
+    [services, bundles, cart],
+  );
 
   return (
     <CoreDataContext.Provider value={contextValue}>
@@ -77,9 +89,7 @@ function CoreDataProviderInner({ children }: { children: ReactNode }) {
 export function CoreDataProvider({ children }: { children: ReactNode }) {
   return (
     <OptimizedCartProvider>
-      <CoreDataProviderInner>
-        {children}
-      </CoreDataProviderInner>
+      <CoreDataProviderInner>{children}</CoreDataProviderInner>
     </OptimizedCartProvider>
   );
 }

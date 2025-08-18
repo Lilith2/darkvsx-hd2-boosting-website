@@ -76,15 +76,17 @@ export function useAdminAnalytics({
 
     // Count pending orders
     const pendingRegularOrders = orders.filter(
-      (order) => order.status === "pending"
+      (order) => order.status === "pending",
     ).length;
     const pendingCustomOrders = customOrders.filter(
-      (order) => order.status === "pending"
+      (order) => order.status === "pending",
     ).length;
     const pendingOrdersCount = pendingRegularOrders + pendingCustomOrders;
 
     // Count active services
-    const activeServicesCount = services.filter((service) => service.active).length;
+    const activeServicesCount = services.filter(
+      (service) => service.active,
+    ).length;
 
     // Count unique customers
     const customerEmails = new Set<string>();
@@ -109,17 +111,22 @@ export function useAdminAnalytics({
     const recentOrders = allOrders
       .sort((a, b) => {
         const dateA = new Date(
-          ("createdAt" in a ? (a as any).createdAt : (a as any).created_at) || new Date()
+          ("createdAt" in a ? (a as any).createdAt : (a as any).created_at) ||
+            new Date(),
         ).getTime();
         const dateB = new Date(
-          ("createdAt" in b ? (b as any).createdAt : (b as any).created_at) || new Date()
+          ("createdAt" in b ? (b as any).createdAt : (b as any).created_at) ||
+            new Date(),
         ).getTime();
         return dateB - dateA;
       })
       .slice(0, 5);
 
     // Calculate top services by revenue
-    const serviceRevenue = new Map<string, { name: string; revenue: number; orderCount: number }>();
+    const serviceRevenue = new Map<
+      string,
+      { name: string; revenue: number; orderCount: number }
+    >();
 
     orders.forEach((order) => {
       if (order.services) {
@@ -131,7 +138,7 @@ export function useAdminAnalytics({
           };
           serviceRevenue.set(service.id, {
             name: service.name,
-            revenue: current.revenue + (service.price * service.quantity),
+            revenue: current.revenue + service.price * service.quantity,
             orderCount: current.orderCount + 1,
           });
         });
