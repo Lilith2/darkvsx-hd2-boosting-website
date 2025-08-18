@@ -435,7 +435,7 @@ export default function OrderTracking() {
                         team.
                       </p>
                     ) : (
-                      (normalizedOrder.messages || []).map((message) => (
+                      (normalizedOrder.messages || []).map((message: any) => (
                         <div
                           key={message.id}
                           className={`p-3 rounded-lg ${
