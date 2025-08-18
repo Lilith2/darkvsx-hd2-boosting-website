@@ -61,7 +61,7 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
       <ErrorBoundary>
         <SecurityProvider>
-          {/* <AccessibilityWrapper> */}
+          <AccessibilityWrapper>
             <SEOHead />
             <QueryClientProvider client={queryClient}>
               <TooltipProvider>
@@ -86,7 +86,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 </AuthProvider>
               </TooltipProvider>
             </QueryClientProvider>
-          {/* </AccessibilityWrapper> */}
+          </AccessibilityWrapper>
         </SecurityProvider>
       </ErrorBoundary>
     </>
