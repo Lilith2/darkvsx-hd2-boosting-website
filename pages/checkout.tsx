@@ -273,6 +273,7 @@ export default function Checkout() {
             special_instructions:
               customOrderData.special_instructions || orderNotes,
             customer_email: user?.email || guestInfo.email,
+            customer_name: user?.username || guestInfo.name,
             customer_discord: customOrderData.customer_discord,
             userId: user?.id || null,
             referralCode: referralCode || undefined,
