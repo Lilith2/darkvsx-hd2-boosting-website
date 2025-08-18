@@ -190,6 +190,7 @@ export default function OrderConfirmation() {
   const orderDate = isCustomOrder ? order.created_at : order.createdAt;
   const orderAmount = isCustomOrder ? order.total_amount : order.totalAmount;
   const customerEmail = isCustomOrder ? order.customer_email : order.customerEmail;
+  const customerName = isCustomOrder ? order.customer_name : order.customerName;
   const orderStatus = order.status;
 
   // Get order items for display
