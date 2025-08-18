@@ -312,10 +312,10 @@ export default function Checkout() {
 
       // Redirect to order confirmation page BEFORE clearing cart to avoid flash
       if (regularOrderItems.length > 0) {
-        router.push(`/order-confirmation?orderId=${orderId}${paymentDetails?.id ? `&paymentId=${paymentDetails.id}` : ''}`);
+        router.push(`/order-confirmation?orderId=${orderId}&sendEmail=true${paymentDetails?.id ? `&paymentId=${paymentDetails.id}` : ''}`);
       } else if (customOrderId) {
         // For custom orders, use the captured custom order ID
-        router.push(`/order-confirmation?orderId=${customOrderId}&type=custom${paymentDetails?.id ? `&paymentId=${paymentDetails.id}` : ''}`);
+        router.push(`/order-confirmation?orderId=${customOrderId}&type=custom&sendEmail=true${paymentDetails?.id ? `&paymentId=${paymentDetails.id}` : ''}`);
       } else {
         // Fallback to account page if no order ID available
         console.warn("No order ID available for redirect, going to account page");
