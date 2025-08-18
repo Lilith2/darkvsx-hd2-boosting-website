@@ -301,7 +301,7 @@ export default function OrderConfirmation() {
       })) || [];
   }
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case "completed":
         return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
