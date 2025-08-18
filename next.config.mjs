@@ -6,9 +6,9 @@ const nextConfig = {
   compress: true,
   allowedDevOrigins: [
     '1c1d42e681804164827111b263e5941f-c903eba0dff24a369b0e80752.fly.dev',
-    /\.fly\.dev$/,
-    /localhost/,
-    /127\.0\.0\.1/,
+    'localhost',
+    '127.0.0.1',
+    '*.fly.dev',
   ],
   async headers() {
     return [
