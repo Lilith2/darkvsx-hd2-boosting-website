@@ -22,8 +22,6 @@ import {
   PricingTabLoadingSkeleton,
   OverviewCardsLoadingSkeleton,
 } from "@/components/admin/AdminLoadingStates";
-import { AdminPerformanceMonitor } from "@/components/admin/AdminPerformanceMonitor";
-import { AdminOperationTracker, useAdminOperations } from "@/components/admin/AdminOperationTracker";
 
 // Lazy load components with better loading states
 const ServiceModal = dynamic(
