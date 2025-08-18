@@ -429,7 +429,7 @@ export default function Index() {
             Build your perfect custom order with our flexible pricing system. Choose exactly what you need - medals, levels, samples, or super credits.
           </p>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12 px-4 sm:px-0">
             <div className="p-6 bg-card/50 rounded-xl border border-border/50">
               <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Trophy className="w-6 h-6 text-white" />
