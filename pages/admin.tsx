@@ -446,14 +446,7 @@ export default function AdminDashboard() {
   const handleDeletePricing = async (id: string) => {
     if (!confirm("Are you sure you want to delete this item?")) return;
 
-    const pricing = localCustomPricing.find(p => p.id === id);
-    const operationId = addOperation({
-      type: 'pricing',
-      description: `Deleting ${pricing?.item_name || 'pricing item'}`,
-    });
-
     try {
-      updateOperation(operationId, { status: 'running', progress: 50 });
       const { supabase } = await import("@/integrations/supabase/client");
       const { error } = await supabase
         .from("custom_pricing")
@@ -467,17 +460,12 @@ export default function AdminDashboard() {
       // Invalidate the optimized cache
       invalidateAll();
 
-      updateOperation(operationId, { status: 'success', progress: 100 });
       toast({
         title: "Pricing Deleted",
         description: "Custom pricing has been deleted successfully.",
       });
     } catch (error) {
       console.error("Error deleting pricing:", error);
-      updateOperation(operationId, {
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
       toast({
         title: "Error",
         description: "Failed to delete pricing. Please try again.",
