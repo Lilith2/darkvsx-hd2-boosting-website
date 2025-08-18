@@ -325,7 +325,10 @@ export default function Index() {
 
                   <CardHeader className="relative z-10">
                     <div className="flex items-start justify-between mb-2">
-                      <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                      <CardTitle
+                    className="text-xl group-hover:text-primary transition-colors"
+                    id={`service-title-${service.id}`}
+                  >
                         {service.title}
                       </CardTitle>
                       <Badge variant="outline" className="text-xs bg-background/50">
