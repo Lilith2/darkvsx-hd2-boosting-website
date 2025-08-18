@@ -972,3 +972,10 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
+// Ensure this page is server-side rendered for proper MPA behavior
+export async function getServerSideProps() {
+  return {
+    props: {}, // Return empty props, data is fetched client-side via hooks
+  };
+}
