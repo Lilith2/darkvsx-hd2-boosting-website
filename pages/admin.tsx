@@ -689,7 +689,7 @@ export default function AdminDashboard() {
             {isLoading && currentTab === "services" ? (
               <ServicesTabLoadingSkeleton />
             ) : (
-              <AdminServicesTab
+              <AdminServicesTabLazy
                 services={services}
                 loading={isLoading}
                 onAddService={handleAddService}
