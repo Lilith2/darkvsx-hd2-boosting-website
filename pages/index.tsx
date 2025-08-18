@@ -387,10 +387,12 @@ export default function Index() {
                       <Button
                         className="w-full mt-6 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-lg group-hover:shadow-xl transition-all"
                         onClick={() => handleAddToCart(service)}
+                        aria-label={`Add ${service.title} to cart for $${service.price}`}
+                        aria-describedby={`service-title-${service.id}`}
                       >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        <ShoppingCart className="w-4 h-4 mr-2" aria-hidden="true" />
                         Add to Cart
-                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                       </Button>
                     </div>
                   </CardContent>
