@@ -31,9 +31,21 @@ export function trackPerformanceMetrics() {
 
 function collectMetrics() {
   try {
+    // Check if performance API is available
+    if (!performance || !performance.getEntriesByType) {
+      console.warn("Performance API not available");
+      return;
+    }
+
     const navigation = performance.getEntriesByType(
       "navigation",
     )[0] as PerformanceNavigationTiming;
+    
+    if (!navigation) {
+      console.warn("Navigation timing not available");
+      return;
+    }
+
     const paint = performance.getEntriesByType("paint");
 
     const metrics: Partial<PerformanceMetrics> = {
@@ -101,21 +113,26 @@ function collectMetrics() {
 }
 
 function sendMetrics(metrics: Partial<PerformanceMetrics>) {
-  // Log to console in development
+  // Only log to console in development, avoid any network calls
   if (process.env.NODE_ENV === "development") {
     console.log("Performance Metrics:", metrics);
+    return;
   }
 
-  // Send to analytics service (Google Analytics, etc.)
-  if (typeof gtag !== "undefined") {
-    gtag("event", "page_performance", {
-      load_time: Math.round(metrics.loadTime || 0),
-      dom_content_loaded: Math.round(metrics.domContentLoaded || 0),
-      first_contentful_paint: Math.round(metrics.firstContentfulPaint || 0),
-      largest_contentful_paint: Math.round(metrics.largestContentfulPaint || 0),
-      cumulative_layout_shift: metrics.cumulativeLayoutShift || 0,
-      first_input_delay: Math.round(metrics.firstInputDelay || 0),
-    });
+  // Send to analytics service only in production (Google Analytics, etc.)
+  try {
+    if (typeof gtag !== "undefined") {
+      gtag("event", "page_performance", {
+        load_time: Math.round(metrics.loadTime || 0),
+        dom_content_loaded: Math.round(metrics.domContentLoaded || 0),
+        first_contentful_paint: Math.round(metrics.firstContentfulPaint || 0),
+        largest_contentful_paint: Math.round(metrics.largestContentfulPaint || 0),
+        cumulative_layout_shift: metrics.cumulativeLayoutShift || 0,
+        first_input_delay: Math.round(metrics.firstInputDelay || 0),
+      });
+    }
+  } catch (error) {
+    console.warn("Failed to send analytics metrics:", error);
   }
 }
 
@@ -124,41 +141,53 @@ export function trackEvent(
   eventName: string,
   parameters?: Record<string, any>,
 ) {
-  if (typeof gtag !== "undefined") {
-    gtag("event", eventName, parameters);
-  }
+  try {
+    if (typeof gtag !== "undefined") {
+      gtag("event", eventName, parameters);
+    }
 
-  // Also log in development
-  if (process.env.NODE_ENV === "development") {
-    console.log("Analytics Event:", eventName, parameters);
+    // Also log in development
+    if (process.env.NODE_ENV === "development") {
+      console.log("Analytics Event:", eventName, parameters);
+    }
+  } catch (error) {
+    console.warn("Failed to track event:", error);
   }
 }
 
 // Track page views
 export function trackPageView(path: string, title?: string) {
-  if (typeof gtag !== "undefined") {
-    gtag("config", "GA_MEASUREMENT_ID", {
-      page_path: path,
-      page_title: title || document.title,
-    });
-  }
+  try {
+    if (typeof gtag !== "undefined") {
+      gtag("config", "GA_MEASUREMENT_ID", {
+        page_path: path,
+        page_title: title || document?.title || "",
+      });
+    }
 
-  if (process.env.NODE_ENV === "development") {
-    console.log("Page View:", path, title);
+    if (process.env.NODE_ENV === "development") {
+      console.log("Page View:", path, title);
+    }
+  } catch (error) {
+    console.warn("Failed to track page view:", error);
   }
 }
 
 // Track errors
 export function trackError(error: Error, context?: string) {
-  if (typeof gtag !== "undefined") {
-    gtag("event", "exception", {
-      description: error.message,
-      fatal: false,
-      context: context,
-    });
-  }
+  try {
+    if (typeof gtag !== "undefined") {
+      gtag("event", "exception", {
+        description: error.message,
+        fatal: false,
+        context: context,
+      });
+    }
 
-  console.error("Tracked Error:", error, context);
+    console.error("Tracked Error:", error, context);
+  } catch (e) {
+    console.warn("Failed to track error:", e);
+  }
 }
 
 // Core Web Vitals scoring
@@ -185,28 +214,68 @@ function getScoreForMetric(
   return 50;
 }
 
-// Initialize analytics
+// Initialize analytics with better error handling
 export function initializeAnalytics() {
+  // Guard against server-side execution
   if (typeof window === "undefined") return;
 
-  // Track performance metrics
-  trackPerformanceMetrics();
+  try {
+    // Track performance metrics only if available
+    if (performance && performance.getEntriesByType) {
+      trackPerformanceMetrics();
+    }
 
-  // Track page visibility changes
-  document.addEventListener("visibilitychange", () => {
-    trackEvent("page_visibility_change", {
-      visibility_state: document.visibilityState,
-    });
-  });
+    // Track page visibility changes only if document is available
+    if (document && document.addEventListener) {
+      document.addEventListener("visibilitychange", () => {
+        try {
+          trackEvent("page_visibility_change", {
+            visibility_state: document.visibilityState,
+          });
+        } catch (error) {
+          console.warn("Failed to track visibility change:", error);
+        }
+      });
+    }
 
-  // Track errors
-  window.addEventListener("error", (event) => {
-    trackError(event.error, "window_error");
-  });
+    // Track errors with better error handling
+    if (window.addEventListener) {
+      window.addEventListener("error", (event) => {
+        try {
+          if (event.error) {
+            trackError(event.error, "window_error");
+          }
+        } catch (error) {
+          console.warn("Failed to track window error:", error);
+        }
+      });
 
-  window.addEventListener("unhandledrejection", (event) => {
-    trackError(new Error(event.reason), "unhandled_promise_rejection");
-  });
+      window.addEventListener("unhandledrejection", (event) => {
+        try {
+          // Filter out HMR-related errors and fetch errors from external services
+          const reason = event.reason;
+          if (reason && typeof reason === 'object') {
+            const message = reason.message || '';
+            
+            // Skip HMR and development-related errors
+            if (message.includes('Loading CSS chunk') || 
+                message.includes('Loading chunk') ||
+                message.includes('hmr') ||
+                message.includes('fullstory') ||
+                message.includes('Failed to fetch') && process.env.NODE_ENV === 'development') {
+              return;
+            }
+          }
+          
+          trackError(new Error(event.reason), "unhandled_promise_rejection");
+        } catch (error) {
+          console.warn("Failed to track promise rejection:", error);
+        }
+      });
+    }
+  } catch (error) {
+    console.warn("Analytics initialization failed:", error);
+  }
 }
 
 // Declare global gtag function
