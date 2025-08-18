@@ -6,8 +6,13 @@ const nextConfig = {
   compress: true,
   output: "standalone", // Enable standalone output for proper page routing
   generateEtags: true,
+  swcMinify: true, // Enable SWC minification for better performance
   experimental: {
     scrollRestoration: true,
+    optimizeCss: true, // Enable CSS optimization
+    newNextLinkBehavior: true, // Use new Link behavior for better performance
+    legacyBrowsers: false, // Disable legacy browser support for smaller bundles
+    browsersListForSwc: true, // Use browserslist for SWC
   },
   allowedDevOrigins: [
     "1c1d42e681804164827111b263e5941f-c903eba0dff24a369b0e80752.fly.dev",
@@ -63,29 +68,36 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "localhost",
-      },
-      {
-        protocol: "https",
         hostname: "images.unsplash.com",
       },
       {
         protocol: "https",
         hostname: "cdn.jsdelivr.net",
       },
+      {
+        protocol: "https",
+        hostname: "ahqqptrclqtwqjgmtesv.supabase.co",
+      },
     ],
     unoptimized: false,
     formats: ["image/webp", "image/avif"],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days (more reasonable)
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    loader: 'default',
+    quality: 85, // Optimize quality vs file size
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
+    styledComponents: false, // We're using Tailwind, disable styled-components
   },
   productionBrowserSourceMaps: false,
+  // Bundle analyzer when needed
+  bundlePagesRouterDependencies: true,
+  // Optimize build output
+  optimizeFonts: true,
   transpilePackages: [
     "@supabase/supabase-js",
     "@supabase/auth-js",
