@@ -67,12 +67,20 @@ export async function sendOrderConfirmationEmail(params: SendOrderConfirmationPa
       body: JSON.stringify(params),
     });
 
-    const data: EmailResponse = await response.json();
-
     if (!response.ok) {
-      throw new Error(data.error || 'Failed to send order confirmation email');
+      // Try to get error details from response, but handle if body is already read
+      let errorMessage = 'Failed to send order confirmation email';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorData.message || errorMessage;
+      } catch (jsonError) {
+        // If we can't read the response body, use status text
+        errorMessage = `HTTP ${response.status}: ${response.statusText || errorMessage}`;
+      }
+      throw new Error(errorMessage);
     }
 
+    const data: EmailResponse = await response.json();
     return data;
   } catch (error: any) {
     console.error('Order confirmation email service error:', error);
