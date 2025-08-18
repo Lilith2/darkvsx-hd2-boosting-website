@@ -67,7 +67,7 @@ export function ServicesProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const mapService = (service: Service): ServiceData => ({
+  const mapService = (service: any): ServiceData => ({
     id: service.id,
     title: service.title,
     description: service.description,
