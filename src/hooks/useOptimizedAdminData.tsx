@@ -233,7 +233,7 @@ export function useOptimizedAdminData() {
 
     const allOrders = [...orders, ...customOrders];
     const totalRevenue = allOrders.reduce((sum, order) => {
-      const amount = order.total_amount || order.totalAmount || 0;
+      const amount = order.total_amount || (order as any).totalAmount || 0;
       return sum + amount;
     }, 0);
 
