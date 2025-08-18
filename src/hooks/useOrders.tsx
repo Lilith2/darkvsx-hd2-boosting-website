@@ -89,7 +89,7 @@ export interface OrderData {
   }[];
   tracking: {
     status: string;
-    timestamp: string;
+    timestamp: string | null;
     description: string;
   }[];
 }
