@@ -16,9 +16,9 @@ interface CoreDataContextType {
     bundles: BundleData[];
     loading: boolean;
     refreshBundles: () => Promise<void>;
-    addBundle: (bundle: Omit<BundleData, "id">) => Promise<boolean>;
-    updateBundle: (id: string, updates: Partial<BundleData>) => Promise<boolean>;
-    deleteBundle: (id: string) => Promise<boolean>;
+    addBundle: (bundle: Omit<Bundle, "id" | "created_at" | "updated_at">) => Promise<void>;
+    updateBundle: (id: string, updates: Partial<Bundle>) => Promise<void>;
+    deleteBundle: (id: string) => Promise<void>;
   };
   cart: {
     items: any[];
