@@ -71,9 +71,28 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
 
+      // Optimized query with selective fields and better ordering
       const { data, error: fetchError } = await supabase
         .from("bundles")
-        .select("*")
+        .select(`
+          id,
+          name,
+          description,
+          services,
+          original_price,
+          discounted_price,
+          discount,
+          duration,
+          popular,
+          badge,
+          features,
+          active,
+          created_at,
+          orders_count
+        `)
+        .eq("active", true) // Only fetch active bundles for better performance
+        .order("popular", { ascending: false })
+        .order("orders_count", { ascending: false })
         .order("created_at", { ascending: false });
 
       if (fetchError) {
