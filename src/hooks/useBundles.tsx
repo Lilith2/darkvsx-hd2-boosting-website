@@ -74,7 +74,8 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
       // Optimized query with selective fields and better ordering
       const { data, error: fetchError } = await supabase
         .from("bundles")
-        .select(`
+        .select(
+          `
           id,
           name,
           description,
@@ -89,7 +90,8 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
           active,
           created_at,
           orders_count
-        `)
+        `,
+        )
         .eq("active", true) // Only fetch active bundles for better performance
         .order("popular", { ascending: false })
         .order("orders_count", { ascending: false })

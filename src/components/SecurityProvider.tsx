@@ -40,7 +40,7 @@ export function SecurityProvider({ children }: { children: ReactNode }) {
     details?: Record<string, any>,
   ) => {
     // Simple console logging for security events in development
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log(`[Security Event] ${type}: ${action}`, details);
     }
   };
