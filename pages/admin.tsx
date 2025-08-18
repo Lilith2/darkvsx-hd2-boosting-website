@@ -271,7 +271,7 @@ export default function AdminDashboard() {
         }
         break;
     }
-  }, [services, bundles, orders, customOrders, localCustomPricing]);
+  }, [services.length, bundles.length, orders.length, customOrders.length, localCustomPricing.length]);
 
   // EARLY RETURN AFTER ALL HOOKS - Show full loading dashboard for initial load
   if (isLoading && orders.length === 0 && services.length === 0) {
