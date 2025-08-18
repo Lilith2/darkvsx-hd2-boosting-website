@@ -150,10 +150,10 @@ export default function Index() {
               </span>
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-12 sm:mb-16 px-4 sm:px-0">
               <Button
                 size="lg"
-                className="text-lg px-8 py-6 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-xl group"
+                className="text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-xl group w-full sm:w-auto"
                 aria-label="Start your Helldivers 2 boosting order now"
                 onClick={() => {
                   const servicesSection = document.getElementById('services');
