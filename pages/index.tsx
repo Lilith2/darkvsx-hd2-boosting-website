@@ -223,7 +223,7 @@ export default function Index() {
           {/* Service Filter */}
           {activeServices.length > 0 && (
             <div className="mb-12">
-              <ServiceFilter
+              <DynamicServiceFilter
                 onFilterChange={setSelectedCategory}
                 activeFilter={selectedCategory}
                 serviceCounts={serviceCounts}
