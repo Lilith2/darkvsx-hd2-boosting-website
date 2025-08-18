@@ -218,9 +218,6 @@ export default function AdminDashboard() {
     pricing: false,
   });
 
-  // Custom pricing data is now handled by useOptimizedAdminData
-  const [localCustomPricing, setLocalCustomPricing] = useState<any[]>([]);
-
   // Modal state management
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
@@ -234,11 +231,6 @@ export default function AdminDashboard() {
   const [orderDetailsType, setOrderDetailsType] = useState<
     "regular" | "custom"
   >("regular");
-
-  // Sync optimized data with local state for pricing management
-  useEffect(() => {
-    setLocalCustomPricing(customPricing);
-  }, [customPricing]);
 
   // Track tab changes for loading optimization
   const handleTabChange = useCallback((value: string) => {
