@@ -1,6 +1,9 @@
 import React, { ReactNode, createContext, useContext, useMemo } from "react";
-import { useServices, ServiceData, Service } from "@/hooks/useServices";
-import { useBundles, BundleData, Bundle } from "@/hooks/useBundles";
+import { AuthProvider } from "@/hooks/useAuth";
+import { ServicesProvider, useServices, ServiceData, Service } from "@/hooks/useServices";
+import { BundlesProvider, useBundles, BundleData, Bundle } from "@/hooks/useBundles";
+import { OrdersProvider } from "@/hooks/useOrders";
+import { ReferralsProvider } from "@/hooks/useReferrals";
 import {
   OptimizedCartProvider,
   useOptimizedCart,
@@ -88,9 +91,19 @@ function CoreDataProviderInner({ children }: { children: ReactNode }) {
 
 export function CoreDataProvider({ children }: { children: ReactNode }) {
   return (
-    <OptimizedCartProvider>
-      <CoreDataProviderInner>{children}</CoreDataProviderInner>
-    </OptimizedCartProvider>
+    <AuthProvider>
+      <ServicesProvider>
+        <BundlesProvider>
+          <OptimizedCartProvider>
+            <OrdersProvider>
+              <ReferralsProvider>
+                <CoreDataProviderInner>{children}</CoreDataProviderInner>
+              </ReferralsProvider>
+            </OrdersProvider>
+          </OptimizedCartProvider>
+        </BundlesProvider>
+      </ServicesProvider>
+    </AuthProvider>
   );
 }
 
