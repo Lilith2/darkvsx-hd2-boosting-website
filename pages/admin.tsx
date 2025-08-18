@@ -235,14 +235,20 @@ export default function AdminDashboard() {
     "regular" | "custom"
   >("regular");
 
-  // Sync optimized data with local state - only sync when data is first loaded or reset
+  // Sync optimized data with local state - only sync when data is first loaded
   useEffect(() => {
     // Only sync when customPricing has data and localCustomPricing is empty (initial load)
-    // or when customPricing length changes significantly (data refresh)
     if (customPricing.length > 0 && localCustomPricing.length === 0) {
-      setLocalCustomPricing(customPricing);
+      setLocalCustomPricing([...customPricing]); // Create a copy to avoid reference issues
     }
   }, [customPricing.length]); // Only depend on length to avoid infinite loops
+
+  // Fallback: if customPricing is available but localCustomPricing is still empty after loading
+  useEffect(() => {
+    if (!isLoading && customPricing.length > 0 && localCustomPricing.length === 0) {
+      setLocalCustomPricing([...customPricing]);
+    }
+  }, [isLoading]); // Only run when loading state changes
 
   // Track tab changes for loading optimization
   const handleTabChange = useCallback((value: string) => {
