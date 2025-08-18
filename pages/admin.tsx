@@ -610,7 +610,54 @@ export default function AdminDashboard() {
                   isLoading={isLoading}
                 />
                 <RecentOrdersCard
-                  recentOrders={[...orders, ...customOrders].slice(0, 5)}
+                  recentOrders={[
+                    // Transform raw orders to OrderData format
+                    ...orders.map(order => ({
+                      id: order.id,
+                      userId: order.user_id,
+                      customerEmail: order.customer_email || '',
+                      customerName: order.customer_name || '',
+                      services: Array.isArray(order.services) ? order.services as any[] : [],
+                      status: order.status as any,
+                      totalAmount: order.total_amount || 0,
+                      paymentStatus: order.payment_status as any,
+                      createdAt: order.created_at || '',
+                      updatedAt: order.updated_at || '',
+                      progress: order.progress,
+                      assignedBooster: order.assigned_booster,
+                      estimatedCompletion: order.estimated_completion,
+                      notes: order.notes,
+                      transactionId: order.transaction_id,
+                      ipAddress: order.ip_address,
+                      referralCode: order.referral_code,
+                      referralDiscount: order.referral_discount,
+                      referralCreditsUsed: order.referral_credits_used,
+                      referredByUserId: order.referred_by_user_id,
+                      messages: [],
+                      tracking: []
+                    } as any)),
+                    // Transform raw custom orders to CustomOrder format
+                    ...customOrders.map(order => ({
+                      id: order.id,
+                      user_id: order.user_id,
+                      order_number: order.order_number || '',
+                      status: order.status,
+                      total_amount: order.total_amount || 0,
+                      currency: order.currency || 'USD',
+                      items: Array.isArray(order.items) ? order.items as any[] : [],
+                      special_instructions: order.special_instructions,
+                      customer_email: order.customer_email,
+                      customer_name: order.customer_name,
+                      customer_discord: order.customer_discord,
+                      payment_intent_id: order.payment_intent_id,
+                      delivery_status: order.delivery_status as any || 'not_started',
+                      delivery_notes: order.delivery_notes,
+                      admin_notes: order.admin_notes,
+                      created_at: order.created_at,
+                      updated_at: order.updated_at,
+                      completed_at: order.completed_at
+                    } as any))
+                  ].slice(0, 5)}
                   isLoading={isLoading}
                   onOrderClick={(order, type) => {
                     setSelectedOrderForDetails(order);
