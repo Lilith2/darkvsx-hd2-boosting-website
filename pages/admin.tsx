@@ -235,11 +235,11 @@ export default function AdminDashboard() {
     "regular" | "custom"
   >("regular");
 
-  // Sync optimized data with local state - use stable comparison to prevent infinite loops
+  // Sync optimized data with local state - only sync when data is first loaded or reset
   useEffect(() => {
-    // Only update if the array length or content has actually changed
-    if (customPricing.length !== localCustomPricing.length ||
-        JSON.stringify(customPricing) !== JSON.stringify(localCustomPricing)) {
+    // Only sync when customPricing has data and localCustomPricing is empty (initial load)
+    // or when customPricing length changes significantly (data refresh)
+    if (customPricing.length > 0 && localCustomPricing.length === 0) {
       setLocalCustomPricing(customPricing);
     }
   }, [customPricing.length]); // Only depend on length to avoid infinite loops
