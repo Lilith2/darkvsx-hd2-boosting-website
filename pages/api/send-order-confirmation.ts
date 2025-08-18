@@ -116,31 +116,33 @@ function generateOrderConfirmationHTML(data: EmailData): string {
           <h3 style="margin: 0 0 16px; color: #111827; font-size: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;">Order Details</h3>
           
           <div style="margin-bottom: 24px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <span style="color: #6b7280; font-weight: 500;">Order Number:</span>
-              <span style="color: #111827; font-weight: 600;">${orderNumber}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <span style="color: #6b7280; font-weight: 500;">Order Date:</span>
-              <span style="color: #111827;">${new Date(orderDate).toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              })}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <span style="color: #6b7280; font-weight: 500;">Order Type:</span>
-              <span style="color: #111827;">${isCustomOrder ? 'Custom Order' : 'Standard Order'}</span>
-            </div>
-            ${paymentId ? `
-            <div style="display: flex; justify-content: space-between;">
-              <span style="color: #6b7280; font-weight: 500;">Payment ID:</span>
-              <span style="color: #111827; font-family: monospace; font-size: 14px;">${paymentId}</span>
-            </div>
-            ` : ''}
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; color: #6b7280; font-weight: 500;">Order Number:</td>
+                <td style="padding: 8px 0; color: #111827; font-weight: 600; text-align: right;">${orderNumber}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6b7280; font-weight: 500;">Order Date:</td>
+                <td style="padding: 8px 0; color: #111827; text-align: right;">${new Date(orderDate).toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #6b7280; font-weight: 500;">Order Type:</td>
+                <td style="padding: 8px 0; color: #111827; text-align: right;">${isCustomOrder ? 'Custom Order' : 'Standard Order'}</td>
+              </tr>
+              ${paymentId ? `
+              <tr>
+                <td style="padding: 8px 0; color: #6b7280; font-weight: 500;">Payment ID:</td>
+                <td style="padding: 8px 0; color: #111827; font-family: monospace; font-size: 14px; text-align: right;">${paymentId}</td>
+              </tr>
+              ` : ''}
+            </table>
           </div>
 
           <!-- Order Items -->
