@@ -515,12 +515,26 @@ export default function OrderConfirmation() {
         <Card className="mt-8">
           <CardContent className="p-6">
             <div className="flex items-center space-x-4">
-              <Mail className="w-8 h-8 text-primary" />
-              <div>
-                <h3 className="font-semibold">Confirmation Email Sent</h3>
+              <Mail className={`w-8 h-8 ${emailSent ? 'text-green-600' : emailError ? 'text-red-600' : 'text-blue-600'}`} />
+              <div className="flex-1">
+                <h3 className="font-semibold">
+                  {emailSent ? 'Confirmation Email Sent' : emailError ? 'Email Failed' : 'Sending Confirmation Email...'}
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                  We've sent a confirmation email to <strong>{customerEmail}</strong> with your order details.
-                  If you don't see it in your inbox, please check your spam folder.
+                  {emailSent ? (
+                    <>
+                      We've sent a confirmation email to <strong>{customerEmail}</strong> with your order details.
+                      If you don't see it in your inbox, please check your spam folder.
+                    </>
+                  ) : emailError ? (
+                    <>
+                      Failed to send confirmation email: {emailError}
+                    </>
+                  ) : (
+                    <>
+                      Sending your order confirmation to <strong>{customerEmail}</strong>...
+                    </>
+                  )}
                 </p>
               </div>
             </div>
