@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ServiceFilter } from "@/components/ServiceFilter";
+import { DynamicServiceFilter } from "@/components/DynamicServiceFilter";
 import {
   Star,
   Shield,
