@@ -520,50 +520,122 @@ export default function Checkout() {
 
             {/* Right Column - Payment */}
             <div className="space-y-6">
-              {/* Order Total Card */}
-              <Card className="border-0 shadow-lg bg-gradient-to-br from-card to-card/50 backdrop-blur-sm sticky top-8">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center text-xl">
-                    <CreditCard className="w-6 h-6 mr-3 text-primary" />
-                    Order Total
-                  </CardTitle>
+              {/* Enhanced Order Total Card */}
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-white via-blue-50/50 to-indigo-50/30 dark:from-card dark:via-card/80 dark:to-card/60 backdrop-blur-sm sticky top-8 overflow-hidden">
+                {/* Header with better styling */}
+                <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-primary/10 border-b border-border/20">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center text-xl font-semibold">
+                      <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center mr-3">
+                        <CreditCard className="w-5 h-5 text-primary" />
+                      </div>
+                      Order Summary
+                    </CardTitle>
+                    {(referralDiscount > 0 || referralCreditsApplied > 0) && (
+                      <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                        <Sparkles className="w-3 h-3 mr-1" />
+                        Savings Applied
+                      </Badge>
+                    )}
+                  </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-base">
-                      <span>Subtotal</span>
-                      <span className="font-medium">${subtotal.toFixed(2)}</span>
+
+                <CardContent className="p-6 space-y-6">
+                  {/* Order Items Summary */}
+                  <div className="bg-muted/30 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Order Items</span>
+                      <Badge variant="outline" className="text-xs">
+                        {cartItems.length} item{cartItems.length !== 1 ? 's' : ''}
+                      </Badge>
                     </div>
-                    {referralDiscount > 0 && (
-                      <div className="flex justify-between text-sm text-green-600">
-                        <span className="flex items-center">
-                          <Sparkles className="w-4 h-4 mr-1" />
-                          Referral Discount (10%)
-                        </span>
-                        <span className="font-medium">
-                          -${referralDiscount.toFixed(2)}
-                        </span>
+                    <div className="space-y-2">
+                      {cartItems.slice(0, 2).map((item, index) => (
+                        <div key={item.id} className="flex justify-between text-sm">
+                          <span className="truncate flex-1 mr-2">{item.service.title}</span>
+                          <span className="font-medium">${(item.service.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                      ))}
+                      {cartItems.length > 2 && (
+                        <div className="text-xs text-muted-foreground text-center pt-1">
+                          +{cartItems.length - 2} more item{cartItems.length - 2 !== 1 ? 's' : ''}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Pricing Breakdown */}
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-base font-medium">Subtotal</span>
+                      <span className="text-lg font-semibold">${subtotal.toFixed(2)}</span>
+                    </div>
+
+                    {/* Savings Section */}
+                    {(referralDiscount > 0 || referralCreditsApplied > 0) && (
+                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border border-green-200/50 dark:border-green-800/50 rounded-xl p-4 space-y-3">
+                        <div className="flex items-center space-x-2 mb-3">
+                          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                            <Sparkles className="w-3 h-3 text-white" />
+                          </div>
+                          <span className="font-semibold text-green-800 dark:text-green-200">Your Savings</span>
+                        </div>
+
+                        {referralDiscount > 0 && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-green-700 dark:text-green-300">Referral Discount (10%)</span>
+                            <span className="font-bold text-green-600 dark:text-green-400">-${referralDiscount.toFixed(2)}</span>
+                          </div>
+                        )}
+
+                        {referralCreditsApplied > 0 && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-green-700 dark:text-green-300">Credits Applied</span>
+                            <span className="font-bold text-green-600 dark:text-green-400">-${referralCreditsApplied.toFixed(2)}</span>
+                          </div>
+                        )}
+
+                        <div className="pt-2 border-t border-green-200/50 dark:border-green-800/50">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm font-semibold text-green-800 dark:text-green-200">Total Saved</span>
+                            <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                              -${(referralDiscount + referralCreditsApplied).toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     )}
-                    {referralCreditsApplied > 0 && (
-                      <div className="flex justify-between text-sm text-blue-600">
-                        <span className="flex items-center">
-                          <Sparkles className="w-4 h-4 mr-1" />
-                          Credits Applied
-                        </span>
-                        <span className="font-medium">
-                          -${referralCreditsApplied.toFixed(2)}
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex justify-between text-sm text-muted-foreground">
+
+                    <div className="flex justify-between items-center text-sm text-muted-foreground py-1">
                       <span>Tax (8%)</span>
-                      <span>${tax.toFixed(2)}</span>
+                      <span className="font-medium">${tax.toFixed(2)}</span>
                     </div>
+
                     <Separator className="my-4" />
-                    <div className="flex justify-between text-2xl font-bold">
-                      <span>Total</span>
-                      <span className="text-primary">${total.toFixed(2)}</span>
+
+                    {/* Final Total */}
+                    <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl p-4">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="text-lg font-semibold">Total</span>
+                          {(referralDiscount > 0 || referralCreditsApplied > 0) && (
+                            <div className="text-xs text-muted-foreground line-through">
+                              ${(subtotal + tax).toFixed(2)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <span className="text-3xl font-bold text-primary">${total.toFixed(2)}</span>
+                          <div className="text-xs text-muted-foreground">USD</div>
+                        </div>
+                      </div>
+
+                      {total <= 0 && (
+                        <div className="mt-3 flex items-center justify-center space-x-2 text-green-600">
+                          <CheckCircle className="w-4 h-4" />
+                          <span className="text-sm font-semibold">Fully covered by credits!</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
