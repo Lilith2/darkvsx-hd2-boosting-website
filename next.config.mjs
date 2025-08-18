@@ -62,7 +62,6 @@ const nextConfig = {
   },
   experimental: {
     scrollRestoration: true,
-    optimizeCss: true,
   },
   turbopack: {
     rules: {
