@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client-no-realtime";
 import { useRequestDeduplication } from "./useRequestDeduplication";
 import { OrderData, Order, OrderMessage, OrderTracking } from "./useOrders";
 

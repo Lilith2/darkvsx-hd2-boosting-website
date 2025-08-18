@@ -5,7 +5,7 @@ import {
   useContext,
   ReactNode,
 } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client-no-realtime";
 import { useAuth } from "./useAuth";
 
 export interface Referral {
