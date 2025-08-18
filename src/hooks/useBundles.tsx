@@ -49,7 +49,7 @@ export function BundlesProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const mapBundle = (bundle: Bundle): BundleData => ({
+  const mapBundle = (bundle: any): BundleData => ({
     id: bundle.id,
     name: bundle.name || "",
     description: bundle.description || "",
