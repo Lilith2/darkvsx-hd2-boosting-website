@@ -71,6 +71,9 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
   },
+  devIndicators: {
+    buildActivity: false,
+  },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
