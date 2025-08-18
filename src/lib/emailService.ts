@@ -6,6 +6,22 @@ interface SendEmailParams {
   customerName: string;
 }
 
+interface SendOrderConfirmationParams {
+  customerEmail: string;
+  customerName: string;
+  orderNumber: string;
+  orderDate: string;
+  orderTotal: number;
+  items: Array<{
+    name: string;
+    quantity: number;
+    price: number;
+    total: number;
+  }>;
+  paymentId?: string;
+  isCustomOrder?: boolean;
+}
+
 interface EmailResponse {
   success: boolean;
   message: string;
@@ -38,6 +54,29 @@ export async function sendTicketReplyEmail(params: SendEmailParams): Promise<Ema
   } catch (error: any) {
     console.error('Email service error:', error);
     throw new Error(error.message || 'Failed to send email');
+  }
+}
+
+export async function sendOrderConfirmationEmail(params: SendOrderConfirmationParams): Promise<EmailResponse> {
+  try {
+    const response = await fetch('/api/send-order-confirmation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(params),
+    });
+
+    const data: EmailResponse = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to send order confirmation email');
+    }
+
+    return data;
+  } catch (error: any) {
+    console.error('Order confirmation email service error:', error);
+    throw new Error(error.message || 'Failed to send order confirmation email');
   }
 }
 
