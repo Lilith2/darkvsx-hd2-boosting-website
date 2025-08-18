@@ -399,7 +399,7 @@ export default function CustomOrder() {
                           </span>
                         </div>
                         <Badge variant="secondary" className="text-xs">
-                          ${items[0]?.price_per_unit}
+                          ${items?.[0]?.price_per_unit || 0}
                         </Badge>
                       </div>
                     </button>
