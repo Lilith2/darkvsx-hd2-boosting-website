@@ -47,6 +47,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
+        {...(!asChild && {
+          type: props.type || "button",
+          role: "button",
+          tabIndex: props.disabled ? -1 : 0,
+        })}
       />
     );
   },
