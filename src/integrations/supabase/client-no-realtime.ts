@@ -19,8 +19,6 @@ export const supabaseNoRealtime = createClient<Database>(
       persistSession: true,
       autoRefreshToken: true,
     },
-    // Completely disable realtime
-    realtime: undefined,
     global: {
       headers: {
         'X-Client-Info': 'helldivers2-boost-app-no-realtime',
