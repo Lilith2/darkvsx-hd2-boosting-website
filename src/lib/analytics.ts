@@ -148,10 +148,7 @@ export function trackEvent(
       gtag("event", eventName, parameters);
     }
 
-    // Also log in development
-    if (process.env.NODE_ENV === "development") {
-      console.log("Analytics Event:", eventName, parameters);
-    }
+    // Analytics events are tracked silently in production
   } catch (error) {
     console.warn("Failed to track event:", error);
   }
