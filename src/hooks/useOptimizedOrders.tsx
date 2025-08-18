@@ -98,7 +98,7 @@ export function OptimizedOrdersProvider({
     ipAddress: order.ip_address || undefined,
     referralCode: order.referral_code || undefined,
     referralDiscount: order.referral_discount || undefined,
-    creditsUsed: order.credits_used || undefined,
+    referralCreditsUsed: order.credits_used || undefined,
     referredByUserId: order.referred_by_user_id || undefined,
     messages: messages.map((msg: any) => ({
       id: msg.id,
