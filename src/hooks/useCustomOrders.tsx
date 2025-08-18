@@ -107,8 +107,9 @@ export function useCustomOrders() {
 
         transformedOrders.push({
           ...order,
+          user_id: order.user_id || undefined,
           items: orderItems,
-        });
+        } as any);
       }
 
       setOrders(transformedOrders);
