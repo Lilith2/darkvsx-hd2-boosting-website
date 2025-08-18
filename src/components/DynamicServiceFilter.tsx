@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 
 export const DynamicServiceFilter = dynamic(
   () => import("@/components/ServiceFilter"),
