@@ -213,14 +213,17 @@ export default function CustomOrder() {
         ...updatedItems[existingIndex],
         quantity: quantity,
         total_price: totalPrice,
+        category: pricingItem.category || "",
+        item_name: pricingItem.item_name || "",
+        description: pricingItem.description || "",
       };
       setOrderItems(updatedItems);
     } else {
       const newItem: OrderItem = {
-        category: pricingItem.category,
-        item_name: pricingItem.item_name,
+        category: pricingItem.category || "",
+        item_name: pricingItem.item_name || "",
         quantity: quantity,
-        price_per_unit: pricingItem.price_per_unit,
+        price_per_unit: pricingItem.price_per_unit || 0,
         total_price: totalPrice,
         description: pricingItem.description || "",
       };
