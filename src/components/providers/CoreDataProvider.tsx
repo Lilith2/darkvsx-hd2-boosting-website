@@ -8,9 +8,9 @@ interface CoreDataContextType {
     services: ServiceData[];
     loading: boolean;
     refreshServices: () => Promise<void>;
-    addService: (service: Omit<ServiceData, "id">) => Promise<boolean>;
-    updateService: (id: string, updates: Partial<ServiceData>) => Promise<boolean>;
-    deleteService: (id: string) => Promise<boolean>;
+    addService: (service: Omit<Service, "id" | "created_at" | "updated_at">) => Promise<void>;
+    updateService: (id: string, updates: Partial<Service>) => Promise<void>;
+    deleteService: (id: string) => Promise<void>;
   };
   bundles: {
     bundles: BundleData[];
