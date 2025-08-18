@@ -65,7 +65,7 @@ export default function Document() {
         />
         
         {/* Performance optimizations */}
-        <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        {/* Font preloading removed - using system fonts for better performance */}
       </Head>
       <body className="antialiased">
         <Main />
