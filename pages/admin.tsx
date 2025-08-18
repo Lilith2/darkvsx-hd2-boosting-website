@@ -290,7 +290,7 @@ export default function AdminDashboard() {
   };
 
   const handleDeletePricing = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this pricing item?")) return;
+    if (!confirm("Are you sure you want to delete this item?")) return;
 
     try {
       const { supabase } = await import("@/integrations/supabase/client");
