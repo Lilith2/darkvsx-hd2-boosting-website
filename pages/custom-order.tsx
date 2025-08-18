@@ -434,8 +434,8 @@ export default function CustomOrder() {
                                 {getCategoryTitle(category)}
                               </CardTitle>
                               <CardDescription className="text-xs">
-                                Starting at ${items[0]?.price_per_unit} per{" "}
-                                {items[0]?.item_name.toLowerCase()}
+                                Starting at ${items?.[0]?.price_per_unit || 0} per{" "}
+                                {items?.[0]?.item_name?.toLowerCase() || "item"}
                               </CardDescription>
                             </div>
                           </div>
