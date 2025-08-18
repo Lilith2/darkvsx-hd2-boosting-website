@@ -18,58 +18,43 @@ import { AdminPricingTab } from "@/components/admin/AdminPricingTab";
 
 import { LoadingSpinner } from "../components/LoadingSpinner";
 
-// Dynamically import heavy components
-const ServiceModal = dynamic(
-  () =>
-    import("@/components/ServiceModal").then((mod) => ({
-      default: mod.ServiceModal,
-    })),
-  {
-    loading: () => <LoadingSpinner className="p-4" />,
-  },
-);
-const BundleModal = dynamic(
-  () =>
-    import("@/components/BundleModal").then((mod) => ({
-      default: mod.BundleModal,
-    })),
-  {
-    loading: () => <LoadingSpinner className="p-4" />,
-  },
-);
-const PricingModal = dynamic(
-  () =>
-    import("@/components/PricingModal").then((mod) => ({
-      default: mod.PricingModal,
-    })),
-  {
-    loading: () => <LoadingSpinner className="p-4" />,
-  },
-);
-const SimpleCustomOrders = dynamic(
-  () => import("@/components/SimpleCustomOrders"),
-  {
-    loading: () => <LoadingSpinner className="p-4" />,
-  },
-);
-const OrderDetailsModal = dynamic(
-  () =>
-    import("@/components/OrderDetailsModal").then((mod) => ({
-      default: mod.OrderDetailsModal,
-    })),
-  {
-    loading: () => <LoadingSpinner className="p-4" />,
-  },
-);
-const EnhancedOrdersTable = dynamic(
-  () =>
-    import("@/components/admin/EnhancedOrdersTable").then((mod) => ({
-      default: mod.EnhancedOrdersTable,
-    })),
-  {
-    loading: () => <LoadingSpinner className="p-4" />,
-  },
-);
+// Lazy load components with better loading states
+const ServiceModal = dynamic(() => import("@/components/ServiceModal").then(mod => ({ default: mod.ServiceModal })), {
+  loading: () => <LoadingSpinner className="p-4" />,
+});
+
+const BundleModal = dynamic(() => import("@/components/BundleModal").then(mod => ({ default: mod.BundleModal })), {
+  loading: () => <LoadingSpinner className="p-4" />,
+});
+
+const PricingModal = dynamic(() => import("@/components/PricingModal").then(mod => ({ default: mod.PricingModal })), {
+  loading: () => <LoadingSpinner className="p-4" />,
+});
+
+const OrderDetailsModal = dynamic(() => import("@/components/OrderDetailsModal").then(mod => ({ default: mod.OrderDetailsModal })), {
+  loading: () => <LoadingSpinner className="p-4" />,
+});
+
+// Lazy load tab content to improve initial page load
+const AdminServicesTabLazy = dynamic(() => import("@/components/admin/AdminServicesTab").then(mod => ({ default: mod.AdminServicesTab })), {
+  loading: () => <div className="p-8"><LoadingSpinner /></div>,
+});
+
+const AdminBundlesTabLazy = dynamic(() => import("@/components/admin/AdminBundlesTab").then(mod => ({ default: mod.AdminBundlesTab })), {
+  loading: () => <div className="p-8"><LoadingSpinner /></div>,
+});
+
+const AdminPricingTabLazy = dynamic(() => import("@/components/admin/AdminPricingTab").then(mod => ({ default: mod.AdminPricingTab })), {
+  loading: () => <div className="p-8"><LoadingSpinner /></div>,
+});
+
+const VirtualizedOrdersTable = dynamic(() => import("@/components/admin/VirtualizedOrdersTable"), {
+  loading: () => <div className="p-8"><LoadingSpinner /></div>,
+});
+
+const SimpleCustomOrders = dynamic(() => import("@/components/SimpleCustomOrders"), {
+  loading: () => <div className="p-8"><LoadingSpinner /></div>,
+});
 import { Button } from "@/components/ui/button";
 import {
   Card,
