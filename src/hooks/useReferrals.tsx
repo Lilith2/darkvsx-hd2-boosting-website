@@ -133,7 +133,7 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
       );
 
       const referralCustomOrders = customOrdersData.filter(
-        (order) => order.referral_code === userReferralCode,
+        (order) => (order as any).referral_code === userReferralCode,
       );
 
       const allReferralOrders = [
