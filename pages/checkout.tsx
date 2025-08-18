@@ -724,33 +724,33 @@ export default function Checkout() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 gap-3">
-                    <div className="flex items-center space-x-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200/50 dark:border-green-800/50">
-                      <div className="w-8 h-8 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3 text-sm">
+                      <div className="w-8 h-8 bg-green-500/10 rounded-full flex items-center justify-center">
                         <Lock className="w-4 h-4 text-green-600" />
                       </div>
                       <div>
-                        <span className="text-sm font-medium">256-bit SSL Encryption</span>
+                        <span className="font-medium">256-bit SSL Encryption</span>
                         <p className="text-xs text-muted-foreground">Bank-level security</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200/50 dark:border-blue-800/50">
-                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+                    <div className="flex items-center space-x-3 text-sm">
+                      <div className="w-8 h-8 bg-blue-500/10 rounded-full flex items-center justify-center">
                         <Shield className="w-4 h-4 text-blue-600" />
                       </div>
                       <div>
-                        <span className="text-sm font-medium">PayPal Buyer Protection</span>
+                        <span className="font-medium">PayPal Buyer Protection</span>
                         <p className="text-xs text-muted-foreground">Full purchase protection</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-3 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-200/50 dark:border-yellow-800/50">
-                      <div className="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center">
+                    <div className="flex items-center space-x-3 text-sm">
+                      <div className="w-8 h-8 bg-yellow-500/10 rounded-full flex items-center justify-center">
                         <CheckCircle className="w-4 h-4 text-yellow-600" />
                       </div>
                       <div>
-                        <span className="text-sm font-medium">Account Safety Guaranteed</span>
+                        <span className="font-medium">Account Safety Guaranteed</span>
                         <p className="text-xs text-muted-foreground">100% secure boosting</p>
                       </div>
                     </div>
