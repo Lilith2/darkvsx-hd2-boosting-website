@@ -60,7 +60,7 @@ export default function Checkout() {
   const [promoCode, setPromoCode] = useState("");
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [guestInfo, setGuestInfo] = useState({ name: "", email: "" });
-  const [useCredits, setUseCredits] = useState(false);
+  const [useAvailableCredits, setUseAvailableCredits] = useState(false);
   const [creditsApplied, setCreditsApplied] = useState(0);
   const [availableCredits, setAvailableCredits] = useState(0);
 
@@ -155,7 +155,7 @@ export default function Checkout() {
   };
 
   const handleCreditsToggle = (checked: boolean) => {
-    setUseCredits(checked);
+    setUseAvailableCredits(checked);
     if (checked && availableCredits > 0) {
       const maxApplicable = subtotal - promoDiscount + (subtotal - promoDiscount) * PAYMENT_CONSTANTS.TAX_RATE;
       const creditsToApply = Math.min(availableCredits, maxApplicable);
@@ -196,7 +196,7 @@ export default function Checkout() {
     setIsProcessing(true);
 
     try {
-      if (useCredits && creditsApplied > 0) {
+      if (useAvailableCredits && creditsApplied > 0) {
         const success = await useCredits(creditsApplied);
         if (!success) {
           throw new Error("Failed to use credits");
@@ -548,7 +548,7 @@ export default function Checkout() {
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id="use-credits"
-                          checked={useCredits}
+                          checked={useAvailableCredits}
                           onCheckedChange={handleCreditsToggle}
                         />
                         <Label htmlFor="use-credits">Use available credits</Label>
