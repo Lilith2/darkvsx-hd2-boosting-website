@@ -1,5 +1,6 @@
 import type { AppProps } from "next/app";
 import { useEffect } from "react";
+import Head from "next/head";
 import "../src/global.css";
 
 import { Toaster } from "@/components/ui/toaster";
