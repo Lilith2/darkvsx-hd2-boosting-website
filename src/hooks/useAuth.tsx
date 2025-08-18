@@ -44,6 +44,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingProfile, setLoadingProfile] = useState(false);
 
   useEffect(() => {
     // Get initial session
@@ -71,6 +72,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadUserProfile = async (userId: string) => {
+    if (loadingProfile) return; // Prevent duplicate calls
+    setLoadingProfile(true);
     try {
 
       const { data: profile, error } = await supabase
@@ -126,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Error loading profile:", error);
     } finally {
       setLoading(false);
+      setLoadingProfile(false);
     }
   };
 
