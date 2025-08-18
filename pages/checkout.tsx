@@ -521,7 +521,7 @@ export default function Checkout() {
             {/* Right Column - Payment */}
             <div className="space-y-6">
               {/* Enhanced Order Total Card */}
-              <Card className="border-0 shadow-lg bg-card backdrop-blur-sm sticky top-8 overflow-hidden">
+              <Card className="border-0 shadow-lg bg-card backdrop-blur-sm overflow-hidden">
                 {/* Header with better styling */}
                 <CardHeader className="pb-3 border-b border-border/20">
                   <div className="flex items-center justify-between">
