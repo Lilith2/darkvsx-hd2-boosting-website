@@ -138,7 +138,10 @@ export function ReferralsProvider({ children }: { children: ReactNode }) {
 
       const allReferralOrders = [
         ...referralOrders.map((o) => ({ ...(o as any), source: "regular" })),
-        ...referralCustomOrders.map((o) => ({ ...(o as any), source: "custom" })),
+        ...referralCustomOrders.map((o) => ({
+          ...(o as any),
+          source: "custom",
+        })),
       ];
 
       const totalReferred = allReferralOrders.length;
