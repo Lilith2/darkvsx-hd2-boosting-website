@@ -42,6 +42,8 @@ export default function OrderConfirmation() {
 
   const [order, setOrder] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   // Determine if this is a custom order
   const isCustomOrder = type === "custom";
