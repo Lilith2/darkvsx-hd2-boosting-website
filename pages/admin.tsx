@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useServices } from "@/hooks/useServices";
 import { useBundles } from "@/hooks/useBundles";
-import { useOrders } from "@/hooks/useOrders";
-import { useCustomOrders } from "@/hooks/useCustomOrders";
 import { useOptimizedAdminData } from "@/hooks/useOptimizedAdminData";
 import { useToast } from "@/hooks/use-toast";
 import dynamic from "next/dynamic";
@@ -163,57 +161,39 @@ import {
 } from "lucide-react";
 
 export default function AdminDashboard() {
-  // Temporarily use legacy hooks to debug
+  // Use optimized hooks for better performance
   const {
+    orders,
+    customOrders,
     services,
+    bundles,
+    customPricing,
+    analytics,
+    isLoading,
+    hasErrors,
+    errors,
+    updateOrderStatus,
+    invalidateAll,
+  } = useOptimizedAdminData();
+
+  // Legacy hooks for service and bundle management (still needed for CRUD operations)
+  const {
     addService,
     updateService,
     deleteService,
     toggleServiceStatus,
   } = useServices();
-  const { bundles, addBundle, updateBundle, deleteBundle, toggleBundleStatus } =
+  const { addBundle, updateBundle, deleteBundle, toggleBundleStatus } =
     useBundles();
-  const {
-    orders,
-    updateOrderStatus,
-    addOrderMessage,
-    assignBooster,
-    updateOrderProgress,
-    loading,
-    error,
-  } = useOrders();
-  const {
-    orders: customOrders,
-    stats: customOrderStats,
-    loading: customOrdersLoading,
-    error: customOrdersError,
-  } = useCustomOrders();
   const { toast } = useToast();
 
-  // Fetch custom pricing data
-  const [customPricing, setCustomPricing] = useState<any[]>([]);
+  // Custom pricing data is now handled by useOptimizedAdminData
+  const [localCustomPricing, setLocalCustomPricing] = useState<any[]>([]);
 
+  // Sync optimized data with local state for pricing management
   useEffect(() => {
-    const fetchCustomPricing = async () => {
-      try {
-        const { supabase } = await import("@/integrations/supabase/client");
-        const { data, error } = await supabase
-          .from("custom_pricing")
-          .select("*")
-          .order("category", { ascending: true });
-
-        if (error) {
-          console.error("Error fetching custom pricing:", error);
-        } else {
-          setCustomPricing(data || []);
-        }
-      } catch (err) {
-        console.error("Error fetching custom pricing:", err);
-      }
-    };
-
-    fetchCustomPricing();
-  }, []);
+    setLocalCustomPricing(customPricing);
+  }, [customPricing]);
 
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
@@ -303,11 +283,14 @@ export default function AdminDashboard() {
 
         if (error) throw error;
 
-        setCustomPricing((prev) =>
+        setLocalCustomPricing((prev) =>
           prev.map((p) =>
             p.id === isEditingPricing.id ? { ...p, ...pricingData } : p,
           ),
         );
+
+        // Invalidate the optimized cache
+        invalidateAll();
 
         toast({
           title: "Pricing Updated",
@@ -322,7 +305,10 @@ export default function AdminDashboard() {
 
         if (error) throw error;
 
-        setCustomPricing((prev) => [...prev, data]);
+        setLocalCustomPricing((prev) => [...prev, data]);
+
+        // Invalidate the optimized cache
+        invalidateAll();
 
         toast({
           title: "Pricing Added",
@@ -354,7 +340,10 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      setCustomPricing((prev) => prev.filter((p) => p.id !== id));
+      setLocalCustomPricing((prev) => prev.filter((p) => p.id !== id));
+
+      // Invalidate the optimized cache
+      invalidateAll();
 
       toast({
         title: "Pricing Deleted",
@@ -380,11 +369,14 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      setCustomPricing((prev) =>
+      setLocalCustomPricing((prev) =>
         prev.map((p) =>
           p.id === id ? { ...p, is_active: !currentStatus } : p,
         ),
       );
+
+      // Invalidate the optimized cache
+      invalidateAll();
 
       toast({
         title: "Status Updated",
@@ -420,84 +412,47 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Debug Info */}
-        {(error || customOrdersError) && (
+        {hasErrors && (
           <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
             <h3 className="font-semibold text-red-600 mb-2">
               Database Connection Error
             </h3>
-            {error && (
-              <p className="text-sm text-red-600">Regular Orders: {error}</p>
+            {errors.orders && (
+              <p className="text-sm text-red-600">Orders: {errors.orders}</p>
             )}
-            {customOrdersError && (
+            {errors.customOrders && (
               <p className="text-sm text-red-600">
-                Custom Orders: {customOrdersError}
+                Custom Orders: {errors.customOrders}
               </p>
+            )}
+            {errors.services && (
+              <p className="text-sm text-red-600">Services: {errors.services}</p>
+            )}
+            {errors.bundles && (
+              <p className="text-sm text-red-600">Bundles: {errors.bundles}</p>
             )}
           </div>
         )}
 
-        {(loading || customOrdersLoading) && (
+        {isLoading && (
           <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
             <p className="text-blue-600">
-              Loading{" "}
-              {loading && customOrdersLoading
-                ? "all orders"
-                : loading
-                  ? "regular orders"
-                  : "custom orders"}
-              ...
+              Loading admin dashboard data...
             </p>
           </div>
         )}
 
-        {/* Stats Grid */}
+        {/* Stats Grid - Using optimized analytics */}
         <div className="mb-8">
           <OptimizedAdminStatsCards
-            totalRevenue={[...orders, ...customOrders].reduce((sum, order) => {
-              const amount =
-                "totalAmount" in order ? order.totalAmount : order.total_amount;
-              return sum + (amount || 0);
-            }, 0)}
-            pendingOrdersCount={
-              [...orders, ...customOrders].filter(
-                (order) => order.status === "pending",
-              ).length
-            }
-            activeServicesCount={
-              services.filter((service) => service.active !== false).length
-            }
-            totalCustomersCount={
-              new Set(
-                [...orders, ...customOrders]
-                  .map((order) => {
-                    const email =
-                      "customerEmail" in order
-                        ? order.customerEmail
-                        : order.customer_email;
-                    return email;
-                  })
-                  .filter(Boolean),
-              ).size
-            }
-            completedOrdersCount={
-              [...orders, ...customOrders].filter(
-                (order) => order.status === "completed",
-              ).length
-            }
-            totalOrdersCount={orders.length + customOrders.length}
-            avgOrderValue={
-              orders.length + customOrders.length > 0
-                ? [...orders, ...customOrders].reduce((sum, order) => {
-                    const amount =
-                      "totalAmount" in order
-                        ? order.totalAmount
-                        : order.total_amount;
-                    return sum + (amount || 0);
-                  }, 0) /
-                  (orders.length + customOrders.length)
-                : 0
-            }
-            isLoading={loading || customOrdersLoading}
+            totalRevenue={analytics.totalRevenue}
+            pendingOrdersCount={analytics.pendingOrdersCount}
+            activeServicesCount={analytics.activeServicesCount}
+            totalCustomersCount={analytics.totalCustomersCount}
+            completedOrdersCount={analytics.completedOrdersCount}
+            totalOrdersCount={analytics.totalOrdersCount}
+            avgOrderValue={analytics.avgOrderValue}
+            isLoading={analytics.isLoading}
           />
         </div>
 
@@ -521,11 +476,11 @@ export default function AdminDashboard() {
                   revenue: service.price * (service.orders_count || 0),
                   orderCount: service.orders_count || 0,
                 }))}
-                isLoading={loading || customOrdersLoading}
+                isLoading={isLoading}
               />
               <RecentOrdersCard
                 recentOrders={[...orders, ...customOrders].slice(0, 5)}
-                isLoading={loading || customOrdersLoading}
+                isLoading={isLoading}
                 onOrderClick={(order, type) => {
                   setSelectedOrderForDetails(order);
                   setOrderDetailsType(type);
@@ -539,7 +494,7 @@ export default function AdminDashboard() {
           <TabsContent value="services" className="space-y-6">
             <AdminServicesTab
               services={services}
-              loading={loading}
+              loading={isLoading}
               onAddService={handleAddService}
               onEditService={handleEditService}
               onDeleteService={handleDeleteService}
@@ -697,7 +652,7 @@ export default function AdminDashboard() {
                 <div>
                   <CardTitle className="flex items-center">
                     <DollarSign className="w-5 h-5 mr-2" />
-                    Custom Pricing Management ({customPricing.length})
+                    Custom Pricing Management ({localCustomPricing.length})
                   </CardTitle>
                   <CardDescription>
                     Manage dynamic pricing for custom orders (medals, levels,
@@ -713,7 +668,7 @@ export default function AdminDashboard() {
                 </Button>
               </CardHeader>
               <CardContent>
-                {customPricing.length === 0 ? (
+                {localCustomPricing.length === 0 ? (
                   <div className="text-center py-12">
                     <DollarSign className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
                     <h3 className="text-lg font-semibold mb-2">
@@ -733,7 +688,7 @@ export default function AdminDashboard() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {customPricing.map((pricing) => (
+                    {localCustomPricing.map((pricing) => (
                       <Card
                         key={pricing.id}
                         className="border border-border/30 hover:border-primary/30 transition-colors"
@@ -826,19 +781,9 @@ export default function AdminDashboard() {
             <EnhancedOrdersTable
               orders={orders}
               customOrders={customOrders}
-              onUpdateOrderStatus={(orderId: string, status: string) => {
-                updateOrderStatus(
-                  orderId,
-                  status as
-                    | "pending"
-                    | "processing"
-                    | "in-progress"
-                    | "completed"
-                    | "cancelled",
-                );
-              }}
-              loading={loading || customOrdersLoading}
-              onRefresh={() => window.location.reload()}
+              onUpdateOrderStatus={updateOrderStatus}
+              loading={isLoading}
+              onRefresh={() => invalidateAll()}
             />
           </TabsContent>
         </Tabs>
