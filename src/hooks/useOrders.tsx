@@ -47,10 +47,10 @@ export interface OrderMessage {
 
 export interface OrderTracking {
   id: string;
-  order_id: string;
+  order_id: string | null;
   status: string;
   description: string;
-  created_at: string;
+  created_at: string | null;
 }
 
 // Transformed interfaces for frontend
