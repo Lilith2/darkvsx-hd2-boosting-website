@@ -188,12 +188,8 @@ export default function AdminDashboard() {
   } = useOptimizedAdminData();
 
   // Legacy hooks for service and bundle management (still needed for CRUD operations)
-  const {
-    addService,
-    updateService,
-    deleteService,
-    toggleServiceStatus,
-  } = useServices();
+  const { addService, updateService, deleteService, toggleServiceStatus } =
+    useServices();
   const { addBundle, updateBundle, deleteBundle, toggleBundleStatus } =
     useBundles();
   const { toast } = useToast();
@@ -234,39 +230,52 @@ export default function AdminDashboard() {
 
   // Fallback: if customPricing is available but localCustomPricing is still empty after loading
   useEffect(() => {
-    if (!isLoading && customPricing.length > 0 && localCustomPricing.length === 0) {
+    if (
+      !isLoading &&
+      customPricing.length > 0 &&
+      localCustomPricing.length === 0
+    ) {
       setLocalCustomPricing([...customPricing]);
     }
   }, [isLoading]); // Only run when loading state changes
 
   // Track tab changes for loading optimization
-  const handleTabChange = useCallback((value: string) => {
-    setCurrentTab(value);
+  const handleTabChange = useCallback(
+    (value: string) => {
+      setCurrentTab(value);
 
-    // Preload data for the selected tab if needed
-    switch (value) {
-      case "services":
-        if (services.length === 0) {
-          setLoadingStates(prev => ({ ...prev, services: true }));
-        }
-        break;
-      case "bundles":
-        if (bundles.length === 0) {
-          setLoadingStates(prev => ({ ...prev, bundles: true }));
-        }
-        break;
-      case "orders":
-        if (orders.length === 0 && customOrders.length === 0) {
-          setLoadingStates(prev => ({ ...prev, orders: true }));
-        }
-        break;
-      case "pricing":
-        if (localCustomPricing.length === 0) {
-          setLoadingStates(prev => ({ ...prev, pricing: true }));
-        }
-        break;
-    }
-  }, [services.length, bundles.length, orders.length, customOrders.length, localCustomPricing.length]);
+      // Preload data for the selected tab if needed
+      switch (value) {
+        case "services":
+          if (services.length === 0) {
+            setLoadingStates((prev) => ({ ...prev, services: true }));
+          }
+          break;
+        case "bundles":
+          if (bundles.length === 0) {
+            setLoadingStates((prev) => ({ ...prev, bundles: true }));
+          }
+          break;
+        case "orders":
+          if (orders.length === 0 && customOrders.length === 0) {
+            setLoadingStates((prev) => ({ ...prev, orders: true }));
+          }
+          break;
+        case "pricing":
+          if (localCustomPricing.length === 0) {
+            setLoadingStates((prev) => ({ ...prev, pricing: true }));
+          }
+          break;
+      }
+    },
+    [
+      services.length,
+      bundles.length,
+      orders.length,
+      customOrders.length,
+      localCustomPricing.length,
+    ],
+  );
 
   // EARLY RETURN AFTER ALL HOOKS - Show full loading dashboard for initial load
   if (isLoading && orders.length === 0 && services.length === 0) {
@@ -296,12 +305,12 @@ export default function AdminDashboard() {
 
       toast({
         title: "Success",
-        description: `Service ${editingService ? 'updated' : 'created'} successfully.`,
+        description: `Service ${editingService ? "updated" : "created"} successfully.`,
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: `Failed to ${editingService ? 'update' : 'create'} service.`,
+        description: `Failed to ${editingService ? "update" : "create"} service.`,
         variant: "destructive",
       });
     }
@@ -346,12 +355,12 @@ export default function AdminDashboard() {
 
       toast({
         title: "Success",
-        description: `Bundle ${selectedBundle ? 'updated' : 'created'} successfully.`,
+        description: `Bundle ${selectedBundle ? "updated" : "created"} successfully.`,
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: `Failed to ${selectedBundle ? 'update' : 'create'} bundle.`,
+        description: `Failed to ${selectedBundle ? "update" : "create"} bundle.`,
         variant: "destructive",
       });
     }
@@ -541,7 +550,9 @@ export default function AdminDashboard() {
               </p>
             )}
             {errors.services && (
-              <p className="text-sm text-red-600">Services: {errors.services}</p>
+              <p className="text-sm text-red-600">
+                Services: {errors.services}
+              </p>
             )}
             {errors.bundles && (
               <p className="text-sm text-red-600">Bundles: {errors.bundles}</p>
@@ -551,9 +562,7 @@ export default function AdminDashboard() {
 
         {isLoading && (
           <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-            <p className="text-blue-600">
-              Loading admin dashboard data...
-            </p>
+            <p className="text-blue-600">Loading admin dashboard data...</p>
           </div>
         )}
 
@@ -572,7 +581,11 @@ export default function AdminDashboard() {
         </div>
 
         {/* Main Content - Simplified Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6" onValueChange={handleTabChange}>
+        <Tabs
+          defaultValue="overview"
+          className="space-y-6"
+          onValueChange={handleTabChange}
+        >
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
@@ -721,7 +734,9 @@ export default function AdminDashboard() {
                                       "0.00"}
                                   </span>
                                   <span className="text-sm text-muted-foreground line-through">
-                                    ${bundle.original_price?.toFixed(2) || "0.00"}
+                                    $
+                                    {bundle.original_price?.toFixed(2) ||
+                                      "0.00"}
                                   </span>
                                 </div>
                                 <span className="text-sm text-muted-foreground">
@@ -778,131 +793,133 @@ export default function AdminDashboard() {
               <PricingTabLoadingSkeleton />
             ) : (
               <Card className="border border-border/50">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center">
-                    <DollarSign className="w-5 h-5 mr-2" />
-                    Custom Pricing Management ({localCustomPricing.length})
-                  </CardTitle>
-                  <CardDescription>
-                    Manage dynamic pricing for custom orders (medals, levels,
-                    samples, super credits)
-                  </CardDescription>
-                </div>
-                <Button
-                  onClick={handleAddPricing}
-                  className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Pricing
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {localCustomPricing.length === 0 ? (
-                  <div className="text-center py-12">
-                    <DollarSign className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                    <h3 className="text-lg font-semibold mb-2">
-                      No custom pricing yet
-                    </h3>
-                    <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-                      Add pricing for custom order items to enable the custom
-                      order system.
-                    </p>
-                    <Button
-                      onClick={handleAddPricing}
-                      className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Your First Pricing
-                    </Button>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center">
+                      <DollarSign className="w-5 h-5 mr-2" />
+                      Custom Pricing Management ({localCustomPricing.length})
+                    </CardTitle>
+                    <CardDescription>
+                      Manage dynamic pricing for custom orders (medals, levels,
+                      samples, super credits)
+                    </CardDescription>
                   </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {localCustomPricing.map((pricing) => (
-                      <Card
-                        key={pricing.id}
-                        className="border border-border/30 hover:border-primary/30 transition-colors"
+                  <Button
+                    onClick={handleAddPricing}
+                    className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Pricing
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  {localCustomPricing.length === 0 ? (
+                    <div className="text-center py-12">
+                      <DollarSign className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                      <h3 className="text-lg font-semibold mb-2">
+                        No custom pricing yet
+                      </h3>
+                      <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                        Add pricing for custom order items to enable the custom
+                        order system.
+                      </p>
+                      <Button
+                        onClick={handleAddPricing}
+                        className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
                       >
-                        <CardHeader className="pb-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <CardTitle className="text-lg capitalize">
-                                {pricing.item_name}
-                              </CardTitle>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {pricing.category.replace("_", " ")}
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Your First Pricing
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {localCustomPricing.map((pricing) => (
+                        <Card
+                          key={pricing.id}
+                          className="border border-border/30 hover:border-primary/30 transition-colors"
+                        >
+                          <CardHeader className="pb-3">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <CardTitle className="text-lg capitalize">
+                                  {pricing.item_name}
+                                </CardTitle>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {pricing.category.replace("_", " ")}
+                                </p>
+                              </div>
+                              <div className="flex flex-col items-end space-y-1">
+                                <Badge
+                                  variant={
+                                    pricing.is_active ? "default" : "secondary"
+                                  }
+                                  className="cursor-pointer"
+                                  onClick={() =>
+                                    togglePricingStatus(
+                                      pricing.id,
+                                      pricing.is_active,
+                                    )
+                                  }
+                                >
+                                  {pricing.is_active ? "Active" : "Inactive"}
+                                </Badge>
+                              </div>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3">
+                              <div className="flex justify-between items-center">
+                                <span className="text-2xl font-bold text-primary">
+                                  ${pricing.price_per_unit}
+                                </span>
+                                <span className="text-sm text-muted-foreground">
+                                  per unit
+                                </span>
+                              </div>
+
+                              <p className="text-sm text-muted-foreground line-clamp-2">
+                                {pricing.description}
                               </p>
-                            </div>
-                            <div className="flex flex-col items-end space-y-1">
-                              <Badge
-                                variant={
-                                  pricing.is_active ? "default" : "secondary"
-                                }
-                                className="cursor-pointer"
-                                onClick={() =>
-                                  togglePricingStatus(
-                                    pricing.id,
-                                    pricing.is_active,
-                                  )
-                                }
-                              >
-                                {pricing.is_active ? "Active" : "Inactive"}
-                              </Badge>
-                            </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-3">
-                            <div className="flex justify-between items-center">
-                              <span className="text-2xl font-bold text-primary">
-                                ${pricing.price_per_unit}
-                              </span>
-                              <span className="text-sm text-muted-foreground">
-                                per unit
-                              </span>
-                            </div>
 
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                              {pricing.description}
-                            </p>
-
-                            <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
-                              <div>
-                                <span className="font-medium">Min:</span>{" "}
-                                {pricing.minimum_quantity}
+                              <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                                <div>
+                                  <span className="font-medium">Min:</span>{" "}
+                                  {pricing.minimum_quantity}
+                                </div>
+                                <div>
+                                  <span className="font-medium">Max:</span>{" "}
+                                  {pricing.maximum_quantity}
+                                </div>
                               </div>
-                              <div>
-                                <span className="font-medium">Max:</span>{" "}
-                                {pricing.maximum_quantity}
+
+                              <div className="flex space-x-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleEditPricing(pricing)}
+                                  className="flex-1"
+                                >
+                                  <Edit className="w-3 h-3 mr-1" />
+                                  Edit
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() =>
+                                    handleDeletePricing(pricing.id)
+                                  }
+                                  className="text-destructive hover:text-destructive"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
                               </div>
                             </div>
-
-                            <div className="flex space-x-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleEditPricing(pricing)}
-                                className="flex-1"
-                              >
-                                <Edit className="w-3 h-3 mr-1" />
-                                Edit
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleDeletePricing(pricing.id)}
-                                className="text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
               </Card>
             )}
           </TabsContent>

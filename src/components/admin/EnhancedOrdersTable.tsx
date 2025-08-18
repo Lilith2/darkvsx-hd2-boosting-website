@@ -103,19 +103,29 @@ export function EnhancedOrdersTable({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
-  const [viewMode, setViewMode] = useState<"table" | "cards" | "virtualized">("table");
+  const [viewMode, setViewMode] = useState<"table" | "cards" | "virtualized">(
+    "table",
+  );
   const [dateRange, setDateRange] = useState("all");
   const [amountRange, setAmountRange] = useState("all");
 
   // Modal state
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalOrderType, setModalOrderType] = useState<"regular" | "custom">("regular");
+  const [modalOrderType, setModalOrderType] = useState<"regular" | "custom">(
+    "regular",
+  );
 
   // Combine all orders
   const allOrders = useMemo(() => {
-    const regularOrders = orders.map(order => ({ ...order, orderType: "regular" }));
-    const customOrdersWithType = customOrders.map(order => ({ ...order, orderType: "custom" }));
+    const regularOrders = orders.map((order) => ({
+      ...order,
+      orderType: "regular",
+    }));
+    const customOrdersWithType = customOrders.map((order) => ({
+      ...order,
+      orderType: "custom",
+    }));
     return [...regularOrders, ...customOrdersWithType];
   }, [orders, customOrders]);
 
@@ -131,28 +141,36 @@ export function EnhancedOrdersTable({
   }, [shouldUseVirtualization, viewMode]);
 
   // Helper functions
-  const getCustomerName = (order: Order) => order.customer_name || order.customerName || "N/A";
-  const getCustomerEmail = (order: Order) => order.customer_email || order.customerEmail || "N/A";
-  const getTotalAmount = (order: Order) => order.total_amount || order.totalAmount || 0;
-  const getCreatedAt = (order: Order) => order.created_at || order.createdAt || "";
-  const getPaymentStatus = (order: Order) => order.payment_status || order.paymentStatus || "unknown";
+  const getCustomerName = (order: Order) =>
+    order.customer_name || order.customerName || "N/A";
+  const getCustomerEmail = (order: Order) =>
+    order.customer_email || order.customerEmail || "N/A";
+  const getTotalAmount = (order: Order) =>
+    order.total_amount || order.totalAmount || 0;
+  const getCreatedAt = (order: Order) =>
+    order.created_at || order.createdAt || "";
+  const getPaymentStatus = (order: Order) =>
+    order.payment_status || order.paymentStatus || "unknown";
 
   // Advanced filtering and searching
   const filteredOrders = useMemo(() => {
-    return allOrders.filter(order => {
+    return allOrders.filter((order) => {
       // Search filter
       const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = !searchTerm || 
+      const matchesSearch =
+        !searchTerm ||
         order.id.toLowerCase().includes(searchLower) ||
         getCustomerName(order).toLowerCase().includes(searchLower) ||
         getCustomerEmail(order).toLowerCase().includes(searchLower) ||
         order.status.toLowerCase().includes(searchLower);
 
       // Status filter
-      const matchesStatus = statusFilter === "all" || order.status === statusFilter;
+      const matchesStatus =
+        statusFilter === "all" || order.status === statusFilter;
 
       // Order type filter
-      const matchesOrderType = orderTypeFilter === "all" || 
+      const matchesOrderType =
+        orderTypeFilter === "all" ||
         (orderTypeFilter === "regular" && order.orderType === "regular") ||
         (orderTypeFilter === "custom" && order.orderType === "custom");
 
@@ -160,7 +178,7 @@ export function EnhancedOrdersTable({
       const orderDate = new Date(getCreatedAt(order));
       const now = new Date();
       let matchesDate = true;
-      
+
       if (dateRange === "today") {
         matchesDate = orderDate.toDateString() === now.toDateString();
       } else if (dateRange === "week") {
@@ -174,7 +192,7 @@ export function EnhancedOrdersTable({
       // Amount range filter
       const amount = getTotalAmount(order);
       let matchesAmount = true;
-      
+
       if (amountRange === "0-50") {
         matchesAmount = amount <= 50;
       } else if (amountRange === "50-100") {
@@ -183,9 +201,22 @@ export function EnhancedOrdersTable({
         matchesAmount = amount > 100;
       }
 
-      return matchesSearch && matchesStatus && matchesOrderType && matchesDate && matchesAmount;
+      return (
+        matchesSearch &&
+        matchesStatus &&
+        matchesOrderType &&
+        matchesDate &&
+        matchesAmount
+      );
     });
-  }, [allOrders, searchTerm, statusFilter, orderTypeFilter, dateRange, amountRange]);
+  }, [
+    allOrders,
+    searchTerm,
+    statusFilter,
+    orderTypeFilter,
+    dateRange,
+    amountRange,
+  ]);
 
   // Sorting
   const sortedOrders = useMemo(() => {
@@ -225,7 +256,7 @@ export function EnhancedOrdersTable({
   const totalPages = Math.ceil(sortedOrders.length / pageSize);
   const paginatedOrders = sortedOrders.slice(
     (currentPage - 1) * pageSize,
-    currentPage * pageSize
+    currentPage * pageSize,
   );
 
   // Selection handlers
@@ -233,21 +264,21 @@ export function EnhancedOrdersTable({
     if (selectedOrders.length === paginatedOrders.length) {
       setSelectedOrders([]);
     } else {
-      setSelectedOrders(paginatedOrders.map(order => order.id));
+      setSelectedOrders(paginatedOrders.map((order) => order.id));
     }
   };
 
   const handleSelectOrder = (orderId: string) => {
-    setSelectedOrders(prev => 
-      prev.includes(orderId) 
-        ? prev.filter(id => id !== orderId)
-        : [...prev, orderId]
+    setSelectedOrders((prev) =>
+      prev.includes(orderId)
+        ? prev.filter((id) => id !== orderId)
+        : [...prev, orderId],
     );
   };
 
   // Bulk actions
   const handleBulkStatusUpdate = (status: string) => {
-    selectedOrders.forEach(orderId => {
+    selectedOrders.forEach((orderId) => {
       onUpdateOrderStatus(orderId, status);
     });
     setSelectedOrders([]);
@@ -256,23 +287,33 @@ export function EnhancedOrdersTable({
   // Export functionality
   const handleExport = () => {
     const csvContent = [
-      ["Order ID", "Customer", "Email", "Status", "Amount", "Date", "Type"].join(","),
-      ...sortedOrders.map(order => [
-        order.id.slice(-6),
-        getCustomerName(order),
-        getCustomerEmail(order),
-        order.status,
-        getTotalAmount(order),
-        new Date(getCreatedAt(order)).toLocaleDateString(),
-        order.orderType
-      ].join(","))
+      [
+        "Order ID",
+        "Customer",
+        "Email",
+        "Status",
+        "Amount",
+        "Date",
+        "Type",
+      ].join(","),
+      ...sortedOrders.map((order) =>
+        [
+          order.id.slice(-6),
+          getCustomerName(order),
+          getCustomerEmail(order),
+          order.status,
+          getTotalAmount(order),
+          new Date(getCreatedAt(order)).toLocaleDateString(),
+          order.orderType,
+        ].join(","),
+      ),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `orders-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `orders-${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -340,7 +381,7 @@ export function EnhancedOrdersTable({
             )}
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
@@ -348,14 +389,10 @@ export function EnhancedOrdersTable({
             onClick={onRefresh}
             disabled={loading}
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-          >
+
+          <Button variant="outline" size="sm" onClick={handleExport}>
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
@@ -467,13 +504,19 @@ export function EnhancedOrdersTable({
               <DropdownMenuContent>
                 <DropdownMenuLabel>Change Status</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleBulkStatusUpdate("processing")}>
+                <DropdownMenuItem
+                  onClick={() => handleBulkStatusUpdate("processing")}
+                >
                   Mark as Processing
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleBulkStatusUpdate("in-progress")}>
+                <DropdownMenuItem
+                  onClick={() => handleBulkStatusUpdate("in-progress")}
+                >
                   Mark as In Progress
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleBulkStatusUpdate("completed")}>
+                <DropdownMenuItem
+                  onClick={() => handleBulkStatusUpdate("completed")}
+                >
                   Mark as Completed
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -491,15 +534,23 @@ export function EnhancedOrdersTable({
 
       {/* Virtualized View - For large datasets */}
       {viewMode === "virtualized" && (
-        <Suspense fallback={
-          <div className="border rounded-lg p-8 text-center">
-            <div className="animate-spin h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading virtualized table...</p>
-          </div>
-        }>
+        <Suspense
+          fallback={
+            <div className="border rounded-lg p-8 text-center">
+              <div className="animate-spin h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">
+                Loading virtualized table...
+              </p>
+            </div>
+          }
+        >
           <VirtualizedOrdersTable
-            orders={filteredOrders.filter(order => order.orderType === "regular")}
-            customOrders={filteredOrders.filter(order => order.orderType === "custom")}
+            orders={filteredOrders.filter(
+              (order) => order.orderType === "regular",
+            )}
+            customOrders={filteredOrders.filter(
+              (order) => order.orderType === "custom",
+            )}
             isLoading={loading}
             onOrderSelect={openOrderDetails}
             onStatusUpdate={onUpdateOrderStatus}
@@ -594,7 +645,9 @@ export function EnhancedOrdersTable({
                   </TableCell>
                   <TableCell>
                     <div>
-                      <div className="font-medium">{getCustomerName(order)}</div>
+                      <div className="font-medium">
+                        {getCustomerName(order)}
+                      </div>
                       <div className="text-sm text-muted-foreground">
                         {getCustomerEmail(order)}
                       </div>
@@ -624,18 +677,24 @@ export function EnhancedOrdersTable({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => openOrderDetails(order)}>
+                        <DropdownMenuItem
+                          onClick={() => openOrderDetails(order)}
+                        >
                           <Eye className="h-4 w-4 mr-2" />
                           View Details
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          onClick={() => onUpdateOrderStatus(order.id, "processing")}
+                          onClick={() =>
+                            onUpdateOrderStatus(order.id, "processing")
+                          }
                         >
                           Mark Processing
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => onUpdateOrderStatus(order.id, "completed")}
+                          onClick={() =>
+                            onUpdateOrderStatus(order.id, "completed")
+                          }
                         >
                           Mark Completed
                         </DropdownMenuItem>
@@ -659,7 +718,9 @@ export function EnhancedOrdersTable({
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="font-mono font-medium">#{order.id.slice(-6)}</div>
+                  <div className="font-mono font-medium">
+                    #{order.id.slice(-6)}
+                  </div>
                   <Badge className={`${getStatusColor(order.status)} text-xs`}>
                     {order.status.replace("_", " ").replace("-", " ")}
                   </Badge>
@@ -678,7 +739,7 @@ export function EnhancedOrdersTable({
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              
+
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
@@ -692,7 +753,9 @@ export function EnhancedOrdersTable({
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span>{new Date(getCreatedAt(order)).toLocaleDateString()}</span>
+                  <span>
+                    {new Date(getCreatedAt(order)).toLocaleDateString()}
+                  </span>
                 </div>
               </div>
             </div>
@@ -706,15 +769,14 @@ export function EnhancedOrdersTable({
           <div className="flex items-center gap-2 text-sm text-yellow-800">
             <Info className="h-4 w-4" />
             <span>
-              Large dataset detected ({allOrders.length} orders).
-              Consider using{" "}
+              Large dataset detected ({allOrders.length} orders). Consider using{" "}
               <button
                 onClick={() => setViewMode("virtualized")}
                 className="font-medium underline hover:no-underline"
               >
                 virtualized view
-              </button>
-              {" "}for better performance.
+              </button>{" "}
+              for better performance.
             </span>
           </div>
         </div>
@@ -729,7 +791,10 @@ export function EnhancedOrdersTable({
               {Math.min(currentPage * pageSize, sortedOrders.length)} of{" "}
               {sortedOrders.length} orders
             </span>
-            <Select value={pageSize.toString()} onValueChange={(value) => setPageSize(Number(value))}>
+            <Select
+              value={pageSize.toString()}
+              onValueChange={(value) => setPageSize(Number(value))}
+            >
               <SelectTrigger className="w-20">
                 <SelectValue />
               </SelectTrigger>
@@ -747,10 +812,14 @@ export function EnhancedOrdersTable({
               <PaginationItem>
                 <PaginationPrevious
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
                 />
               </PaginationItem>
-              
+
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 const page = i + 1;
                 return (
@@ -765,13 +834,19 @@ export function EnhancedOrdersTable({
                   </PaginationItem>
                 );
               })}
-              
+
               {totalPages > 5 && <PaginationEllipsis />}
-              
+
               <PaginationItem>
                 <PaginationNext
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  onClick={() =>
+                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                  }
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
                 />
               </PaginationItem>
             </PaginationContent>

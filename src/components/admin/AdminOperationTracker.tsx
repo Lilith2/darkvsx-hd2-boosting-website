@@ -20,7 +20,7 @@ interface Operation {
   id: string;
   type: string;
   description: string;
-  status: 'pending' | 'running' | 'success' | 'error' | 'cancelled';
+  status: "pending" | "running" | "success" | "error" | "cancelled";
   progress: number;
   startTime: number;
   endTime?: number;
@@ -35,70 +35,74 @@ interface AdminOperationTrackerProps {
   className?: string;
 }
 
-export function AdminOperationTracker({ 
-  operations, 
-  onRetryOperation, 
+export function AdminOperationTracker({
+  operations,
+  onRetryOperation,
   onCancelOperation,
-  className 
+  className,
 }: AdminOperationTrackerProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'running' | 'completed' | 'failed'>('all');
+  const [filter, setFilter] = useState<
+    "all" | "running" | "completed" | "failed"
+  >("all");
   const { toast } = useToast();
 
   // Auto-show when there are running operations
   useEffect(() => {
-    const hasRunningOps = operations.some(op => op.status === 'running' || op.status === 'pending');
+    const hasRunningOps = operations.some(
+      (op) => op.status === "running" || op.status === "pending",
+    );
     if (hasRunningOps && !isVisible) {
       setIsVisible(true);
     }
   }, [operations, isVisible]);
 
   // Filter operations
-  const filteredOperations = operations.filter(op => {
+  const filteredOperations = operations.filter((op) => {
     switch (filter) {
-      case 'running':
-        return op.status === 'running' || op.status === 'pending';
-      case 'completed':
-        return op.status === 'success';
-      case 'failed':
-        return op.status === 'error' || op.status === 'cancelled';
+      case "running":
+        return op.status === "running" || op.status === "pending";
+      case "completed":
+        return op.status === "success";
+      case "failed":
+        return op.status === "error" || op.status === "cancelled";
       default:
         return true;
     }
   });
 
-  const getStatusIcon = (status: Operation['status']) => {
+  const getStatusIcon = (status: Operation["status"]) => {
     switch (status) {
-      case 'pending':
+      case "pending":
         return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'running':
+      case "running":
         return <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />;
-      case 'success':
+      case "success":
         return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'error':
+      case "error":
         return <XCircle className="h-4 w-4 text-red-500" />;
-      case 'cancelled':
+      case "cancelled":
         return <AlertCircle className="h-4 w-4 text-orange-500" />;
       default:
         return <Clock className="h-4 w-4" />;
     }
   };
 
-  const getStatusBadge = (status: Operation['status']) => {
-    const variants: Record<Operation['status'], any> = {
-      pending: 'secondary',
-      running: 'default',
-      success: 'default',
-      error: 'destructive',
-      cancelled: 'outline',
+  const getStatusBadge = (status: Operation["status"]) => {
+    const variants: Record<Operation["status"], any> = {
+      pending: "secondary",
+      running: "default",
+      success: "default",
+      error: "destructive",
+      cancelled: "outline",
     };
 
-    const colors: Record<Operation['status'], string> = {
-      pending: 'bg-yellow-500/20 text-yellow-700',
-      running: 'bg-blue-500/20 text-blue-700',
-      success: 'bg-green-500/20 text-green-700',
-      error: 'bg-red-500/20 text-red-700',
-      cancelled: 'bg-orange-500/20 text-orange-700',
+    const colors: Record<Operation["status"], string> = {
+      pending: "bg-yellow-500/20 text-yellow-700",
+      running: "bg-blue-500/20 text-blue-700",
+      success: "bg-green-500/20 text-green-700",
+      error: "bg-red-500/20 text-red-700",
+      cancelled: "bg-orange-500/20 text-orange-700",
     };
 
     return (
@@ -137,9 +141,11 @@ export function AdminOperationTracker({
 
   // Floating toggle button when minimized
   if (!isVisible) {
-    const runningCount = operations.filter(op => op.status === 'running' || op.status === 'pending').length;
-    const failedCount = operations.filter(op => op.status === 'error').length;
-    
+    const runningCount = operations.filter(
+      (op) => op.status === "running" || op.status === "pending",
+    ).length;
+    const failedCount = operations.filter((op) => op.status === "error").length;
+
     return (
       <Button
         variant="outline"
@@ -147,7 +153,9 @@ export function AdminOperationTracker({
         onClick={() => setIsVisible(true)}
         className="fixed bottom-20 right-4 z-40 shadow-lg"
       >
-        <Loader2 className={`h-4 w-4 mr-2 ${runningCount > 0 ? 'animate-spin' : ''}`} />
+        <Loader2
+          className={`h-4 w-4 mr-2 ${runningCount > 0 ? "animate-spin" : ""}`}
+        />
         {runningCount > 0 && <span className="mr-2">{runningCount}</span>}
         {failedCount > 0 && (
           <Badge variant="destructive" className="h-5 w-5 p-0 text-xs ml-1">
@@ -169,17 +177,19 @@ export function AdminOperationTracker({
             </CardTitle>
             <div className="flex items-center gap-2">
               <div className="flex border rounded-md overflow-hidden">
-                {(['all', 'running', 'completed', 'failed'] as const).map((filterType) => (
-                  <Button
-                    key={filterType}
-                    variant={filter === filterType ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setFilter(filterType)}
-                    className="h-6 px-2 text-xs border-0 rounded-none"
-                  >
-                    {filterType}
-                  </Button>
-                ))}
+                {(["all", "running", "completed", "failed"] as const).map(
+                  (filterType) => (
+                    <Button
+                      key={filterType}
+                      variant={filter === filterType ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setFilter(filterType)}
+                      className="h-6 px-2 text-xs border-0 rounded-none"
+                    >
+                      {filterType}
+                    </Button>
+                  ),
+                )}
               </div>
               <Button
                 variant="ghost"
@@ -196,70 +206,76 @@ export function AdminOperationTracker({
           {filteredOperations.length === 0 ? (
             <div className="text-center py-4">
               <p className="text-sm text-muted-foreground">
-                No {filter !== 'all' ? filter : ''} operations
+                No {filter !== "all" ? filter : ""} operations
               </p>
             </div>
           ) : (
-            filteredOperations.slice(-10).reverse().map((operation) => (
-              <div
-                key={operation.id}
-                className="border rounded-lg p-3 space-y-2 bg-card/50"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2 flex-1">
-                    {getStatusIcon(operation.status)}
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-medium truncate">
-                        {operation.description}
-                      </h4>
-                      <p className="text-xs text-muted-foreground">
-                        {operation.type} • {getDuration(operation)}
-                      </p>
+            filteredOperations
+              .slice(-10)
+              .reverse()
+              .map((operation) => (
+                <div
+                  key={operation.id}
+                  className="border rounded-lg p-3 space-y-2 bg-card/50"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2 flex-1">
+                      {getStatusIcon(operation.status)}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-medium truncate">
+                          {operation.description}
+                        </h4>
+                        <p className="text-xs text-muted-foreground">
+                          {operation.type} • {getDuration(operation)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {getStatusBadge(operation.status)}
+                      {operation.status === "error" && onRetryOperation && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRetry(operation.id)}
+                          className="h-6 w-6 p-0"
+                        >
+                          <RotateCcw className="h-3 w-3" />
+                        </Button>
+                      )}
+                      {(operation.status === "running" ||
+                        operation.status === "pending") &&
+                        onCancelOperation && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleCancel(operation.id)}
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {getStatusBadge(operation.status)}
-                    {operation.status === 'error' && onRetryOperation && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRetry(operation.id)}
-                        className="h-6 w-6 p-0"
-                      >
-                        <RotateCcw className="h-3 w-3" />
-                      </Button>
-                    )}
-                    {(operation.status === 'running' || operation.status === 'pending') && onCancelOperation && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleCancel(operation.id)}
-                        className="h-6 w-6 p-0"
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
+
+                  {/* Progress bar for running operations */}
+                  {(operation.status === "running" ||
+                    operation.status === "pending") && (
+                    <div className="space-y-1">
+                      <Progress value={operation.progress} className="h-2" />
+                      <p className="text-xs text-muted-foreground text-right">
+                        {operation.progress}%
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Error message */}
+                  {operation.status === "error" && operation.error && (
+                    <div className="p-2 bg-red-500/10 border border-red-500/20 rounded text-xs text-red-600">
+                      {operation.error}
+                    </div>
+                  )}
                 </div>
-
-                {/* Progress bar for running operations */}
-                {(operation.status === 'running' || operation.status === 'pending') && (
-                  <div className="space-y-1">
-                    <Progress value={operation.progress} className="h-2" />
-                    <p className="text-xs text-muted-foreground text-right">
-                      {operation.progress}%
-                    </p>
-                  </div>
-                )}
-
-                {/* Error message */}
-                {operation.status === 'error' && operation.error && (
-                  <div className="p-2 bg-red-500/10 border border-red-500/20 rounded text-xs text-red-600">
-                    {operation.error}
-                  </div>
-                )}
-              </div>
-            ))
+              ))
           )}
         </CardContent>
       </Card>
@@ -272,59 +288,79 @@ export function useAdminOperations() {
   const [operations, setOperations] = useState<Operation[]>([]);
   const { toast } = useToast();
 
-  const addOperation = useCallback((operation: Omit<Operation, 'id' | 'startTime' | 'progress' | 'status'>) => {
-    const newOperation: Operation = {
-      ...operation,
-      id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      startTime: Date.now(),
-      progress: 0,
-      status: 'pending',
-    };
+  const addOperation = useCallback(
+    (
+      operation: Omit<Operation, "id" | "startTime" | "progress" | "status">,
+    ) => {
+      const newOperation: Operation = {
+        ...operation,
+        id: `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        startTime: Date.now(),
+        progress: 0,
+        status: "pending",
+      };
 
-    setOperations(prev => [...prev, newOperation]);
-    return newOperation.id;
-  }, []);
+      setOperations((prev) => [...prev, newOperation]);
+      return newOperation.id;
+    },
+    [],
+  );
 
-  const updateOperation = useCallback((id: string, updates: Partial<Operation>) => {
-    setOperations(prev => prev.map(op => 
-      op.id === id 
-        ? { 
-            ...op, 
-            ...updates,
-            endTime: updates.status && ['success', 'error', 'cancelled'].includes(updates.status) 
-              ? Date.now() 
-              : op.endTime
-          }
-        : op
-    ));
-  }, []);
+  const updateOperation = useCallback(
+    (id: string, updates: Partial<Operation>) => {
+      setOperations((prev) =>
+        prev.map((op) =>
+          op.id === id
+            ? {
+                ...op,
+                ...updates,
+                endTime:
+                  updates.status &&
+                  ["success", "error", "cancelled"].includes(updates.status)
+                    ? Date.now()
+                    : op.endTime,
+              }
+            : op,
+        ),
+      );
+    },
+    [],
+  );
 
   const removeOperation = useCallback((id: string) => {
-    setOperations(prev => prev.filter(op => op.id !== id));
+    setOperations((prev) => prev.filter((op) => op.id !== id));
   }, []);
 
   const clearCompleted = useCallback(() => {
-    setOperations(prev => prev.filter(op => 
-      !['success', 'error', 'cancelled'].includes(op.status)
-    ));
+    setOperations((prev) =>
+      prev.filter(
+        (op) => !["success", "error", "cancelled"].includes(op.status),
+      ),
+    );
   }, []);
 
-  const retryOperation = useCallback((id: string) => {
-    updateOperation(id, {
-      status: 'pending',
-      progress: 0,
-      startTime: Date.now(),
-      endTime: undefined,
-      error: undefined,
-    });
-  }, [updateOperation]);
+  const retryOperation = useCallback(
+    (id: string) => {
+      updateOperation(id, {
+        status: "pending",
+        progress: 0,
+        startTime: Date.now(),
+        endTime: undefined,
+        error: undefined,
+      });
+    },
+    [updateOperation],
+  );
 
-  const cancelOperation = useCallback((id: string) => {
-    updateOperation(id, {
-      status: 'cancelled',
-      endTime: Date.now(),
-    });
-  }, [updateOperation]);
+  const cancelOperation = useCallback(
+    (id: string) => {
+      updateOperation(id, {
+        status: "cancelled",
+        endTime: Date.now(),
+      });
+    },
+    [updateOperation],
+  );
 
   return {
     operations,

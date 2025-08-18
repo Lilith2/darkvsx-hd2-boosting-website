@@ -336,7 +336,7 @@ export function AdminDashboardLoadingState() {
               <Skeleton key={index} className="h-10 w-24" />
             ))}
           </div>
-          
+
           {/* Default to overview loading */}
           <OverviewCardsLoadingSkeleton />
         </div>
