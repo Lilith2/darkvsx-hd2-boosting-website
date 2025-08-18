@@ -163,6 +163,7 @@ export default function VirtualizedOrdersTable({
     totalCount,
     shouldVirtualize,
   } = useOptimizedTable(normalizedOrders, {
+    data: normalizedOrders,
     estimateSize: 60,
     overscan: 5,
   });
