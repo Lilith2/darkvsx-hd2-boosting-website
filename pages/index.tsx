@@ -74,8 +74,32 @@ export default function Index() {
   return (
     <>
       <SEOHead
-        title="Helldivers 2 Boosting Services - Fast & Professional"
-        description="Premium Helldivers 2 boosting services. Get your rank up fast with our professional team. Safe, secure, and guaranteed results."
+        title="Helldivers 2 Boosting Services - Fast & Professional | HelldiversBoost"
+        description="Premium Helldivers 2 boosting services with 99.9% success rate. Level boosts, weapon unlocks, credit farming, and mission completion. Safe, secure, 24/7 support."
+        keywords="helldivers 2 boost, helldivers 2 boosting service, helldivers level boost, helldivers weapons unlock, super credits farming, helldivers 2 professional boosting"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "HelldiversBoost",
+          "url": "https://helldivers2boost.com",
+          "description": "Professional Helldivers 2 boosting services",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://helldivers2boost.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          },
+          "provider": {
+            "@type": "Organization",
+            "name": "HelldiversBoost",
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.9",
+              "reviewCount": "1247",
+              "bestRating": "5",
+              "worstRating": "1"
+            }
+          }
+        }}
       />
       <div className="bg-gradient-to-br from-background via-background to-background/80">
 
