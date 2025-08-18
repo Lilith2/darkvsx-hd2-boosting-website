@@ -431,6 +431,8 @@ export type Database = {
           transaction_id?: string | null;
           referral_code?: string | null;
           referral_discount?: number | null;
+          referral_credits_used?: number | null;
+          referred_by_user_id?: string | null;
           credits_used?: number | null;
           status_history?: Json | null;
         };
@@ -453,6 +455,8 @@ export type Database = {
           transaction_id?: string | null;
           referral_code?: string | null;
           referral_discount?: number | null;
+          referral_credits_used?: number | null;
+          referred_by_user_id?: string | null;
           credits_used?: number | null;
           status_history?: Json | null;
         };
