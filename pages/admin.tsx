@@ -387,16 +387,9 @@ export default function AdminDashboard() {
   };
 
   const handleSavePricing = async (pricingData: any) => {
-    const operationId = addOperation({
-      type: 'pricing',
-      description: isEditingPricing ? `Updating ${pricingData.item_name}` : `Creating ${pricingData.item_name}`,
-    });
-
     try {
-      updateOperation(operationId, { status: 'running', progress: 25 });
       const { supabase } = await import("@/integrations/supabase/client");
 
-      updateOperation(operationId, { progress: 50 });
       if (isEditingPricing) {
         const { error } = await supabase
           .from("custom_pricing")
@@ -411,11 +404,9 @@ export default function AdminDashboard() {
           ),
         );
 
-        updateOperation(operationId, { progress: 75 });
         // Invalidate the optimized cache
         invalidateAll();
 
-        updateOperation(operationId, { status: 'success', progress: 100 });
         toast({
           title: "Pricing Updated",
           description: "Custom pricing has been updated successfully.",
@@ -431,11 +422,9 @@ export default function AdminDashboard() {
 
         setLocalCustomPricing((prev) => [...prev, data]);
 
-        updateOperation(operationId, { progress: 75 });
         // Invalidate the optimized cache
         invalidateAll();
 
-        updateOperation(operationId, { status: 'success', progress: 100 });
         toast({
           title: "Pricing Added",
           description: "New custom pricing has been added successfully.",
@@ -446,10 +435,6 @@ export default function AdminDashboard() {
       setIsEditingPricing(null);
     } catch (error) {
       console.error("Error saving pricing:", error);
-      updateOperation(operationId, {
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
       toast({
         title: "Error",
         description: "Failed to save pricing. Please try again.",
