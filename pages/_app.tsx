@@ -45,7 +45,7 @@ const queryClient = new QueryClient({
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     // Initialize analytics and performance tracking
-    initializeAnalytics();
+    // initializeAnalytics();
 
     // Initialize security measures
     initializeSecurity();
