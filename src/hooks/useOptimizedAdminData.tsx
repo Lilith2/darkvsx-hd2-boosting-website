@@ -252,7 +252,7 @@ export function useOptimizedAdminData() {
     // Extract unique customers
     const uniqueCustomers = new Set();
     allOrders.forEach(order => {
-      const email = order.customer_email || order.customerEmail;
+      const email = order.customer_email || (order as any).customerEmail;
       if (email) uniqueCustomers.add(email);
     });
 
