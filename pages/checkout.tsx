@@ -464,10 +464,10 @@ export default function Checkout() {
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Badge variant="outline" className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
-                  <Shield className="w-3 h-3 mr-1 text-green-600" />
-                  <span className="text-green-700 dark:text-green-400 text-xs">SSL Secured</span>
-                </Badge>
+                <Badge variant="outline" className="bg-green-500/10 border-green-500/30">
+                <Shield className="w-3 h-3 mr-1 text-green-400" />
+                <span className="text-green-300 text-xs">SSL Secured</span>
+              </Badge>
               </div>
             </div>
 
