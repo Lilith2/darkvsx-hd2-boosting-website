@@ -8,7 +8,9 @@ const nextConfig = {
   generateEtags: true,
   experimental: {
     scrollRestoration: true,
-    // Removed optimizeCss as it was causing critters module issues
+    esmExternals: true, // Better tree shaking
+    serverComponentsExternalPackages: ['@supabase/supabase-js'], // External packages for better bundling
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'], // Optimize icon imports
   },
   allowedDevOrigins: [
     "1c1d42e681804164827111b263e5941f-c903eba0dff24a369b0e80752.fly.dev",
@@ -76,6 +78,13 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
   // Bundle analyzer when needed
   bundlePagesRouterDependencies: true,
+  // Advanced optimization
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+      skipDefaultConversion: true,
+    },
+  },
   transpilePackages: [
     "@supabase/supabase-js", // Only the main package needed
   ],
