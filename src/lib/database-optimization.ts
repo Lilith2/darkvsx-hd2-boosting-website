@@ -260,7 +260,9 @@ export async function batchQueries<T extends Record<string, any>>(
   const data = {} as T;
 
   results.forEach((result, index) => {
-    const key = queries[index].key;
+    const query = queries[index];
+    if (!query) return;
+    const key = query.key;
     if (result.status === "fulfilled") {
       data[key] = result.value;
     } else {
