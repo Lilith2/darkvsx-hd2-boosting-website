@@ -76,7 +76,6 @@ export default function App({ Component, pageProps }: AppProps) {
               defaultTheme="dark"
               enableSystem={false}
               disableTransitionOnChange
-              suppressHydrationWarning
             >
               <QueryClientProvider client={queryClient}>
                 <TooltipProvider>
