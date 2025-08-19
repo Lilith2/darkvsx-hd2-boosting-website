@@ -71,17 +71,24 @@ export default function App({ Component, pageProps }: AppProps) {
         <SecurityProvider>
           <AccessibilityWrapper>
             <SEOHead />
-            <QueryClientProvider client={queryClient}>
-              <TooltipProvider>
-                <CoreDataProvider>
-                  <Layout>
-                    <Component {...pageProps} />
-                    <Toaster />
-                    <Sonner />
-                  </Layout>
-                </CoreDataProvider>
-              </TooltipProvider>
-            </QueryClientProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem={false}
+              disableTransitionOnChange
+            >
+              <QueryClientProvider client={queryClient}>
+                <TooltipProvider>
+                  <CoreDataProvider>
+                    <Layout>
+                      <Component {...pageProps} />
+                      <Toaster />
+                      <Sonner />
+                    </Layout>
+                  </CoreDataProvider>
+                </TooltipProvider>
+              </QueryClientProvider>
+            </ThemeProvider>
           </AccessibilityWrapper>
         </SecurityProvider>
       </ErrorBoundary>
