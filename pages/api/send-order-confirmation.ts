@@ -30,15 +30,14 @@ export default async function handler(
   try {
     const emailData: EmailData = req.body;
 
-    // Debug log environment variables (without showing password)
-    console.log("SMTP Configuration:", {
-      host: process.env.SMTP_HOST || "NOT SET",
-      port: process.env.SMTP_PORT || "NOT SET",
-      user: process.env.SMTP_USER || "NOT SET",
-      from: process.env.EMAIL_FROM || "NOT SET",
-      fromName: process.env.EMAIL_FROM_NAME || "NOT SET",
-      hasPassword: !!process.env.SMTP_PASS
-    });
+    // Validate environment variables first
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.error("Missing SMTP environment variables");
+      return res.status(500).json({
+        error: "Server configuration error",
+        details: "SMTP settings are not properly configured",
+      });
+    }
 
     // Validate required fields
     if (
