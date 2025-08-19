@@ -146,39 +146,39 @@ export default function Cart() {
 
           {/* Cart Stats */}
           <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="p-4 bg-gradient-to-r from-blue-50/50 to-cyan-50/50 dark:from-blue-950/20 dark:to-cyan-950/20 rounded-xl border border-blue-200/50 dark:border-blue-800/50">
+            <div className="p-4 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-xl border border-blue-500/20">
               <div className="flex items-center space-x-2">
-                <Package className="w-5 h-5 text-blue-600" />
+                <Package className="w-5 h-5 text-blue-400" />
                 <div>
-                  <div className="text-xl font-bold text-blue-600">{cartItems.length}</div>
-                  <div className="text-sm text-blue-700 dark:text-blue-300">Services</div>
+                  <div className="text-xl font-bold text-blue-400">{cartItems.length}</div>
+                  <div className="text-sm text-blue-300">Services</div>
                 </div>
               </div>
             </div>
-            <div className="p-4 bg-gradient-to-r from-green-50/50 to-emerald-50/50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-xl border border-green-200/50 dark:border-green-800/50">
+            <div className="p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20">
               <div className="flex items-center space-x-2">
-                <TrendingUp className="w-5 h-5 text-green-600" />
+                <TrendingUp className="w-5 h-5 text-green-400" />
                 <div>
-                  <div className="text-xl font-bold text-green-600">${subtotal.toFixed(2)}</div>
-                  <div className="text-sm text-green-700 dark:text-green-300">Subtotal</div>
+                  <div className="text-xl font-bold text-green-400">${subtotal.toFixed(2)}</div>
+                  <div className="text-sm text-green-300">Subtotal</div>
                 </div>
               </div>
             </div>
-            <div className="p-4 bg-gradient-to-r from-purple-50/50 to-pink-50/50 dark:from-purple-950/20 dark:to-pink-950/20 rounded-xl border border-purple-200/50 dark:border-purple-800/50">
+            <div className="p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20">
               <div className="flex items-center space-x-2">
-                <Timer className="w-5 h-5 text-purple-600" />
+                <Timer className="w-5 h-5 text-purple-400" />
                 <div>
-                  <div className="text-xl font-bold text-purple-600">24h</div>
-                  <div className="text-sm text-purple-700 dark:text-purple-300">Est. Start</div>
+                  <div className="text-xl font-bold text-purple-400">24h</div>
+                  <div className="text-sm text-purple-300">Est. Start</div>
                 </div>
               </div>
             </div>
-            <div className="p-4 bg-gradient-to-r from-orange-50/50 to-yellow-50/50 dark:from-orange-950/20 dark:to-yellow-950/20 rounded-xl border border-orange-200/50 dark:border-orange-800/50">
+            <div className="p-4 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 rounded-xl border border-orange-500/20">
               <div className="flex items-center space-x-2">
-                <Users className="w-5 h-5 text-orange-600" />
+                <Users className="w-5 h-5 text-orange-400" />
                 <div>
-                  <div className="text-xl font-bold text-orange-600">Pro</div>
-                  <div className="text-sm text-orange-700 dark:text-orange-300">Team</div>
+                  <div className="text-xl font-bold text-orange-400">Pro</div>
+                  <div className="text-sm text-orange-300">Team</div>
                 </div>
               </div>
             </div>
