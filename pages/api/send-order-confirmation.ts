@@ -95,9 +95,7 @@ export default async function handler(
 
     // Test connection first
     try {
-      console.log("Testing SMTP connection...");
       await transporter.verify();
-      console.log("SMTP connection verified successfully");
     } catch (verifyError: any) {
       console.error("SMTP connection verification failed:", verifyError);
       return res.status(500).json({
@@ -107,9 +105,7 @@ export default async function handler(
     }
 
     // Send email
-    console.log("Sending email to:", emailData.customerEmail);
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully:", info.messageId);
 
     res.status(200).json({
       success: true,
