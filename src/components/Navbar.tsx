@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
 import { Button } from "@/components/ui/button";
@@ -34,11 +35,14 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <div className="w-10 h-10">
-              <img
+            <div className="w-10 h-10 relative">
+              <Image
                 src="https://cdn.builder.io/api/v1/image/assets%2F140080265ae84fed81345db6d679ba75%2F0ba66a9961654e799d47f40a907b95dc?format=webp&width=64"
                 alt="HelldiversBoost Logo"
-                className="w-full h-full object-contain"
+                fill
+                className="object-contain"
+                priority
+                sizes="40px"
               />
             </div>
             <div>
