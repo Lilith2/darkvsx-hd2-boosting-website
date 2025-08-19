@@ -53,7 +53,7 @@ export default function App({ Component, pageProps }: AppProps) {
     initializePerformanceTracking();
 
     // Register Service Worker for offline support and caching
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       registerServiceWorker();
     }
   }, []);

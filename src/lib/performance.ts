@@ -2,7 +2,7 @@
 export interface PerformanceMetric {
   name: string;
   value: number;
-  rating: 'good' | 'needs-improvement' | 'poor';
+  rating: "good" | "needs-improvement" | "poor";
   timestamp: number;
   id: string;
 }
@@ -10,20 +10,23 @@ export interface PerformanceMetric {
 // Core Web Vitals thresholds
 const THRESHOLDS = {
   LCP: { good: 2500, poor: 4000 }, // Largest Contentful Paint
-  FID: { good: 100, poor: 300 },   // First Input Delay
-  CLS: { good: 0.1, poor: 0.25 },  // Cumulative Layout Shift
+  FID: { good: 100, poor: 300 }, // First Input Delay
+  CLS: { good: 0.1, poor: 0.25 }, // Cumulative Layout Shift
   FCP: { good: 1800, poor: 3000 }, // First Contentful Paint
   TTFB: { good: 800, poor: 1800 }, // Time to First Byte
 };
 
 // Get performance rating based on thresholds
-function getPerformanceRating(metric: string, value: number): 'good' | 'needs-improvement' | 'poor' {
+function getPerformanceRating(
+  metric: string,
+  value: number,
+): "good" | "needs-improvement" | "poor" {
   const threshold = THRESHOLDS[metric as keyof typeof THRESHOLDS];
-  if (!threshold) return 'good';
-  
-  if (value <= threshold.good) return 'good';
-  if (value <= threshold.poor) return 'needs-improvement';
-  return 'poor';
+  if (!threshold) return "good";
+
+  if (value <= threshold.good) return "good";
+  if (value <= threshold.poor) return "needs-improvement";
+  return "poor";
 }
 
 // Generate unique ID for metrics
@@ -35,52 +38,55 @@ function generateId(): string {
 async function sendMetric(metric: PerformanceMetric): Promise<void> {
   try {
     // In production, send to your analytics service
-    if (process.env.NODE_ENV === 'production') {
-      await fetch('/api/analytics/performance', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+    if (process.env.NODE_ENV === "production") {
+      await fetch("/api/analytics/performance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(metric),
       });
     } else {
-      console.log('[Performance]', metric);
+      console.log("[Performance]", metric);
     }
   } catch (error) {
-    console.error('[Performance] Failed to send metric:', error);
+    console.error("[Performance] Failed to send metric:", error);
   }
 }
 
 // Track Core Web Vitals
 export function trackWebVitals(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   // Track LCP (Largest Contentful Paint)
   new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
       const metric: PerformanceMetric = {
-        name: 'LCP',
+        name: "LCP",
         value: entry.startTime,
-        rating: getPerformanceRating('LCP', entry.startTime),
+        rating: getPerformanceRating("LCP", entry.startTime),
         timestamp: Date.now(),
         id: generateId(),
       };
       sendMetric(metric);
     }
-  }).observe({ entryTypes: ['largest-contentful-paint'] });
+  }).observe({ entryTypes: ["largest-contentful-paint"] });
 
   // Track FID (First Input Delay)
   new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
       const fidEntry = entry as PerformanceEventTiming;
       const metric: PerformanceMetric = {
-        name: 'FID',
+        name: "FID",
         value: fidEntry.processingStart - fidEntry.startTime,
-        rating: getPerformanceRating('FID', fidEntry.processingStart - fidEntry.startTime),
+        rating: getPerformanceRating(
+          "FID",
+          fidEntry.processingStart - fidEntry.startTime,
+        ),
         timestamp: Date.now(),
         id: generateId(),
       };
       sendMetric(metric);
     }
-  }).observe({ entryTypes: ['first-input'] });
+  }).observe({ entryTypes: ["first-input"] });
 
   // Track CLS (Cumulative Layout Shift)
   let clsValue = 0;
@@ -91,14 +97,14 @@ export function trackWebVitals(): void {
         clsValue += layoutShiftEntry.value;
       }
     }
-  }).observe({ entryTypes: ['layout-shift'] });
+  }).observe({ entryTypes: ["layout-shift"] });
 
   // Send CLS on page unload
-  addEventListener('beforeunload', () => {
+  addEventListener("beforeunload", () => {
     const metric: PerformanceMetric = {
-      name: 'CLS',
+      name: "CLS",
       value: clsValue,
-      rating: getPerformanceRating('CLS', clsValue),
+      rating: getPerformanceRating("CLS", clsValue),
       timestamp: Date.now(),
       id: generateId(),
     };
@@ -108,18 +114,18 @@ export function trackWebVitals(): void {
   // Track FCP (First Contentful Paint)
   new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-      if (entry.name === 'first-contentful-paint') {
+      if (entry.name === "first-contentful-paint") {
         const metric: PerformanceMetric = {
-          name: 'FCP',
+          name: "FCP",
           value: entry.startTime,
-          rating: getPerformanceRating('FCP', entry.startTime),
+          rating: getPerformanceRating("FCP", entry.startTime),
           timestamp: Date.now(),
           id: generateId(),
         };
         sendMetric(metric);
       }
     }
-  }).observe({ entryTypes: ['paint'] });
+  }).observe({ entryTypes: ["paint"] });
 
   // Track TTFB (Time to First Byte)
   new PerformanceObserver((list) => {
@@ -127,60 +133,74 @@ export function trackWebVitals(): void {
       const navEntry = entry as PerformanceNavigationTiming;
       const ttfb = navEntry.responseStart - navEntry.requestStart;
       const metric: PerformanceMetric = {
-        name: 'TTFB',
+        name: "TTFB",
         value: ttfb,
-        rating: getPerformanceRating('TTFB', ttfb),
+        rating: getPerformanceRating("TTFB", ttfb),
         timestamp: Date.now(),
         id: generateId(),
       };
       sendMetric(metric);
     }
-  }).observe({ entryTypes: ['navigation'] });
+  }).observe({ entryTypes: ["navigation"] });
 }
 
 // Track custom performance metrics
-export function trackCustomMetric(name: string, value: number, unit = 'ms'): void {
+export function trackCustomMetric(
+  name: string,
+  value: number,
+  unit = "ms",
+): void {
   const metric: PerformanceMetric = {
     name: `custom-${name}`,
     value,
-    rating: 'good', // Custom metrics don't have standard thresholds
+    rating: "good", // Custom metrics don't have standard thresholds
     timestamp: Date.now(),
     id: generateId(),
   };
-  
+
   sendMetric(metric);
 }
 
 // Track page load performance
 export function trackPageLoad(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
-  window.addEventListener('load', () => {
+  window.addEventListener("load", () => {
     // Track total page load time
     const pageLoadTime = performance.now();
-    trackCustomMetric('page-load-time', pageLoadTime);
+    trackCustomMetric("page-load-time", pageLoadTime);
 
     // Track resource loading times
-    const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
-    
+    const resources = performance.getEntriesByType(
+      "resource",
+    ) as PerformanceResourceTiming[];
+
     resources.forEach((resource) => {
-      if (resource.duration > 100) { // Only track slow resources
-        trackCustomMetric(`resource-${resource.initiatorType}`, resource.duration);
+      if (resource.duration > 100) {
+        // Only track slow resources
+        trackCustomMetric(
+          `resource-${resource.initiatorType}`,
+          resource.duration,
+        );
       }
     });
 
     // Track memory usage (if available)
-    if ('memory' in performance) {
+    if ("memory" in performance) {
       const memory = (performance as any).memory;
-      trackCustomMetric('memory-used', memory.usedJSHeapSize / 1024 / 1024, 'MB');
+      trackCustomMetric(
+        "memory-used",
+        memory.usedJSHeapSize / 1024 / 1024,
+        "MB",
+      );
     }
   });
 }
 
 // Track user interactions
-export function trackInteraction(action: string, category = 'user'): void {
+export function trackInteraction(action: string, category = "user"): void {
   const startTime = performance.now();
-  
+
   // Measure interaction time
   requestIdleCallback(() => {
     const duration = performance.now() - startTime;
@@ -190,28 +210,30 @@ export function trackInteraction(action: string, category = 'user'): void {
 
 // Performance budget monitoring
 export function checkPerformanceBudget(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   const budget = {
-    'bundle-js': 500 * 1024,    // 500KB JS budget
-    'bundle-css': 100 * 1024,   // 100KB CSS budget
-    'images': 2 * 1024 * 1024,  // 2MB images budget
+    "bundle-js": 500 * 1024, // 500KB JS budget
+    "bundle-css": 100 * 1024, // 100KB CSS budget
+    images: 2 * 1024 * 1024, // 2MB images budget
   };
 
-  const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+  const resources = performance.getEntriesByType(
+    "resource",
+  ) as PerformanceResourceTiming[];
   const usage = {
-    'bundle-js': 0,
-    'bundle-css': 0,
-    'images': 0,
+    "bundle-js": 0,
+    "bundle-css": 0,
+    images: 0,
   };
 
   resources.forEach((resource) => {
-    if (resource.name.includes('.js')) {
-      usage['bundle-js'] += resource.transferSize || 0;
-    } else if (resource.name.includes('.css')) {
-      usage['bundle-css'] += resource.transferSize || 0;
+    if (resource.name.includes(".js")) {
+      usage["bundle-js"] += resource.transferSize || 0;
+    } else if (resource.name.includes(".css")) {
+      usage["bundle-css"] += resource.transferSize || 0;
     } else if (resource.name.match(/\.(jpg|jpeg|png|gif|webp|avif)$/i)) {
-      usage['images'] += resource.transferSize || 0;
+      usage["images"] += resource.transferSize || 0;
     }
   });
 
@@ -219,26 +241,28 @@ export function checkPerformanceBudget(): void {
   Object.entries(budget).forEach(([type, limit]) => {
     const used = usage[type as keyof typeof usage];
     const percentage = (used / limit) * 100;
-    
+
     if (percentage > 90) {
-      console.warn(`[Performance Budget] ${type} usage at ${percentage.toFixed(1)}% (${used}/${limit} bytes)`);
-      trackCustomMetric(`budget-${type}`, percentage, '%');
+      console.warn(
+        `[Performance Budget] ${type} usage at ${percentage.toFixed(1)}% (${used}/${limit} bytes)`,
+      );
+      trackCustomMetric(`budget-${type}`, percentage, "%");
     }
   });
 }
 
 // Initialize all performance tracking
 export function initializePerformanceTracking(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
 
   // Track Core Web Vitals
   trackWebVitals();
-  
+
   // Track page load performance
   trackPageLoad();
-  
+
   // Check performance budget
   checkPerformanceBudget();
-  
-  console.log('[Performance] Tracking initialized');
+
+  console.log("[Performance] Tracking initialized");
 }

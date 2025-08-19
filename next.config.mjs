@@ -9,10 +9,10 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
     esmExternals: true, // Better tree shaking
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'], // Optimize icon imports
+    optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"], // Optimize icon imports
   },
   // Move serverComponentsExternalPackages to the correct location
-  serverExternalPackages: ['@supabase/supabase-js'],
+  serverExternalPackages: ["@supabase/supabase-js"],
   allowedDevOrigins: [
     "1c1d42e681804164827111b263e5941f-c903eba0dff24a369b0e80752.fly.dev",
     "ef297b071d014482af49aab623b4cc88-c420d88334bd4335931373581.projects.builder.codes",
@@ -73,7 +73,7 @@ const nextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days (more reasonable)
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    loader: 'default',
+    loader: "default",
     // Quality is handled by the default loader
   },
   compiler: {
@@ -85,8 +85,8 @@ const nextConfig = {
   bundlePagesRouterDependencies: true,
   // Advanced optimization
   modularizeImports: {
-    'lucide-react': {
-      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+    "lucide-react": {
+      transform: "lucide-react/dist/esm/icons/{{kebabCase member}}",
       skipDefaultConversion: true,
     },
   },

@@ -6,7 +6,7 @@ export interface PaginationOptions {
   page?: number;
   limit?: number;
   orderBy?: string;
-  orderDirection?: 'asc' | 'desc';
+  orderDirection?: "asc" | "desc";
 }
 
 export interface PaginatedResult<T> {
@@ -26,12 +26,14 @@ const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 
 // Optimized services query with pagination
-export async function getServicesOptimized(options: PaginationOptions = {}): Promise<PaginatedResult<any>> {
+export async function getServicesOptimized(
+  options: PaginationOptions = {},
+): Promise<PaginatedResult<any>> {
   const {
     page = 1,
     limit = DEFAULT_LIMIT,
-    orderBy = 'created_at',
-    orderDirection = 'desc'
+    orderBy = "created_at",
+    orderDirection = "desc",
   } = options;
 
   const safePage = Math.max(1, page);
@@ -40,14 +42,15 @@ export async function getServicesOptimized(options: PaginationOptions = {}): Pro
 
   // First, get the total count (cached for 5 minutes)
   const { count: total } = await supabase
-    .from('services')
-    .select('*', { count: 'exact', head: true })
-    .eq('active', true);
+    .from("services")
+    .select("*", { count: "exact", head: true })
+    .eq("active", true);
 
   // Then get the paginated data with optimized query
   const { data, error } = await supabase
-    .from('services')
-    .select(`
+    .from("services")
+    .select(
+      `
       id,
       title,
       description,
@@ -61,13 +64,14 @@ export async function getServicesOptimized(options: PaginationOptions = {}): Pro
       category,
       created_at,
       orders_count
-    `)
-    .eq('active', true)
-    .order(orderBy, { ascending: orderDirection === 'asc' })
+    `,
+    )
+    .eq("active", true)
+    .order(orderBy, { ascending: orderDirection === "asc" })
     .range(offset, offset + safeLimit - 1);
 
   if (error) {
-    console.error('Services query error:', error);
+    console.error("Services query error:", error);
     throw error;
   }
 
@@ -87,12 +91,14 @@ export async function getServicesOptimized(options: PaginationOptions = {}): Pro
 }
 
 // Optimized bundles query with pagination
-export async function getBundlesOptimized(options: PaginationOptions = {}): Promise<PaginatedResult<any>> {
+export async function getBundlesOptimized(
+  options: PaginationOptions = {},
+): Promise<PaginatedResult<any>> {
   const {
     page = 1,
     limit = DEFAULT_LIMIT,
-    orderBy = 'created_at',
-    orderDirection = 'desc'
+    orderBy = "created_at",
+    orderDirection = "desc",
   } = options;
 
   const safePage = Math.max(1, page);
@@ -101,14 +107,15 @@ export async function getBundlesOptimized(options: PaginationOptions = {}): Prom
 
   // Get total count
   const { count: total } = await supabase
-    .from('bundles')
-    .select('*', { count: 'exact', head: true })
-    .eq('active', true);
+    .from("bundles")
+    .select("*", { count: "exact", head: true })
+    .eq("active", true);
 
   // Get paginated data
   const { data, error } = await supabase
-    .from('bundles')
-    .select(`
+    .from("bundles")
+    .select(
+      `
       id,
       title,
       description,
@@ -119,13 +126,14 @@ export async function getBundlesOptimized(options: PaginationOptions = {}): Prom
       popular,
       active,
       created_at
-    `)
-    .eq('active', true)
-    .order(orderBy, { ascending: orderDirection === 'asc' })
+    `,
+    )
+    .eq("active", true)
+    .order(orderBy, { ascending: orderDirection === "asc" })
     .range(offset, offset + safeLimit - 1);
 
   if (error) {
-    console.error('Bundles query error:', error);
+    console.error("Bundles query error:", error);
     throw error;
   }
 
@@ -147,16 +155,20 @@ export async function getBundlesOptimized(options: PaginationOptions = {}): Prom
 // Optimized orders query with filters and pagination
 export async function getOrdersOptimized(
   userId?: string,
-  options: PaginationOptions & { status?: string; dateFrom?: string; dateTo?: string } = {}
+  options: PaginationOptions & {
+    status?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  } = {},
 ): Promise<PaginatedResult<any>> {
   const {
     page = 1,
     limit = DEFAULT_LIMIT,
-    orderBy = 'created_at',
-    orderDirection = 'desc',
+    orderBy = "created_at",
+    orderDirection = "desc",
     status,
     dateFrom,
-    dateTo
+    dateTo,
   } = options;
 
   const safePage = Math.max(1, page);
@@ -164,22 +176,22 @@ export async function getOrdersOptimized(
   const offset = (safePage - 1) * safeLimit;
 
   // Build query with filters
-  let query = supabase.from('orders').select('*', { count: 'exact' });
-  
+  let query = supabase.from("orders").select("*", { count: "exact" });
+
   if (userId) {
-    query = query.eq('user_id', userId);
+    query = query.eq("user_id", userId);
   }
-  
+
   if (status) {
-    query = query.eq('status', status);
+    query = query.eq("status", status);
   }
-  
+
   if (dateFrom) {
-    query = query.gte('created_at', dateFrom);
+    query = query.gte("created_at", dateFrom);
   }
-  
+
   if (dateTo) {
-    query = query.lte('created_at', dateTo);
+    query = query.lte("created_at", dateTo);
   }
 
   // Get total count with filters
@@ -187,11 +199,11 @@ export async function getOrdersOptimized(
 
   // Get paginated data
   const { data, error } = await query
-    .order(orderBy, { ascending: orderDirection === 'asc' })
+    .order(orderBy, { ascending: orderDirection === "asc" })
     .range(offset, offset + safeLimit - 1);
 
   if (error) {
-    console.error('Orders query error:', error);
+    console.error("Orders query error:", error);
     throw error;
   }
 
@@ -211,21 +223,28 @@ export async function getOrdersOptimized(
 }
 
 // Query result caching utility
-const queryCache = new Map<string, { data: any; timestamp: number; ttl: number }>();
+const queryCache = new Map<
+  string,
+  { data: any; timestamp: number; ttl: number }
+>();
 
 export function getCachedQuery<T>(key: string): T | null {
   const cached = queryCache.get(key);
   if (!cached) return null;
-  
+
   if (Date.now() - cached.timestamp > cached.ttl) {
     queryCache.delete(key);
     return null;
   }
-  
+
   return cached.data;
 }
 
-export function setCachedQuery<T>(key: string, data: T, ttlMs = 5 * 60 * 1000): void {
+export function setCachedQuery<T>(
+  key: string,
+  data: T,
+  ttlMs = 5 * 60 * 1000,
+): void {
   queryCache.set(key, {
     data,
     timestamp: Date.now(),
@@ -235,35 +254,38 @@ export function setCachedQuery<T>(key: string, data: T, ttlMs = 5 * 60 * 1000): 
 
 // Batch query utility for related data
 export async function batchQueries<T extends Record<string, any>>(
-  queries: Array<{ key: keyof T; query: Promise<any> }>
+  queries: Array<{ key: keyof T; query: Promise<any> }>,
 ): Promise<T> {
-  const results = await Promise.allSettled(queries.map(q => q.query));
+  const results = await Promise.allSettled(queries.map((q) => q.query));
   const data = {} as T;
-  
+
   results.forEach((result, index) => {
     const key = queries[index].key;
-    if (result.status === 'fulfilled') {
+    if (result.status === "fulfilled") {
       data[key] = result.value;
     } else {
       console.error(`Batch query failed for ${String(key)}:`, result.reason);
       data[key] = null;
     }
   });
-  
+
   return data;
 }
 
 // Database connection health check
-export async function checkDatabaseHealth(): Promise<{ healthy: boolean; latency: number }> {
+export async function checkDatabaseHealth(): Promise<{
+  healthy: boolean;
+  latency: number;
+}> {
   const start = performance.now();
-  
+
   try {
-    await supabase.from('services').select('id').limit(1).single();
+    await supabase.from("services").select("id").limit(1).single();
     const latency = performance.now() - start;
     return { healthy: true, latency };
   } catch (error) {
     const latency = performance.now() - start;
-    console.error('Database health check failed:', error);
+    console.error("Database health check failed:", error);
     return { healthy: false, latency };
   }
 }
@@ -271,25 +293,28 @@ export async function checkDatabaseHealth(): Promise<{ healthy: boolean; latency
 // Query performance monitoring
 export function monitorQuery<T>(
   queryName: string,
-  queryFn: () => Promise<T>
+  queryFn: () => Promise<T>,
 ): Promise<T> {
   const start = performance.now();
-  
+
   return queryFn()
     .then((result) => {
       const duration = performance.now() - start;
       console.log(`[DB Query] ${queryName}: ${duration.toFixed(2)}ms`);
-      
+
       // Track slow queries
       if (duration > 1000) {
         console.warn(`[DB Slow Query] ${queryName}: ${duration.toFixed(2)}ms`);
       }
-      
+
       return result;
     })
     .catch((error) => {
       const duration = performance.now() - start;
-      console.error(`[DB Query Error] ${queryName}: ${duration.toFixed(2)}ms`, error);
+      console.error(
+        `[DB Query Error] ${queryName}: ${duration.toFixed(2)}ms`,
+        error,
+      );
       throw error;
     });
 }

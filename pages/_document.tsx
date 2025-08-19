@@ -87,8 +87,9 @@ export default function Document() {
         />
 
         {/* Critical CSS inlined for fastest rendering */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
             *,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}
             html{line-height:1.5;-webkit-text-size-adjust:100%;font-family:Inter,ui-sans-serif,system-ui,sans-serif}
             body{margin:0;line-height:inherit;background-color:hsl(210 20% 7%);color:hsl(210 40% 98%)}
@@ -98,12 +99,18 @@ export default function Document() {
             .bg-background\/95{background-color:hsl(210 20% 7% / 0.95)}.backdrop-blur-md{backdrop-filter:blur(12px)}
             .border-b{border-bottom-width:1px}.border-border{border-color:hsl(215 25% 20%)}
             .transition-colors{transition:color 150ms,background-color 150ms,border-color 150ms}
-          `
-        }} />
+          `,
+          }}
+        />
 
         {/* Performance optimizations */}
         <link rel="preload" href="/sw.js" as="script" />
-        <link rel="preload" href="/api/ping" as="fetch" crossOrigin="anonymous" />
+        <link
+          rel="preload"
+          href="/api/ping"
+          as="fetch"
+          crossOrigin="anonymous"
+        />
       </Head>
       <body className="antialiased">
         <Main />
