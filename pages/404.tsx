@@ -16,7 +16,8 @@ export default function Custom404() {
       "🚀 Extraction ship couldn't find landing zone",
       "💥 Strategem malfunction detected",
     ];
-    setRandomFact(bugFacts[Math.floor(Math.random() * bugFacts.length)]);
+    const selectedFact = bugFacts[Math.floor(Math.random() * bugFacts.length)];
+    setRandomFact(selectedFact || "🔥 Democracy is temporarily unavailable");
   }, []);
 
   // Glitch effect for the 404 text
