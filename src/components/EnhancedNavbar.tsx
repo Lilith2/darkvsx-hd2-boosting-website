@@ -188,9 +188,14 @@ export function EnhancedNavbar() {
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              suppressHydrationWarning
             >
-              {theme === "dark" ? (
-                <Sun className="w-4 h-4" />
+              {mounted ? (
+                theme === "dark" ? (
+                  <Sun className="w-4 h-4" />
+                ) : (
+                  <Moon className="w-4 h-4" />
+                )
               ) : (
                 <Moon className="w-4 h-4" />
               )}
