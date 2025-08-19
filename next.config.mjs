@@ -32,7 +32,7 @@ const nextConfig = {
         headers: [
           {
             key: "X-Frame-Options",
-            value: "DENY",
+            value: "SAMEORIGIN",
           },
           {
             key: "X-Content-Type-Options",
@@ -54,7 +54,7 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://www.paypal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://ahqqptrclqtwqjgmtesv.supabase.co https://api.stripe.com https://www.paypal.com; frame-src https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com;",
+              "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://www.paypal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://ahqqptrclqtwqjgmtesv.supabase.co https://api.stripe.com https://www.paypal.com; frame-src https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com; frame-ancestors 'self' https://*.builder.codes https://*.fly.dev;",
           },
         ],
       },
