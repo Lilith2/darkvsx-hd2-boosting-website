@@ -393,29 +393,29 @@ export default function Cart() {
             </Card>
 
             {/* Why Choose Us */}
-            <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50/50 to-purple-50/50 dark:from-blue-950/20 dark:to-purple-950/20">
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500/5 to-purple-500/5">
               <CardHeader>
-                <CardTitle className="text-lg flex items-center text-blue-800 dark:text-blue-200">
-                  <Sparkles className="w-5 h-5 mr-2 text-blue-600" />
+                <CardTitle className="text-lg flex items-center text-blue-400">
+                  <Sparkles className="w-5 h-5 mr-2 text-blue-400" />
                   Why Choose Us?
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 rounded-full flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-green-600" />
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-green-400" />
                   </div>
                   <span className="text-sm font-medium">24/7 Progress Updates</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-full flex items-center justify-center">
-                    <Users className="w-4 h-4 text-blue-600" />
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full flex items-center justify-center">
+                    <Users className="w-4 h-4 text-blue-400" />
                   </div>
                   <span className="text-sm font-medium">Professional Team</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 rounded-full flex items-center justify-center">
-                    <Trophy className="w-4 h-4 text-purple-600" />
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center">
+                    <Trophy className="w-4 h-4 text-purple-400" />
                   </div>
                   <span className="text-sm font-medium">Guaranteed Results</span>
                 </div>
