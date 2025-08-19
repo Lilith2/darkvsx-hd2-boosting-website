@@ -27,7 +27,6 @@ import {
   Package,
   Crown,
   Bell,
-  Search,
   Moon,
   Sun,
 } from "lucide-react";
@@ -58,8 +57,6 @@ export function EnhancedNavbar() {
   const { cartItems } = useCart();
   const { theme, setTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Handle mounting
@@ -90,17 +87,6 @@ export function EnhancedNavbar() {
     }
   }, [logout, router]);
 
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      if (searchQuery.trim()) {
-        router.push(`/?search=${encodeURIComponent(searchQuery)}`);
-        setShowSearch(false);
-        setSearchQuery("");
-      }
-    },
-    [searchQuery, router],
-  );
 
   const isActivePath = useCallback(
     (path: string) => {
@@ -173,16 +159,6 @@ export function EnhancedNavbar() {
 
           {/* Actions */}
           <div className="flex items-center space-x-2">
-            {/* Search Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowSearch(!showSearch)}
-              className="hidden sm:flex"
-            >
-              <Search className="w-4 h-4" />
-            </Button>
-
             {/* Theme Toggle */}
             <Button
               variant="ghost"
@@ -307,28 +283,6 @@ export function EnhancedNavbar() {
           </div>
         </div>
 
-        {/* Search Bar */}
-        {showSearch && (
-          <div className="pb-3">
-            <form onSubmit={handleSearch} className="relative max-w-md mx-auto">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search services..."
-                className="w-full px-4 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                autoFocus
-              />
-              <Button
-                type="submit"
-                size="sm"
-                className="absolute right-1 top-1 h-7"
-              >
-                <Search className="w-3 h-3" />
-              </Button>
-            </form>
-          </div>
-        )}
       </div>
     </nav>
   );
