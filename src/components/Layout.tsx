@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Navbar } from "./Navbar";
+import { EnhancedNavbar } from "./EnhancedNavbar";
 import { Footer } from "./Footer";
 
 interface LayoutProps {
