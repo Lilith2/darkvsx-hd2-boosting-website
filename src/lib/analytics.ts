@@ -66,7 +66,9 @@ function collectMetrics() {
         const lcpObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           const lastEntry = entries[entries.length - 1];
-          metrics.largestContentfulPaint = lastEntry.startTime;
+          if (lastEntry) {
+            metrics.largestContentfulPaint = lastEntry.startTime;
+          }
           sendMetrics(metrics);
         });
         lcpObserver.observe({ entryTypes: ["largest-contentful-paint"] });
