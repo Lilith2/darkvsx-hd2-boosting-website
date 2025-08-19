@@ -444,7 +444,7 @@ export default function CustomOrder() {
                       </CardHeader>
                       <CardContent className="pt-0">
                         <div className="space-y-3">
-                          {items.map((item) => (
+                          {(items || []).map((item) => (
                             <ItemCard
                               key={item.id}
                               item={item}
