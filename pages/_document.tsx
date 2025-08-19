@@ -15,15 +15,7 @@ export default function Document() {
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet"
-          media="print"
-          onLoad="this.media='all'"
         />
-        <noscript>
-          <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-            rel="stylesheet"
-          />
-        </noscript>
 
         {/* DNS prefetch for external services */}
         <link rel="dns-prefetch" href="https://discord.gg" />
