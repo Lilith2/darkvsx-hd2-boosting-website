@@ -212,12 +212,6 @@ export function EnhancedNavbar() {
                       Account
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/order-tracking" className="flex items-center">
-                      <Package className="w-4 h-4 mr-2" />
-                      Orders
-                    </Link>
-                  </DropdownMenuItem>
                   {user?.role === "admin" && (
                     <DropdownMenuItem asChild>
                       <Link href="/admin" className="flex items-center">
