@@ -30,29 +30,16 @@ const nextConfig = {
       {
         source: "/(.*)",
         headers: [
-          // Remove X-Frame-Options entirely to let CSP frame-ancestors handle it
+          // Keep only essential security headers that don't break integrations
           {
             key: "X-Content-Type-Options",
             value: "nosniff",
           },
           {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
-          },
-          {
             key: "Referrer-Policy",
             value: "strict-origin-when-cross-origin",
           },
-          {
-            key: "Permissions-Policy",
-            value:
-              "camera=(), microphone=(), geolocation=(), interest-cohort=()",
-          },
-          {
-            key: "Content-Security-Policy",
-            value:
-              "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://www.paypal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://ahqqptrclqtwqjgmtesv.supabase.co https://api.stripe.com https://www.paypal.com; frame-src https://js.stripe.com https://www.paypal.com https://www.sandbox.paypal.com; frame-ancestors 'self' https://*.builder.codes https://*.fly.dev https://*.projects.builder.codes;",
-          },
+          // Removed restrictive CSP and frame policies for better integration compatibility
         ],
       },
     ];
