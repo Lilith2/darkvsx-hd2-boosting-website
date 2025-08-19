@@ -106,16 +106,7 @@ const AdminPricingTabLazy = dynamic(
   },
 );
 
-const VirtualizedOrdersTable = dynamic(
-  () => import("@/components/admin/VirtualizedOrdersTable"),
-  {
-    loading: () => (
-      <div className="p-8">
-        <LoadingSpinner />
-      </div>
-    ),
-  },
-);
+// VirtualizedOrdersTable removed - component was deleted
 
 const SimpleCustomOrders = dynamic(
   () => import("@/components/SimpleCustomOrders"),
