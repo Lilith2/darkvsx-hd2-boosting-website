@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Activity, Package, DollarSign } from "lucide-react";
-import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import { LoadingSpinner } from "@/components/ui/loading";
 import { OrderData } from "@/hooks/useOrders";
 import { CustomOrder } from "@/hooks/useCustomOrders";
 
