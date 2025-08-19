@@ -15,6 +15,7 @@ import { SecurityProvider } from "@/components/SecurityProvider";
 import { Layout } from "@/components/Layout";
 import { initializeAnalytics } from "@/lib/analytics";
 import { initializeSecurity } from "@/lib/security";
+import { registerServiceWorker } from "@/lib/sw-registration";
 
 // Create QueryClient with optimized settings for MPA
 const queryClient = new QueryClient({
@@ -46,6 +47,11 @@ export default function App({ Component, pageProps }: AppProps) {
 
     // Initialize security measures
     initializeSecurity();
+
+    // Register Service Worker for offline support and caching
+    if (process.env.NODE_ENV === 'production') {
+      registerServiceWorker();
+    }
   }, []);
 
   return (
