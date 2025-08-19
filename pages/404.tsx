@@ -43,15 +43,6 @@ export default function Custom404() {
     setTimeout(() => setIsExtracting(false), 3000);
   };
 
-  const bugFacts = [
-    "🐛 A Charger destroyed this page coordinates",
-    "🔥 Orbital bombardment wiped out this sector",
-    "⚡ EMS Artillery caused data corruption",
-    "🚀 Extraction ship couldn't find landing zone",
-    "💥 Strategem malfunction detected",
-  ];
-
-  const randomFact = bugFacts[Math.floor(Math.random() * bugFacts.length)];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-red-950/20 relative overflow-hidden">
