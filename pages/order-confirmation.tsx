@@ -646,7 +646,7 @@ export default function OrderConfirmation() {
           {/* Enhanced Side Panel */}
           <div className="space-y-6">
             {/* Customer Information */}
-            <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm sticky top-8">
+            <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="flex items-center text-lg">
                   <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center mr-3">
