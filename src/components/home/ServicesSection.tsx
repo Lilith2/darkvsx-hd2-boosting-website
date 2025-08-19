@@ -174,7 +174,7 @@ export function ServicesSection() {
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Delivery:</span>
-                      <span className="font-medium">{service.delivery_time}</span>
+                      <span className="font-medium">{service.duration}</span>
                     </div>
                   </div>
 
