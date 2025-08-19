@@ -86,13 +86,10 @@ export function EnhancedNavbar() {
     }
   }, [logout, router]);
 
-
   const isActivePath = useCallback(
     (path: string) => {
       if (path === "/" && router.pathname !== "/") return false;
-      return (
-        router.pathname === path || router.pathname.startsWith(path + "/")
-      );
+      return router.pathname === path || router.pathname.startsWith(path + "/");
     },
     [router.pathname],
   );
@@ -275,7 +272,6 @@ export function EnhancedNavbar() {
             </Sheet>
           </div>
         </div>
-
       </div>
     </nav>
   );

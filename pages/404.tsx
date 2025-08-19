@@ -44,7 +44,6 @@ export default function Custom404() {
     setTimeout(() => setIsExtracting(false), 3000);
   };
 
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-red-950/20 relative overflow-hidden">
       {/* Background Effects */}
@@ -87,7 +86,9 @@ export default function Custom404() {
               <p className="text-lg text-orange-300 font-medium">
                 🦅 SUPER EARTH COMMAND TRANSMISSION 🦅
               </p>
-              <p className="text-muted-foreground">{randomFact || "🔥 Democracy is temporarily unavailable"}</p>
+              <p className="text-muted-foreground">
+                {randomFact || "🔥 Democracy is temporarily unavailable"}
+              </p>
               <p className="text-blue-300 text-sm italic">
                 "Democracy never sleeps, but sometimes URLs do."
               </p>
