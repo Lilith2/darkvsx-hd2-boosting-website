@@ -93,12 +93,7 @@ const nextConfig = {
   // Bundle analyzer when needed
   bundlePagesRouterDependencies: true,
   transpilePackages: [
-    "@supabase/supabase-js",
-    "@supabase/auth-js",
-    "@supabase/postgrest-js",
-    "@supabase/storage-js",
-    "@supabase/realtime-js",
-    "@supabase/functions-js",
+    "@supabase/supabase-js", // Only the main package needed
   ],
   // Webpack configuration removed - it was causing more issues than solving
   // Modern Next.js handles Supabase without custom webpack config
