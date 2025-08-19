@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
-import { useSafeAuth } from "@/hooks/useSafeAuth";
-import {
-  LoadingFallback,
-  OptimizedSpinner,
-} from "@/components/LoadingFallback";
+import { useAuth } from "@/hooks/useAuth";
+import { LoadingSpinner } from "@/components/ui/loading";
 
 export function AppContent({ children }: { children: React.ReactNode }) {
   const { loading } = useSafeAuth();
