@@ -267,6 +267,7 @@ export const initializeSecurity = (): void => {
         e.preventDefault();
         return false;
       }
+      return true;
     });
   }
 
