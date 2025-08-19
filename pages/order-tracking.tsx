@@ -799,7 +799,7 @@ export default function OrderTracking() {
           {/* Enhanced Sidebar */}
           <div className="space-y-6">
             {/* Order Summary */}
-            <Card className="border-0 shadow-xl bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm sticky top-32">
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="flex items-center text-lg">
                   <DollarSign className="w-5 h-5 mr-2 text-primary" />
