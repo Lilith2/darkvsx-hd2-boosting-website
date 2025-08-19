@@ -26,7 +26,6 @@ import {
   Settings,
   Package,
   Crown,
-  Bell,
   Moon,
   Sun,
 } from "lucide-react";
