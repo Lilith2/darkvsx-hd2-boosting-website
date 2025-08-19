@@ -5,6 +5,7 @@ import { AlertTriangle, Rocket, Zap, Shield, Crosshair } from "lucide-react";
 export default function Custom404() {
   const [isExtracting, setIsExtracting] = useState(false);
   const [glitchText, setGlitchText] = useState("404");
+  const [randomFact, setRandomFact] = useState("");
 
   // Glitch effect for the 404 text
   useEffect(() => {
