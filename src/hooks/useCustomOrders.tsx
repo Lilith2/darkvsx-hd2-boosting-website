@@ -136,7 +136,7 @@ export function useCustomOrders() {
         return;
       }
 
-      if (data && data.length > 0) {
+      if (data && data.length > 0 && data[0]) {
         setStats(data[0]);
       }
     } catch (err: any) {
