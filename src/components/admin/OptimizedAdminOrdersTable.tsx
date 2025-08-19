@@ -25,7 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import { LoadingSpinner } from "@/components/ui/loading";
 import { OrderDetailsModal } from "@/components/OrderDetailsModal";
 import {
   Search,
