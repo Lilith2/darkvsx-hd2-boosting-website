@@ -379,7 +379,7 @@ export default function Account() {
                 </h1>
                 <div className="flex items-center space-x-3 mt-1">
                   <span className="text-sm text-muted-foreground">
-                    Member since {joinDate.toLocaleDateString()}
+                    Member since {formatDisplayDate(joinDate)}
                   </span>
                 </div>
               </div>
