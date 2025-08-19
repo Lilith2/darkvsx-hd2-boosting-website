@@ -94,19 +94,46 @@ export default async function handler(
       html: htmlContent,
     };
 
+    // Test connection first
+    try {
+      console.log("Testing SMTP connection...");
+      await transporter.verify();
+      console.log("SMTP connection verified successfully");
+    } catch (verifyError: any) {
+      console.error("SMTP connection verification failed:", verifyError);
+      return res.status(500).json({
+        error: "SMTP connection failed",
+        details: verifyError.message,
+      });
+    }
+
     // Send email
-    await transporter.sendMail(mailOptions);
+    console.log("Sending email to:", emailData.customerEmail);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully:", info.messageId);
 
     res.status(200).json({
       success: true,
       message: "Order confirmation email sent successfully",
       sentTo: emailData.customerEmail,
+      messageId: info.messageId,
     });
   } catch (error: any) {
     console.error("Email sending error:", error);
+
+    // More detailed error reporting
+    let errorDetails = error.message;
+    if (error.code) {
+      errorDetails = `${error.code}: ${error.message}`;
+    }
+    if (error.response) {
+      errorDetails += ` (Response: ${error.response})`;
+    }
+
     res.status(500).json({
       error: "Failed to send email",
-      details: error.message,
+      details: errorDetails,
+      code: error.code || "UNKNOWN_ERROR",
     });
   }
 }
