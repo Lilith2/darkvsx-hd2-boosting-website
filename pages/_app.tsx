@@ -71,12 +71,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <SecurityProvider>
           <AccessibilityWrapper>
             <SEOHead />
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="dark"
-              enableSystem={false}
-              disableTransitionOnChange
-            >
+            <ThemeProviderWrapper>
               <QueryClientProvider client={queryClient}>
                 <TooltipProvider>
                   <CoreDataProvider>
@@ -88,7 +83,7 @@ export default function App({ Component, pageProps }: AppProps) {
                   </CoreDataProvider>
                 </TooltipProvider>
               </QueryClientProvider>
-            </ThemeProvider>
+            </ThemeProviderWrapper>
           </AccessibilityWrapper>
         </SecurityProvider>
       </ErrorBoundary>
