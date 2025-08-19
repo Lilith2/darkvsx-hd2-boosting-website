@@ -88,13 +88,11 @@ export default function Account() {
   // Add error boundary for order data
   const safeUserOrders = React.useMemo(() => {
     try {
-      return [...userRegularOrders, ...userCustomOrders].sort(
-        (a, b) => {
-          const dateA = "created_at" in a ? a.created_at : a.createdAt;
-          const dateB = "created_at" in b ? b.created_at : b.createdAt;
-          return new Date(dateB).getTime() - new Date(dateA).getTime();
-        },
-      );
+      return [...userRegularOrders, ...userCustomOrders].sort((a, b) => {
+        const dateA = "created_at" in a ? a.created_at : a.createdAt;
+        const dateB = "created_at" in b ? b.created_at : b.createdAt;
+        return new Date(dateB).getTime() - new Date(dateA).getTime();
+      });
     } catch (error) {
       console.error("Error processing user orders:", error);
       return [];
@@ -567,8 +565,7 @@ export default function Account() {
                           </div>
                           <div className="flex items-center space-x-2">
                             <span className="text-xs text-muted-foreground">
-                              Last:{" "}
-                              {formatDisplayDate(service.lastUsed)}
+                              Last: {formatDisplayDate(service.lastUsed)}
                             </span>
                             <Button size="sm" variant="outline">
                               <RefreshCw className="w-3 h-3 mr-1" />

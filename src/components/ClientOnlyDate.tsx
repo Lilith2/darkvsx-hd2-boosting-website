@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { formatDisplayDate } from '@/lib/date-utils';
+import { useState, useEffect } from "react";
+import { formatDisplayDate } from "@/lib/date-utils";
 
 interface ClientOnlyDateProps {
   date: string | Date;
@@ -11,7 +11,11 @@ interface ClientOnlyDateProps {
  * Component that only renders dates on the client side to prevent hydration mismatches
  * Shows a fallback during SSR and hydration
  */
-export function ClientOnlyDate({ date, fallback = 'Loading...', className }: ClientOnlyDateProps) {
+export function ClientOnlyDate({
+  date,
+  fallback = "Loading...",
+  className,
+}: ClientOnlyDateProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
