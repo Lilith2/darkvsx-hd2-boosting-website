@@ -900,15 +900,15 @@ export default function Checkout() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 gap-3">
-                    <div className="flex items-center space-x-3 p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                    <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
                       <Lock className="w-5 h-5 text-green-600" />
                       <span className="text-sm font-medium">256-bit SSL encryption</span>
                     </div>
-                    <div className="flex items-center space-x-3 p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                    <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
                       <CheckCircle className="w-5 h-5 text-blue-600" />
                       <span className="text-sm font-medium">PayPal Buyer Protection</span>
                     </div>
-                    <div className="flex items-center space-x-3 p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                    <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
                       <Shield className="w-5 h-5 text-purple-600" />
                       <span className="text-sm font-medium">Account Safety Guaranteed</span>
                     </div>
