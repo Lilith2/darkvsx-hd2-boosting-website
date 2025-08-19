@@ -891,30 +891,30 @@ export default function Checkout() {
               </Card>
 
               {/* Enhanced Security Features */}
-              <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50/50 to-emerald-50/50 dark:from-green-950/20 dark:to-emerald-950/20">
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-green-500/5 to-emerald-500/5">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center text-green-800 dark:text-green-200">
-                    <Shield className="w-5 h-5 mr-2 text-green-600" />
+                  <CardTitle className="text-lg flex items-center text-green-400">
+                    <Shield className="w-5 h-5 mr-2 text-green-400" />
                     Security & Trust
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 gap-3">
                     <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
-                      <Lock className="w-5 h-5 text-green-600" />
+                      <Lock className="w-5 h-5 text-green-400" />
                       <span className="text-sm font-medium">256-bit SSL encryption</span>
                     </div>
                     <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
-                      <CheckCircle className="w-5 h-5 text-blue-600" />
+                      <CheckCircle className="w-5 h-5 text-blue-400" />
                       <span className="text-sm font-medium">PayPal Buyer Protection</span>
                     </div>
                     <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
-                      <Shield className="w-5 h-5 text-purple-600" />
+                      <Shield className="w-5 h-5 text-purple-400" />
                       <span className="text-sm font-medium">Account Safety Guaranteed</span>
                     </div>
                   </div>
-                  <div className="pt-3 border-t border-green-200 dark:border-green-800">
-                    <div className="flex items-center justify-center space-x-2 text-xs text-green-700 dark:text-green-300">
+                  <div className="pt-3 border-t border-green-500/30">
+                    <div className="flex items-center justify-center space-x-2 text-xs text-green-300">
                       <Star className="w-4 h-4" />
                       <span className="font-medium">Trusted by 10,000+ customers</span>
                     </div>
