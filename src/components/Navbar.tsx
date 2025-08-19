@@ -58,24 +58,28 @@ export function Navbar() {
             <Link
               href="/#services"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
+              prefetch={true}
             >
               Services
             </Link>
             <Link
               href="/bundles"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
+              prefetch={true}
             >
               Bundles
             </Link>
             <Link
               href="/custom-order"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
+              prefetch={false}
             >
               Custom Order
             </Link>
             <Link
               href="/faq"
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
+              prefetch={false}
             >
               FAQ
             </Link>
@@ -87,20 +91,20 @@ export function Navbar() {
               <>
                 {isAdmin && (
                   <Button variant="ghost" size="sm" asChild>
-                    <Link href="/admin">
+                    <Link href="/admin" prefetch={false}>
                       <User className="w-4 h-4 mr-2" />
                       Admin
                     </Link>
                   </Button>
                 )}
                 <Button variant="ghost" size="sm" asChild>
-                  <Link href="/account">
+                  <Link href="/account" prefetch={true}>
                     <User className="w-4 h-4 mr-2" />
                     Account
                   </Link>
                 </Button>
                 <Button variant="ghost" size="sm" asChild className="relative">
-                  <Link href="/cart">
+                  <Link href="/cart" prefetch={true}>
                     <ShoppingCart className="w-4 h-4 mr-2" />
                     Cart
                     {cartItemCount > 0 && (
