@@ -267,7 +267,7 @@ export async function batchQueries<T extends Record<string, any>>(
       data[key] = result.value;
     } else {
       console.error(`Batch query failed for ${String(key)}:`, result.reason);
-      data[key] = null;
+      data[key] = undefined as any;
     }
   });
 
