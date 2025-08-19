@@ -11,14 +11,21 @@ export default function Index() {
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  // Handle client-side mounting
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Handle scroll effect for scroll-to-top button
   useEffect(() => {
+    if (!mounted) return;
+
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [mounted]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
