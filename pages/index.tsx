@@ -9,6 +9,7 @@ import { ArrowUp } from "lucide-react";
 
 export default function Index() {
   const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Handle scroll effect for scroll-to-top button
   useEffect(() => {
