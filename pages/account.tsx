@@ -568,7 +568,7 @@ export default function Account() {
                           <div className="flex items-center space-x-2">
                             <span className="text-xs text-muted-foreground">
                               Last:{" "}
-                              {new Date(service.lastUsed).toLocaleDateString()}
+                              {formatDisplayDate(service.lastUsed)}
                             </span>
                             <Button size="sm" variant="outline">
                               <RefreshCw className="w-3 h-3 mr-1" />
