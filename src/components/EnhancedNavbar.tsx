@@ -60,6 +60,7 @@ export function EnhancedNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Handle scroll effect
   useEffect(() => {
