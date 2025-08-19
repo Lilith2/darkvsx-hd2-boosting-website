@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft,
   ShoppingCart,
@@ -37,6 +38,12 @@ import {
   Lock,
   Sparkles,
   Clock,
+  Star,
+  Gift,
+  Zap,
+  ArrowRight,
+  ExternalLink,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
@@ -63,6 +70,8 @@ export default function Checkout() {
   const [useAvailableCredits, setUseAvailableCredits] = useState(false);
   const [creditsApplied, setCreditsApplied] = useState(0);
   const [availableCredits, setAvailableCredits] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [promoCodeStatus, setPromoCodeStatus] = useState<'idle' | 'loading' | 'applied' | 'error'>('idle');
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -105,8 +114,11 @@ export default function Checkout() {
   const validatePromoCode = async (code: string) => {
     if (!code.trim()) {
       setPromoDiscount(0);
+      setPromoCodeStatus('idle');
       return;
     }
+
+    setPromoCodeStatus('loading');
 
     try {
       const { supabase } = await import("@/integrations/supabase/client");
@@ -118,6 +130,7 @@ export default function Checkout() {
 
       if (error) {
         console.error("Error validating promo code:", error);
+        setPromoCodeStatus('error');
         toast({
           title: "Error",
           description: "Could not validate promo code. Please try again.",
@@ -129,6 +142,7 @@ export default function Checkout() {
       const validation = data;
 
       if (!validation.valid) {
+        setPromoCodeStatus('error');
         toast({
           title: "Invalid promo code",
           description: validation.error || "Please enter a valid promo code.",
@@ -140,12 +154,14 @@ export default function Checkout() {
 
       const discountAmount = subtotal * REFERRAL_CONFIG.customerDiscount;
       setPromoDiscount(discountAmount);
+      setPromoCodeStatus('applied');
       toast({
         title: "Promo code applied!",
         description: `You saved $${discountAmount.toFixed(2)} with the promo code.`,
       });
     } catch (err) {
       console.error("Unexpected error validating promo code:", err);
+      setPromoCodeStatus('error');
       toast({
         title: "Error",
         description: "Could not validate promo code. Please try again.",
@@ -175,22 +191,24 @@ export default function Checkout() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <div className="w-24 h-24 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <Package className="w-12 h-12 text-muted-foreground" />
-          </div>
-          <h2 className="text-3xl font-bold mb-4">Your cart is empty</h2>
-          <p className="text-muted-foreground mb-8 text-lg">
-            Add some services to your cart before proceeding to checkout.
-          </p>
-          <Button asChild size="lg" className="min-w-48">
-            <Link href="/">
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Continue Shopping
-            </Link>
-          </Button>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg text-center">
+          <CardContent className="p-8">
+            <div className="w-20 h-20 bg-gradient-to-br from-muted to-muted/50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Package className="w-10 h-10 text-muted-foreground" />
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Your cart is empty</h2>
+            <p className="text-muted-foreground mb-8 text-lg">
+              Add some amazing boosting services to your cart before proceeding to checkout.
+            </p>
+            <Button asChild size="lg" className="min-w-48 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90">
+              <Link href="/">
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                Browse Services
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -384,9 +402,26 @@ export default function Checkout() {
     });
   };
 
+  const isStepComplete = (step: number) => {
+    switch (step) {
+      case 1:
+        return true; // Info step - always available
+      case 2:
+        return true; // Order review step
+      case 3:
+        return agreeToTerms; // Payment step
+      default:
+        return false;
+    }
+  };
+
+  const canProceedToPayment = () => {
+    return agreeToTerms && (total <= 0 || true); // Can always proceed if terms agreed
+  };
+
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -405,68 +440,121 @@ export default function Checkout() {
         intent: "capture",
       }}
     >
-      <div className="min-h-screen bg-background">
-        {/* Header */}
-        <div className="border-b bg-card/80 backdrop-blur-sm">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+        {/* Enhanced Header */}
+        <div className="bg-gradient-to-r from-card/95 to-card/80 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between py-6">
+            <div className="flex items-center justify-between py-4">
               <div className="flex items-center space-x-4">
                 <Link
                   href="/cart"
-                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
                 >
-                  <ArrowLeft className="w-5 h-5 mr-2" />
+                  <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-0.5 transition-transform" />
                   Back to Cart
                 </Link>
                 <Separator orientation="vertical" className="h-6" />
                 <div>
-                  <h1 className="text-3xl font-bold">Checkout</h1>
-                  <p className="text-muted-foreground">
-                    Complete your secure order
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+                    Secure Checkout
+                  </h1>
+                  <p className="text-sm text-muted-foreground">
+                    Complete your order safely and securely
                   </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <Shield className="w-4 h-4 text-green-500" />
-                <span>Secure Checkout</span>
+              <div className="flex items-center space-x-3">
+                <Badge variant="outline" className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
+                  <Shield className="w-3 h-3 mr-1 text-green-600" />
+                  <span className="text-green-700 dark:text-green-400 text-xs">SSL Secured</span>
+                </Badge>
+              </div>
+            </div>
+
+            {/* Progress Steps */}
+            <div className="pb-4">
+              <div className="flex items-center justify-center space-x-8">
+                {[
+                  { number: 1, label: "Review Order", icon: ShoppingCart },
+                  { number: 2, label: "Order Details", icon: User },
+                  { number: 3, label: "Payment", icon: CreditCard },
+                ].map(({ number, label, icon: Icon }) => (
+                  <div key={number} className="flex items-center">
+                    <div className={`flex items-center space-x-2 ${
+                      currentStep >= number ? 'text-primary' : 'text-muted-foreground'
+                    }`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                        currentStep >= number 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'bg-muted text-muted-foreground'
+                      }`}>
+                        {currentStep > number ? <CheckCircle className="w-4 h-4" /> : number}
+                      </div>
+                      <span className="text-sm font-medium">{label}</span>
+                    </div>
+                    {number < 3 && (
+                      <ArrowRight className={`w-4 h-4 mx-4 ${
+                        currentStep > number ? 'text-primary' : 'text-muted-foreground'
+                      }`} />
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Left Column - Order Details */}
-            <div className="space-y-8">
-              {/* Order Items */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <ShoppingCart className="w-5 h-5 mr-3" />
-                    Order Items
-                    <Badge variant="secondary" className="ml-3">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Order Items Card */}
+              <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center text-xl">
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center mr-3">
+                      <ShoppingCart className="w-5 h-5 text-white" />
+                    </div>
+                    Your Order
+                    <Badge variant="secondary" className="ml-auto bg-primary/10 text-primary">
                       {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}
                     </Badge>
                   </CardTitle>
+                  <CardDescription>
+                    Review your selected boosting services
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {cartItems.map((item) => (
+                  {cartItems.map((item, index) => (
                     <div
                       key={item.id}
-                      className="flex items-center space-x-4 p-4 border rounded-lg"
+                      className="flex items-center space-x-4 p-4 border border-border/50 rounded-xl bg-gradient-to-r from-muted/20 to-muted/10 hover:from-muted/30 hover:to-muted/20 transition-all duration-200"
                     >
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Package className="w-6 h-6 text-primary" />
+                      <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-xl flex items-center justify-center">
+                        <Zap className="w-8 h-8 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold">{item.service.title}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Quantity: {item.quantity}
-                        </p>
+                        <h4 className="font-semibold text-lg">{item.service.title}</h4>
+                        <div className="flex items-center space-x-3 mt-2">
+                          <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-950/20">
+                            <Clock className="w-3 h-3 mr-1" />
+                            {item.service.duration}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs bg-purple-50 dark:bg-purple-950/20">
+                            <Star className="w-3 h-3 mr-1" />
+                            {item.service.difficulty}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs bg-green-50 dark:bg-green-950/20">
+                            Qty: {item.quantity}
+                          </Badge>
+                        </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-lg">
+                        <p className="font-bold text-xl text-primary">
                           ${(item.service.price * item.quantity).toFixed(2)}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          ${item.service.price} each
                         </p>
                       </div>
                     </div>
@@ -475,34 +563,40 @@ export default function Checkout() {
               </Card>
 
               {/* Customer Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <User className="w-5 h-5 mr-3" />
+              <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center text-xl">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                      <User className="w-5 h-5 text-white" />
+                    </div>
                     Customer Information
                   </CardTitle>
+                  <CardDescription>
+                    Your account details for this order
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label className="flex items-center">
-                      <Mail className="w-4 h-4 mr-2" />
-                      Email Address
-                    </Label>
-                    <div className="p-3 bg-muted rounded-lg">
-                      <p className="font-medium">{user?.email}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Order updates will be sent here
-                      </p>
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center space-x-3">
+                      <Mail className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="font-semibold text-base">{user?.email}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Order confirmations and updates will be sent here
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Order Notes */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <MessageSquare className="w-5 h-5 mr-3" />
+              <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center text-xl">
+                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center mr-3">
+                      <MessageSquare className="w-5 h-5 text-white" />
+                    </div>
                     Order Notes
                   </CardTitle>
                   <CardDescription>
@@ -515,48 +609,73 @@ export default function Checkout() {
                     onChange={(e) => setOrderNotes(e.target.value)}
                     placeholder="Include your Discord username, preferred gaming hours, or any specific requirements..."
                     rows={4}
+                    className="resize-none border-border/50 focus:border-primary/50 bg-background/50"
                   />
+                  <p className="text-sm text-muted-foreground mt-2">
+                    💡 <strong>Tip:</strong> Include your Discord username and preferred hours for better service
+                  </p>
                 </CardContent>
               </Card>
 
               {/* Promo Code & Credits */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Tag className="w-5 h-5 mr-3" />
-                    Promo Code & Credits
+              <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center text-xl">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3">
+                      <Gift className="w-5 h-5 text-white" />
+                    </div>
+                    Discounts & Credits
                   </CardTitle>
+                  <CardDescription>
+                    Apply promo codes and use available credits
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Promo Code */}
                   <div className="space-y-3">
-                    <Label htmlFor="promo-code">Promo Code</Label>
+                    <Label htmlFor="promo-code" className="text-base font-medium">
+                      Promo Code
+                    </Label>
                     <div className="flex space-x-2">
-                      <Input
-                        id="promo-code"
-                        value={promoCode}
-                        onChange={(e) =>
-                          setPromoCode(e.target.value.toUpperCase())
-                        }
-                        placeholder="Enter promo code"
-                        className="flex-1"
-                      />
+                      <div className="flex-1 relative">
+                        <Input
+                          id="promo-code"
+                          value={promoCode}
+                          onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                          placeholder="Enter promo code"
+                          className="h-12 pr-10 border-border/50 focus:border-primary/50"
+                          disabled={promoCodeStatus === 'loading'}
+                        />
+                        {promoCodeStatus === 'applied' && (
+                          <CheckCircle className="w-5 h-5 text-green-600 absolute right-3 top-3.5" />
+                        )}
+                      </div>
                       <Button
                         onClick={() => validatePromoCode(promoCode)}
-                        variant="outline"
-                        disabled={!promoCode.trim()}
+                        disabled={!promoCode.trim() || promoCodeStatus === 'loading'}
+                        className="h-12 px-6"
                       >
-                        Apply
+                        {promoCodeStatus === 'loading' ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          "Apply"
+                        )}
                       </Button>
                     </div>
                     {promoDiscount > 0 && (
-                      <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
-                        <div className="flex items-center space-x-2">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                          <span className="text-sm text-green-700 dark:text-green-400">
-                            Promo code applied! You saved $
-                            {promoDiscount.toFixed(2)}
-                          </span>
+                      <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border border-green-200 dark:border-green-800 rounded-xl">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-green-800 dark:text-green-200">
+                              Promo code applied!
+                            </p>
+                            <p className="text-sm text-green-700 dark:text-green-300">
+                              You saved ${promoDiscount.toFixed(2)} with this promo code
+                            </p>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -564,33 +683,41 @@ export default function Checkout() {
 
                   {/* Credits */}
                   {availableCredits > 0 && (
-                    <div className="space-y-3 pt-4 border-t">
+                    <div className="space-y-3 pt-4 border-t border-border/50">
                       <div className="flex items-center justify-between">
-                        <Label className="flex items-center">
-                          <DollarSign className="w-4 h-4 mr-2" />
+                        <Label className="flex items-center text-base font-medium">
+                          <DollarSign className="w-5 h-5 mr-2 text-primary" />
                           Available Credits
                         </Label>
-                        <span className="font-bold text-green-600">
+                        <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm px-3 py-1">
                           ${availableCredits.toFixed(2)}
-                        </span>
+                        </Badge>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-3 p-4 border border-border/50 rounded-xl bg-gradient-to-r from-muted/20 to-muted/10">
                         <Checkbox
                           id="use-credits"
                           checked={useAvailableCredits}
                           onCheckedChange={handleCreditsToggle}
+                          className="w-5 h-5"
                         />
-                        <Label htmlFor="use-credits">
-                          Use available credits
+                        <Label htmlFor="use-credits" className="flex-1 cursor-pointer">
+                          Use ${Math.min(availableCredits, subtotalAfterTax).toFixed(2)} of your available credits
                         </Label>
                       </div>
                       {creditsApplied > 0 && (
-                        <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                          <div className="flex items-center space-x-2">
-                            <CheckCircle className="w-4 h-4 text-blue-600" />
-                            <span className="text-sm text-blue-700 dark:text-blue-400">
-                              Applied ${creditsApplied.toFixed(2)} in credits!
-                            </span>
+                        <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+                              <CheckCircle className="w-4 h-4 text-blue-600" />
+                            </div>
+                            <div>
+                              <p className="font-semibold text-blue-800 dark:text-blue-200">
+                                Credits applied!
+                              </p>
+                              <p className="text-sm text-blue-700 dark:text-blue-300">
+                                You're using ${creditsApplied.toFixed(2)} from your credit balance
+                              </p>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -600,95 +727,102 @@ export default function Checkout() {
               </Card>
             </div>
 
-            {/* Right Column - Payment Summary */}
+            {/* Enhanced Sidebar */}
             <div className="space-y-6">
               {/* Order Summary */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <CreditCard className="w-5 h-5 mr-3" />
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm sticky top-32">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center text-xl">
+                    <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center mr-3">
+                      <CreditCard className="w-4 h-4 text-white" />
+                    </div>
                     Order Summary
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span>Subtotal</span>
-                      <span className="font-medium">
-                        ${subtotal.toFixed(2)}
-                      </span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-base">Subtotal</span>
+                      <span className="font-semibold text-lg">${subtotal.toFixed(2)}</span>
                     </div>
                     {promoDiscount > 0 && (
-                      <div className="flex justify-between text-green-600">
+                      <div className="flex justify-between items-center text-green-600">
                         <span className="flex items-center">
                           <Sparkles className="w-4 h-4 mr-1" />
                           Promo Discount
                         </span>
-                        <span>-${promoDiscount.toFixed(2)}</span>
+                        <span className="font-semibold">-${promoDiscount.toFixed(2)}</span>
                       </div>
                     )}
                     {creditsApplied > 0 && (
-                      <div className="flex justify-between text-blue-600">
+                      <div className="flex justify-between items-center text-blue-600">
                         <span className="flex items-center">
                           <DollarSign className="w-4 h-4 mr-1" />
                           Credits Applied
                         </span>
-                        <span>-${creditsApplied.toFixed(2)}</span>
+                        <span className="font-semibold">-${creditsApplied.toFixed(2)}</span>
                       </div>
                     )}
-                    <div className="flex justify-between text-muted-foreground">
+                    <div className="flex justify-between items-center text-muted-foreground">
                       <span>Tax (8%)</span>
                       <span>${tax.toFixed(2)}</span>
                     </div>
-                    <Separator />
-                    <div className="flex justify-between text-xl font-bold">
+                    <Separator className="my-4" />
+                    <div className="flex justify-between items-center text-2xl font-bold">
                       <span>Total</span>
-                      <span className="text-primary">${total.toFixed(2)}</span>
+                      <span className="text-primary bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                        ${total.toFixed(2)}
+                      </span>
                     </div>
                   </div>
 
                   {/* Terms Agreement */}
-                  <div className="pt-4 space-y-4">
-                    <div className="flex items-start space-x-2">
-                      <Checkbox
-                        id="terms"
-                        checked={agreeToTerms}
-                        onCheckedChange={(checked) =>
-                          setAgreeToTerms(checked as boolean)
-                        }
-                      />
-                      <div className="text-sm">
-                        <label htmlFor="terms" className="cursor-pointer">
-                          I agree to the{" "}
-                          <Link
-                            href="/terms"
-                            className="text-primary hover:underline"
-                          >
-                            Terms of Service
-                          </Link>{" "}
-                          and{" "}
-                          <Link
-                            href="/privacy"
-                            className="text-primary hover:underline"
-                          >
-                            Privacy Policy
-                          </Link>
-                        </label>
+                  <div className="pt-6 space-y-4 border-t border-border/50">
+                    <div className="p-4 border border-border/50 rounded-xl bg-muted/20">
+                      <div className="flex items-start space-x-3">
+                        <Checkbox
+                          id="terms"
+                          checked={agreeToTerms}
+                          onCheckedChange={(checked) => setAgreeToTerms(checked as boolean)}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <Label htmlFor="terms" className="text-sm leading-6 cursor-pointer">
+                            I agree to the{" "}
+                            <Link
+                              href="/terms"
+                              target="_blank"
+                              className="text-primary hover:underline inline-flex items-center"
+                            >
+                              Terms of Service
+                              <ExternalLink className="w-3 h-3 ml-1" />
+                            </Link>{" "}
+                            and{" "}
+                            <Link
+                              href="/privacy"
+                              target="_blank"
+                              className="text-primary hover:underline inline-flex items-center"
+                            >
+                              Privacy Policy
+                              <ExternalLink className="w-3 h-3 ml-1" />
+                            </Link>
+                          </Label>
+                        </div>
                       </div>
                     </div>
 
                     {/* Payment Buttons */}
                     {agreeToTerms ? (
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         {total <= 0 ? (
                           <Button
                             onClick={handleCreditOnlyPayment}
                             disabled={isProcessing}
-                            className="w-full h-12 text-lg bg-green-600 hover:bg-green-700"
+                            className="w-full h-14 text-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg"
                           >
                             {isProcessing ? (
                               <>
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                                 Processing Order...
                               </>
                             ) : (
@@ -699,80 +833,90 @@ export default function Checkout() {
                             )}
                           </Button>
                         ) : (
-                          <div className="space-y-3">
-                            <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                              <div className="flex items-center space-x-2 text-sm">
-                                <Shield className="w-4 h-4 text-blue-600" />
-                                <span className="text-blue-700 dark:text-blue-300">
+                          <div className="space-y-4">
+                            <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                              <div className="flex items-center space-x-3 text-sm">
+                                <Shield className="w-5 h-5 text-blue-600" />
+                                <span className="text-blue-700 dark:text-blue-300 font-medium">
                                   Secure payment processed by PayPal
                                 </span>
                               </div>
                             </div>
-                            <PayPalButtons
-                              style={{
-                                layout: "vertical",
-                                color: "blue",
-                                shape: "rect",
-                                label: "paypal",
-                                height: 50,
-                              }}
-                              createOrder={createPayPalOrder}
-                              onApprove={async (data, actions) => {
-                                if (actions.order) {
-                                  const details = await actions.order.capture();
-                                  handlePayPalSuccess(details, data);
-                                }
-                              }}
-                              onError={handlePayPalError}
-                              onCancel={handlePayPalCancel}
-                              disabled={isProcessing}
-                            />
+                            <div className="paypal-container">
+                              <PayPalButtons
+                                style={{
+                                  layout: "vertical",
+                                  color: "blue",
+                                  shape: "rect",
+                                  label: "paypal",
+                                  height: 55,
+                                }}
+                                createOrder={createPayPalOrder}
+                                onApprove={async (data, actions) => {
+                                  if (actions.order) {
+                                    const details = await actions.order.capture();
+                                    handlePayPalSuccess(details, data);
+                                  }
+                                }}
+                                onError={handlePayPalError}
+                                onCancel={handlePayPalCancel}
+                                disabled={isProcessing}
+                              />
+                            </div>
                           </div>
                         )}
                       </div>
                     ) : (
-                      <Button disabled className="w-full h-12">
+                      <Button disabled className="w-full h-14 text-lg">
+                        <AlertTriangle className="w-5 h-5 mr-2" />
                         Please accept the terms to continue
                       </Button>
                     )}
 
                     {isProcessing && (
-                      <div className="text-center py-2">
-                        <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-                          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                          <span>Processing your order...</span>
+                      <div className="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 border border-yellow-200 dark:border-yellow-800 rounded-xl">
+                        <div className="flex items-center justify-center space-x-3">
+                          <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
+                          <span className="text-base font-semibold">
+                            Processing your payment...
+                          </span>
                         </div>
+                        <p className="text-sm text-center text-muted-foreground mt-2">
+                          Please do not close this window or refresh the page
+                        </p>
                       </div>
                     )}
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Security Features */}
-              <Card>
+              {/* Enhanced Security Features */}
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-green-50/50 to-emerald-50/50 dark:from-green-950/20 dark:to-emerald-950/20">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center">
-                    <Shield className="w-5 h-5 mr-2 text-green-500" />
+                  <CardTitle className="text-lg flex items-center text-green-800 dark:text-green-200">
+                    <Shield className="w-5 h-5 mr-2 text-green-600" />
                     Security & Trust
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex items-center space-x-3 text-sm">
-                    <Lock className="w-4 h-4 text-green-600" />
-                    <span>256-bit SSL encryption</span>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className="flex items-center space-x-3 p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                      <Lock className="w-5 h-5 text-green-600" />
+                      <span className="text-sm font-medium">256-bit SSL encryption</span>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                      <CheckCircle className="w-5 h-5 text-blue-600" />
+                      <span className="text-sm font-medium">PayPal Buyer Protection</span>
+                    </div>
+                    <div className="flex items-center space-x-3 p-3 bg-white/50 dark:bg-black/20 rounded-lg">
+                      <Shield className="w-5 h-5 text-purple-600" />
+                      <span className="text-sm font-medium">Account Safety Guaranteed</span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-3 text-sm">
-                    <CheckCircle className="w-4 h-4 text-blue-600" />
-                    <span>PayPal Buyer Protection</span>
-                  </div>
-                  <div className="flex items-center space-x-3 text-sm">
-                    <Shield className="w-4 h-4 text-yellow-600" />
-                    <span>Account Safety Guaranteed</span>
-                  </div>
-                  <div className="pt-2 border-t">
-                    <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
-                      <Clock className="w-3 h-3" />
-                      <span>Trusted by thousands of customers</span>
+                  <div className="pt-3 border-t border-green-200 dark:border-green-800">
+                    <div className="flex items-center justify-center space-x-2 text-xs text-green-700 dark:text-green-300">
+                      <Star className="w-4 h-4" />
+                      <span className="font-medium">Trusted by 10,000+ customers</span>
                     </div>
                   </div>
                 </CardContent>
