@@ -828,7 +828,7 @@ export default function Account() {
 
                           <div className="flex items-center justify-between text-sm">
                             <span className="text-muted-foreground">
-                              {new Date(orderDate).toLocaleDateString()}
+                              {formatDisplayDate(orderDate)}
                             </span>
                             <div className="flex space-x-2">
                               {/* Track Order - works for both regular and custom orders */}
