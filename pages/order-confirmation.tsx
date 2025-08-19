@@ -42,6 +42,7 @@ import {
   PartyPopper,
   ExternalLink,
   ChevronRight,
+  AlertCircle,
 } from "lucide-react";
 
 export default function OrderConfirmation() {
@@ -372,7 +373,7 @@ export default function OrderConfirmation() {
         <div className="fixed inset-0 pointer-events-none z-0">
           <div className="absolute top-10 left-10 text-6xl animate-bounce">🎉</div>
           <div className="absolute top-20 right-20 text-4xl animate-bounce delay-100">⭐</div>
-          <div className="absolute top-40 left-1/3 text-5xl animate-bounce delay-200">��</div>
+          <div className="absolute top-40 left-1/3 text-5xl animate-bounce delay-200">🎮</div>
           <div className="absolute top-60 right-1/3 text-3xl animate-bounce delay-300">🏆</div>
         </div>
       )}
