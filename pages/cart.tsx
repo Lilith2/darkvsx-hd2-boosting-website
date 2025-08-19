@@ -336,10 +336,10 @@ export default function Cart() {
 
                 {/* Promo hint */}
                 <div className="pt-4 border-t border-border/50">
-                  <div className="p-3 bg-gradient-to-r from-yellow-50/50 to-orange-50/50 dark:from-yellow-950/20 dark:to-orange-950/20 rounded-lg border border-yellow-200/50 dark:border-yellow-800/50">
+                  <div className="p-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/20">
                     <div className="flex items-center space-x-2">
-                      <Gift className="w-4 h-4 text-yellow-600" />
-                      <span className="text-sm font-medium text-yellow-700 dark:text-yellow-300">
+                      <Gift className="w-4 h-4 text-yellow-400" />
+                      <span className="text-sm font-medium text-yellow-300">
                         Have a promo code? Apply it at checkout!
                       </span>
                     </div>
