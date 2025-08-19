@@ -71,6 +71,8 @@ export async function sendOrderConfirmationEmail(
   params: SendOrderConfirmationParams,
 ): Promise<EmailResponse> {
   try {
+    console.log("Attempting to send order confirmation email to:", params.customerEmail);
+
     const response = await fetch("/api/send-order-confirmation", {
       method: "POST",
       headers: {
@@ -82,17 +84,31 @@ export async function sendOrderConfirmationEmail(
     if (!response.ok) {
       // Try to get error details from response, but handle if body is already read
       let errorMessage = "Failed to send order confirmation email";
+      let errorDetails = "";
+
       try {
         const errorData = await response.json();
         errorMessage = errorData.error || errorData.message || errorMessage;
+        errorDetails = errorData.details || "";
+
+        console.error("Email API Error Response:", {
+          status: response.status,
+          error: errorMessage,
+          details: errorDetails,
+          code: errorData.code
+        });
       } catch (jsonError) {
         // If we can't read the response body, use status text
         errorMessage = `HTTP ${response.status}: ${response.statusText || errorMessage}`;
+        console.error("Failed to parse error response:", jsonError);
       }
-      throw new Error(errorMessage);
+
+      const fullErrorMessage = errorDetails ? `${errorMessage}: ${errorDetails}` : errorMessage;
+      throw new Error(fullErrorMessage);
     }
 
     const data: EmailResponse = await response.json();
+    console.log("Order confirmation email sent successfully:", data);
     return data;
   } catch (error: any) {
     console.error("Order confirmation email service error:", error);
