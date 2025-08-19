@@ -216,15 +216,15 @@ export default function Cart() {
                             {item.service.title}
                           </h3>
                           <div className="flex items-center space-x-3">
-                            <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-950/20">
+                            <Badge variant="outline" className="text-xs bg-blue-500/10 border-blue-500/30">
                               <Clock className="w-3 h-3 mr-1" />
                               {item.service.duration}
                             </Badge>
-                            <Badge variant="outline" className="text-xs bg-purple-50 dark:bg-purple-950/20">
+                            <Badge variant="outline" className="text-xs bg-purple-500/10 border-purple-500/30">
                               <Star className="w-3 h-3 mr-1" />
                               {item.service.difficulty}
                             </Badge>
-                            <Badge variant="outline" className="text-xs bg-green-50 dark:bg-green-950/20">
+                            <Badge variant="outline" className="text-xs bg-green-500/10 border-green-500/30">
                               <Trophy className="w-3 h-3 mr-1" />
                               Premium
                             </Badge>
