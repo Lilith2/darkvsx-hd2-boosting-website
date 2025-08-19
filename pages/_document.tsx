@@ -112,7 +112,7 @@ export default function Document() {
           crossOrigin="anonymous"
         />
       </Head>
-      <body className="antialiased dark">
+      <body className="antialiased" suppressHydrationWarning>
         <Main />
         <NextScript />
       </body>
