@@ -536,11 +536,11 @@ export default function Checkout() {
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-lg">{item.service.title}</h4>
                         <div className="flex items-center space-x-3 mt-2">
-                          <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-950/20">
+                          <Badge variant="outline" className="text-xs bg-blue-500/10 border-blue-500/30">
                             <Clock className="w-3 h-3 mr-1" />
                             {item.service.duration}
                           </Badge>
-                          <Badge variant="outline" className="text-xs bg-purple-50 dark:bg-purple-950/20">
+                          <Badge variant="outline" className="text-xs bg-purple-500/10 border-purple-500/30">
                             <Star className="w-3 h-3 mr-1" />
                             {item.service.difficulty}
                           </Badge>
