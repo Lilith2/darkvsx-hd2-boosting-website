@@ -44,7 +44,7 @@ export default function Index() {
         <TestimonialsSection />
 
         {/* Scroll to Top Button */}
-        {scrolled && (
+        {mounted && scrolled && (
           <Button
             onClick={scrollToTop}
             size="lg"
