@@ -61,6 +61,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "ahqqptrclqtwqjgmtesv.supabase.co",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.builder.io",
+      },
     ],
     unoptimized: false,
     formats: ["image/webp", "image/avif"],
