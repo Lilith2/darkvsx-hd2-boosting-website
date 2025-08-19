@@ -75,7 +75,7 @@ export function LiveChat() {
         id: (Date.now() + 1).toString(),
         from: "agent",
         message:
-          autoResponses[Math.floor(Math.random() * autoResponses.length)],
+          autoResponses[Math.floor(Math.random() * autoResponses.length)] || "How can I help you today?",
         timestamp: new Date().toISOString(),
         agentName: "Sarah",
       };
