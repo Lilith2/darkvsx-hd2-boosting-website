@@ -169,7 +169,7 @@ export default function Account() {
     return {
       action: order.status === "completed" ? "Order completed" : "Order placed",
       details,
-      time: new Date(orderDate).toLocaleDateString(),
+      time: formatDisplayDate(orderDate),
       icon: order.status === "completed" ? CheckCircle : Package,
     };
   });
