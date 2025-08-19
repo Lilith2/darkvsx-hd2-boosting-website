@@ -62,15 +62,22 @@ export function EnhancedNavbar() {
   const [showSearch, setShowSearch] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  // Handle mounting
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Handle scroll effect
   useEffect(() => {
+    if (!mounted) return;
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [mounted]);
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
