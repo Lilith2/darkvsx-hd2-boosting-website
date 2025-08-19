@@ -78,8 +78,8 @@ export default async function handler(
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
-      debug: true, // Enable debug logging
-      logger: true, // Enable logging
+      debug: false, // Disable verbose debug logging
+      logger: false, // Disable verbose logging
     });
 
     // Generate HTML email content
