@@ -16,6 +16,7 @@ import { Layout } from "@/components/Layout";
 import { initializeAnalytics } from "@/lib/analytics";
 import { initializeSecurity } from "@/lib/security";
 import { registerServiceWorker } from "@/lib/sw-registration";
+import { initializePerformanceTracking } from "@/lib/performance";
 
 // Create QueryClient with optimized settings for MPA
 const queryClient = new QueryClient({
@@ -47,6 +48,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
     // Initialize security measures
     initializeSecurity();
+
+    // Initialize Core Web Vitals and performance monitoring
+    initializePerformanceTracking();
 
     // Register Service Worker for offline support and caching
     if (process.env.NODE_ENV === 'production') {
