@@ -81,22 +81,22 @@ export default function Cart() {
               {/* Why Choose Us Section */}
               <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <Shield className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <Shield className="w-6 h-6 text-green-400" />
                   </div>
                   <h3 className="font-semibold mb-1">100% Safe</h3>
                   <p className="text-sm text-muted-foreground">Account safety guaranteed</p>
                 </div>
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <Clock className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <Clock className="w-6 h-6 text-blue-400" />
                   </div>
                   <h3 className="font-semibold mb-1">Fast Delivery</h3>
                   <p className="text-sm text-muted-foreground">Quick turnaround times</p>
                 </div>
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <Trophy className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <Trophy className="w-6 h-6 text-purple-400" />
                   </div>
                   <h3 className="font-semibold mb-1">Pro Team</h3>
                   <p className="text-sm text-muted-foreground">Skilled professionals</p>
