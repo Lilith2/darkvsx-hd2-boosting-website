@@ -8,7 +8,6 @@ import dynamic from "next/dynamic";
 // Import optimized admin components
 import { OptimizedAdminStatsCards } from "@/components/admin/OptimizedAdminStatsCards";
 import { OptimizedAdminOrdersTable } from "@/components/admin/OptimizedAdminOrdersTable";
-import { EnhancedOrdersTable } from "@/components/admin/EnhancedOrdersTable";
 import { TopServicesCard } from "@/components/admin/TopServicesCard";
 import { RecentOrdersCard } from "@/components/admin/RecentOrdersCard";
 // These are now lazy loaded above
