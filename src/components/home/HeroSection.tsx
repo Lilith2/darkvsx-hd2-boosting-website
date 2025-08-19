@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { ArrowRight, Play, Award, Gamepad2, Star, Shield, Target, Zap } from "lucide-react";
+import { ArrowRight, Play, Award, Gamepad2, Star, Shield, Target, Zap, User, Trophy } from "lucide-react";
 
 export function HeroSection() {
   return (
