@@ -16,7 +16,7 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet"
           media="print"
-          onLoad={() => { (document.querySelector('link[media="print"]') as HTMLLinkElement).media = 'all'; }}
+          onLoad={(e) => { (e.target as HTMLLinkElement).media = 'all'; }}
         />
         <noscript>
           <link
