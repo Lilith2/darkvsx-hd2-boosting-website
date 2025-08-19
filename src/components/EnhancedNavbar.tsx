@@ -32,7 +32,7 @@ import {
   Sun,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useCart } from "@/hooks/useCart";
+import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
