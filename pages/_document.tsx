@@ -86,6 +86,21 @@ export default function Document() {
           }}
         />
 
+        {/* Critical CSS inlined for fastest rendering */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            *,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}
+            html{line-height:1.5;-webkit-text-size-adjust:100%;font-family:Inter,ui-sans-serif,system-ui,sans-serif}
+            body{margin:0;line-height:inherit;background-color:hsl(210 20% 7%);color:hsl(210 40% 98%)}
+            .min-h-screen{min-height:100vh}.flex{display:flex}.flex-col{flex-direction:column}.flex-1{flex:1 1 0%}
+            .fixed{position:fixed}.top-0{top:0px}.left-0{left:0px}.right-0{right:0px}.z-50{z-index:50}
+            .h-16{height:4rem}.items-center{align-items:center}.justify-between{justify-content:space-between}
+            .bg-background\/95{background-color:hsl(210 20% 7% / 0.95)}.backdrop-blur-md{backdrop-filter:blur(12px)}
+            .border-b{border-bottom-width:1px}.border-border{border-color:hsl(215 25% 20%)}
+            .transition-colors{transition:color 150ms,background-color 150ms,border-color 150ms}
+          `
+        }} />
+
         {/* Performance optimizations */}
         <link rel="preload" href="/sw.js" as="script" />
         <link rel="preload" href="/api/ping" as="fetch" crossOrigin="anonymous" />
