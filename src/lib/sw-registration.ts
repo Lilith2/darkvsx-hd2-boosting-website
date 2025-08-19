@@ -70,7 +70,7 @@ export const requestBackgroundSync = (tag: string): void => {
   ) {
     navigator.serviceWorker.ready
       .then((registration) => {
-        return registration.sync.register(tag);
+        return (registration as any).sync?.register(tag);
       })
       .catch((error) => {
         console.error("[SW] Background sync registration failed:", error);
