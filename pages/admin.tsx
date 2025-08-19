@@ -987,7 +987,7 @@ export default function AdminDashboard() {
             {isLoading && currentTab === "orders" ? (
               <OrdersTableLoadingSkeleton />
             ) : (
-              <EnhancedOrdersTable
+              <OptimizedAdminOrdersTable
                 orders={orders.map((order: any) => ({
                   ...order,
                   created_at: order.created_at || order.createdAt,
