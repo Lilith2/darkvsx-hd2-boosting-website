@@ -4,13 +4,26 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        {/* Preconnect to optimize external font loading */}
+        {/* Optimized font loading strategy */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+        {/* Font with display=swap for better performance */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+          media="print"
+          onLoad="this.media='all'"
+        />
+        <noscript>
+          <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+          />
+        </noscript>
 
         {/* DNS prefetch for external services */}
         <link rel="dns-prefetch" href="https://discord.gg" />
@@ -74,7 +87,8 @@ export default function Document() {
         />
 
         {/* Performance optimizations */}
-        {/* Font preloading removed - using system fonts for better performance */}
+        <link rel="preload" href="/sw.js" as="script" />
+        <link rel="preload" href="/api/ping" as="fetch" crossOrigin="anonymous" />
       </Head>
       <body className="antialiased">
         <Main />
