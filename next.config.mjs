@@ -9,9 +9,10 @@ const nextConfig = {
   experimental: {
     scrollRestoration: true,
     esmExternals: true, // Better tree shaking
-    serverComponentsExternalPackages: ['@supabase/supabase-js'], // External packages for better bundling
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'], // Optimize icon imports
   },
+  // Move serverComponentsExternalPackages to the correct location
+  serverExternalPackages: ['@supabase/supabase-js'],
   allowedDevOrigins: [
     "1c1d42e681804164827111b263e5941f-c903eba0dff24a369b0e80752.fly.dev",
     "ef297b071d014482af49aab623b4cc88-c420d88334bd4335931373581.projects.builder.codes",
@@ -85,9 +86,8 @@ const nextConfig = {
       skipDefaultConversion: true,
     },
   },
-  transpilePackages: [
-    "@supabase/supabase-js", // Only the main package needed
-  ],
+  // Removed transpilePackages to avoid conflict with serverExternalPackages
+  // transpilePackages: [],
   // Webpack configuration removed - it was causing more issues than solving
   // Modern Next.js handles Supabase without custom webpack config
   env: {
