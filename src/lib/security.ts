@@ -246,7 +246,7 @@ export const security = {
 };
 
 // Initialize security measures
-export const initializeSecurity = () => {
+export const initializeSecurity = (): void => {
   if (typeof window === "undefined") return;
 
   // Disable right-click context menu in production
