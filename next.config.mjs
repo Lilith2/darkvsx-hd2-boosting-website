@@ -8,7 +8,7 @@ const nextConfig = {
   generateEtags: true,
   experimental: {
     scrollRestoration: true,
-    optimizeCss: true, // Enable CSS optimization
+    // Removed optimizeCss as it was causing critters module issues
   },
   allowedDevOrigins: [
     "1c1d42e681804164827111b263e5941f-c903eba0dff24a369b0e80752.fly.dev",
@@ -100,31 +100,8 @@ const nextConfig = {
     "@supabase/realtime-js",
     "@supabase/functions-js",
   ],
-  webpack: (config, { isServer, webpack }) => {
-    // Minimal webpack config to fix Supabase issues without breaking anything
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-        crypto: false,
-      };
-
-      // Suppress the specific realtime-js critical dependency warning
-      config.plugins.push(
-        new webpack.ContextReplacementPlugin(
-          /\/node_modules\/@supabase\/realtime-js\/dist\/main\/lib\/websocket-factory\.js$/,
-          (data) => {
-            delete data.dependencies[0].critical;
-            return data;
-          },
-        ),
-      );
-    }
-
-    return config;
-  },
+  // Webpack configuration removed - it was causing more issues than solving
+  // Modern Next.js handles Supabase without custom webpack config
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
