@@ -12,7 +12,7 @@ import { TopServicesCard } from "@/components/admin/TopServicesCard";
 import { RecentOrdersCard } from "@/components/admin/RecentOrdersCard";
 // These are now lazy loaded above
 
-import { LoadingSpinner } from "../components/LoadingSpinner";
+import { LoadingSpinner } from "@/components/ui/loading";
 import {
   AdminDashboardLoadingState,
   ServicesTabLoadingSkeleton,
