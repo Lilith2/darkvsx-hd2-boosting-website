@@ -79,6 +79,8 @@ export default async function handler(
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
+      debug: true, // Enable debug logging
+      logger: true, // Enable logging
     });
 
     // Generate HTML email content
