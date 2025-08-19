@@ -71,7 +71,9 @@ export default function Checkout() {
   const [creditsApplied, setCreditsApplied] = useState(0);
   const [availableCredits, setAvailableCredits] = useState(0);
   const [currentStep, setCurrentStep] = useState(1);
-  const [promoCodeStatus, setPromoCodeStatus] = useState<'idle' | 'loading' | 'applied' | 'error'>('idle');
+  const [promoCodeStatus, setPromoCodeStatus] = useState<
+    "idle" | "loading" | "applied" | "error"
+  >("idle");
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -114,11 +116,11 @@ export default function Checkout() {
   const validatePromoCode = async (code: string) => {
     if (!code.trim()) {
       setPromoDiscount(0);
-      setPromoCodeStatus('idle');
+      setPromoCodeStatus("idle");
       return;
     }
 
-    setPromoCodeStatus('loading');
+    setPromoCodeStatus("loading");
 
     try {
       const { supabase } = await import("@/integrations/supabase/client");
@@ -130,7 +132,7 @@ export default function Checkout() {
 
       if (error) {
         console.error("Error validating promo code:", error);
-        setPromoCodeStatus('error');
+        setPromoCodeStatus("error");
         toast({
           title: "Error",
           description: "Could not validate promo code. Please try again.",
@@ -142,7 +144,7 @@ export default function Checkout() {
       const validation = data;
 
       if (!validation.valid) {
-        setPromoCodeStatus('error');
+        setPromoCodeStatus("error");
         toast({
           title: "Invalid promo code",
           description: validation.error || "Please enter a valid promo code.",
@@ -154,14 +156,14 @@ export default function Checkout() {
 
       const discountAmount = subtotal * REFERRAL_CONFIG.customerDiscount;
       setPromoDiscount(discountAmount);
-      setPromoCodeStatus('applied');
+      setPromoCodeStatus("applied");
       toast({
         title: "Promo code applied!",
         description: `You saved $${discountAmount.toFixed(2)} with the promo code.`,
       });
     } catch (err) {
       console.error("Unexpected error validating promo code:", err);
-      setPromoCodeStatus('error');
+      setPromoCodeStatus("error");
       toast({
         title: "Error",
         description: "Could not validate promo code. Please try again.",
@@ -199,9 +201,14 @@ export default function Checkout() {
             </div>
             <h2 className="text-3xl font-bold mb-4">Your cart is empty</h2>
             <p className="text-muted-foreground mb-8 text-lg">
-              Add some amazing boosting services to your cart before proceeding to checkout.
+              Add some amazing boosting services to your cart before proceeding
+              to checkout.
             </p>
-            <Button asChild size="lg" className="min-w-48 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90">
+            <Button
+              asChild
+              size="lg"
+              className="min-w-48 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+            >
               <Link href="/">
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Browse Services
@@ -464,10 +471,13 @@ export default function Checkout() {
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Badge variant="outline" className="bg-green-500/10 border-green-500/30">
-                <Shield className="w-3 h-3 mr-1 text-green-400" />
-                <span className="text-green-300 text-xs">SSL Secured</span>
-              </Badge>
+                <Badge
+                  variant="outline"
+                  className="bg-green-500/10 border-green-500/30"
+                >
+                  <Shield className="w-3 h-3 mr-1 text-green-400" />
+                  <span className="text-green-300 text-xs">SSL Secured</span>
+                </Badge>
               </div>
             </div>
 
@@ -480,22 +490,36 @@ export default function Checkout() {
                   { number: 3, label: "Payment", icon: CreditCard },
                 ].map(({ number, label, icon: Icon }) => (
                   <div key={number} className="flex items-center">
-                    <div className={`flex items-center space-x-2 ${
-                      currentStep >= number ? 'text-primary' : 'text-muted-foreground'
-                    }`}>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                        currentStep >= number 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-muted text-muted-foreground'
-                      }`}>
-                        {currentStep > number ? <CheckCircle className="w-4 h-4" /> : number}
+                    <div
+                      className={`flex items-center space-x-2 ${
+                        currentStep >= number
+                          ? "text-primary"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                          currentStep >= number
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {currentStep > number ? (
+                          <CheckCircle className="w-4 h-4" />
+                        ) : (
+                          number
+                        )}
                       </div>
                       <span className="text-sm font-medium">{label}</span>
                     </div>
                     {number < 3 && (
-                      <ArrowRight className={`w-4 h-4 mx-4 ${
-                        currentStep > number ? 'text-primary' : 'text-muted-foreground'
-                      }`} />
+                      <ArrowRight
+                        className={`w-4 h-4 mx-4 ${
+                          currentStep > number
+                            ? "text-primary"
+                            : "text-muted-foreground"
+                        }`}
+                      />
                     )}
                   </div>
                 ))}
@@ -516,7 +540,10 @@ export default function Checkout() {
                       <ShoppingCart className="w-5 h-5 text-white" />
                     </div>
                     Your Order
-                    <Badge variant="secondary" className="ml-auto bg-primary/10 text-primary">
+                    <Badge
+                      variant="secondary"
+                      className="ml-auto bg-primary/10 text-primary"
+                    >
                       {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}
                     </Badge>
                   </CardTitle>
@@ -534,17 +561,28 @@ export default function Checkout() {
                         <Zap className="w-8 h-8 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-lg">{item.service.title}</h4>
+                        <h4 className="font-semibold text-lg">
+                          {item.service.title}
+                        </h4>
                         <div className="flex items-center space-x-3 mt-2">
-                          <Badge variant="outline" className="text-xs bg-blue-500/10 border-blue-500/30">
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-blue-500/10 border-blue-500/30"
+                          >
                             <Clock className="w-3 h-3 mr-1" />
                             {item.service.duration}
                           </Badge>
-                          <Badge variant="outline" className="text-xs bg-purple-500/10 border-purple-500/30">
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-purple-500/10 border-purple-500/30"
+                          >
                             <Star className="w-3 h-3 mr-1" />
                             {item.service.difficulty}
                           </Badge>
-                          <Badge variant="outline" className="text-xs bg-green-50 dark:bg-green-950/20">
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-green-50 dark:bg-green-950/20"
+                          >
                             Qty: {item.quantity}
                           </Badge>
                         </div>
@@ -612,7 +650,8 @@ export default function Checkout() {
                     className="resize-none border-border/50 focus:border-primary/50 bg-background/50"
                   />
                   <p className="text-sm text-muted-foreground mt-2">
-                    💡 <strong>Tip:</strong> Include your Discord username and preferred hours for better service
+                    💡 <strong>Tip:</strong> Include your Discord username and
+                    preferred hours for better service
                   </p>
                 </CardContent>
               </Card>
@@ -633,7 +672,10 @@ export default function Checkout() {
                 <CardContent className="space-y-6">
                   {/* Promo Code */}
                   <div className="space-y-3">
-                    <Label htmlFor="promo-code" className="text-base font-medium">
+                    <Label
+                      htmlFor="promo-code"
+                      className="text-base font-medium"
+                    >
                       Promo Code
                     </Label>
                     <div className="flex space-x-2">
@@ -641,21 +683,25 @@ export default function Checkout() {
                         <Input
                           id="promo-code"
                           value={promoCode}
-                          onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                          onChange={(e) =>
+                            setPromoCode(e.target.value.toUpperCase())
+                          }
                           placeholder="Enter promo code"
                           className="h-12 pr-10 border-border/50 focus:border-primary/50"
-                          disabled={promoCodeStatus === 'loading'}
+                          disabled={promoCodeStatus === "loading"}
                         />
-                        {promoCodeStatus === 'applied' && (
+                        {promoCodeStatus === "applied" && (
                           <CheckCircle className="w-5 h-5 text-green-600 absolute right-3 top-3.5" />
                         )}
                       </div>
                       <Button
                         onClick={() => validatePromoCode(promoCode)}
-                        disabled={!promoCode.trim() || promoCodeStatus === 'loading'}
+                        disabled={
+                          !promoCode.trim() || promoCodeStatus === "loading"
+                        }
                         className="h-12 px-6"
                       >
-                        {promoCodeStatus === 'loading' ? (
+                        {promoCodeStatus === "loading" ? (
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (
                           "Apply"
@@ -673,7 +719,8 @@ export default function Checkout() {
                               Promo code applied!
                             </p>
                             <p className="text-sm text-green-300">
-                              You saved ${promoDiscount.toFixed(2)} with this promo code
+                              You saved ${promoDiscount.toFixed(2)} with this
+                              promo code
                             </p>
                           </div>
                         </div>
@@ -700,8 +747,15 @@ export default function Checkout() {
                           onCheckedChange={handleCreditsToggle}
                           className="w-5 h-5"
                         />
-                        <Label htmlFor="use-credits" className="flex-1 cursor-pointer">
-                          Use ${Math.min(availableCredits, subtotalAfterTax).toFixed(2)} of your available credits
+                        <Label
+                          htmlFor="use-credits"
+                          className="flex-1 cursor-pointer"
+                        >
+                          Use $
+                          {Math.min(availableCredits, subtotalAfterTax).toFixed(
+                            2,
+                          )}{" "}
+                          of your available credits
                         </Label>
                       </div>
                       {creditsApplied > 0 && (
@@ -715,7 +769,8 @@ export default function Checkout() {
                                 Credits applied!
                               </p>
                               <p className="text-sm text-blue-700 dark:text-blue-300">
-                                You're using ${creditsApplied.toFixed(2)} from your credit balance
+                                You're using ${creditsApplied.toFixed(2)} from
+                                your credit balance
                               </p>
                             </div>
                           </div>
@@ -743,7 +798,9 @@ export default function Checkout() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-base">Subtotal</span>
-                      <span className="font-semibold text-lg">${subtotal.toFixed(2)}</span>
+                      <span className="font-semibold text-lg">
+                        ${subtotal.toFixed(2)}
+                      </span>
                     </div>
                     {promoDiscount > 0 && (
                       <div className="flex justify-between items-center text-green-600">
@@ -751,7 +808,9 @@ export default function Checkout() {
                           <Sparkles className="w-4 h-4 mr-1" />
                           Promo Discount
                         </span>
-                        <span className="font-semibold">-${promoDiscount.toFixed(2)}</span>
+                        <span className="font-semibold">
+                          -${promoDiscount.toFixed(2)}
+                        </span>
                       </div>
                     )}
                     {creditsApplied > 0 && (
@@ -760,7 +819,9 @@ export default function Checkout() {
                           <DollarSign className="w-4 h-4 mr-1" />
                           Credits Applied
                         </span>
-                        <span className="font-semibold">-${creditsApplied.toFixed(2)}</span>
+                        <span className="font-semibold">
+                          -${creditsApplied.toFixed(2)}
+                        </span>
                       </div>
                     )}
                     <div className="flex justify-between items-center text-muted-foreground">
@@ -783,11 +844,16 @@ export default function Checkout() {
                         <Checkbox
                           id="terms"
                           checked={agreeToTerms}
-                          onCheckedChange={(checked) => setAgreeToTerms(checked as boolean)}
+                          onCheckedChange={(checked) =>
+                            setAgreeToTerms(checked as boolean)
+                          }
                           className="mt-1"
                         />
                         <div className="flex-1">
-                          <Label htmlFor="terms" className="text-sm leading-6 cursor-pointer">
+                          <Label
+                            htmlFor="terms"
+                            className="text-sm leading-6 cursor-pointer"
+                          >
                             I agree to the{" "}
                             <Link
                               href="/terms"
@@ -854,7 +920,8 @@ export default function Checkout() {
                                 createOrder={createPayPalOrder}
                                 onApprove={async (data, actions) => {
                                   if (actions.order) {
-                                    const details = await actions.order.capture();
+                                    const details =
+                                      await actions.order.capture();
                                     handlePayPalSuccess(details, data);
                                   }
                                 }}
@@ -902,21 +969,29 @@ export default function Checkout() {
                   <div className="grid grid-cols-1 gap-3">
                     <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
                       <Lock className="w-5 h-5 text-green-400" />
-                      <span className="text-sm font-medium">256-bit SSL encryption</span>
+                      <span className="text-sm font-medium">
+                        256-bit SSL encryption
+                      </span>
                     </div>
                     <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
                       <CheckCircle className="w-5 h-5 text-blue-400" />
-                      <span className="text-sm font-medium">PayPal Buyer Protection</span>
+                      <span className="text-sm font-medium">
+                        PayPal Buyer Protection
+                      </span>
                     </div>
                     <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
                       <Shield className="w-5 h-5 text-purple-400" />
-                      <span className="text-sm font-medium">Account Safety Guaranteed</span>
+                      <span className="text-sm font-medium">
+                        Account Safety Guaranteed
+                      </span>
                     </div>
                   </div>
                   <div className="pt-3 border-t border-green-500/30">
                     <div className="flex items-center justify-center space-x-2 text-xs text-green-300">
                       <Star className="w-4 h-4" />
-                      <span className="font-medium">Trusted by 10,000+ customers</span>
+                      <span className="font-medium">
+                        Trusted by 10,000+ customers
+                      </span>
                     </div>
                   </div>
                 </CardContent>
