@@ -20,7 +20,7 @@ export function AppContent({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
         <div className="text-center">
-          <OptimizedSpinner size="lg" />
+          <LoadingSpinner />
           <p className="text-lg font-medium text-foreground mt-4">
             Loading HelldiversBoost...
           </p>
