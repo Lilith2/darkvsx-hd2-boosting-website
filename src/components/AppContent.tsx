@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { LoadingSpinner } from "@/components/ui/loading";
 
 export function AppContent({ children }: { children: React.ReactNode }) {
-  const { loading } = useSafeAuth();
+  const { loading } = useAuth();
 
   // Show loading only for first 3 seconds, then force render
   const [forceRender, setForceRender] = useState(false);
