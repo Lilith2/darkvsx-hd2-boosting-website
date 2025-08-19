@@ -7,6 +7,18 @@ export default function Custom404() {
   const [glitchText, setGlitchText] = useState("404");
   const [randomFact, setRandomFact] = useState("");
 
+  // Initialize random fact on client to prevent hydration mismatch
+  useEffect(() => {
+    const bugFacts = [
+      "🐛 A Charger destroyed this page coordinates",
+      "🔥 Orbital bombardment wiped out this sector",
+      "⚡ EMS Artillery caused data corruption",
+      "🚀 Extraction ship couldn't find landing zone",
+      "💥 Strategem malfunction detected",
+    ];
+    setRandomFact(bugFacts[Math.floor(Math.random() * bugFacts.length)]);
+  }, []);
+
   // Glitch effect for the 404 text
   useEffect(() => {
     const glitchChars = ["4", "0", "4", "Ø", "£", "#", "@", "∆", "◊"];
