@@ -730,7 +730,7 @@ export default function Checkout() {
             {/* Enhanced Sidebar */}
             <div className="space-y-6">
               {/* Order Summary */}
-              <Card className="border-0 shadow-xl bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm sticky top-32">
+              <Card className="border-0 shadow-xl bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center text-xl">
                     <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center mr-3">
