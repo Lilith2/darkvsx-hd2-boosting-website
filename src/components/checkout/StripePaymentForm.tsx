@@ -216,51 +216,6 @@ export function StripePaymentForm({
         </CardContent>
       </Card>
 
-      {/* Available Payment Methods */}
-      {paymentMethods.length > 0 && (
-        <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center text-lg">
-              <CreditCard className="w-5 h-5 mr-2 text-primary" />
-              Available Payment Methods
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {paymentMethods.map((method) => (
-                <div
-                  key={method.id}
-                  className={`p-4 border rounded-xl transition-all cursor-pointer ${
-                    selectedPaymentMethod === method.id
-                      ? 'border-primary bg-primary/5 shadow-lg'
-                      : 'border-border/50 hover:border-primary/50 bg-muted/20'
-                  }`}
-                  onClick={() => setSelectedPaymentMethod(method.id)}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      selectedPaymentMethod === method.id 
-                        ? 'bg-primary text-white' 
-                        : 'bg-muted text-muted-foreground'
-                    }`}>
-                      {getPaymentIcon(method.icon)}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-sm">{method.name}</h4>
-                      <p className="text-xs text-muted-foreground">{method.description}</p>
-                    </div>
-                    {method.enabled && (
-                      <Badge variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">
-                        Available
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Payment Form */}
       <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
