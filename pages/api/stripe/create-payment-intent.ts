@@ -36,8 +36,29 @@ export default async function handler(
     });
   } catch (error: any) {
     console.error('Error creating payment intent:', error);
-    res.status(500).json({ 
-      error: error.message || 'Failed to create payment intent' 
+
+    // Handle specific Stripe errors
+    if (error.type === 'StripeRateLimitError') {
+      return res.status(429).json({
+        error: 'Too many requests. Please wait a moment and try again.'
+      });
+    }
+
+    if (error.type === 'StripeInvalidRequestError') {
+      return res.status(400).json({
+        error: error.message || 'Invalid request parameters'
+      });
+    }
+
+    if (error.type === 'StripeAuthenticationError') {
+      return res.status(401).json({
+        error: 'Authentication failed. Please contact support.'
+      });
+    }
+
+    // Generic error
+    res.status(500).json({
+      error: error.message || 'Failed to create payment intent'
     });
   }
 }
