@@ -1,23 +1,23 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import Stripe from 'stripe';
+import { NextApiRequest, NextApiResponse } from "next";
+import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: "2024-12-18.acacia",
 });
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const { amount, currency = 'usd', metadata = {} } = req.body;
+    const { amount, currency = "usd", metadata = {} } = req.body;
 
     if (!amount || amount <= 0) {
-      return res.status(400).json({ error: 'Invalid amount' });
+      return res.status(400).json({ error: "Invalid amount" });
     }
 
     // Create payment intent
@@ -35,30 +35,30 @@ export default async function handler(
       paymentIntentId: paymentIntent.id,
     });
   } catch (error: any) {
-    console.error('Error creating payment intent:', error);
+    console.error("Error creating payment intent:", error);
 
     // Handle specific Stripe errors
-    if (error.type === 'StripeRateLimitError') {
+    if (error.type === "StripeRateLimitError") {
       return res.status(429).json({
-        error: 'Too many requests. Please wait a moment and try again.'
+        error: "Too many requests. Please wait a moment and try again.",
       });
     }
 
-    if (error.type === 'StripeInvalidRequestError') {
+    if (error.type === "StripeInvalidRequestError") {
       return res.status(400).json({
-        error: error.message || 'Invalid request parameters'
+        error: error.message || "Invalid request parameters",
       });
     }
 
-    if (error.type === 'StripeAuthenticationError') {
+    if (error.type === "StripeAuthenticationError") {
       return res.status(401).json({
-        error: 'Authentication failed. Please contact support.'
+        error: "Authentication failed. Please contact support.",
       });
     }
 
     // Generic error
     res.status(500).json({
-      error: error.message || 'Failed to create payment intent'
+      error: error.message || "Failed to create payment intent",
     });
   }
 }

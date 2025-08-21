@@ -53,7 +53,11 @@ export default function Cart() {
         <div className="max-w-4xl mx-auto p-6">
           <div className="flex items-center mb-8">
             <Link href="/">
-              <Button variant="ghost" size="sm" className="hover:bg-primary/10 group">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hover:bg-primary/10 group"
+              >
                 <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform" />
                 Back to Services
               </Button>
@@ -65,19 +69,21 @@ export default function Cart() {
               <div className="w-24 h-24 bg-gradient-to-br from-muted to-muted/50 rounded-2xl flex items-center justify-center mx-auto mb-8">
                 <ShoppingCart className="w-12 h-12 text-muted-foreground opacity-50" />
               </div>
-              <h2 className="text-3xl font-bold mb-4">
-                Your cart is empty
-              </h2>
+              <h2 className="text-3xl font-bold mb-4">Your cart is empty</h2>
               <p className="text-muted-foreground mb-8 text-lg max-w-md mx-auto">
-                Discover our amazing boosting services and add them to your cart to get started
+                Discover our amazing boosting services and add them to your cart
+                to get started
               </p>
               <Link href="/">
-                <Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 min-w-48">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 min-w-48"
+                >
                   <ArrowLeft className="w-5 h-5 mr-2" />
                   Browse Services
                 </Button>
               </Link>
-              
+
               {/* Why Choose Us Section */}
               <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
                 <div className="text-center">
@@ -85,21 +91,27 @@ export default function Cart() {
                     <Shield className="w-6 h-6 text-green-400" />
                   </div>
                   <h3 className="font-semibold mb-1">100% Safe</h3>
-                  <p className="text-sm text-muted-foreground">Account safety guaranteed</p>
+                  <p className="text-sm text-muted-foreground">
+                    Account safety guaranteed
+                  </p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl flex items-center justify-center mx-auto mb-3">
                     <Clock className="w-6 h-6 text-blue-400" />
                   </div>
                   <h3 className="font-semibold mb-1">Fast Delivery</h3>
-                  <p className="text-sm text-muted-foreground">Quick turnaround times</p>
+                  <p className="text-sm text-muted-foreground">
+                    Quick turnaround times
+                  </p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-xl flex items-center justify-center mx-auto mb-3">
                     <Trophy className="w-6 h-6 text-purple-400" />
                   </div>
                   <h3 className="font-semibold mb-1">Pro Team</h3>
-                  <p className="text-sm text-muted-foreground">Skilled professionals</p>
+                  <p className="text-sm text-muted-foreground">
+                    Skilled professionals
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -116,7 +128,11 @@ export default function Cart() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center mb-6">
             <Link href="/">
-              <Button variant="ghost" size="sm" className="hover:bg-primary/10 group">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hover:bg-primary/10 group"
+              >
                 <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform" />
                 Back to Services
               </Button>
@@ -131,15 +147,21 @@ export default function Cart() {
               <div>
                 <h1 className="text-3xl font-bold mb-2">Shopping Cart</h1>
                 <p className="text-muted-foreground text-lg">
-                  {cartItems.length} item{cartItems.length !== 1 ? "s" : ""} ready for checkout
+                  {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}{" "}
+                  ready for checkout
                 </p>
               </div>
             </div>
 
             <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800 text-base px-4 py-2">
+              <Badge
+                variant="outline"
+                className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800 text-base px-4 py-2"
+              >
                 <Shield className="w-4 h-4 mr-2 text-green-600" />
-                <span className="text-green-700 dark:text-green-400">Secure Cart</span>
+                <span className="text-green-700 dark:text-green-400">
+                  Secure Cart
+                </span>
               </Badge>
             </div>
           </div>
@@ -150,7 +172,9 @@ export default function Cart() {
               <div className="flex items-center space-x-2">
                 <Package className="w-5 h-5 text-blue-400" />
                 <div>
-                  <div className="text-xl font-bold text-blue-400">{cartItems.length}</div>
+                  <div className="text-xl font-bold text-blue-400">
+                    {cartItems.length}
+                  </div>
                   <div className="text-sm text-blue-300">Services</div>
                 </div>
               </div>
@@ -159,7 +183,9 @@ export default function Cart() {
               <div className="flex items-center space-x-2">
                 <TrendingUp className="w-5 h-5 text-green-400" />
                 <div>
-                  <div className="text-xl font-bold text-green-400">${subtotal.toFixed(2)}</div>
+                  <div className="text-xl font-bold text-green-400">
+                    ${subtotal.toFixed(2)}
+                  </div>
                   <div className="text-sm text-green-300">Subtotal</div>
                 </div>
               </div>
@@ -197,7 +223,10 @@ export default function Cart() {
                     <ShoppingCart className="w-5 h-5 text-white" />
                   </div>
                   Cart Items
-                  <Badge variant="secondary" className="ml-auto bg-primary/10 text-primary">
+                  <Badge
+                    variant="secondary"
+                    className="ml-auto bg-primary/10 text-primary"
+                  >
                     {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}
                   </Badge>
                 </CardTitle>
@@ -216,15 +245,24 @@ export default function Cart() {
                             {item.service.title}
                           </h3>
                           <div className="flex items-center space-x-3">
-                            <Badge variant="outline" className="text-xs bg-blue-500/10 border-blue-500/30">
+                            <Badge
+                              variant="outline"
+                              className="text-xs bg-blue-500/10 border-blue-500/30"
+                            >
                               <Clock className="w-3 h-3 mr-1" />
                               {item.service.duration}
                             </Badge>
-                            <Badge variant="outline" className="text-xs bg-purple-500/10 border-purple-500/30">
+                            <Badge
+                              variant="outline"
+                              className="text-xs bg-purple-500/10 border-purple-500/30"
+                            >
                               <Star className="w-3 h-3 mr-1" />
                               {item.service.difficulty}
                             </Badge>
-                            <Badge variant="outline" className="text-xs bg-green-500/10 border-green-500/30">
+                            <Badge
+                              variant="outline"
+                              className="text-xs bg-green-500/10 border-green-500/30"
+                            >
                               <Trophy className="w-3 h-3 mr-1" />
                               Premium
                             </Badge>
@@ -303,7 +341,9 @@ export default function Cart() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-base">Subtotal</span>
-                    <span className="font-semibold text-lg">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold text-lg">
+                      ${subtotal.toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center text-muted-foreground">
                     <span>Tax (8%)</span>
@@ -319,7 +359,10 @@ export default function Cart() {
                 </div>
 
                 <div className="space-y-4 pt-4">
-                  <Button className="w-full h-14 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-lg" asChild>
+                  <Button
+                    className="w-full h-14 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-lg"
+                    asChild
+                  >
                     <Link href="/checkout">
                       <CreditCard className="w-5 h-5 mr-2" />
                       Proceed to Checkout
@@ -360,21 +403,29 @@ export default function Cart() {
                 <div className="grid grid-cols-1 gap-3">
                   <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
                     <CheckCircle className="w-5 h-5 text-green-400" />
-                    <span className="text-sm font-medium">256-bit SSL encryption</span>
+                    <span className="text-sm font-medium">
+                      256-bit SSL encryption
+                    </span>
                   </div>
                   <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
                     <Shield className="w-5 h-5 text-blue-400" />
-                    <span className="text-sm font-medium">Stripe Fraud Protection</span>
+                    <span className="text-sm font-medium">
+                      Stripe Fraud Protection
+                    </span>
                   </div>
                   <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
                     <Trophy className="w-5 h-5 text-purple-400" />
-                    <span className="text-sm font-medium">Account Safety Guaranteed</span>
+                    <span className="text-sm font-medium">
+                      Account Safety Guaranteed
+                    </span>
                   </div>
                 </div>
                 <div className="pt-3 border-t border-green-500/30">
                   <div className="flex items-center justify-center space-x-2 text-xs text-green-300">
                     <Star className="w-4 h-4" />
-                    <span className="font-medium">Trusted by 10,000+ customers</span>
+                    <span className="font-medium">
+                      Trusted by 10,000+ customers
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -405,7 +456,9 @@ export default function Cart() {
                   <div className="w-8 h-8 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full flex items-center justify-center">
                     <Clock className="w-4 h-4 text-green-400" />
                   </div>
-                  <span className="text-sm font-medium">24/7 Progress Updates</span>
+                  <span className="text-sm font-medium">
+                    24/7 Progress Updates
+                  </span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full flex items-center justify-center">
@@ -417,7 +470,9 @@ export default function Cart() {
                   <div className="w-8 h-8 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center">
                     <Trophy className="w-4 h-4 text-purple-400" />
                   </div>
-                  <span className="text-sm font-medium">Guaranteed Results</span>
+                  <span className="text-sm font-medium">
+                    Guaranteed Results
+                  </span>
                 </div>
               </CardContent>
             </Card>

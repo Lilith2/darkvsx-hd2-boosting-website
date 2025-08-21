@@ -562,10 +562,7 @@ export default function Checkout() {
               <CardContent className="space-y-6">
                 {/* Promo Code */}
                 <div className="space-y-3">
-                  <Label
-                    htmlFor="promo-code"
-                    className="text-base font-medium"
-                  >
+                  <Label htmlFor="promo-code" className="text-base font-medium">
                     Promo Code
                   </Label>
                   <div className="flex space-x-2">

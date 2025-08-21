@@ -358,7 +358,9 @@ export default function OrderConfirmation() {
     } else {
       // Fallback to copying to clipboard
       try {
-        await navigator.clipboard.writeText(`${shareText} - ${window.location.href}`);
+        await navigator.clipboard.writeText(
+          `${shareText} - ${window.location.href}`,
+        );
         alert("Order details copied to clipboard!");
       } catch (err) {
         console.log("Error copying to clipboard:", err);
@@ -371,10 +373,18 @@ export default function OrderConfirmation() {
       {/* Celebratory Background Elements */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-10 left-10 text-6xl animate-bounce">🎉</div>
-          <div className="absolute top-20 right-20 text-4xl animate-bounce delay-100">⭐</div>
-          <div className="absolute top-40 left-1/3 text-5xl animate-bounce delay-200">🎮</div>
-          <div className="absolute top-60 right-1/3 text-3xl animate-bounce delay-300">🏆</div>
+          <div className="absolute top-10 left-10 text-6xl animate-bounce">
+            🎉
+          </div>
+          <div className="absolute top-20 right-20 text-4xl animate-bounce delay-100">
+            ⭐
+          </div>
+          <div className="absolute top-40 left-1/3 text-5xl animate-bounce delay-200">
+            🎮
+          </div>
+          <div className="absolute top-60 right-1/3 text-3xl animate-bounce delay-300">
+            🏆
+          </div>
         </div>
       )}
 
@@ -382,7 +392,10 @@ export default function OrderConfirmation() {
         {/* Enhanced Breadcrumb Navigation */}
         <nav className="mb-8">
           <div className="flex items-center space-x-3 text-sm">
-            <Link href="/" className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/"
+              className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
+            >
               <Home className="w-4 h-4 mr-1" />
               Home
             </Link>
@@ -421,18 +434,22 @@ export default function OrderConfirmation() {
             Order Confirmed! 🎉
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Thank you for choosing HellDivers 2 Boosting! We've received your order and our
-            professional team will begin working on it shortly.
+            Thank you for choosing HellDivers 2 Boosting! We've received your
+            order and our professional team will begin working on it shortly.
           </p>
-          
+
           {/* Quick Stats */}
           <div className="flex items-center justify-center space-x-8 mt-8">
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary">{orderItems.length}</div>
+              <div className="text-2xl font-bold text-primary">
+                {orderItems.length}
+              </div>
               <div className="text-sm text-muted-foreground">Services</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">${orderAmount?.toFixed(2)}</div>
+              <div className="text-2xl font-bold text-green-600">
+                ${orderAmount?.toFixed(2)}
+              </div>
               <div className="text-sm text-muted-foreground">Total Value</div>
             </div>
             <div className="text-center">
@@ -454,7 +471,9 @@ export default function OrderConfirmation() {
                       <Package className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <CardTitle className="text-2xl">Order {orderNumber}</CardTitle>
+                      <CardTitle className="text-2xl">
+                        Order {orderNumber}
+                      </CardTitle>
                       <CardDescription className="text-base">
                         Placed on{" "}
                         {new Date(orderDate).toLocaleDateString("en-US", {
@@ -468,7 +487,9 @@ export default function OrderConfirmation() {
                       </CardDescription>
                     </div>
                   </div>
-                  <Badge className={`text-base px-4 py-2 ${getStatusColor(orderStatus)}`}>
+                  <Badge
+                    className={`text-base px-4 py-2 ${getStatusColor(orderStatus)}`}
+                  >
                     <Trophy className="w-4 h-4 mr-2" />
                     {orderStatus.charAt(0).toUpperCase() + orderStatus.slice(1)}
                   </Badge>
@@ -489,11 +510,17 @@ export default function OrderConfirmation() {
                           {isCustomOrder ? item.item_name : item.name}
                         </h4>
                         <div className="flex items-center space-x-3 mt-2">
-                          <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-950/20">
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-blue-50 dark:bg-blue-950/20"
+                          >
                             <Star className="w-3 h-3 mr-1" />
                             Quantity: {item.quantity}
                           </Badge>
-                          <Badge variant="outline" className="text-xs bg-green-50 dark:bg-green-950/20">
+                          <Badge
+                            variant="outline"
+                            className="text-xs bg-green-50 dark:bg-green-950/20"
+                          >
                             <Award className="w-3 h-3 mr-1" />
                             Premium Service
                           </Badge>
@@ -508,7 +535,8 @@ export default function OrderConfirmation() {
                           ).toFixed(2)}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          ${isCustomOrder ? item.price_per_unit : item.price} each
+                          ${isCustomOrder ? item.price_per_unit : item.price}{" "}
+                          each
                         </p>
                       </div>
                     </div>
@@ -543,21 +571,29 @@ export default function OrderConfirmation() {
                     <div className="p-4 bg-white/50 dark:bg-black/20 rounded-xl">
                       <div className="flex items-center space-x-2 mb-2">
                         <Shield className="w-4 h-4 text-green-600" />
-                        <span className="text-sm font-medium text-green-700 dark:text-green-300">Payment ID</span>
+                        <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                          Payment ID
+                        </span>
                       </div>
-                      <p className="font-mono text-sm font-semibold">{paymentId}</p>
+                      <p className="font-mono text-sm font-semibold">
+                        {paymentId}
+                      </p>
                     </div>
                     <div className="p-4 bg-white/50 dark:bg-black/20 rounded-xl">
                       <div className="flex items-center space-x-2 mb-2">
                         <CreditCard className="w-4 h-4 text-blue-600" />
-                        <span className="text-sm font-medium text-green-700 dark:text-green-300">Method</span>
+                        <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                          Method
+                        </span>
                       </div>
                       <p className="font-semibold">Stripe</p>
                     </div>
                     <div className="p-4 bg-white/50 dark:bg-black/20 rounded-xl">
                       <div className="flex items-center space-x-2 mb-2">
                         <CheckCircle className="w-4 h-4 text-green-600" />
-                        <span className="text-sm font-medium text-green-700 dark:text-green-300">Status</span>
+                        <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                          Status
+                        </span>
                       </div>
                       <Badge className="bg-green-500 text-white">
                         Paid Successfully
@@ -587,47 +623,58 @@ export default function OrderConfirmation() {
                     {
                       step: 1,
                       title: "Order Processing",
-                      description: "We're reviewing your order details and requirements",
+                      description:
+                        "We're reviewing your order details and requirements",
                       time: "Within 1 hour",
                       icon: Package,
-                      status: "current"
+                      status: "current",
                     },
                     {
                       step: 2,
                       title: "Booster Assignment",
-                      description: "A skilled professional booster will be assigned to your order",
+                      description:
+                        "A skilled professional booster will be assigned to your order",
                       time: "Within 2-4 hours",
                       icon: User,
-                      status: "upcoming"
+                      status: "upcoming",
                     },
                     {
                       step: 3,
                       title: "Service Begins",
-                      description: "Your boost will start and you'll receive progress updates",
+                      description:
+                        "Your boost will start and you'll receive progress updates",
                       time: "Within 24 hours",
                       icon: Zap,
-                      status: "upcoming"
+                      status: "upcoming",
                     },
                     {
                       step: 4,
                       title: "Completion",
-                      description: "Your boost will be completed with guaranteed satisfaction",
+                      description:
+                        "Your boost will be completed with guaranteed satisfaction",
                       time: "As scheduled",
                       icon: Trophy,
-                      status: "upcoming"
-                    }
+                      status: "upcoming",
+                    },
                   ].map((step) => (
-                    <div key={step.step} className="flex items-start space-x-4 p-4 bg-white/50 dark:bg-black/20 rounded-xl">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        step.status === 'current' 
-                          ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white' 
-                          : 'bg-muted text-muted-foreground'
-                      }`}>
+                    <div
+                      key={step.step}
+                      className="flex items-start space-x-4 p-4 bg-white/50 dark:bg-black/20 rounded-xl"
+                    >
+                      <div
+                        className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                          step.status === "current"
+                            ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
                         <step.icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-semibold text-base">{step.title}</h4>
+                          <h4 className="font-semibold text-base">
+                            {step.title}
+                          </h4>
                           <Badge variant="outline" className="text-xs">
                             {step.time}
                           </Badge>
@@ -697,7 +744,11 @@ export default function OrderConfirmation() {
                   </Button>
                 </Link>
 
-                <Button variant="outline" className="w-full text-base h-12" onClick={shareOrder}>
+                <Button
+                  variant="outline"
+                  className="w-full text-base h-12"
+                  onClick={shareOrder}
+                >
                   <Share2 className="w-5 h-5 mr-2" />
                   Share Order
                 </Button>
@@ -721,17 +772,30 @@ export default function OrderConfirmation() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-orange-700 dark:text-orange-300 mb-4">
-                  Our support team is available 24/7 to assist you with any questions about your order.
+                  Our support team is available 24/7 to assist you with any
+                  questions about your order.
                 </p>
                 <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start" asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start"
+                    asChild
+                  >
                     <Link href="/contact">
                       <MessageCircle className="w-4 h-4 mr-2" />
                       Contact Support
                     </Link>
                   </Button>
-                  <Button variant="outline" className="w-full justify-start" asChild>
-                    <a href="https://discord.gg/helldivers" target="_blank" rel="noopener noreferrer">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start"
+                    asChild
+                  >
+                    <a
+                      href="https://discord.gg/helldivers"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <ExternalLink className="w-4 h-4 mr-2" />
                       Join Discord
                     </a>
@@ -747,13 +811,15 @@ export default function OrderConfirmation() {
           <Card className="mt-12 border-0 shadow-xl">
             <CardContent className="p-8">
               <div className="flex items-start space-x-6">
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-                  emailSent 
-                    ? "bg-gradient-to-br from-green-500 to-emerald-600" 
-                    : emailError 
-                      ? "bg-gradient-to-br from-red-500 to-pink-600" 
-                      : "bg-gradient-to-br from-blue-500 to-purple-600"
-                }`}>
+                <div
+                  className={`w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                    emailSent
+                      ? "bg-gradient-to-br from-green-500 to-emerald-600"
+                      : emailError
+                        ? "bg-gradient-to-br from-red-500 to-pink-600"
+                        : "bg-gradient-to-br from-blue-500 to-purple-600"
+                  }`}
+                >
                   {emailSent ? (
                     <CheckCircle className="w-8 h-8 text-white" />
                   ) : emailError ? (
@@ -774,20 +840,31 @@ export default function OrderConfirmation() {
                     {emailSent ? (
                       <>
                         We've sent a detailed confirmation email to{" "}
-                        <strong className="text-foreground">{customerEmail}</strong> with your order
-                        details, timeline, and next steps. If you don't see it in your inbox, please check
-                        your spam folder.
+                        <strong className="text-foreground">
+                          {customerEmail}
+                        </strong>{" "}
+                        with your order details, timeline, and next steps. If
+                        you don't see it in your inbox, please check your spam
+                        folder.
                       </>
                     ) : emailError ? (
                       <>
-                        <span className="text-red-600 dark:text-red-400">Failed to send confirmation email: {emailError}</span>
+                        <span className="text-red-600 dark:text-red-400">
+                          Failed to send confirmation email: {emailError}
+                        </span>
                         <br />
-                        <span className="text-sm">Don't worry - your order is still confirmed and being processed!</span>
+                        <span className="text-sm">
+                          Don't worry - your order is still confirmed and being
+                          processed!
+                        </span>
                       </>
                     ) : (
                       <>
                         Sending your order confirmation to{" "}
-                        <strong className="text-foreground">{customerEmail}</strong>...
+                        <strong className="text-foreground">
+                          {customerEmail}
+                        </strong>
+                        ...
                       </>
                     )}
                   </p>

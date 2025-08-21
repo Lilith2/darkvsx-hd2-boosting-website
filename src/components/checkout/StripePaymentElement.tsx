@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   PaymentElement,
   useStripe,
   useElements,
-} from '@stripe/react-stripe-js';
-import { Button } from '@/components/ui/button';
-import { Loader2, CreditCard, AlertTriangle } from 'lucide-react';
+} from "@stripe/react-stripe-js";
+import { Button } from "@/components/ui/button";
+import { Loader2, CreditCard, AlertTriangle } from "lucide-react";
 
 interface StripePaymentElementProps {
   onPaymentSuccess: (paymentIntent: any) => void;
@@ -25,7 +25,7 @@ export function StripePaymentElement({
   const stripe = useStripe();
   const elements = useElements();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -35,31 +35,32 @@ export function StripePaymentElement({
     }
 
     setIsSubmitting(true);
-    setErrorMessage('');
+    setErrorMessage("");
 
     try {
       // Confirm the payment
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
-        redirect: 'if_required',
+        redirect: "if_required",
       });
 
       if (error) {
-        console.error('Payment error:', error);
-        const errorMsg = error.message || 'An unexpected error occurred.';
+        console.error("Payment error:", error);
+        const errorMsg = error.message || "An unexpected error occurred.";
         setErrorMessage(errorMsg);
         onPaymentError(errorMsg);
-      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        console.log('Payment succeeded:', paymentIntent);
+      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        console.log("Payment succeeded:", paymentIntent);
         onPaymentSuccess(paymentIntent);
       } else {
-        const errorMsg = 'Payment was not completed successfully.';
+        const errorMsg = "Payment was not completed successfully.";
         setErrorMessage(errorMsg);
         onPaymentError(errorMsg);
       }
     } catch (err: any) {
-      console.error('Unexpected error during payment:', err);
-      const errorMsg = err.message || 'An unexpected error occurred during payment.';
+      console.error("Unexpected error during payment:", err);
+      const errorMsg =
+        err.message || "An unexpected error occurred during payment.";
       setErrorMessage(errorMsg);
       onPaymentError(errorMsg);
     } finally {
@@ -75,19 +76,19 @@ export function StripePaymentElement({
       <div className="p-4 border border-border/50 rounded-xl bg-background/50">
         <PaymentElement
           options={{
-            layout: 'tabs',
+            layout: "tabs",
             paymentMethodOrder: [
-              'card',
-              'google_pay',
-              'apple_pay',
-              'amazon_pay',
-              'paypal',
-              'us_bank_account',
-              'link',
-              'cashapp',
-              'venmo',
-              'klarna',
-              'affirm'
+              "card",
+              "google_pay",
+              "apple_pay",
+              "amazon_pay",
+              "paypal",
+              "us_bank_account",
+              "link",
+              "cashapp",
+              "venmo",
+              "klarna",
+              "affirm",
             ],
           }}
         />

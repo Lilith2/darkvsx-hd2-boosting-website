@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-import {
-  Shield,
-  Lock,
-  CheckCircle,
-  Loader2,
-} from 'lucide-react';
-import { StripePaymentElement } from './StripePaymentElement';
+import React, { useState, useEffect } from "react";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { Shield, Lock, CheckCircle, Loader2 } from "lucide-react";
+import { StripePaymentElement } from "./StripePaymentElement";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+);
 
 interface StripePaymentFormProps {
   total: number;
@@ -24,7 +20,6 @@ interface StripePaymentFormProps {
   metadata?: Record<string, string>;
 }
 
-
 export function StripePaymentForm({
   total,
   onPaymentSuccess,
@@ -33,7 +28,7 @@ export function StripePaymentForm({
   disabled = false,
   metadata = {},
 }: StripePaymentFormProps) {
-  const [clientSecret, setClientSecret] = useState<string>('');
+  const [clientSecret, setClientSecret] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
@@ -43,31 +38,36 @@ export function StripePaymentForm({
         setIsLoading(true);
 
         // Create payment intent with retry logic for rate limits
-        const intentResponse = await fetch('/api/stripe/create-payment-intent', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+        const intentResponse = await fetch(
+          "/api/stripe/create-payment-intent",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              amount: total,
+              currency: "usd",
+              metadata,
+            }),
           },
-          body: JSON.stringify({
-            amount: total,
-            currency: 'usd',
-            metadata,
-          }),
-        });
+        );
 
         if (!intentResponse.ok) {
           const errorData = await intentResponse.json();
           if (intentResponse.status === 429) {
-            throw new Error('Too many requests. Please wait a moment and try again.');
+            throw new Error(
+              "Too many requests. Please wait a moment and try again.",
+            );
           }
-          throw new Error(errorData.error || 'Failed to create payment intent');
+          throw new Error(errorData.error || "Failed to create payment intent");
         }
 
         const intentData = await intentResponse.json();
         setClientSecret(intentData.clientSecret);
       } catch (error: any) {
-        console.error('Error initializing payment:', error);
-        onPaymentError(error.message || 'Failed to initialize payment');
+        console.error("Error initializing payment:", error);
+        onPaymentError(error.message || "Failed to initialize payment");
       } finally {
         setIsLoading(false);
       }
@@ -82,7 +82,7 @@ export function StripePaymentForm({
 
   const handlePaymentSuccess = (paymentIntent: any) => {
     toast({
-      title: 'Payment Successful!',
+      title: "Payment Successful!",
       description: `Payment of $${total.toFixed(2)} processed successfully.`,
     });
     onPaymentSuccess(paymentIntent);
@@ -90,9 +90,9 @@ export function StripePaymentForm({
 
   const handlePaymentError = (error: string) => {
     toast({
-      title: 'Payment Failed',
+      title: "Payment Failed",
       description: error,
-      variant: 'destructive',
+      variant: "destructive",
     });
     onPaymentError(error);
   };
@@ -103,7 +103,9 @@ export function StripePaymentForm({
         <CardContent className="p-8">
           <div className="flex items-center justify-center space-x-3">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
-            <span className="text-lg font-medium">Initializing secure payment...</span>
+            <span className="text-lg font-medium">
+              Initializing secure payment...
+            </span>
           </div>
         </CardContent>
       </Card>
@@ -117,7 +119,9 @@ export function StripePaymentForm({
           <div className="text-red-500 mb-4">
             <Shield className="w-12 h-12 mx-auto mb-2" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">Payment Initialization Failed</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            Payment Initialization Failed
+          </h3>
           <p className="text-muted-foreground">
             Unable to initialize secure payment. Please try again.
           </p>
@@ -127,15 +131,15 @@ export function StripePaymentForm({
   }
 
   const appearance = {
-    theme: 'stripe' as const,
+    theme: "stripe" as const,
     variables: {
-      colorPrimary: 'hsl(213, 93%, 68%)',
-      colorBackground: 'hsl(var(--background))',
-      colorText: 'hsl(var(--foreground))',
-      colorDanger: 'hsl(var(--destructive))',
-      fontFamily: 'Inter, system-ui, sans-serif',
-      spacingUnit: '4px',
-      borderRadius: '8px',
+      colorPrimary: "hsl(213, 93%, 68%)",
+      colorBackground: "hsl(var(--background))",
+      colorText: "hsl(var(--foreground))",
+      colorDanger: "hsl(var(--destructive))",
+      fontFamily: "Inter, system-ui, sans-serif",
+      spacingUnit: "4px",
+      borderRadius: "8px",
     },
   };
 
@@ -158,13 +162,13 @@ export function StripePaymentForm({
                 Secure Payment with Stripe
               </h4>
               <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                Your payment is protected by Stripe's advanced security. We never store your payment information.
+                Your payment is protected by Stripe's advanced security. We
+                never store your payment information.
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
-
 
       {/* Payment Form */}
       <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
