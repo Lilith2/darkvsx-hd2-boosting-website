@@ -76,7 +76,19 @@ export function StripePaymentElement({
         <PaymentElement
           options={{
             layout: 'tabs',
-            paymentMethodOrder: ['card', 'us_bank_account', 'link'],
+            paymentMethodOrder: [
+              'card',
+              'google_pay',
+              'apple_pay',
+              'amazon_pay',
+              'paypal',
+              'us_bank_account',
+              'link',
+              'cashapp',
+              'venmo',
+              'klarna',
+              'affirm'
+            ],
           }}
         />
       </div>
