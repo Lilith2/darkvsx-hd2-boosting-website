@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@paypal/react-paypal-js": "^8.8.3",
+    "@stripe/react-stripe-js": "^3.9.1",
+    "@stripe/stripe-js": "^7.8.0",
     "@supabase/supabase-js": "^2.54.0",
     "@tanstack/react-virtual": "^3.13.12",
     "@types/nodemailer": "^7.0.0",
@@ -27,6 +29,7 @@
     "lovable-tagger": "^1.1.9",
     "next": "^15.4.6",
     "nodemailer": "^7.0.5",
+    "stripe": "^18.4.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
