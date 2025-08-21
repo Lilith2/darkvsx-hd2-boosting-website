@@ -83,7 +83,7 @@ export default function Privacy() {
                     securely)
                   </li>
                   <li>
-                    Payment information (processed through PayPal, not stored by
+                    Payment information (processed through Stripe, not stored by
                     us)
                   </li>
                   <li>
@@ -173,7 +173,7 @@ export default function Privacy() {
 
                 <h4 className="font-semibold">3.3 Payment Security</h4>
                 <p className="text-muted-foreground">
-                  All payment processing is handled by PayPal. We do not store
+                  All payment processing is handled by Stripe. We do not store
                   credit card information or payment details on our servers.
                 </p>
               </CardContent>
@@ -193,7 +193,7 @@ export default function Privacy() {
                   services:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                  <li>PayPal for payment processing</li>
+                  <li>Stripe for payment processing</li>
                   <li>Email service providers for communications</li>
                   <li>Analytics services for website improvement</li>
                   <li>Cloud storage providers for data backup</li>
