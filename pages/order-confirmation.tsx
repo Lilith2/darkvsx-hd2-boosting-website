@@ -552,7 +552,7 @@ export default function OrderConfirmation() {
                         <CreditCard className="w-4 h-4 text-blue-600" />
                         <span className="text-sm font-medium text-green-700 dark:text-green-300">Method</span>
                       </div>
-                      <p className="font-semibold">PayPal</p>
+                      <p className="font-semibold">Stripe</p>
                     </div>
                     <div className="p-4 bg-white/50 dark:bg-black/20 rounded-xl">
                       <div className="flex items-center space-x-2 mb-2">

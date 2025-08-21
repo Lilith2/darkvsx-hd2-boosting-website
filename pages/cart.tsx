@@ -329,7 +329,7 @@ export default function Cart() {
 
                   <div className="text-center">
                     <p className="text-xs text-muted-foreground">
-                      Secure checkout with PayPal • SSL encrypted
+                      Secure checkout with Stripe • SSL encrypted
                     </p>
                   </div>
                 </div>
@@ -364,7 +364,7 @@ export default function Cart() {
                   </div>
                   <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
                     <Shield className="w-5 h-5 text-blue-400" />
-                    <span className="text-sm font-medium">PayPal Buyer Protection</span>
+                    <span className="text-sm font-medium">Stripe Fraud Protection</span>
                   </div>
                   <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
                     <Trophy className="w-5 h-5 text-purple-400" />
