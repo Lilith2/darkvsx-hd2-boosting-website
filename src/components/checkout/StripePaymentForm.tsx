@@ -16,6 +16,8 @@ import {
   Lock,
   CheckCircle,
   Loader2,
+  ShoppingCart,
+  Calendar,
 } from 'lucide-react';
 import { StripePaymentElement } from './StripePaymentElement';
 
@@ -50,6 +52,16 @@ const getPaymentIcon = (iconType: string) => {
       return <Link2 className="w-5 h-5" />;
     case 'star':
       return <Star className="w-5 h-5" />;
+    case 'google':
+      return <div className="w-5 h-5 bg-gradient-to-r from-blue-500 via-red-500 via-yellow-500 to-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">G</div>;
+    case 'apple':
+      return <div className="w-5 h-5 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black text-xs font-bold">🍎</div>;
+    case 'shopping-cart':
+      return <ShoppingCart className="w-5 h-5" />;
+    case 'paypal':
+      return <div className="w-5 h-5 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">P</div>;
+    case 'calendar':
+      return <Calendar className="w-5 h-5" />;
     default:
       return <CreditCard className="w-5 h-5" />;
   }
