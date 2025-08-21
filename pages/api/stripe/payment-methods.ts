@@ -46,23 +46,18 @@ export default async function handler(
       },
     ];
 
-    // Add custom payment method if available
+    // Add custom payment method - this ID represents a custom payment method in your Stripe dashboard
     const customPaymentMethodId = 'cpmt_1RybC7Gre37xKT2Zf7wCtFrS';
-    
-    try {
-      // Verify the custom payment method exists
-      const customMethod = await stripe.paymentMethods.retrieve(customPaymentMethodId);
-      
-      paymentMethods.push({
-        id: customPaymentMethodId,
-        name: 'Custom Payment',
-        description: 'Special payment method',
-        icon: 'star',
-        enabled: true,
-      });
-    } catch (error) {
-      console.log('Custom payment method not found or not available');
-    }
+
+    // Note: Custom payment methods from dashboard may not be retrievable via API
+    // Adding it to the list as it's configured in your Stripe dashboard
+    paymentMethods.push({
+      id: customPaymentMethodId,
+      name: 'Custom Payment',
+      description: 'Special payment method configured in dashboard',
+      icon: 'star',
+      enabled: true,
+    });
 
     res.status(200).json({ paymentMethods });
   } catch (error: any) {
