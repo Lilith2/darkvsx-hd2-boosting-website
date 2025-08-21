@@ -148,7 +148,7 @@ export default function Terms() {
               <CardContent className="space-y-4">
                 <h4 className="font-semibold">4.1 Payment Processing</h4>
                 <p className="text-muted-foreground">
-                  All payments are processed securely through PayPal. Payment is
+                  All payments are processed securely through Stripe. Payment is
                   required before service begins.
                 </p>
 
