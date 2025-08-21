@@ -46,7 +46,7 @@ const faqData: FAQItem[] = [
     id: "4",
     question: "What payment methods do you accept?",
     answer:
-      "We accept all major payment methods through PayPal, including credit cards, debit cards, and PayPal balance. All transactions are secure and encrypted.",
+      "We accept all major payment methods through Stripe, including credit cards, debit cards, ACH transfers, and mobile payments. All transactions are secure and encrypted with industry-leading security standards.",
     category: "Payment",
   },
   {
