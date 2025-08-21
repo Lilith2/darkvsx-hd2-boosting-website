@@ -91,13 +91,13 @@ export default function TestStripe() {
               >
                 {loading ? 'Testing...' : 'Test Payment Intent'}
               </Button>
-              <Button 
+              <Button
                 onClick={testPaymentMethods}
                 disabled={loading}
                 variant="outline"
                 className="flex-1"
               >
-                {loading ? 'Testing...' : 'Test Payment Methods'}
+                {loading ? 'Testing...' : 'Show Available Payment Methods'}
               </Button>
             </div>
 
