@@ -670,9 +670,6 @@ export default function Checkout() {
                 )}
               </CardContent>
             </Card>
-
-            {/* Payment Methods Information */}
-            <PaymentMethodsInfo />
           </div>
 
           {/* Enhanced Sidebar */}
