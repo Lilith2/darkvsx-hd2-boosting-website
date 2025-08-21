@@ -76,9 +76,7 @@ export function StripePaymentForm({
   metadata = {},
 }: StripePaymentFormProps) {
   const [clientSecret, setClientSecret] = useState<string>('');
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('card');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -109,13 +107,6 @@ export function StripePaymentForm({
 
         const intentData = await intentResponse.json();
         setClientSecret(intentData.clientSecret);
-
-        // Get available payment methods
-        const methodsResponse = await fetch('/api/stripe/payment-methods');
-        if (methodsResponse.ok) {
-          const methodsData = await methodsResponse.json();
-          setPaymentMethods(methodsData.paymentMethods);
-        }
       } catch (error: any) {
         console.error('Error initializing payment:', error);
         onPaymentError(error.message || 'Failed to initialize payment');
