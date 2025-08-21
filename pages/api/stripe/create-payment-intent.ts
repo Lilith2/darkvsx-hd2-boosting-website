@@ -28,7 +28,6 @@ export default async function handler(
       automatic_payment_methods: {
         enabled: true,
       },
-      payment_method_types: ['card'], // Basic card payments
     });
 
     res.status(200).json({
