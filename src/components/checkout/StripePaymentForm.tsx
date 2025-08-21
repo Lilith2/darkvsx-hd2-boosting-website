@@ -74,7 +74,7 @@ export function StripePaymentForm({
       try {
         setIsLoading(true);
 
-        // Create payment intent
+        // Create payment intent with retry logic for rate limits
         const intentResponse = await fetch('/api/stripe/create-payment-intent', {
           method: 'POST',
           headers: {
@@ -88,7 +88,11 @@ export function StripePaymentForm({
         });
 
         if (!intentResponse.ok) {
-          throw new Error('Failed to create payment intent');
+          const errorData = await intentResponse.json();
+          if (intentResponse.status === 429) {
+            throw new Error('Too many requests. Please wait a moment and try again.');
+          }
+          throw new Error(errorData.error || 'Failed to create payment intent');
         }
 
         const intentData = await intentResponse.json();
@@ -109,7 +113,9 @@ export function StripePaymentForm({
     };
 
     if (total > 0 && !disabled) {
-      initializePayment();
+      // Add a small delay to avoid rate limits
+      const timeoutId = setTimeout(initializePayment, 200);
+      return () => clearTimeout(timeoutId);
     }
   }, [total, disabled, metadata, onPaymentError]);
 
