@@ -43,6 +43,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { StripePaymentForm } from "@/components/checkout/StripePaymentForm";
+import { PaymentMethodsInfo } from "@/components/checkout/PaymentMethodsInfo";
 
 export default function Checkout() {
   const { cartItems, getCartTotal, clearCart } = useCart();
@@ -670,6 +671,9 @@ export default function Checkout() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Payment Methods Information */}
+            <PaymentMethodsInfo />
           </div>
 
           {/* Enhanced Sidebar */}
