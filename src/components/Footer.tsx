@@ -114,7 +114,7 @@ export function Footer() {
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-xs text-muted-foreground">
-                Powered by PayPal Secure Payments
+                Powered by Stripe Secure Payments
               </div>
               <div className="flex items-center space-x-2">
                 <Shield className="w-4 h-4 text-green-600" />
