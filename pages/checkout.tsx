@@ -465,6 +465,7 @@ export default function AnimatedCheckout() {
         userId: orderData.userId,
         referralCode: orderData.referralCode,
         referralDiscount: orderData.referralDiscount,
+        paymentIntentId: paymentIntent?.id || `credits-${Date.now()}`, // Pass payment info
       });
     }
   };
