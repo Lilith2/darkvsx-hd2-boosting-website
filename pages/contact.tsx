@@ -251,50 +251,118 @@ export default function Contact() {
           </CardContent>
         </Card>
 
+        {/* Customer Testimonials */}
+        <Card className="mb-12 border-0 shadow-lg bg-gradient-to-br from-muted/20 to-muted/10">
+          <CardHeader>
+            <CardTitle className="text-center text-2xl">What Our Community Says</CardTitle>
+            <CardDescription className="text-center text-lg">
+              Real feedback from our Discord members
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-card/50 rounded-lg p-6 border border-border/30">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-bold">A</span>
+                  </div>
+                  <div>
+                    <p className="font-medium">Alex M.</p>
+                    <p className="text-xs text-muted-foreground">Discord Member</p>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground italic">
+                  "The Discord support is amazing! Got help within minutes and my order was completed perfectly.
+                  The community is really helpful too."
+                </p>
+              </div>
+
+              <div className="bg-card/50 rounded-lg p-6 border border-border/30">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-bold">S</span>
+                  </div>
+                  <div>
+                    <p className="font-medium">Sarah K.</p>
+                    <p className="text-xs text-muted-foreground">Discord Member</p>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground italic">
+                  "Love being able to track my boost progress in real-time. The Discord bot notifications
+                  keep me updated throughout the entire process."
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="border border-border/50">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all">
             <CardContent className="p-6">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-primary" />
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">Response Time</h3>
-                  <p className="text-sm text-muted-foreground">Usually within minutes</p>
+                  <h3 className="font-semibold">Fast Response</h3>
+                  <p className="text-sm text-muted-foreground">Average &lt;5 minutes</p>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
-                Our support team and community are active around the clock to help you with any questions or issues.
+                Our support team is active around the clock to help with any questions or orders.
               </p>
-              <Button 
-                variant="outline" 
-                className="w-full border-primary/20 hover:bg-primary/10"
+              <Button
+                className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
                 onClick={handleDiscordClick}
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
-                Get Support Now
+                Get Support
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border border-border/50">
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all">
             <CardContent className="p-6">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                  <Globe className="w-5 h-5 text-primary" />
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                  <Users className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">Alternative Contact</h3>
-                  <p className="text-sm text-muted-foreground">Need help with Discord?</p>
+                  <h3 className="font-semibold">Place Orders</h3>
+                  <p className="text-sm text-muted-foreground">Direct ordering</p>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
-                If you need help accessing Discord or have any other concerns, check our FAQ section.
+                Place your boost orders directly in Discord for the fastest service.
               </p>
-              <Button 
-                variant="outline" 
-                className="w-full border-primary/20 hover:bg-primary/10"
+              <Button
+                className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-500/90 hover:to-emerald-600/90"
+                onClick={handleDiscordClick}
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Order Now
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg hover:shadow-xl transition-all">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
+                  <Globe className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Need Help?</h3>
+                  <p className="text-sm text-muted-foreground">Check our FAQ</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Find answers to common questions about our services and Discord.
+              </p>
+              <Button
+                variant="outline"
+                className="w-full border-purple-500/20 hover:bg-purple-500/10"
                 asChild
               >
                 <Link href="/faq">
