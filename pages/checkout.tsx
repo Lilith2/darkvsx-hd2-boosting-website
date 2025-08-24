@@ -131,8 +131,10 @@ export default function AnimatedCheckout() {
   }, [user?.id, getUserCredits]);
 
   // Step progression helpers
-  const getCurrentStepIndex = () =>
-    STEPS.findIndex((step) => step.id === currentStep);
+  const getCurrentStepIndex = () => {
+    const index = STEPS.findIndex((step) => step.id === currentStep);
+    return index >= 0 ? index : 0;
+  };
   const getProgress = () => ((getCurrentStepIndex() + 1) / STEPS.length) * 100;
 
   const canProceedFromStep = (step: CheckoutStep): boolean => {
