@@ -64,7 +64,18 @@ export function StripePaymentForm({
       try {
         setIsLoading(true);
 
-        // Create payment intent with retry logic for rate limits
+        // Prepare secure payment data (server will calculate amounts)
+        const services = cartItems
+          .filter(item => !item.service.customOrderData)
+          .map(item => ({
+            id: item.service.id,
+            quantity: item.quantity,
+          }));
+
+        const customOrderData = cartItems
+          .find(item => item.service.customOrderData)?.service.customOrderData;
+
+        // Create payment intent with secure server-side pricing
         const intentResponse = await fetch(
           "/api/stripe/create-payment-intent",
           {
@@ -73,7 +84,10 @@ export function StripePaymentForm({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              amount: total,
+              services,
+              customOrderData,
+              referralDiscount,
+              creditsUsed,
               currency: "usd",
               metadata,
             }),
