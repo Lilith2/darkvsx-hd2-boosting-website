@@ -64,7 +64,8 @@ const STEPS = [
 ] as const;
 
 export default function AnimatedCheckout() {
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart } =
+    useCart();
   const { addOrder } = useOrders();
   const { createOrder: createCustomOrder } = useCustomOrders();
   const { user, isAuthenticated } = useAuth();
@@ -74,7 +75,9 @@ export default function AnimatedCheckout() {
 
   // Step management
   const [currentStep, setCurrentStep] = useState<CheckoutStep>("cart");
-  const [completedSteps, setCompletedSteps] = useState<Set<CheckoutStep>>(new Set());
+  const [completedSteps, setCompletedSteps] = useState<Set<CheckoutStep>>(
+    new Set(),
+  );
 
   // Form state
   const [isProcessing, setIsProcessing] = useState(false);
@@ -128,9 +131,10 @@ export default function AnimatedCheckout() {
   }, [user?.id, getUserCredits]);
 
   // Step progression helpers
-  const getCurrentStepIndex = () => STEPS.findIndex(step => step.id === currentStep);
+  const getCurrentStepIndex = () =>
+    STEPS.findIndex((step) => step.id === currentStep);
   const getProgress = () => ((getCurrentStepIndex() + 1) / STEPS.length) * 100;
-  
+
   const canProceedFromStep = (step: CheckoutStep): boolean => {
     switch (step) {
       case "cart":
@@ -148,7 +152,7 @@ export default function AnimatedCheckout() {
 
   const nextStep = () => {
     if (!canProceedFromStep(currentStep)) return;
-    
+
     const currentIndex = getCurrentStepIndex();
     if (currentIndex < STEPS.length - 1) {
       const newCompleted = new Set(completedSteps);
@@ -166,9 +170,9 @@ export default function AnimatedCheckout() {
   };
 
   const goToStep = (step: CheckoutStep) => {
-    const stepIndex = STEPS.findIndex(s => s.id === step);
+    const stepIndex = STEPS.findIndex((s) => s.id === step);
     const currentIndex = getCurrentStepIndex();
-    
+
     // Can only go backward or to completed steps
     if (stepIndex <= currentIndex || completedSteps.has(step)) {
       setCurrentStep(step);
@@ -302,7 +306,11 @@ export default function AnimatedCheckout() {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.details || errorData.error || "Server verification failed");
+          throw new Error(
+            errorData.details ||
+              errorData.error ||
+              "Server verification failed",
+          );
         }
 
         const result = await response.json();
@@ -408,7 +416,8 @@ export default function AnimatedCheckout() {
             total_price: item.total_price,
             description: item.description,
           })),
-          special_instructions: customOrderData.special_instructions || orderNotes,
+          special_instructions:
+            customOrderData.special_instructions || orderNotes,
           customer_discord: customOrderData.customer_discord,
         };
       }
@@ -598,21 +607,29 @@ export default function AnimatedCheckout() {
               return (
                 <div key={step.id} className="flex items-center">
                   <button
-                    onClick={() => canAccess ? goToStep(step.id as CheckoutStep) : undefined}
+                    onClick={() =>
+                      canAccess ? goToStep(step.id as CheckoutStep) : undefined
+                    }
                     disabled={!canAccess}
                     className={`flex items-center space-x-2 p-3 rounded-xl transition-all ${
                       isActive
                         ? "bg-primary text-primary-foreground shadow-lg scale-105"
                         : isCompleted
-                        ? "bg-green-500/10 text-green-600 hover:bg-green-500/20 cursor-pointer"
-                        : canAccess
-                        ? "bg-muted/50 hover:bg-muted cursor-pointer"
-                        : "bg-muted/20 text-muted-foreground cursor-not-allowed"
+                          ? "bg-green-500/10 text-green-600 hover:bg-green-500/20 cursor-pointer"
+                          : canAccess
+                            ? "bg-muted/50 hover:bg-muted cursor-pointer"
+                            : "bg-muted/20 text-muted-foreground cursor-not-allowed"
                     }`}
                   >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      isActive ? "bg-white/20" : isCompleted ? "bg-green-500/20" : "bg-background/50"
-                    }`}>
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                        isActive
+                          ? "bg-white/20"
+                          : isCompleted
+                            ? "bg-green-500/20"
+                            : "bg-background/50"
+                      }`}
+                    >
                       {isCompleted ? (
                         <CheckCircle className="w-4 h-4" />
                       ) : (
@@ -624,9 +641,13 @@ export default function AnimatedCheckout() {
                     </span>
                   </button>
                   {index < STEPS.length - 1 && (
-                    <div className={`h-0.5 w-8 mx-2 rounded-full ${
-                      completedSteps.has(step.id) ? "bg-green-500" : "bg-border"
-                    }`} />
+                    <div
+                      className={`h-0.5 w-8 mx-2 rounded-full ${
+                        completedSteps.has(step.id)
+                          ? "bg-green-500"
+                          : "bg-border"
+                      }`}
+                    />
                   )}
                 </div>
               );
@@ -657,12 +678,17 @@ export default function AnimatedCheckout() {
                           <ShoppingCart className="w-6 h-6 text-white" />
                         </div>
                         Review Your Cart
-                        <Badge variant="secondary" className="ml-auto bg-primary/10 text-primary">
-                          {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}
+                        <Badge
+                          variant="secondary"
+                          className="ml-auto bg-primary/10 text-primary"
+                        >
+                          {cartItems.length} item
+                          {cartItems.length !== 1 ? "s" : ""}
                         </Badge>
                       </CardTitle>
                       <CardDescription className="text-lg">
-                        Manage quantities and review your selected boosting services
+                        Manage quantities and review your selected boosting
+                        services
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -679,15 +705,24 @@ export default function AnimatedCheckout() {
                               {item.service.title}
                             </h4>
                             <div className="flex items-center space-x-3 mt-2">
-                              <Badge variant="outline" className="text-xs bg-blue-500/10 border-blue-500/30">
+                              <Badge
+                                variant="outline"
+                                className="text-xs bg-blue-500/10 border-blue-500/30"
+                              >
                                 <Clock className="w-3 h-3 mr-1" />
                                 {item.service.duration}
                               </Badge>
-                              <Badge variant="outline" className="text-xs bg-purple-500/10 border-purple-500/30">
+                              <Badge
+                                variant="outline"
+                                className="text-xs bg-purple-500/10 border-purple-500/30"
+                              >
                                 <Star className="w-3 h-3 mr-1" />
                                 {item.service.difficulty}
                               </Badge>
-                              <Badge variant="outline" className="text-xs bg-green-500/10 border-green-500/30">
+                              <Badge
+                                variant="outline"
+                                className="text-xs bg-green-500/10 border-green-500/30"
+                              >
                                 <Trophy className="w-3 h-3 mr-1" />
                                 Premium
                               </Badge>
@@ -699,7 +734,9 @@ export default function AnimatedCheckout() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleUpdateQuantity(item.service.id, -1)}
+                              onClick={() =>
+                                handleUpdateQuantity(item.service.id, -1)
+                              }
                               disabled={item.quantity <= 1}
                               className="w-8 h-8 p-0"
                             >
@@ -713,7 +750,9 @@ export default function AnimatedCheckout() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleUpdateQuantity(item.service.id, 1)}
+                              onClick={() =>
+                                handleUpdateQuantity(item.service.id, 1)
+                              }
                               className="w-8 h-8 p-0"
                             >
                               <Plus className="w-4 h-4" />
@@ -742,7 +781,10 @@ export default function AnimatedCheckout() {
 
                       {/* Order Notes */}
                       <div className="pt-6 border-t border-border/50">
-                        <Label htmlFor="order-notes" className="text-base font-medium mb-3 block">
+                        <Label
+                          htmlFor="order-notes"
+                          className="text-base font-medium mb-3 block"
+                        >
                           Order Notes (Optional)
                         </Label>
                         <Textarea
@@ -754,7 +796,8 @@ export default function AnimatedCheckout() {
                           className="resize-none border-border/50 focus:border-primary/50 bg-background/50"
                         />
                         <p className="text-sm text-muted-foreground mt-2">
-                          💡 <strong>Tip:</strong> Include your Discord username and preferred hours for better service
+                          💡 <strong>Tip:</strong> Include your Discord username
+                          and preferred hours for better service
                         </p>
                       </div>
                     </CardContent>
@@ -780,7 +823,9 @@ export default function AnimatedCheckout() {
                         <div className="flex items-center space-x-3 mb-4">
                           <Mail className="w-6 h-6 text-primary" />
                           <div>
-                            <p className="font-semibold text-lg">{user?.email}</p>
+                            <p className="font-semibold text-lg">
+                              {user?.email}
+                            </p>
                             <p className="text-muted-foreground">
                               Order confirmations and updates will be sent here
                             </p>
@@ -823,7 +868,8 @@ export default function AnimatedCheckout() {
                               </Link>
                             </Label>
                             <p className="text-sm text-muted-foreground mt-2">
-                              By continuing, you acknowledge that you've read and understood our policies.
+                              By continuing, you acknowledge that you've read
+                              and understood our policies.
                             </p>
                           </div>
                         </div>
@@ -849,7 +895,10 @@ export default function AnimatedCheckout() {
                     <CardContent className="space-y-6">
                       {/* Promo Code */}
                       <div className="space-y-4">
-                        <Label htmlFor="promo-code" className="text-lg font-medium">
+                        <Label
+                          htmlFor="promo-code"
+                          className="text-lg font-medium"
+                        >
                           Promo Code
                         </Label>
                         <div className="flex space-x-3">
@@ -893,7 +942,8 @@ export default function AnimatedCheckout() {
                                   Promo code applied!
                                 </p>
                                 <p className="text-sm text-green-300">
-                                  You saved ${promoDiscount.toFixed(2)} with this promo code
+                                  You saved ${promoDiscount.toFixed(2)} with
+                                  this promo code
                                 </p>
                               </div>
                             </div>
@@ -925,9 +975,10 @@ export default function AnimatedCheckout() {
                               className="flex-1 cursor-pointer text-base"
                             >
                               Use $
-                              {Math.min(availableCredits, subtotalAfterTax).toFixed(
-                                2,
-                              )}{" "}
+                              {Math.min(
+                                availableCredits,
+                                subtotalAfterTax,
+                              ).toFixed(2)}{" "}
                               of your available credits
                             </Label>
                           </div>
@@ -942,7 +993,8 @@ export default function AnimatedCheckout() {
                                     Credits applied!
                                   </p>
                                   <p className="text-sm text-blue-700 dark:text-blue-300">
-                                    You're using ${creditsApplied.toFixed(2)} from your credit balance
+                                    You're using ${creditsApplied.toFixed(2)}{" "}
+                                    from your credit balance
                                   </p>
                                 </div>
                               </div>
@@ -965,7 +1017,9 @@ export default function AnimatedCheckout() {
                         Complete Payment
                       </CardTitle>
                       <CardDescription className="text-lg">
-                        {total <= 0 ? "Your order is covered by credits!" : "Secure payment with Stripe"}
+                        {total <= 0
+                          ? "Your order is covered by credits!"
+                          : "Secure payment with Stripe"}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -974,7 +1028,9 @@ export default function AnimatedCheckout() {
                           <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Gift className="w-10 h-10 text-white" />
                           </div>
-                          <h3 className="text-2xl font-bold mb-2">Free Order!</h3>
+                          <h3 className="text-2xl font-bold mb-2">
+                            Free Order!
+                          </h3>
                           <p className="text-muted-foreground mb-6">
                             Your credits cover the entire order amount
                           </p>
@@ -1003,9 +1059,12 @@ export default function AnimatedCheckout() {
                             <div className="flex items-center space-x-3">
                               <Shield className="w-6 h-6 text-purple-400" />
                               <div>
-                                <p className="font-semibold text-purple-300">Secure Payment</p>
+                                <p className="font-semibold text-purple-300">
+                                  Secure Payment
+                                </p>
                                 <p className="text-sm text-purple-200">
-                                  Your payment is protected by Stripe's advanced security
+                                  Your payment is protected by Stripe's advanced
+                                  security
                                 </p>
                               </div>
                             </div>
@@ -1118,8 +1177,10 @@ export default function AnimatedCheckout() {
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {currentStep === "cart" && "Review your selected services"}
-                    {currentStep === "terms" && "Accept terms and privacy policy"}
-                    {currentStep === "discounts" && "Apply discounts and credits"}
+                    {currentStep === "terms" &&
+                      "Accept terms and privacy policy"}
+                    {currentStep === "discounts" &&
+                      "Apply discounts and credits"}
                     {currentStep === "payment" && "Complete your payment"}
                   </div>
                 </div>
@@ -1132,7 +1193,9 @@ export default function AnimatedCheckout() {
                 <div className="flex items-center space-x-3 mb-4">
                   <Shield className="w-6 h-6 text-green-400" />
                   <div>
-                    <h3 className="font-semibold text-green-400">Secure Checkout</h3>
+                    <h3 className="font-semibold text-green-400">
+                      Secure Checkout
+                    </h3>
                     <p className="text-sm text-muted-foreground">
                       Your data is protected
                     </p>

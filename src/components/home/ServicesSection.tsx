@@ -4,7 +4,13 @@ import { useServices } from "@/hooks/useServices";
 import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, DollarSign, TrendingUp, Filter } from "lucide-react";
 
@@ -12,12 +18,13 @@ type ServiceCategory =
   | "All"
   | "Level Boost"
   | "Medals"
-  | "Samples" 
+  | "Samples"
   | "Super Credits"
   | "Promotions";
 
 export function ServicesSection() {
-  const [selectedCategory, setSelectedCategory] = useState<ServiceCategory>("All");
+  const [selectedCategory, setSelectedCategory] =
+    useState<ServiceCategory>("All");
   const router = useRouter();
   const { services } = useServices();
   const { addToCart } = useCart();
@@ -53,7 +60,7 @@ export function ServicesSection() {
 
   const categories: ServiceCategory[] = [
     "All",
-    "Level Boost", 
+    "Level Boost",
     "Medals",
     "Samples",
     "Super Credits",
@@ -76,8 +83,9 @@ export function ServicesSection() {
             Our Premium Services
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Choose from our extensive collection of professional Helldivers 2 boosting services. 
-            All services are completed by expert players with guaranteed results.
+            Choose from our extensive collection of professional Helldivers 2
+            boosting services. All services are completed by expert players with
+            guaranteed results.
           </p>
         </div>
 
@@ -88,7 +96,9 @@ export function ServicesSection() {
               <div className="w-16 h-16 bg-gradient-to-br from-primary to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <TrendingUp className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold mb-2">{activeServices.length}+</h3>
+              <h3 className="text-2xl font-bold mb-2">
+                {activeServices.length}+
+              </h3>
               <p className="text-muted-foreground">Active Services</p>
             </CardContent>
           </Card>
@@ -99,7 +109,7 @@ export function ServicesSection() {
                 <DollarSign className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold mb-2">
-                ${Math.min(...activeServices.map(s => s.price))}+
+                ${Math.min(...activeServices.map((s) => s.price))}+
               </h3>
               <p className="text-muted-foreground">Starting From</p>
             </CardContent>
@@ -125,7 +135,9 @@ export function ServicesSection() {
                 {categories.map((category) => (
                   <Button
                     key={category}
-                    variant={selectedCategory === category ? "default" : "ghost"}
+                    variant={
+                      selectedCategory === category ? "default" : "ghost"
+                    }
                     size="sm"
                     onClick={() => setSelectedCategory(category)}
                     className={`text-sm transition-all ${

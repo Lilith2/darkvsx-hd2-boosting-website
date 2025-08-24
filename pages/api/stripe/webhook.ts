@@ -65,23 +65,33 @@ export default async function handler(
     // Handle the event
     switch (event.type) {
       case "payment_intent.succeeded":
-        await handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent);
+        await handlePaymentIntentSucceeded(
+          event.data.object as Stripe.PaymentIntent,
+        );
         break;
 
       case "payment_intent.payment_failed":
-        await handlePaymentIntentFailed(event.data.object as Stripe.PaymentIntent);
+        await handlePaymentIntentFailed(
+          event.data.object as Stripe.PaymentIntent,
+        );
         break;
 
       case "payment_intent.processing":
-        await handlePaymentIntentProcessing(event.data.object as Stripe.PaymentIntent);
+        await handlePaymentIntentProcessing(
+          event.data.object as Stripe.PaymentIntent,
+        );
         break;
 
       case "payment_intent.requires_action":
-        await handlePaymentIntentRequiresAction(event.data.object as Stripe.PaymentIntent);
+        await handlePaymentIntentRequiresAction(
+          event.data.object as Stripe.PaymentIntent,
+        );
         break;
 
       case "payment_intent.canceled":
-        await handlePaymentIntentCanceled(event.data.object as Stripe.PaymentIntent);
+        await handlePaymentIntentCanceled(
+          event.data.object as Stripe.PaymentIntent,
+        );
         break;
 
       default:
@@ -96,7 +106,9 @@ export default async function handler(
   }
 }
 
-async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+async function handlePaymentIntentSucceeded(
+  paymentIntent: Stripe.PaymentIntent,
+) {
   console.log(`PaymentIntent succeeded: ${paymentIntent.id}`);
 
   try {
@@ -112,10 +124,12 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       .eq("transaction_id", paymentIntent.id);
 
     // If orders already exist and are paid, no action needed
-    if ((existingOrders && existingOrders.length > 0) || 
-        (existingCustomOrders && existingCustomOrders.length > 0)) {
+    if (
+      (existingOrders && existingOrders.length > 0) ||
+      (existingCustomOrders && existingCustomOrders.length > 0)
+    ) {
       console.log(`Orders already exist for PaymentIntent ${paymentIntent.id}`);
-      
+
       // Update status to paid if not already
       if (existingOrders && existingOrders.length > 0) {
         await supabase
@@ -138,18 +152,25 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
     // If no orders exist, log for manual review
     // This might happen if the client-side order creation failed
-    console.warn(`PaymentIntent succeeded but no orders found: ${paymentIntent.id}`);
+    console.warn(
+      `PaymentIntent succeeded but no orders found: ${paymentIntent.id}`,
+    );
     console.warn("This requires manual order creation or investigation");
 
     // You could implement automatic order creation here if you store
     // order data in the PaymentIntent metadata
-    if (paymentIntent.metadata && Object.keys(paymentIntent.metadata).length > 0) {
+    if (
+      paymentIntent.metadata &&
+      Object.keys(paymentIntent.metadata).length > 0
+    ) {
       console.log("PaymentIntent metadata:", paymentIntent.metadata);
       // Could implement order creation from metadata here
     }
-
   } catch (error: any) {
-    console.error(`Error handling payment success for ${paymentIntent.id}:`, error);
+    console.error(
+      `Error handling payment success for ${paymentIntent.id}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -161,7 +182,7 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
     // Update any existing orders to failed status
     const { error: orderError } = await supabase
       .from("orders")
-      .update({ 
+      .update({
         payment_status: "failed",
         status: "failed",
         updated_at: new Date().toISOString(),
@@ -175,7 +196,7 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
     // Update any existing custom orders to failed status
     const { error: customOrderError } = await supabase
       .from("custom_orders")
-      .update({ 
+      .update({
         payment_status: "failed",
         status: "failed",
         updated_at: new Date().toISOString(),
@@ -183,25 +204,34 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
       .eq("transaction_id", paymentIntent.id);
 
     if (customOrderError) {
-      console.error("Error updating failed custom order status:", customOrderError);
+      console.error(
+        "Error updating failed custom order status:",
+        customOrderError,
+      );
     }
 
-    console.log(`Updated orders to failed status for PaymentIntent ${paymentIntent.id}`);
-
+    console.log(
+      `Updated orders to failed status for PaymentIntent ${paymentIntent.id}`,
+    );
   } catch (error: any) {
-    console.error(`Error handling payment failure for ${paymentIntent.id}:`, error);
+    console.error(
+      `Error handling payment failure for ${paymentIntent.id}:`,
+      error,
+    );
     throw error;
   }
 }
 
-async function handlePaymentIntentProcessing(paymentIntent: Stripe.PaymentIntent) {
+async function handlePaymentIntentProcessing(
+  paymentIntent: Stripe.PaymentIntent,
+) {
   console.log(`PaymentIntent processing: ${paymentIntent.id}`);
 
   try {
     // Update any existing orders to processing status
     const { error: orderError } = await supabase
       .from("orders")
-      .update({ 
+      .update({
         payment_status: "processing",
         updated_at: new Date().toISOString(),
       })
@@ -214,30 +244,37 @@ async function handlePaymentIntentProcessing(paymentIntent: Stripe.PaymentIntent
     // Update any existing custom orders to processing status
     const { error: customOrderError } = await supabase
       .from("custom_orders")
-      .update({ 
+      .update({
         payment_status: "processing",
         updated_at: new Date().toISOString(),
       })
       .eq("transaction_id", paymentIntent.id);
 
     if (customOrderError) {
-      console.error("Error updating processing custom order status:", customOrderError);
+      console.error(
+        "Error updating processing custom order status:",
+        customOrderError,
+      );
     }
-
   } catch (error: any) {
-    console.error(`Error handling payment processing for ${paymentIntent.id}:`, error);
+    console.error(
+      `Error handling payment processing for ${paymentIntent.id}:`,
+      error,
+    );
     throw error;
   }
 }
 
-async function handlePaymentIntentRequiresAction(paymentIntent: Stripe.PaymentIntent) {
+async function handlePaymentIntentRequiresAction(
+  paymentIntent: Stripe.PaymentIntent,
+) {
   console.log(`PaymentIntent requires action: ${paymentIntent.id}`);
 
   try {
     // Update any existing orders to require action status
     const { error: orderError } = await supabase
       .from("orders")
-      .update({ 
+      .update({
         payment_status: "requires_action",
         updated_at: new Date().toISOString(),
       })
@@ -250,30 +287,37 @@ async function handlePaymentIntentRequiresAction(paymentIntent: Stripe.PaymentIn
     // Update any existing custom orders to require action status
     const { error: customOrderError } = await supabase
       .from("custom_orders")
-      .update({ 
+      .update({
         payment_status: "requires_action",
         updated_at: new Date().toISOString(),
       })
       .eq("transaction_id", paymentIntent.id);
 
     if (customOrderError) {
-      console.error("Error updating requires_action custom order status:", customOrderError);
+      console.error(
+        "Error updating requires_action custom order status:",
+        customOrderError,
+      );
     }
-
   } catch (error: any) {
-    console.error(`Error handling payment requires action for ${paymentIntent.id}:`, error);
+    console.error(
+      `Error handling payment requires action for ${paymentIntent.id}:`,
+      error,
+    );
     throw error;
   }
 }
 
-async function handlePaymentIntentCanceled(paymentIntent: Stripe.PaymentIntent) {
+async function handlePaymentIntentCanceled(
+  paymentIntent: Stripe.PaymentIntent,
+) {
   console.log(`PaymentIntent canceled: ${paymentIntent.id}`);
 
   try {
     // Update any existing orders to canceled status
     const { error: orderError } = await supabase
       .from("orders")
-      .update({ 
+      .update({
         payment_status: "canceled",
         status: "canceled",
         updated_at: new Date().toISOString(),
@@ -287,7 +331,7 @@ async function handlePaymentIntentCanceled(paymentIntent: Stripe.PaymentIntent) 
     // Update any existing custom orders to canceled status
     const { error: customOrderError } = await supabase
       .from("custom_orders")
-      .update({ 
+      .update({
         payment_status: "canceled",
         status: "canceled",
         updated_at: new Date().toISOString(),
@@ -295,11 +339,16 @@ async function handlePaymentIntentCanceled(paymentIntent: Stripe.PaymentIntent) 
       .eq("transaction_id", paymentIntent.id);
 
     if (customOrderError) {
-      console.error("Error updating canceled custom order status:", customOrderError);
+      console.error(
+        "Error updating canceled custom order status:",
+        customOrderError,
+      );
     }
-
   } catch (error: any) {
-    console.error(`Error handling payment cancellation for ${paymentIntent.id}:`, error);
+    console.error(
+      `Error handling payment cancellation for ${paymentIntent.id}:`,
+      error,
+    );
     throw error;
   }
 }

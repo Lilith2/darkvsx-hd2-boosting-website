@@ -70,7 +70,7 @@ export default async function handler(
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
       console.error("Missing SUPABASE_SERVICE_ROLE_KEY");
       return res.status(500).json({
-        error: "Server configuration error", 
+        error: "Server configuration error",
         details: "Database access not configured",
       });
     }
@@ -109,23 +109,26 @@ export default async function handler(
     const TAX_RATE = 0.08;
     const subtotal = orderData.services.reduce(
       (sum, service) => sum + service.price * service.quantity,
-      0
+      0,
     );
-    
+
     // Add custom order items if present
     let customOrderTotal = 0;
     if (orderData.customOrderData?.items) {
       customOrderTotal = orderData.customOrderData.items.reduce(
         (sum, item) => sum + item.total_price,
-        0
+        0,
       );
     }
-    
+
     const totalBeforeDiscounts = subtotal + customOrderTotal;
     const discountAmount = orderData.referralDiscount || 0;
     const creditsUsed = orderData.referralCreditsUsed || 0;
     const tax = (totalBeforeDiscounts - discountAmount) * TAX_RATE;
-    const expectedTotal = Math.max(0, totalBeforeDiscounts - discountAmount + tax - creditsUsed);
+    const expectedTotal = Math.max(
+      0,
+      totalBeforeDiscounts - discountAmount + tax - creditsUsed,
+    );
 
     // Verify the payment amount matches expected total (with small tolerance for rounding)
     const paidAmount = paymentIntent.amount / 100; // Convert from cents
@@ -160,17 +163,20 @@ export default async function handler(
     }
 
     // Create the order(s) in the database
-    const results = await createOrdersInDatabase(orderData, paymentIntentId, expectedTotal);
+    const results = await createOrdersInDatabase(
+      orderData,
+      paymentIntentId,
+      expectedTotal,
+    );
 
     return res.status(200).json({
       success: true,
       message: "Order created successfully",
       ...results,
     });
-
   } catch (error: any) {
     console.error("Error in verify-and-create endpoint:", error);
-    
+
     return res.status(500).json({
       error: "Internal server error",
       details: error.message || "Failed to process order",
@@ -192,7 +198,7 @@ async function createOrdersInDatabase(
       user_id: orderData.userId || null,
       customer_email: orderData.customerEmail,
       customer_name: orderData.customerName,
-      items: orderData.services.map(service => ({
+      items: orderData.services.map((service) => ({
         service_id: service.id,
         service_name: service.name,
         price: service.price,
@@ -224,18 +230,24 @@ async function createOrdersInDatabase(
   }
 
   // Create custom order if there is custom order data
-  if (orderData.customOrderData?.items && orderData.customOrderData.items.length > 0) {
+  if (
+    orderData.customOrderData?.items &&
+    orderData.customOrderData.items.length > 0
+  ) {
     const customOrderRecord = {
       customer_email: orderData.customerEmail,
       customer_name: orderData.customerName,
       customer_discord: orderData.customOrderData.customer_discord || null,
       items: orderData.customOrderData.items,
-      special_instructions: orderData.customOrderData.special_instructions || orderData.notes || null,
+      special_instructions:
+        orderData.customOrderData.special_instructions ||
+        orderData.notes ||
+        null,
       status: "pending",
       payment_status: "paid",
       total_amount: orderData.customOrderData.items.reduce(
         (sum, item) => sum + item.total_price,
-        0
+        0,
       ),
       transaction_id: transactionId,
       referral_code: orderData.referralCode || null,
@@ -251,7 +263,9 @@ async function createOrdersInDatabase(
       .single();
 
     if (customOrderError) {
-      throw new Error(`Failed to create custom order: ${customOrderError.message}`);
+      throw new Error(
+        `Failed to create custom order: ${customOrderError.message}`,
+      );
     }
 
     results.customOrderId = customOrder.id;

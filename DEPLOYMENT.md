@@ -52,6 +52,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ### SMTP Provider Setup Examples
 
 #### Gmail (Recommended for Small Volume)
+
 ```bash
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=465
@@ -62,11 +63,13 @@ EMAIL_FROM_NAME="Your Business Name"
 ```
 
 **Gmail Setup:**
+
 1. Enable 2-factor authentication on your Google account
 2. Generate an App Password: Google Account → Security → App passwords
 3. Use the 16-character app password as `SMTP_PASS`
 
 #### SendGrid (Recommended for Production)
+
 ```bash
 SMTP_HOST=smtp.sendgrid.net
 SMTP_PORT=465
@@ -77,6 +80,7 @@ EMAIL_FROM_NAME="Your Business Name"
 ```
 
 #### Mailgun
+
 ```bash
 SMTP_HOST=smtp.mailgun.org
 SMTP_PORT=587
@@ -87,6 +91,7 @@ EMAIL_FROM_NAME="Your Business Name"
 ```
 
 #### Amazon SES
+
 ```bash
 SMTP_HOST=email-smtp.us-east-1.amazonaws.com
 SMTP_PORT=587
@@ -110,17 +115,20 @@ EMAIL_FROM_NAME="Your Business Name"
 ### Deployment Steps
 
 1. **Import to Vercel:**
+
    - Go to [vercel.com/new](https://vercel.com/new)
    - Import your GitHub repository
    - Vercel will auto-detect it as a Next.js project
 
 2. **Configure Build Settings:**
+
    - Framework Preset: `Next.js`
    - Build Command: `npm run build`
    - Output Directory: `.next`
    - Install Command: `npm install`
 
 3. **Add Environment Variables:**
+
    - Go to Project Settings → Environment Variables
    - Add all the required variables listed above
    - **Important:** Use production keys for live deployment
@@ -155,11 +163,13 @@ EMAIL_FROM_NAME="Your Business Name"
 ### Security Considerations
 
 1. **Environment Variables:**
+
    - Never commit secret keys to your repository
    - Use different keys for development and production
    - Regularly rotate API keys
 
 2. **Stripe Webhooks:**
+
    - Always verify webhook signatures
    - Use HTTPS endpoints for webhooks
    - Handle duplicate events properly
@@ -189,16 +199,19 @@ To use a custom domain:
 ### Troubleshooting
 
 #### Payment Issues
+
 - Check Stripe dashboard for failed payments
 - Verify webhook endpoints are receiving events
 - Test with Stripe test cards
 
 #### Email Issues
+
 - Check SMTP credentials are correct
 - Verify `EMAIL_FROM` is authorized by your provider
 - Test SMTP connection with your provider's tools
 
 #### Database Issues
+
 - Check Supabase dashboard for connection issues
 - Verify row-level security policies are correct
 - Monitor database logs for errors
