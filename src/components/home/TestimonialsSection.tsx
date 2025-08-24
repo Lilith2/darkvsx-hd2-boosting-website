@@ -68,25 +68,7 @@ export function TestimonialsSection() {
           </p>
         </div>
 
-        {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
-          <div className="text-center">
-            <div className="text-4xl font-bold text-primary mb-2">4.9/5</div>
-            <div className="text-muted-foreground">Average Rating</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl font-bold text-primary mb-2">1,200+</div>
-            <div className="text-muted-foreground">Happy Customers</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl font-bold text-primary mb-2">99.9%</div>
-            <div className="text-muted-foreground">Success Rate</div>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl font-bold text-primary mb-2">24/7</div>
-            <div className="text-muted-foreground">Support Available</div>
-          </div>
-        </div>
+        {/* Note: Reviews will be dynamically populated from customer orders in the future */}
 
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
