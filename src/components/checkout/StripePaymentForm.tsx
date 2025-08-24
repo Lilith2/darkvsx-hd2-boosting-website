@@ -78,6 +78,7 @@ export function StripePaymentForm({
       const timeoutId = setTimeout(initializePayment, 200);
       return () => clearTimeout(timeoutId);
     }
+    return undefined;
   }, [total, disabled, metadata, onPaymentError]);
 
   const handlePaymentSuccess = (paymentIntent: any) => {
