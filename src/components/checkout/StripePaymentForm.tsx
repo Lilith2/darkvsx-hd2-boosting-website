@@ -11,8 +11,32 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
 
+interface CartItem {
+  service: {
+    id: string;
+    title: string;
+    price: number;
+    customOrderData?: {
+      items: Array<{
+        category: string;
+        item_name: string;
+        quantity: number;
+        price_per_unit: number;
+        total_price: number;
+        description?: string;
+      }>;
+      special_instructions?: string;
+      customer_discord?: string;
+    };
+  };
+  quantity: number;
+}
+
 interface StripePaymentFormProps {
   total: number;
+  cartItems: CartItem[];
+  referralDiscount?: number;
+  creditsUsed?: number;
   onPaymentSuccess: (paymentIntent: any) => void;
   onPaymentError: (error: string) => void;
   isProcessing: boolean;
