@@ -198,7 +198,8 @@ async function createOrdersInDatabase(
       user_id: orderData.userId || null,
       customer_email: orderData.customerEmail,
       customer_name: orderData.customerName,
-      items: orderData.services.map((service) => ({
+      // FIX: Use 'services' field instead of 'items'
+      services: orderData.services.map((service) => ({
         service_id: service.id,
         service_name: service.name,
         price: service.price,
@@ -206,14 +207,16 @@ async function createOrdersInDatabase(
       })),
       status: "pending",
       payment_status: "paid",
-      total_amount: totalAmount,
+      total_amount: parseFloat(totalAmount.toFixed(2)), // Fix precision
       notes: orderData.notes || null,
       transaction_id: transactionId,
       referral_code: orderData.referralCode || null,
-      referral_discount: orderData.referralDiscount || null,
-      referral_credits_used: orderData.referralCreditsUsed || null,
+      referral_discount: orderData.referralDiscount ? parseFloat(orderData.referralDiscount.toFixed(2)) : null,
+      // FIX: Use 'credits_used' instead of 'referral_credits_used'
+      credits_used: orderData.referralCreditsUsed ? parseFloat(orderData.referralCreditsUsed.toFixed(2)) : null,
       ip_address: orderData.ipAddress || null,
       created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     const { data: order, error: orderError } = await supabase
@@ -244,16 +247,18 @@ async function createOrdersInDatabase(
         orderData.notes ||
         null,
       status: "pending",
-      payment_status: "paid",
-      total_amount: orderData.customOrderData.items.reduce(
+      total_amount: parseFloat(orderData.customOrderData.items.reduce(
         (sum, item) => sum + item.total_price,
         0,
-      ),
-      transaction_id: transactionId,
+      ).toFixed(2)), // Fix precision
+      currency: "USD",
+      // FIX: Use 'payment_intent_id' instead of 'transaction_id'
+      payment_intent_id: transactionId,
       referral_code: orderData.referralCode || null,
-      referral_discount: orderData.referralDiscount || null,
+      referral_discount: orderData.referralDiscount ? parseFloat(orderData.referralDiscount.toFixed(2)) : null,
       user_id: orderData.userId || null,
       created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     const { data: customOrder, error: customOrderError } = await supabase
