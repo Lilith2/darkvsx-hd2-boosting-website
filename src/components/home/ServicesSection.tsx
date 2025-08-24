@@ -89,42 +89,6 @@ export function ServicesSection() {
           </p>
         </div>
 
-        {/* Service Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-primary to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2">
-                {activeServices.length}+
-              </h3>
-              <p className="text-muted-foreground">Active Services</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <DollarSign className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2">
-                ${Math.min(...activeServices.map((s) => s.price))}+
-              </h3>
-              <p className="text-muted-foreground">Starting From</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
-            <CardContent className="p-6 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <ShoppingCart className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2">24/7</h3>
-              <p className="text-muted-foreground">Service Availability</p>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Category Filter */}
         <div className="mb-12">
