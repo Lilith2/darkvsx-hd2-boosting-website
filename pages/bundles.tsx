@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useBundles } from "@/hooks/useBundles";
 import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
 import { useToast } from "@/hooks/use-toast";
@@ -28,6 +29,7 @@ import {
 } from "lucide-react";
 
 export default function Bundles() {
+  const router = useRouter();
   const { bundles, loading, error } = useBundles();
   const { addToCart } = useCart();
   const { toast } = useToast();
@@ -55,6 +57,8 @@ export default function Bundles() {
       title: "Bundle added to cart!",
       description: `${bundle.name} has been added to your cart.`,
     });
+    // Redirect to unified checkout for streamlined experience
+    router.push("/checkout");
   };
 
   if (loading) {
