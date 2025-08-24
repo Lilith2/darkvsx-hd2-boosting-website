@@ -197,11 +197,10 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
     const { error: customOrderError } = await supabase
       .from("custom_orders")
       .update({
-        payment_status: "failed",
-        status: "failed",
+        status: "cancelled",
         updated_at: new Date().toISOString(),
       })
-      .eq("transaction_id", paymentIntent.id);
+      .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrderError) {
       console.error(
@@ -245,10 +244,10 @@ async function handlePaymentIntentProcessing(
     const { error: customOrderError } = await supabase
       .from("custom_orders")
       .update({
-        payment_status: "processing",
+        status: "processing",
         updated_at: new Date().toISOString(),
       })
-      .eq("transaction_id", paymentIntent.id);
+      .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrderError) {
       console.error(
@@ -288,10 +287,10 @@ async function handlePaymentIntentRequiresAction(
     const { error: customOrderError } = await supabase
       .from("custom_orders")
       .update({
-        payment_status: "requires_action",
+        status: "pending",
         updated_at: new Date().toISOString(),
       })
-      .eq("transaction_id", paymentIntent.id);
+      .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrderError) {
       console.error(
@@ -332,11 +331,10 @@ async function handlePaymentIntentCanceled(
     const { error: customOrderError } = await supabase
       .from("custom_orders")
       .update({
-        payment_status: "canceled",
-        status: "canceled",
+        status: "cancelled",
         updated_at: new Date().toISOString(),
       })
-      .eq("transaction_id", paymentIntent.id);
+      .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrderError) {
       console.error(
