@@ -21,7 +21,7 @@ import {
 
 export default function Contact() {
   const handleDiscordClick = () => {
-    window.open('https://discord.gg/GqPTaWnfTG', '_blank');
+    window.open("https://discord.gg/GqPTaWnfTG", "_blank");
   };
 
   return (
@@ -55,7 +55,8 @@ export default function Contact() {
             </h1>
 
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Get instant support, place orders, connect with our community, and receive real-time updates on your boosting services
+              Get instant support, place orders, connect with our community, and
+              receive real-time updates on your boosting services
             </p>
           </div>
         </div>
@@ -69,11 +70,12 @@ export default function Contact() {
               <div className="w-24 h-24 bg-gradient-to-r from-primary to-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg">
                 <MessageSquare className="w-12 h-12 text-white" />
               </div>
-              
+
               <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
               <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join our active Discord community where you can place orders, get instant support from our team,
-                track your boost progress, and connect with fellow Helldivers.
+                Join our active Discord community where you can place orders,
+                get instant support from our team, track your boost progress,
+                and connect with fellow Helldivers.
               </p>
 
               <Button
@@ -102,7 +104,8 @@ export default function Contact() {
               </div>
               <h3 className="font-semibold mb-2">Instant Support</h3>
               <p className="text-sm text-muted-foreground">
-                Get help immediately from our active support team and community members
+                Get help immediately from our active support team and community
+                members
               </p>
             </CardContent>
           </Card>
@@ -114,7 +117,8 @@ export default function Contact() {
               </div>
               <h3 className="font-semibold mb-2">Active Community</h3>
               <p className="text-sm text-muted-foreground">
-                Connect with thousands of Helldivers players and boosting customers
+                Connect with thousands of Helldivers players and boosting
+                customers
               </p>
             </CardContent>
           </Card>
@@ -142,7 +146,9 @@ export default function Contact() {
           </Card>
           <Card className="text-center border-0 shadow-lg bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
             <CardContent className="p-6">
-              <div className="text-3xl font-bold text-primary mb-2">&lt;5min</div>
+              <div className="text-3xl font-bold text-primary mb-2">
+                &lt;5min
+              </div>
               <div className="text-muted-foreground">Average Response</div>
             </CardContent>
           </Card>
@@ -157,7 +163,9 @@ export default function Contact() {
         {/* What You Get */}
         <Card className="mb-12 border-0 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-center text-2xl">What You'll Find in Our Discord</CardTitle>
+            <CardTitle className="text-center text-2xl">
+              What You'll Find in Our Discord
+            </CardTitle>
             <CardDescription className="text-center text-lg">
               Your one-stop destination for all Helldivers 2 boosting needs
             </CardDescription>
@@ -170,7 +178,8 @@ export default function Contact() {
                   <div>
                     <p className="font-medium">Order Placement & Support</p>
                     <p className="text-sm text-muted-foreground">
-                      Place orders directly in Discord and get instant support from our team
+                      Place orders directly in Discord and get instant support
+                      from our team
                     </p>
                   </div>
                 </div>
@@ -180,7 +189,8 @@ export default function Contact() {
                   <div>
                     <p className="font-medium">Live Progress Tracking</p>
                     <p className="text-sm text-muted-foreground">
-                      Get real-time updates and screenshots of your boost progress
+                      Get real-time updates and screenshots of your boost
+                      progress
                     </p>
                   </div>
                 </div>
@@ -212,7 +222,8 @@ export default function Contact() {
                   <div>
                     <p className="font-medium">Exclusive Discord Pricing</p>
                     <p className="text-sm text-muted-foreground">
-                      Access to Discord-only discounts and member-exclusive offers
+                      Access to Discord-only discounts and member-exclusive
+                      offers
                     </p>
                   </div>
                 </div>
@@ -254,7 +265,9 @@ export default function Contact() {
         {/* Customer Testimonials */}
         <Card className="mb-12 border-0 shadow-lg bg-gradient-to-br from-muted/20 to-muted/10">
           <CardHeader>
-            <CardTitle className="text-center text-2xl">What Our Community Says</CardTitle>
+            <CardTitle className="text-center text-2xl">
+              What Our Community Says
+            </CardTitle>
             <CardDescription className="text-center text-lg">
               Real feedback from our Discord members
             </CardDescription>
@@ -268,12 +281,15 @@ export default function Contact() {
                   </div>
                   <div>
                     <p className="font-medium">Alex M.</p>
-                    <p className="text-xs text-muted-foreground">Discord Member</p>
+                    <p className="text-xs text-muted-foreground">
+                      Discord Member
+                    </p>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground italic">
-                  "The Discord support is amazing! Got help within minutes and my order was completed perfectly.
-                  The community is really helpful too."
+                  "The Discord support is amazing! Got help within minutes and
+                  my order was completed perfectly. The community is really
+                  helpful too."
                 </p>
               </div>
 
@@ -284,12 +300,15 @@ export default function Contact() {
                   </div>
                   <div>
                     <p className="font-medium">Sarah K.</p>
-                    <p className="text-xs text-muted-foreground">Discord Member</p>
+                    <p className="text-xs text-muted-foreground">
+                      Discord Member
+                    </p>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground italic">
-                  "Love being able to track my boost progress in real-time. The Discord bot notifications
-                  keep me updated throughout the entire process."
+                  "Love being able to track my boost progress in real-time. The
+                  Discord bot notifications keep me updated throughout the
+                  entire process."
                 </p>
               </div>
             </div>
@@ -306,11 +325,14 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold">Fast Response</h3>
-                  <p className="text-sm text-muted-foreground">Average &lt;5 minutes</p>
+                  <p className="text-sm text-muted-foreground">
+                    Average &lt;5 minutes
+                  </p>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
-                Our support team is active around the clock to help with any questions or orders.
+                Our support team is active around the clock to help with any
+                questions or orders.
               </p>
               <Button
                 className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
@@ -330,11 +352,14 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold">Place Orders</h3>
-                  <p className="text-sm text-muted-foreground">Direct ordering</p>
+                  <p className="text-sm text-muted-foreground">
+                    Direct ordering
+                  </p>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
-                Place your boost orders directly in Discord for the fastest service.
+                Place your boost orders directly in Discord for the fastest
+                service.
               </p>
               <Button
                 className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-500/90 hover:to-emerald-600/90"
@@ -365,9 +390,7 @@ export default function Contact() {
                 className="w-full border-purple-500/20 hover:bg-purple-500/10"
                 asChild
               >
-                <Link href="/faq">
-                  View FAQ
-                </Link>
+                <Link href="/faq">View FAQ</Link>
               </Button>
             </CardContent>
           </Card>
