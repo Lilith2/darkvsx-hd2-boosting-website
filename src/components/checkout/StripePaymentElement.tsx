@@ -82,7 +82,6 @@ export function StripePaymentElement({
               "google_pay",
               "apple_pay",
               "amazon_pay",
-              "paypal",
               "us_bank_account",
               "link",
               "cashapp",

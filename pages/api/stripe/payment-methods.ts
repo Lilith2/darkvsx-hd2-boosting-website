@@ -45,13 +45,6 @@ export default async function handler(
         enabled: true,
       },
       {
-        id: "paypal",
-        name: "PayPal",
-        description: "Pay with PayPal",
-        icon: "paypal",
-        enabled: true,
-      },
-      {
         id: "us_bank_account",
         name: "ACH Direct Debit",
         description: "Pay directly from your bank account",
