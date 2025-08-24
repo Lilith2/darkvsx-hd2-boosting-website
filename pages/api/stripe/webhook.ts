@@ -121,7 +121,7 @@ async function handlePaymentIntentSucceeded(
     const { data: existingCustomOrders } = await supabase
       .from("custom_orders")
       .select("id, status")
-      .eq("transaction_id", paymentIntent.id);
+      .eq("payment_intent_id", paymentIntent.id);
 
     // If orders already exist and are paid, no action needed
     if (
@@ -142,9 +142,9 @@ async function handlePaymentIntentSucceeded(
       if (existingCustomOrders && existingCustomOrders.length > 0) {
         await supabase
           .from("custom_orders")
-          .update({ payment_status: "paid", status: "pending" })
-          .eq("transaction_id", paymentIntent.id)
-          .neq("payment_status", "paid");
+          .update({ status: "processing" })
+          .eq("payment_intent_id", paymentIntent.id)
+          .eq("status", "pending");
       }
 
       return;
