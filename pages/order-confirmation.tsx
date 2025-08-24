@@ -792,7 +792,7 @@ export default function OrderConfirmation() {
                     asChild
                   >
                     <a
-                      href="https://discord.gg/helldivers"
+                      href="https://discord.gg/GqPTaWnfTG"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

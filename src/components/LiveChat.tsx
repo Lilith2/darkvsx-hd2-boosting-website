@@ -35,7 +35,7 @@ const autoResponses = [
   "I understand you need help. Let me connect you with our live support team.",
   "For immediate assistance with orders, please provide your order ID.",
   "Our team is online and ready to help! What specific service are you interested in?",
-  "You can also join our Discord community for faster support: https://discord.gg/helldivers2boost",
+  "You can also join our Discord community for faster support: https://discord.gg/GqPTaWnfTG",
 ];
 
 export function LiveChat() {

@@ -63,9 +63,9 @@ export default function Document() {
                 "@type": "ContactPoint",
                 contactType: "customer service",
                 availableLanguage: "en",
-                url: "https://discord.gg/helldivers2boost",
+                url: "https://discord.gg/GqPTaWnfTG",
               },
-              sameAs: ["https://discord.gg/helldivers2boost"],
+              sameAs: ["https://discord.gg/GqPTaWnfTG"],
               offers: {
                 "@type": "Offer",
                 category: "Gaming Services",
