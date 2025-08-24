@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, DollarSign, TrendingUp, Filter } from "lucide-react";
+import { ShoppingCart, Filter } from "lucide-react";
 
 type ServiceCategory =
   | "All"
