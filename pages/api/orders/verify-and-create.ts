@@ -190,14 +190,12 @@ export default async function handler(
       );
     }
 
-    const totalBeforeDiscounts = subtotal + customOrderTotal;
+    const subtotal = servicesTotal + customOrderTotal;
     const discountAmount = orderData.referralDiscount || 0;
     const creditsUsed = orderData.referralCreditsUsed || 0;
-    const tax = (totalBeforeDiscounts - discountAmount) * TAX_RATE;
-    const expectedTotal = Math.max(
-      0,
-      totalBeforeDiscounts - discountAmount + tax - creditsUsed,
-    );
+    const totalBeforeCredits = subtotal - discountAmount;
+    const tax = Math.max(0, totalBeforeCredits * TAX_RATE);
+    const expectedTotal = Math.max(0, totalBeforeCredits + tax - creditsUsed);
 
     // Verify the payment amount matches expected total (with small tolerance for rounding)
     const paidAmount = paymentIntent.amount / 100; // Convert from cents
