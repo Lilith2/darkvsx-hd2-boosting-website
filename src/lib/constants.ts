@@ -24,8 +24,8 @@ export const REFERRAL_CONSTANTS = {
 export const PAYMENT_CONSTANTS = {
   TAX_RATE: 0.08, // 8% sales tax (configurable by region/business requirements)
   TAX_LABEL: "Sales Tax (8%)", // Display label for tax
-  // Note: This is general sales tax, not PayPal processing fees
-  // PayPal fees are separate and handled during payment processing
+  // Note: This is general sales tax, not payment gateway processing fees
+  // Payment processing fees are separate and handled by the payment provider
 } as const;
 
 // Order Status Types

@@ -275,7 +275,7 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
       // Add all optional fields that now exist in the database schema
       const insertData: any = { ...baseOrderData };
 
-      // Add transaction ID for PayPal tracking
+      // Add transaction ID for payment gateway tracking
       if ((orderData as any).transactionId) {
         insertData.transaction_id = (orderData as any).transactionId;
       }
