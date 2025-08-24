@@ -160,14 +160,20 @@ export default function AnimatedCheckout() {
       const newCompleted = new Set(completedSteps);
       newCompleted.add(currentStep);
       setCompletedSteps(newCompleted);
-      setCurrentStep(STEPS[currentIndex + 1].id as CheckoutStep);
+      const nextStep = STEPS[currentIndex + 1];
+      if (nextStep) {
+        setCurrentStep(nextStep.id as CheckoutStep);
+      }
     }
   };
 
   const prevStep = () => {
     const currentIndex = getCurrentStepIndex();
     if (currentIndex > 0) {
-      setCurrentStep(STEPS[currentIndex - 1].id as CheckoutStep);
+      const prevStepItem = STEPS[currentIndex - 1];
+      if (prevStepItem) {
+        setCurrentStep(prevStepItem.id as CheckoutStep);
+      }
     }
   };
 
