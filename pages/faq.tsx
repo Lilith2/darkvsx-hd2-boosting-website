@@ -236,7 +236,7 @@ export default function FAQ() {
                   asChild
                 >
                   <a
-                    href="https://discord.gg/helldivers2boost"
+                    href="https://discord.gg/GqPTaWnfTG"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
