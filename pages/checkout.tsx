@@ -40,12 +40,19 @@ import {
   Zap,
   ExternalLink,
   AlertTriangle,
+  Plus,
+  Minus,
+  Trash2,
+  Edit3,
+  ArrowRight,
+  Truck,
+  Trophy,
 } from "lucide-react";
 import Link from "next/link";
 import { StripePaymentForm } from "@/components/checkout/StripePaymentForm";
 
-export default function Checkout() {
-  const { cartItems, getCartTotal, clearCart } = useCart();
+export default function UnifiedCheckout() {
+  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
   const { addOrder } = useOrders();
   const { createOrder: createCustomOrder } = useCustomOrders();
   const { user, isAuthenticated } = useAuth();
@@ -102,6 +109,22 @@ export default function Checkout() {
 
     fetchCredits();
   }, [user?.id, getUserCredits]);
+
+  const handleUpdateQuantity = (serviceId: string, change: number) => {
+    const currentItem = cartItems.find((item) => item.service.id === serviceId);
+    if (currentItem) {
+      const newQuantity = Math.max(1, currentItem.quantity + change);
+      updateQuantity(serviceId, newQuantity);
+    }
+  };
+
+  const handleRemoveItem = (serviceId: string) => {
+    removeFromCart(serviceId);
+    toast({
+      title: "Item removed",
+      description: "The service has been removed from your cart.",
+    });
+  };
 
   const validatePromoCode = async (code: string) => {
     if (!code.trim()) {
@@ -386,22 +409,22 @@ export default function Checkout() {
       {/* Enhanced Header */}
       <div className="bg-gradient-to-r from-card/95 to-card/80 backdrop-blur-sm border-b border-border/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
+          <div className="flex items-center justify-between py-6">
             <div className="flex items-center space-x-4">
               <Link
-                href="/cart"
+                href="/"
                 className="flex items-center text-muted-foreground hover:text-foreground transition-colors group"
               >
                 <ArrowLeft className="w-5 h-5 mr-2 group-hover:-translate-x-0.5 transition-transform" />
-                Back to Cart
+                Back to Services
               </Link>
               <Separator orientation="vertical" className="h-6" />
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                  Secure Checkout
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
+                  Checkout & Review
                 </h1>
-                <p className="text-sm text-muted-foreground">
-                  Complete your order safely and securely with Stripe
+                <p className="text-muted-foreground">
+                  Review your order, apply discounts, and complete your purchase
                 </p>
               </div>
             </div>
@@ -422,14 +445,17 @@ export default function Checkout() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Order Items Card */}
+            {/* Step 1: Cart Review & Management */}
             <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center text-xl">
                   <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center mr-3">
                     <ShoppingCart className="w-5 h-5 text-white" />
                   </div>
-                  Your Order
+                  <span className="flex items-center">
+                    <span className="text-2xl font-bold text-primary mr-3">1</span>
+                    Review Your Cart
+                  </span>
                   <Badge
                     variant="secondary"
                     className="ml-auto bg-primary/10 text-primary"
@@ -438,7 +464,7 @@ export default function Checkout() {
                   </Badge>
                 </CardTitle>
                 <CardDescription>
-                  Review your selected boosting services
+                  Manage quantities and review your selected boosting services
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -471,12 +497,40 @@ export default function Checkout() {
                         </Badge>
                         <Badge
                           variant="outline"
-                          className="text-xs bg-green-50 dark:bg-green-950/20"
+                          className="text-xs bg-green-500/10 border-green-500/30"
                         >
-                          Qty: {item.quantity}
+                          <Trophy className="w-3 h-3 mr-1" />
+                          Premium
                         </Badge>
                       </div>
                     </div>
+
+                    {/* Quantity Controls */}
+                    <div className="flex items-center space-x-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleUpdateQuantity(item.service.id, -1)}
+                        disabled={item.quantity <= 1}
+                        className="w-8 h-8 p-0"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </Button>
+                      <div className="w-12 h-8 bg-muted rounded-lg flex items-center justify-center">
+                        <span className="font-semibold text-sm">
+                          {item.quantity}
+                        </span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleUpdateQuantity(item.service.id, 1)}
+                        className="w-8 h-8 p-0"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+
                     <div className="text-right">
                       <p className="font-bold text-xl text-primary">
                         ${(item.service.price * item.quantity).toFixed(2)}
@@ -485,19 +539,40 @@ export default function Checkout() {
                         ${item.service.price} each
                       </p>
                     </div>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveItem(item.service.id)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 w-8 h-8 p-0"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 ))}
+                
+                <div className="pt-4 border-t border-border/50">
+                  <div className="flex items-center space-x-2 text-muted-foreground">
+                    <Truck className="w-4 h-4" />
+                    <span className="text-sm">
+                      Services will start within 24 hours of payment confirmation
+                    </span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
-            {/* Customer Information */}
+            {/* Step 2: Customer Information */}
             <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center text-xl">
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
                     <User className="w-5 h-5 text-white" />
                   </div>
-                  Customer Information
+                  <span className="flex items-center">
+                    <span className="text-2xl font-bold text-primary mr-3">2</span>
+                    Customer Information
+                  </span>
                 </CardTitle>
                 <CardDescription>
                   Your account details for this order
@@ -518,14 +593,17 @@ export default function Checkout() {
               </CardContent>
             </Card>
 
-            {/* Order Notes */}
+            {/* Step 3: Order Notes */}
             <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center text-xl">
                   <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center mr-3">
                     <MessageSquare className="w-5 h-5 text-white" />
                   </div>
-                  Order Notes
+                  <span className="flex items-center">
+                    <span className="text-2xl font-bold text-primary mr-3">3</span>
+                    Order Notes
+                  </span>
                 </CardTitle>
                 <CardDescription>
                   Any special instructions for your boosting service
@@ -546,14 +624,17 @@ export default function Checkout() {
               </CardContent>
             </Card>
 
-            {/* Promo Code & Credits */}
+            {/* Step 4: Discounts & Credits */}
             <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center text-xl">
                   <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3">
                     <Gift className="w-5 h-5 text-white" />
                   </div>
-                  Discounts & Credits
+                  <span className="flex items-center">
+                    <span className="text-2xl font-bold text-primary mr-3">4</span>
+                    Discounts & Credits
+                  </span>
                 </CardTitle>
                 <CardDescription>
                   Apply promo codes and use available credits
@@ -724,8 +805,13 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* Terms Agreement */}
+                {/* Step 5: Terms & Payment */}
                 <div className="pt-6 space-y-4 border-t border-border/50">
+                  <div className="flex items-center text-lg font-semibold mb-4">
+                    <span className="text-2xl font-bold text-primary mr-3">5</span>
+                    Terms & Payment
+                  </div>
+
                   <div className="p-4 border border-border/50 rounded-xl bg-muted/20">
                     <div className="flex items-start space-x-3">
                       <Checkbox
@@ -806,6 +892,32 @@ export default function Checkout() {
                       Please accept the terms to continue
                     </Button>
                   )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Security Badges */}
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-green-500/5 to-emerald-500/5">
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-1 gap-3">
+                  <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                    <span className="text-sm font-medium">
+                      256-bit SSL encryption
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
+                    <Shield className="w-5 h-5 text-blue-400" />
+                    <span className="text-sm font-medium">
+                      Stripe Fraud Protection
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
+                    <Trophy className="w-5 h-5 text-purple-400" />
+                    <span className="text-sm font-medium">
+                      Account Safety Guaranteed
+                    </span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
