@@ -83,7 +83,7 @@ export function Footer() {
             <h3 className="text-lg font-semibold">Community</h3>
             <div className="space-y-3">
               <a
-                href="https://discord.gg/helldivers2boost"
+                href="https://discord.gg/GqPTaWnfTG"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-primary transition-colors"
