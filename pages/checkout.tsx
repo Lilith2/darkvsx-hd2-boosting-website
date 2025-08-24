@@ -1080,6 +1080,9 @@ export default function AnimatedCheckout() {
                           </div>
                           <StripePaymentForm
                             total={total}
+                            cartItems={cartItems}
+                            referralDiscount={promoDiscount}
+                            creditsUsed={creditsApplied}
                             onPaymentSuccess={handleStripePaymentSuccess}
                             onPaymentError={handleStripePaymentError}
                             isProcessing={isProcessing}
