@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { useServices } from "@/hooks/useServices";
 import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
 import { useToast } from "@/hooks/use-toast";
@@ -17,6 +18,7 @@ type ServiceCategory =
 
 export function ServicesSection() {
   const [selectedCategory, setSelectedCategory] = useState<ServiceCategory>("All");
+  const router = useRouter();
   const { services } = useServices();
   const { addToCart } = useCart();
   const { toast } = useToast();
@@ -45,6 +47,8 @@ export function ServicesSection() {
       title: "Added to cart!",
       description: `${service.title} has been added to your cart.`,
     });
+    // Redirect to unified checkout for streamlined experience
+    router.push("/checkout");
   };
 
   const categories: ServiceCategory[] = [
