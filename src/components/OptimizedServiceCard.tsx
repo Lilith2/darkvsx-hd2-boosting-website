@@ -1,4 +1,5 @@
 import React, { memo, useCallback } from "react";
+import { useRouter } from "next/router";
 import {
   Card,
   CardContent,
@@ -21,6 +22,7 @@ interface OptimizedServiceCardProps {
 
 export const OptimizedServiceCard = memo<OptimizedServiceCardProps>(
   ({ service, onQuickView }) => {
+    const router = useRouter();
     const { addToCart } = useCart();
     const { toast } = useToast();
 
@@ -31,7 +33,9 @@ export const OptimizedServiceCard = memo<OptimizedServiceCardProps>(
         description: `${service.title} has been added to your cart.`,
         duration: 2000,
       });
-    }, [service, addToCart, toast]);
+      // Redirect to unified checkout for streamlined experience
+      router.push("/checkout");
+    }, [service, addToCart, toast, router]);
 
     const handleQuickView = useCallback(() => {
       onQuickView?.(service);
