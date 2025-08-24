@@ -23,72 +23,72 @@ interface FAQItem {
 const faqData: FAQItem[] = [
   {
     id: "1",
-    question: "Is this safe?",
+    question: "How safe is your boosting service?",
     answer:
-      "This service is about 75% safe, with a 25% uncertainty factor. However, as of now, there have been zero reports of any punishments for clients or boosters - no bans, no account wipes, nothing. While no method is 100% risk-free, the results so far speak for themselves.",
+      "Our service maintains a strong safety record with no reported punishments, bans, or account issues to date. While we cannot guarantee 100% risk-free operation (as no service can), our track record demonstrates consistent safety. We employ secure methods and maintain transparent communication about any potential risks.",
     category: "Security",
   },
   {
     id: "2",
-    question: "How does this work?",
+    question: "How does the boosting process work?",
     answer:
-      "It's simple: 1) Add me on Helldivers 2, 2) Join my session. That's it! No password sharing, no shady steps - just drop in and play together. Your account remains completely secure.",
+      "Our process is straightforward and secure: you add our booster on Helldivers 2, then they join your gaming session. This method eliminates the need for password sharing or account access, ensuring your credentials remain completely private and secure throughout the entire process.",
     category: "General",
   },
   {
     id: "3",
-    question: "What payment methods do you accept?",
+    question: "Why are your prices more competitive than competitors?",
     answer:
-      "Currently, we only accept PayPal. We're still working on adding more payment options that don't take huge fees, so we can keep our prices low and fair for everyone.",
-    category: "Payment",
-  },
-  {
-    id: "4",
-    question: "How do I purchase a service?",
-    answer:
-      "Here's the process: 1) Open a ticket in our Order channel, 2) Specify if you want a pre-made pack or would like a custom order, 3) After confirming everything looks good, we'll proceed to payment and fulfill your order.",
+      "We believe quality boosting services should be accessible and fairly priced. Our competitive pricing reflects our commitment to providing excellent value while maintaining professional service standards. We focus on fair pricing rather than inflated costs that can burden our customers.",
     category: "General",
   },
   {
-    id: "5",
-    question: "Why are your prices lower than others?",
-    answer:
-      "Honestly? They should be. I don't believe simple services should cost a fortune. I respect your time and money, so I keep prices competitive and fair. Boosting in Helldivers 2 shouldn't break the bank.",
-    category: "Payment",
-  },
-  {
-    id: "6",
+    id: "4",
     question: "Do I need to share my account credentials?",
     answer:
-      "No! You never need to share passwords or any account information. We use a session-joining method where you simply add us in-game and we join your session. Your account stays completely secure.",
+      "Absolutely not. Our session-joining methodology means you never need to share passwords, account details, or any sensitive information. You simply add our booster in-game and they join your session, keeping your account completely secure and under your control.",
     category: "Security",
   },
   {
-    id: "7",
-    question: "How long does delivery take?",
+    id: "5",
+    question: "What are typical delivery timeframes?",
     answer:
-      "Delivery times depend on the specific service you've ordered. Simple boosts can often be completed quickly, while more complex custom orders may take longer. We'll give you an estimated timeframe when you place your order.",
+      "Delivery times vary based on service complexity and current demand. Simple boosting services are typically completed within hours, while more comprehensive orders may require additional time. We provide estimated completion times during the ordering process and keep you updated throughout.",
     category: "Delivery",
   },
   {
-    id: "8",
-    question: "Can I get a custom order?",
+    id: "6",
+    question: "Do you offer custom boosting services?",
     answer:
-      "Absolutely! We offer both pre-made service packs and fully custom orders tailored to your specific needs. Just let us know what you're looking for when you open your ticket.",
+      "Yes, we provide both standardized service packages and fully customized boosting solutions tailored to your specific requirements. Our team can accommodate unique requests and specialized needs beyond our standard offerings.",
+    category: "General",
+  },
+  {
+    id: "7",
+    question: "What happens if issues arise during service?",
+    answer:
+      "While our services maintain excellent reliability, should any unexpected issues occur, our team immediately works to resolve them. We prioritize customer satisfaction and account safety, providing prompt communication and solutions throughout the resolution process.",
+    category: "General",
+  },
+  {
+    id: "8",
+    question: "What is your refund and satisfaction policy?",
+    answer:
+      "We stand behind our service quality and maintain a customer satisfaction guarantee. If we cannot deliver the promised service or if you experience issues, we work diligently to resolve concerns. Our support team handles each case individually to ensure fair resolution.",
     category: "General",
   },
   {
     id: "9",
-    question: "What if something goes wrong?",
+    question: "How do you ensure service discretion?",
     answer:
-      "While we've had zero issues so far, if anything unexpected happens, we'll work with you to resolve it. Customer satisfaction and account safety are our top priorities.",
-    category: "General",
+      "Our boosters maintain complete professionalism and discretion during all gaming sessions. They operate naturally within the game environment without revealing the nature of our service to other players, ensuring your privacy is fully protected.",
+    category: "Security",
   },
   {
     id: "10",
-    question: "Do you offer refunds?",
+    question: "Is customer support available during service?",
     answer:
-      "We stand behind our service quality. If we can't deliver what was promised or if you're not satisfied, we'll work to make it right. Contact us through our support channels to discuss any concerns.",
+      "Yes, our customer support team provides ongoing assistance throughout your service period. We maintain communication channels for progress updates, questions, and any assistance you may need during the boosting process.",
     category: "General",
   },
 ];
