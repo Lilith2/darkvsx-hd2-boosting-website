@@ -552,7 +552,7 @@ export default function AnimatedCheckout() {
       scale: 1,
       transition: {
         duration: 0.5,
-        ease: [0.04, 0.62, 0.23, 0.98],
+        ease: "easeOut" as const,
       },
     },
     exit: {
@@ -561,7 +561,7 @@ export default function AnimatedCheckout() {
       scale: 0.95,
       transition: {
         duration: 0.3,
-        ease: [0.55, 0.06, 0.68, 0.19],
+        ease: "easeIn" as const,
       },
     },
   };
