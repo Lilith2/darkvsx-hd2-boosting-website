@@ -258,8 +258,8 @@ export function initializeAnalytics() {
         try {
           // Filter out HMR-related errors and fetch errors from external services
           const reason = event.reason;
-          if (reason && typeof reason === "object") {
-            const message = reason.message || "";
+          if (reason && typeof reason === "object" && reason.message) {
+            const message = String(reason.message || "");
 
             // Skip HMR and development-related errors
             if (
@@ -274,7 +274,9 @@ export function initializeAnalytics() {
             }
           }
 
-          trackError(new Error(event.reason), "unhandled_promise_rejection");
+          // Ensure we have a proper Error object
+          const errorMessage = reason instanceof Error ? reason.message : String(reason || "Unknown error");
+          trackError(new Error(errorMessage), "unhandled_promise_rejection");
         } catch (error) {
           console.warn("Failed to track promise rejection:", error);
         }
