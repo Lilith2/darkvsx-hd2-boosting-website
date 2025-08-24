@@ -233,7 +233,9 @@ export function useCustomOrders() {
       // Add referral information if provided
       if (orderData.referralCode) {
         customOrderData.referral_code = orderData.referralCode;
-        customOrderData.referral_discount = orderData.referralDiscount ? parseFloat(orderData.referralDiscount.toFixed(2)) : 0;
+        customOrderData.referral_discount = orderData.referralDiscount
+          ? parseFloat(orderData.referralDiscount.toFixed(2))
+          : 0;
       }
 
       const { data: orderResult, error: orderError } = await supabase

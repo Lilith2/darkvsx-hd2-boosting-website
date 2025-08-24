@@ -211,9 +211,13 @@ async function createOrdersInDatabase(
       notes: orderData.notes || null,
       transaction_id: transactionId,
       referral_code: orderData.referralCode || null,
-      referral_discount: orderData.referralDiscount ? parseFloat(orderData.referralDiscount.toFixed(2)) : null,
+      referral_discount: orderData.referralDiscount
+        ? parseFloat(orderData.referralDiscount.toFixed(2))
+        : null,
       // FIX: Use 'credits_used' instead of 'referral_credits_used'
-      credits_used: orderData.referralCreditsUsed ? parseFloat(orderData.referralCreditsUsed.toFixed(2)) : null,
+      credits_used: orderData.referralCreditsUsed
+        ? parseFloat(orderData.referralCreditsUsed.toFixed(2))
+        : null,
       ip_address: orderData.ipAddress || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -247,15 +251,18 @@ async function createOrdersInDatabase(
         orderData.notes ||
         null,
       status: "pending",
-      total_amount: parseFloat(orderData.customOrderData.items.reduce(
-        (sum, item) => sum + item.total_price,
-        0,
-      ).toFixed(2)), // Fix precision
+      total_amount: parseFloat(
+        orderData.customOrderData.items
+          .reduce((sum, item) => sum + item.total_price, 0)
+          .toFixed(2),
+      ), // Fix precision
       currency: "USD",
       // FIX: Use 'payment_intent_id' instead of 'transaction_id'
       payment_intent_id: transactionId,
       referral_code: orderData.referralCode || null,
-      referral_discount: orderData.referralDiscount ? parseFloat(orderData.referralDiscount.toFixed(2)) : null,
+      referral_discount: orderData.referralDiscount
+        ? parseFloat(orderData.referralDiscount.toFixed(2))
+        : null,
       user_id: orderData.userId || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
