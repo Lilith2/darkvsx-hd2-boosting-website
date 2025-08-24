@@ -26,6 +26,7 @@
     "express": "^4.18.2",
     "jsdom": "^26.1.0",
     "lovable-tagger": "^1.1.9",
+    "micro": "^10.0.1",
     "next": "^15.4.6",
     "nodemailer": "^7.0.5",
     "stripe": "^18.4.0",
