@@ -271,11 +271,12 @@ export default function AnimatedCheckout() {
     }
   };
 
-  // Order processing
+  // Secure order processing with server-side verification
   const processOrder = async (paymentIntent?: any) => {
     setIsProcessing(true);
 
     try {
+      // For credit-only payments, still use credits first
       if (useAvailableCredits && creditsApplied > 0) {
         const success = await useCredits(creditsApplied);
         if (!success) {
@@ -283,97 +284,56 @@ export default function AnimatedCheckout() {
         }
       }
 
-      const customOrderItems = cartItems.filter(
-        (item) => item.service.customOrderData,
-      );
-      const regularOrderItems = cartItems.filter(
-        (item) => !item.service.customOrderData,
-      );
+      // For payments with PaymentIntent (Stripe), use secure server-side verification
+      if (paymentIntent?.id) {
+        const orderData = await prepareOrderData();
 
-      let orderId = null;
-
-      if (regularOrderItems.length > 0) {
-        orderId = await addOrder({
-          userId: user?.id || null,
-          customerEmail: user?.email || "",
-          customerName: user?.username || "",
-          services: regularOrderItems.map((item) => ({
-            id: item.service.id,
-            name: item.service.title,
-            price: item.service.price,
-            quantity: item.quantity,
-          })),
-          status: "pending",
-          totalAmount: regularOrderItems.reduce(
-            (sum, item) => sum + item.service.price * item.quantity,
-            0,
-          ),
-          paymentStatus: "paid",
-          notes: orderNotes,
-          transactionId: paymentIntent?.id || `credits-${Date.now()}`,
-          referralCode: promoCode || undefined,
-          referralDiscount: promoDiscount || undefined,
-          referralCreditsUsed: creditsApplied || undefined,
+        // Call secure server endpoint to verify payment and create order
+        const response = await fetch("/api/orders/verify-and-create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            paymentIntentId: paymentIntent.id,
+            orderData: orderData,
+          }),
         });
-      }
 
-      let customOrderId = null;
-      if (customOrderItems.length > 0) {
-        for (const cartItem of customOrderItems) {
-          const customOrderData = cartItem.service.customOrderData;
-          if (!customOrderData) continue;
-
-          const customOrderResult = await createCustomOrder({
-            items: customOrderData.items.map((item: any) => ({
-              category: item.category,
-              item_name: item.item_name,
-              quantity: item.quantity,
-              price_per_unit: item.price_per_unit,
-              total_price: item.total_price,
-              description: item.description,
-            })),
-            special_instructions:
-              customOrderData.special_instructions || orderNotes,
-            customer_email: user?.email || "",
-            customer_name: user?.username || "",
-            customer_discord: customOrderData.customer_discord,
-            userId: user?.id || null,
-            referralCode: promoCode || undefined,
-            referralDiscount: promoDiscount || undefined,
-          });
-
-          if (!customOrderId && customOrderResult) {
-            customOrderId = customOrderResult.id;
-          }
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.details || errorData.error || "Server verification failed");
         }
-      }
 
-      const orderMessage =
-        customOrderItems.length > 0 && regularOrderItems.length > 0
-          ? "Your orders have been confirmed"
-          : customOrderItems.length > 0
-            ? "Your custom order has been confirmed"
-            : `Your order #${orderId?.slice(-6)} has been confirmed`;
+        const result = await response.json();
 
-      const paymentMessage =
-        total <= 0
-          ? "Paid with credits"
-          : `Payment ID: ${paymentIntent?.id || "Credits"}`;
+        toast({
+          title: "Payment successful!",
+          description: `Your order has been confirmed. Payment ID: ${paymentIntent.id}`,
+        });
 
-      toast({
-        title: total <= 0 ? "Order confirmed!" : "Payment successful!",
-        description: `${orderMessage}. ${paymentMessage}`,
-      });
-
-      if (regularOrderItems.length > 0) {
-        router.push(
-          `/order-confirmation?orderId=${orderId}&sendEmail=true${paymentIntent?.id ? `&paymentId=${paymentIntent.id}` : ""}`,
-        );
-      } else if (customOrderId) {
-        router.push(
-          `/order-confirmation?orderId=${customOrderId}&type=custom&sendEmail=true${paymentIntent?.id ? `&paymentId=${paymentIntent.id}` : ""}`,
-        );
+        // Redirect to order confirmation
+        if (result.orderId) {
+          router.push(
+            `/order-confirmation?orderId=${result.orderId}&sendEmail=true&paymentId=${paymentIntent.id}`,
+          );
+        } else if (result.customOrderId) {
+          router.push(
+            `/order-confirmation?orderId=${result.customOrderId}&type=custom&sendEmail=true&paymentId=${paymentIntent.id}`,
+          );
+        } else {
+          router.push("/account");
+        }
       } else {
+        // For credit-only payments, create order directly (already verified credits above)
+        const orderData = await prepareOrderData();
+        await createOrderDirectly(orderData);
+
+        toast({
+          title: "Order confirmed!",
+          description: "Your order has been confirmed. Paid with credits.",
+        });
+
         router.push("/account");
       }
 
@@ -381,7 +341,7 @@ export default function AnimatedCheckout() {
         clearCart();
       }, 100);
     } catch (error: any) {
-      console.error("Error creating order:", error);
+      console.error("Error processing order:", error);
 
       let errorMessage = "Unknown error";
       if (error?.message) {
@@ -399,15 +359,104 @@ export default function AnimatedCheckout() {
       }
 
       toast({
-        title: "Order creation failed",
-        description:
-          total <= 0
-            ? `We couldn't create your order: ${errorMessage}. Please contact support.`
-            : `Payment was successful but we couldn't create your order: ${errorMessage}. Please contact support.`,
+        title: "Order processing failed",
+        description: errorMessage.includes("Payment")
+          ? errorMessage
+          : `We couldn't process your order: ${errorMessage}. Please contact support.`,
         variant: "destructive",
       });
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  // Helper function to prepare order data
+  const prepareOrderData = async () => {
+    const customOrderItems = cartItems.filter(
+      (item) => item.service.customOrderData,
+    );
+    const regularOrderItems = cartItems.filter(
+      (item) => !item.service.customOrderData,
+    );
+
+    const orderData: any = {
+      userId: user?.id || null,
+      customerEmail: user?.email || "",
+      customerName: user?.username || "",
+      services: regularOrderItems.map((item) => ({
+        id: item.service.id,
+        name: item.service.title,
+        price: item.service.price,
+        quantity: item.quantity,
+      })),
+      notes: orderNotes,
+      referralCode: promoCode || undefined,
+      referralDiscount: promoDiscount || undefined,
+      referralCreditsUsed: creditsApplied || undefined,
+    };
+
+    // Add custom order data if present
+    if (customOrderItems.length > 0) {
+      const customOrderData = customOrderItems[0]?.service.customOrderData;
+      if (customOrderData) {
+        orderData.customOrderData = {
+          items: customOrderData.items.map((item: any) => ({
+            category: item.category,
+            item_name: item.item_name,
+            quantity: item.quantity,
+            price_per_unit: item.price_per_unit,
+            total_price: item.total_price,
+            description: item.description,
+          })),
+          special_instructions: customOrderData.special_instructions || orderNotes,
+          customer_discord: customOrderData.customer_discord,
+        };
+      }
+    }
+
+    return orderData;
+  };
+
+  // Fallback for credit-only orders (maintains existing functionality)
+  const createOrderDirectly = async (orderData: any) => {
+    const customOrderItems = cartItems.filter(
+      (item) => item.service.customOrderData,
+    );
+    const regularOrderItems = cartItems.filter(
+      (item) => !item.service.customOrderData,
+    );
+
+    if (regularOrderItems.length > 0) {
+      await addOrder({
+        userId: orderData.userId,
+        customerEmail: orderData.customerEmail,
+        customerName: orderData.customerName,
+        services: orderData.services,
+        status: "pending",
+        totalAmount: regularOrderItems.reduce(
+          (sum, item) => sum + item.service.price * item.quantity,
+          0,
+        ),
+        paymentStatus: "paid",
+        notes: orderData.notes,
+        transactionId: `credits-${Date.now()}`,
+        referralCode: orderData.referralCode,
+        referralDiscount: orderData.referralDiscount,
+        referralCreditsUsed: orderData.referralCreditsUsed,
+      });
+    }
+
+    if (customOrderItems.length > 0 && orderData.customOrderData) {
+      await createCustomOrder({
+        items: orderData.customOrderData.items,
+        special_instructions: orderData.customOrderData.special_instructions,
+        customer_email: orderData.customerEmail,
+        customer_name: orderData.customerName,
+        customer_discord: orderData.customOrderData.customer_discord,
+        userId: orderData.userId,
+        referralCode: orderData.referralCode,
+        referralDiscount: orderData.referralDiscount,
+      });
     }
   };
 
