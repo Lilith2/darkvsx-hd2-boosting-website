@@ -21,7 +21,7 @@ import {
 
 export default function Contact() {
   const handleDiscordClick = () => {
-    window.open('https://discord.gg/helldivers2boost', '_blank');
+    window.open('https://discord.gg/GqPTaWnfTG', '_blank');
   };
 
   return (
@@ -55,7 +55,7 @@ export default function Contact() {
             </h1>
 
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Get instant support, connect with our community, and stay updated with the latest news
+              Get instant support, place orders, connect with our community, and receive real-time updates on your boosting services
             </p>
           </div>
         </div>
@@ -72,8 +72,8 @@ export default function Contact() {
               
               <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
               <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join thousands of Helldivers in our Discord community. Get instant support, 
-                participate in events, and connect with other players.
+                Join our active Discord community where you can place orders, get instant support from our team,
+                track your boost progress, and connect with fellow Helldivers.
               </p>
 
               <Button
@@ -132,12 +132,34 @@ export default function Contact() {
           </Card>
         </div>
 
+        {/* Statistics Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <Card className="text-center border-0 shadow-lg bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="text-3xl font-bold text-primary mb-2">2,500+</div>
+              <div className="text-muted-foreground">Discord Members</div>
+            </CardContent>
+          </Card>
+          <Card className="text-center border-0 shadow-lg bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="text-3xl font-bold text-primary mb-2">&lt;5min</div>
+              <div className="text-muted-foreground">Average Response</div>
+            </CardContent>
+          </Card>
+          <Card className="text-center border-0 shadow-lg bg-gradient-to-br from-card to-card/80 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="text-3xl font-bold text-primary mb-2">24/7</div>
+              <div className="text-muted-foreground">Support Available</div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* What You Get */}
-        <Card className="mb-12">
+        <Card className="mb-12 border-0 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-center">What You'll Find in Our Discord</CardTitle>
-            <CardDescription className="text-center">
-              Everything you need for the best Helldivers 2 boosting experience
+            <CardTitle className="text-center text-2xl">What You'll Find in Our Discord</CardTitle>
+            <CardDescription className="text-center text-lg">
+              Your one-stop destination for all Helldivers 2 boosting needs
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -146,9 +168,9 @@ export default function Contact() {
                 <div className="flex items-start space-x-3">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium">24/7 Support Channels</p>
+                    <p className="font-medium">Order Placement & Support</p>
                     <p className="text-sm text-muted-foreground">
-                      Dedicated support channels with fast response times
+                      Place orders directly in Discord and get instant support from our team
                     </p>
                   </div>
                 </div>
@@ -156,9 +178,9 @@ export default function Contact() {
                 <div className="flex items-start space-x-3">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium">Order Updates</p>
+                    <p className="font-medium">Live Progress Tracking</p>
                     <p className="text-sm text-muted-foreground">
-                      Real-time notifications about your boost progress
+                      Get real-time updates and screenshots of your boost progress
                     </p>
                   </div>
                 </div>
@@ -188,9 +210,9 @@ export default function Contact() {
                 <div className="flex items-start space-x-3">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium">Exclusive Offers</p>
+                    <p className="font-medium">Exclusive Discord Pricing</p>
                     <p className="text-sm text-muted-foreground">
-                      Discord-only discounts and special pricing
+                      Access to Discord-only discounts and member-exclusive offers
                     </p>
                   </div>
                 </div>
@@ -198,9 +220,9 @@ export default function Contact() {
                 <div className="flex items-start space-x-3">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="font-medium">Direct Communication</p>
+                    <p className="font-medium">Booster Communication</p>
                     <p className="text-sm text-muted-foreground">
-                      Chat directly with boosters and support staff
+                      Chat directly with your assigned booster during service
                     </p>
                   </div>
                 </div>
