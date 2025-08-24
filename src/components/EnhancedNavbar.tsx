@@ -38,8 +38,6 @@ interface NavigationItem {
   name: string;
   href: string;
   icon?: React.ComponentType<{ className?: string }>;
-  badge?: string;
-  isNew?: boolean;
 }
 
 const navigation: NavigationItem[] = [
