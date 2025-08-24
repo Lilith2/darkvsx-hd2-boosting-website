@@ -175,7 +175,7 @@ export function EnhancedNavbar() {
 
             {/* Cart */}
             <Button variant="ghost" size="icon" asChild className="relative">
-              <Link href="/cart">
+              <Link href="/checkout">
                 <ShoppingCart className="w-4 h-4" />
                 {cartItemCount > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary">

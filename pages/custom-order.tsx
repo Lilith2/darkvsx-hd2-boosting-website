@@ -307,7 +307,7 @@ export default function CustomOrder() {
         description: "Your custom order has been added to the cart.",
       });
 
-      router.push("/cart");
+      router.push("/checkout");
     } catch (error: any) {
       console.error("Error processing order:", error);
       const errorMessage =
