@@ -7,7 +7,7 @@ const API_CACHE_NAME = "helldivers-boost-api-v1";
 const STATIC_ASSETS = [
   "/",
   "/bundles",
-  "/cart",
+  "/checkout",
   "/account",
   "/_next/static/css/app.css",
   "/manifest.json",
