@@ -401,10 +401,10 @@ export default function OrderConfirmation() {
             </Link>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
             <Link
-              href="/cart"
+              href="/checkout"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              Cart
+              Checkout
             </Link>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
             <Link
