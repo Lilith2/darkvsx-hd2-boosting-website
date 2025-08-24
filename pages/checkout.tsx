@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { motion, AnimatePresence } from "framer-motion";
 import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
 import { useOrders } from "@/hooks/useOrders";
 import { useCustomOrders } from "@/hooks/useCustomOrders";
@@ -22,8 +23,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft,
+  ArrowRight,
   ShoppingCart,
   User,
   Mail,
@@ -43,15 +46,24 @@ import {
   Plus,
   Minus,
   Trash2,
-  Edit3,
-  ArrowRight,
-  Truck,
   Trophy,
+  FileText,
+  Percent,
+  Play,
 } from "lucide-react";
 import Link from "next/link";
 import { StripePaymentForm } from "@/components/checkout/StripePaymentForm";
 
-export default function UnifiedCheckout() {
+type CheckoutStep = "cart" | "terms" | "discounts" | "payment";
+
+const STEPS = [
+  { id: "cart", title: "Review Cart", icon: ShoppingCart },
+  { id: "terms", title: "Terms & Policy", icon: FileText },
+  { id: "discounts", title: "Discounts & Credits", icon: Percent },
+  { id: "payment", title: "Payment", icon: CreditCard },
+] as const;
+
+export default function AnimatedCheckout() {
   const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
   const { addOrder } = useOrders();
   const { createOrder: createCustomOrder } = useCustomOrders();
@@ -60,6 +72,11 @@ export default function UnifiedCheckout() {
   const { toast } = useToast();
   const router = useRouter();
 
+  // Step management
+  const [currentStep, setCurrentStep] = useState<CheckoutStep>("cart");
+  const [completedSteps, setCompletedSteps] = useState<Set<CheckoutStep>>(new Set());
+
+  // Form state
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
   const [agreeToTerms, setAgreeToTerms] = useState(false);
@@ -110,6 +127,55 @@ export default function UnifiedCheckout() {
     fetchCredits();
   }, [user?.id, getUserCredits]);
 
+  // Step progression helpers
+  const getCurrentStepIndex = () => STEPS.findIndex(step => step.id === currentStep);
+  const getProgress = () => ((getCurrentStepIndex() + 1) / STEPS.length) * 100;
+  
+  const canProceedFromStep = (step: CheckoutStep): boolean => {
+    switch (step) {
+      case "cart":
+        return cartItems.length > 0;
+      case "terms":
+        return agreeToTerms;
+      case "discounts":
+        return true; // Always can proceed from discounts
+      case "payment":
+        return false; // Can't proceed beyond payment
+      default:
+        return false;
+    }
+  };
+
+  const nextStep = () => {
+    if (!canProceedFromStep(currentStep)) return;
+    
+    const currentIndex = getCurrentStepIndex();
+    if (currentIndex < STEPS.length - 1) {
+      const newCompleted = new Set(completedSteps);
+      newCompleted.add(currentStep);
+      setCompletedSteps(newCompleted);
+      setCurrentStep(STEPS[currentIndex + 1].id as CheckoutStep);
+    }
+  };
+
+  const prevStep = () => {
+    const currentIndex = getCurrentStepIndex();
+    if (currentIndex > 0) {
+      setCurrentStep(STEPS[currentIndex - 1].id as CheckoutStep);
+    }
+  };
+
+  const goToStep = (step: CheckoutStep) => {
+    const stepIndex = STEPS.findIndex(s => s.id === step);
+    const currentIndex = getCurrentStepIndex();
+    
+    // Can only go backward or to completed steps
+    if (stepIndex <= currentIndex || completedSteps.has(step)) {
+      setCurrentStep(step);
+    }
+  };
+
+  // Cart management
   const handleUpdateQuantity = (serviceId: string, change: number) => {
     const currentItem = cartItems.find((item) => item.service.id === serviceId);
     if (currentItem) {
@@ -126,6 +192,7 @@ export default function UnifiedCheckout() {
     });
   };
 
+  // Promo code validation
   const validatePromoCode = async (code: string) => {
     if (!code.trim()) {
       setPromoDiscount(0);
@@ -204,35 +271,7 @@ export default function UnifiedCheckout() {
     }
   };
 
-  if (cartItems.length === 0) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg text-center">
-          <CardContent className="p-8">
-            <div className="w-20 h-20 bg-gradient-to-br from-muted to-muted/50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Package className="w-10 h-10 text-muted-foreground" />
-            </div>
-            <h2 className="text-3xl font-bold mb-4">Your cart is empty</h2>
-            <p className="text-muted-foreground mb-8 text-lg">
-              Add some amazing boosting services to your cart before proceeding
-              to checkout.
-            </p>
-            <Button
-              asChild
-              size="lg"
-              className="min-w-48 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-            >
-              <Link href="/">
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Browse Services
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
+  // Order processing
   const processOrder = async (paymentIntent?: any) => {
     setIsProcessing(true);
 
@@ -391,6 +430,35 @@ export default function UnifiedCheckout() {
     });
   };
 
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg text-center">
+          <CardContent className="p-8">
+            <div className="w-20 h-20 bg-gradient-to-br from-muted to-muted/50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Package className="w-10 h-10 text-muted-foreground" />
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Your cart is empty</h2>
+            <p className="text-muted-foreground mb-8 text-lg">
+              Add some amazing boosting services to your cart before proceeding
+              to checkout.
+            </p>
+            <Button
+              asChild
+              size="lg"
+              className="min-w-48 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+            >
+              <Link href="/">
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                Browse Services
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -403,6 +471,33 @@ export default function UnifiedCheckout() {
       </div>
     );
   }
+
+  // Animation variants
+  const stepVariants = {
+    hidden: {
+      opacity: 0,
+      x: 50,
+      scale: 0.95,
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      scale: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    },
+    exit: {
+      opacity: 0,
+      x: -50,
+      scale: 0.95,
+      transition: {
+        duration: 0.3,
+        ease: "easeIn",
+      },
+    },
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
@@ -421,10 +516,10 @@ export default function UnifiedCheckout() {
               <Separator orientation="vertical" className="h-6" />
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
-                  Checkout & Review
+                  Animated Checkout
                 </h1>
                 <p className="text-muted-foreground">
-                  Review your order, apply discounts, and complete your purchase
+                  Step-by-step checkout experience
                 </p>
               </div>
             </div>
@@ -441,323 +536,485 @@ export default function UnifiedCheckout() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Step 1: Cart Review & Management */}
-            <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center text-xl">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center mr-3">
-                    <ShoppingCart className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="flex items-center">
-                    <span className="text-2xl font-bold text-primary mr-3">1</span>
-                    Review Your Cart
-                  </span>
-                  <Badge
-                    variant="secondary"
-                    className="ml-auto bg-primary/10 text-primary"
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Progress Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            {STEPS.map((step, index) => {
+              const Icon = step.icon;
+              const isActive = currentStep === step.id;
+              const isCompleted = completedSteps.has(step.id);
+              const canAccess = index <= getCurrentStepIndex() || isCompleted;
+
+              return (
+                <div key={step.id} className="flex items-center">
+                  <button
+                    onClick={() => canAccess ? goToStep(step.id as CheckoutStep) : undefined}
+                    disabled={!canAccess}
+                    className={`flex items-center space-x-2 p-3 rounded-xl transition-all ${
+                      isActive
+                        ? "bg-primary text-primary-foreground shadow-lg scale-105"
+                        : isCompleted
+                        ? "bg-green-500/10 text-green-600 hover:bg-green-500/20 cursor-pointer"
+                        : canAccess
+                        ? "bg-muted/50 hover:bg-muted cursor-pointer"
+                        : "bg-muted/20 text-muted-foreground cursor-not-allowed"
+                    }`}
                   >
-                    {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}
-                  </Badge>
-                </CardTitle>
-                <CardDescription>
-                  Manage quantities and review your selected boosting services
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {cartItems.map((item, index) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center space-x-4 p-4 border border-border/50 rounded-xl bg-gradient-to-r from-muted/20 to-muted/10 hover:from-muted/30 hover:to-muted/20 transition-all duration-200"
-                  >
-                    <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-xl flex items-center justify-center">
-                      <Zap className="w-8 h-8 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-lg">
-                        {item.service.title}
-                      </h4>
-                      <div className="flex items-center space-x-3 mt-2">
-                        <Badge
-                          variant="outline"
-                          className="text-xs bg-blue-500/10 border-blue-500/30"
-                        >
-                          <Clock className="w-3 h-3 mr-1" />
-                          {item.service.duration}
-                        </Badge>
-                        <Badge
-                          variant="outline"
-                          className="text-xs bg-purple-500/10 border-purple-500/30"
-                        >
-                          <Star className="w-3 h-3 mr-1" />
-                          {item.service.difficulty}
-                        </Badge>
-                        <Badge
-                          variant="outline"
-                          className="text-xs bg-green-500/10 border-green-500/30"
-                        >
-                          <Trophy className="w-3 h-3 mr-1" />
-                          Premium
-                        </Badge>
-                      </div>
-                    </div>
-
-                    {/* Quantity Controls */}
-                    <div className="flex items-center space-x-3">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleUpdateQuantity(item.service.id, -1)}
-                        disabled={item.quantity <= 1}
-                        className="w-8 h-8 p-0"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </Button>
-                      <div className="w-12 h-8 bg-muted rounded-lg flex items-center justify-center">
-                        <span className="font-semibold text-sm">
-                          {item.quantity}
-                        </span>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleUpdateQuantity(item.service.id, 1)}
-                        className="w-8 h-8 p-0"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    </div>
-
-                    <div className="text-right">
-                      <p className="font-bold text-xl text-primary">
-                        ${(item.service.price * item.quantity).toFixed(2)}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        ${item.service.price} each
-                      </p>
-                    </div>
-
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveItem(item.service.id)}
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10 w-8 h-8 p-0"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
-                
-                <div className="pt-4 border-t border-border/50">
-                  <div className="flex items-center space-x-2 text-muted-foreground">
-                    <Truck className="w-4 h-4" />
-                    <span className="text-sm">
-                      Services will start within 24 hours of payment confirmation
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Step 2: Customer Information */}
-            <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center text-xl">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                    <User className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="flex items-center">
-                    <span className="text-2xl font-bold text-primary mr-3">2</span>
-                    Customer Information
-                  </span>
-                </CardTitle>
-                <CardDescription>
-                  Your account details for this order
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl border border-blue-500/20">
-                  <div className="flex items-center space-x-3">
-                    <Mail className="w-5 h-5 text-primary" />
-                    <div>
-                      <p className="font-semibold text-base">{user?.email}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Order confirmations and updates will be sent here
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Step 3: Order Notes */}
-            <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center text-xl">
-                  <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center mr-3">
-                    <MessageSquare className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="flex items-center">
-                    <span className="text-2xl font-bold text-primary mr-3">3</span>
-                    Order Notes
-                  </span>
-                </CardTitle>
-                <CardDescription>
-                  Any special instructions for your boosting service
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Textarea
-                  value={orderNotes}
-                  onChange={(e) => setOrderNotes(e.target.value)}
-                  placeholder="Include your Discord username, preferred gaming hours, or any specific requirements..."
-                  rows={4}
-                  className="resize-none border-border/50 focus:border-primary/50 bg-background/50"
-                />
-                <p className="text-sm text-muted-foreground mt-2">
-                  💡 <strong>Tip:</strong> Include your Discord username and
-                  preferred hours for better service
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Step 4: Discounts & Credits */}
-            <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center text-xl">
-                  <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3">
-                    <Gift className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="flex items-center">
-                    <span className="text-2xl font-bold text-primary mr-3">4</span>
-                    Discounts & Credits
-                  </span>
-                </CardTitle>
-                <CardDescription>
-                  Apply promo codes and use available credits
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Promo Code */}
-                <div className="space-y-3">
-                  <Label htmlFor="promo-code" className="text-base font-medium">
-                    Promo Code
-                  </Label>
-                  <div className="flex space-x-2">
-                    <div className="flex-1 relative">
-                      <Input
-                        id="promo-code"
-                        value={promoCode}
-                        onChange={(e) =>
-                          setPromoCode(e.target.value.toUpperCase())
-                        }
-                        placeholder="Enter promo code"
-                        className="h-12 pr-10 border-border/50 focus:border-primary/50"
-                        disabled={promoCodeStatus === "loading"}
-                      />
-                      {promoCodeStatus === "applied" && (
-                        <CheckCircle className="w-5 h-5 text-green-600 absolute right-3 top-3.5" />
-                      )}
-                    </div>
-                    <Button
-                      onClick={() => validatePromoCode(promoCode)}
-                      disabled={
-                        !promoCode.trim() || promoCodeStatus === "loading"
-                      }
-                      className="h-12 px-6"
-                    >
-                      {promoCodeStatus === "loading" ? (
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      isActive ? "bg-white/20" : isCompleted ? "bg-green-500/20" : "bg-background/50"
+                    }`}>
+                      {isCompleted ? (
+                        <CheckCircle className="w-4 h-4" />
                       ) : (
-                        "Apply"
+                        <Icon className="w-4 h-4" />
                       )}
-                    </Button>
-                  </div>
-                  {promoDiscount > 0 && (
-                    <div className="p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-green-400">
-                            Promo code applied!
-                          </p>
-                          <p className="text-sm text-green-300">
-                            You saved ${promoDiscount.toFixed(2)} with this
-                            promo code
-                          </p>
-                        </div>
-                      </div>
                     </div>
+                    <span className="font-medium text-sm hidden sm:block">
+                      {step.title}
+                    </span>
+                  </button>
+                  {index < STEPS.length - 1 && (
+                    <div className={`h-0.5 w-8 mx-2 rounded-full ${
+                      completedSteps.has(step.id) ? "bg-green-500" : "bg-border"
+                    }`} />
                   )}
                 </div>
+              );
+            })}
+          </div>
+          <Progress value={getProgress()} className="h-2" />
+        </div>
 
-                {/* Credits */}
-                {availableCredits > 0 && (
-                  <div className="space-y-3 pt-4 border-t border-border/50">
-                    <div className="flex items-center justify-between">
-                      <Label className="flex items-center text-base font-medium">
-                        <DollarSign className="w-5 h-5 mr-2 text-primary" />
-                        Available Credits
-                      </Label>
-                      <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm px-3 py-1">
-                        ${availableCredits.toFixed(2)}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center space-x-3 p-4 border border-border/50 rounded-xl bg-gradient-to-r from-muted/20 to-muted/10">
-                      <Checkbox
-                        id="use-credits"
-                        checked={useAvailableCredits}
-                        onCheckedChange={handleCreditsToggle}
-                        className="w-5 h-5"
-                      />
-                      <Label
-                        htmlFor="use-credits"
-                        className="flex-1 cursor-pointer"
-                      >
-                        Use $
-                        {Math.min(availableCredits, subtotalAfterTax).toFixed(
-                          2,
-                        )}{" "}
-                        of your available credits
-                      </Label>
-                    </div>
-                    {creditsApplied > 0 && (
-                      <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
-                            <CheckCircle className="w-4 h-4 text-blue-600" />
+        {/* Step Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                variants={stepVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="space-y-6"
+              >
+                {/* Step 1: Cart Review */}
+                {currentStep === "cart" && (
+                  <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-2xl">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center mr-4">
+                          <ShoppingCart className="w-6 h-6 text-white" />
+                        </div>
+                        Review Your Cart
+                        <Badge variant="secondary" className="ml-auto bg-primary/10 text-primary">
+                          {cartItems.length} item{cartItems.length !== 1 ? "s" : ""}
+                        </Badge>
+                      </CardTitle>
+                      <CardDescription className="text-lg">
+                        Manage quantities and review your selected boosting services
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {cartItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center space-x-4 p-4 border border-border/50 rounded-xl bg-gradient-to-r from-muted/20 to-muted/10 hover:from-muted/30 hover:to-muted/20 transition-all duration-200"
+                        >
+                          <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-xl flex items-center justify-center">
+                            <Zap className="w-8 h-8 text-primary" />
                           </div>
-                          <div>
-                            <p className="font-semibold text-blue-800 dark:text-blue-200">
-                              Credits applied!
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-lg">
+                              {item.service.title}
+                            </h4>
+                            <div className="flex items-center space-x-3 mt-2">
+                              <Badge variant="outline" className="text-xs bg-blue-500/10 border-blue-500/30">
+                                <Clock className="w-3 h-3 mr-1" />
+                                {item.service.duration}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs bg-purple-500/10 border-purple-500/30">
+                                <Star className="w-3 h-3 mr-1" />
+                                {item.service.difficulty}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs bg-green-500/10 border-green-500/30">
+                                <Trophy className="w-3 h-3 mr-1" />
+                                Premium
+                              </Badge>
+                            </div>
+                          </div>
+
+                          {/* Quantity Controls */}
+                          <div className="flex items-center space-x-3">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleUpdateQuantity(item.service.id, -1)}
+                              disabled={item.quantity <= 1}
+                              className="w-8 h-8 p-0"
+                            >
+                              <Minus className="w-4 h-4" />
+                            </Button>
+                            <div className="w-12 h-8 bg-muted rounded-lg flex items-center justify-center">
+                              <span className="font-semibold text-sm">
+                                {item.quantity}
+                              </span>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleUpdateQuantity(item.service.id, 1)}
+                              className="w-8 h-8 p-0"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
+
+                          <div className="text-right">
+                            <p className="font-bold text-xl text-primary">
+                              ${(item.service.price * item.quantity).toFixed(2)}
                             </p>
-                            <p className="text-sm text-blue-700 dark:text-blue-300">
-                              You're using ${creditsApplied.toFixed(2)} from
-                              your credit balance
+                            <p className="text-sm text-muted-foreground">
+                              ${item.service.price} each
+                            </p>
+                          </div>
+
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveItem(item.service.id)}
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 w-8 h-8 p-0"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+
+                      {/* Order Notes */}
+                      <div className="pt-6 border-t border-border/50">
+                        <Label htmlFor="order-notes" className="text-base font-medium mb-3 block">
+                          Order Notes (Optional)
+                        </Label>
+                        <Textarea
+                          id="order-notes"
+                          value={orderNotes}
+                          onChange={(e) => setOrderNotes(e.target.value)}
+                          placeholder="Include your Discord username, preferred gaming hours, or any specific requirements..."
+                          rows={3}
+                          className="resize-none border-border/50 focus:border-primary/50 bg-background/50"
+                        />
+                        <p className="text-sm text-muted-foreground mt-2">
+                          💡 <strong>Tip:</strong> Include your Discord username and preferred hours for better service
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Step 2: Terms & Policy */}
+                {currentStep === "terms" && (
+                  <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-2xl">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                          <FileText className="w-6 h-6 text-white" />
+                        </div>
+                        Terms & Privacy Policy
+                      </CardTitle>
+                      <CardDescription className="text-lg">
+                        Please review and accept our terms to continue
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="p-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl border border-blue-500/20">
+                        <div className="flex items-center space-x-3 mb-4">
+                          <Mail className="w-6 h-6 text-primary" />
+                          <div>
+                            <p className="font-semibold text-lg">{user?.email}</p>
+                            <p className="text-muted-foreground">
+                              Order confirmations and updates will be sent here
                             </p>
                           </div>
                         </div>
                       </div>
-                    )}
-                  </div>
+
+                      <div className="p-6 border border-border/50 rounded-xl bg-muted/20">
+                        <div className="flex items-start space-x-4">
+                          <Checkbox
+                            id="terms"
+                            checked={agreeToTerms}
+                            onCheckedChange={(checked) =>
+                              setAgreeToTerms(checked as boolean)
+                            }
+                            className="mt-1 w-5 h-5"
+                          />
+                          <div className="flex-1">
+                            <Label
+                              htmlFor="terms"
+                              className="text-base leading-7 cursor-pointer"
+                            >
+                              I agree to the{" "}
+                              <Link
+                                href="/terms"
+                                target="_blank"
+                                className="text-primary hover:underline inline-flex items-center"
+                              >
+                                Terms of Service
+                                <ExternalLink className="w-3 h-3 ml-1" />
+                              </Link>{" "}
+                              and{" "}
+                              <Link
+                                href="/privacy"
+                                target="_blank"
+                                className="text-primary hover:underline inline-flex items-center"
+                              >
+                                Privacy Policy
+                                <ExternalLink className="w-3 h-3 ml-1" />
+                              </Link>
+                            </Label>
+                            <p className="text-sm text-muted-foreground mt-2">
+                              By continuing, you acknowledge that you've read and understood our policies.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 )}
-              </CardContent>
-            </Card>
+
+                {/* Step 3: Discounts & Credits */}
+                {currentStep === "discounts" && (
+                  <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-2xl">
+                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4">
+                          <Percent className="w-6 h-6 text-white" />
+                        </div>
+                        Discounts & Credits
+                      </CardTitle>
+                      <CardDescription className="text-lg">
+                        Apply promo codes and use available credits
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {/* Promo Code */}
+                      <div className="space-y-4">
+                        <Label htmlFor="promo-code" className="text-lg font-medium">
+                          Promo Code
+                        </Label>
+                        <div className="flex space-x-3">
+                          <div className="flex-1 relative">
+                            <Input
+                              id="promo-code"
+                              value={promoCode}
+                              onChange={(e) =>
+                                setPromoCode(e.target.value.toUpperCase())
+                              }
+                              placeholder="Enter promo code"
+                              className="h-12 pr-10 border-border/50 focus:border-primary/50 text-base"
+                              disabled={promoCodeStatus === "loading"}
+                            />
+                            {promoCodeStatus === "applied" && (
+                              <CheckCircle className="w-5 h-5 text-green-600 absolute right-3 top-3.5" />
+                            )}
+                          </div>
+                          <Button
+                            onClick={() => validatePromoCode(promoCode)}
+                            disabled={
+                              !promoCode.trim() || promoCodeStatus === "loading"
+                            }
+                            className="h-12 px-6"
+                          >
+                            {promoCodeStatus === "loading" ? (
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              "Apply"
+                            )}
+                          </Button>
+                        </div>
+                        {promoDiscount > 0 && (
+                          <div className="p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+                                <CheckCircle className="w-4 h-4 text-green-400" />
+                              </div>
+                              <div>
+                                <p className="font-semibold text-green-400">
+                                  Promo code applied!
+                                </p>
+                                <p className="text-sm text-green-300">
+                                  You saved ${promoDiscount.toFixed(2)} with this promo code
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Credits */}
+                      {availableCredits > 0 && (
+                        <div className="space-y-4 pt-4 border-t border-border/50">
+                          <div className="flex items-center justify-between">
+                            <Label className="flex items-center text-lg font-medium">
+                              <DollarSign className="w-5 h-5 mr-2 text-primary" />
+                              Available Credits
+                            </Label>
+                            <Badge className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1">
+                              ${availableCredits.toFixed(2)}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center space-x-3 p-4 border border-border/50 rounded-xl bg-gradient-to-r from-muted/20 to-muted/10">
+                            <Checkbox
+                              id="use-credits"
+                              checked={useAvailableCredits}
+                              onCheckedChange={handleCreditsToggle}
+                              className="w-5 h-5"
+                            />
+                            <Label
+                              htmlFor="use-credits"
+                              className="flex-1 cursor-pointer text-base"
+                            >
+                              Use $
+                              {Math.min(availableCredits, subtotalAfterTax).toFixed(
+                                2,
+                              )}{" "}
+                              of your available credits
+                            </Label>
+                          </div>
+                          {creditsApplied > 0 && (
+                            <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+                                  <CheckCircle className="w-4 h-4 text-blue-600" />
+                                </div>
+                                <div>
+                                  <p className="font-semibold text-blue-800 dark:text-blue-200">
+                                    Credits applied!
+                                  </p>
+                                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                                    You're using ${creditsApplied.toFixed(2)} from your credit balance
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Step 4: Payment */}
+                {currentStep === "payment" && (
+                  <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-2xl">
+                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mr-4">
+                          <CreditCard className="w-6 h-6 text-white" />
+                        </div>
+                        Complete Payment
+                      </CardTitle>
+                      <CardDescription className="text-lg">
+                        {total <= 0 ? "Your order is covered by credits!" : "Secure payment with Stripe"}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {total <= 0 ? (
+                        <div className="text-center py-8">
+                          <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Gift className="w-10 h-10 text-white" />
+                          </div>
+                          <h3 className="text-2xl font-bold mb-2">Free Order!</h3>
+                          <p className="text-muted-foreground mb-6">
+                            Your credits cover the entire order amount
+                          </p>
+                          <Button
+                            onClick={handleCreditOnlyPayment}
+                            disabled={isProcessing}
+                            size="lg"
+                            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg"
+                          >
+                            {isProcessing ? (
+                              <>
+                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                                Processing Order...
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle className="w-5 h-5 mr-2" />
+                                Complete Order - Free!
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-6">
+                          <div className="p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20">
+                            <div className="flex items-center space-x-3">
+                              <Shield className="w-6 h-6 text-purple-400" />
+                              <div>
+                                <p className="font-semibold text-purple-300">Secure Payment</p>
+                                <p className="text-sm text-purple-200">
+                                  Your payment is protected by Stripe's advanced security
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <StripePaymentForm
+                            total={total}
+                            onPaymentSuccess={handleStripePaymentSuccess}
+                            onPaymentError={handleStripePaymentError}
+                            isProcessing={isProcessing}
+                            disabled={false}
+                            metadata={{
+                              orderId: `order_${Date.now()}`,
+                              userEmail: user?.email || "",
+                              userName: user?.username || "",
+                            }}
+                          />
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-between mt-8">
+              <Button
+                variant="outline"
+                onClick={prevStep}
+                disabled={getCurrentStepIndex() === 0}
+                className="flex items-center"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Previous
+              </Button>
+
+              {currentStep !== "payment" && (
+                <Button
+                  onClick={nextStep}
+                  disabled={!canProceedFromStep(currentStep)}
+                  className="flex items-center bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+                >
+                  {currentStep === "cart" && "Continue to Terms"}
+                  {currentStep === "terms" && "Continue to Discounts"}
+                  {currentStep === "discounts" && "Continue to Payment"}
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+            </div>
           </div>
 
-          {/* Enhanced Sidebar */}
+          {/* Order Summary Sidebar */}
           <div className="space-y-6">
-            {/* Order Summary */}
-            <Card className="border-0 shadow-xl bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm">
-              <CardHeader className="pb-4">
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-sm sticky top-6">
+              <CardHeader>
                 <CardTitle className="flex items-center text-xl">
                   <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-600 rounded-lg flex items-center justify-center mr-3">
-                    <CreditCard className="w-4 h-4 text-white" />
+                    <Package className="w-4 h-4 text-white" />
                   </div>
                   Order Summary
                 </CardTitle>
@@ -805,118 +1062,45 @@ export default function UnifiedCheckout() {
                   </div>
                 </div>
 
-                {/* Step 5: Terms & Payment */}
-                <div className="pt-6 space-y-4 border-t border-border/50">
-                  <div className="flex items-center text-lg font-semibold mb-4">
-                    <span className="text-2xl font-bold text-primary mr-3">5</span>
-                    Terms & Payment
+                {/* Progress Indicator */}
+                <div className="pt-4 border-t border-border/50">
+                  <div className="text-sm text-muted-foreground mb-2">
+                    Step {getCurrentStepIndex() + 1} of {STEPS.length}
                   </div>
-
-                  <div className="p-4 border border-border/50 rounded-xl bg-muted/20">
-                    <div className="flex items-start space-x-3">
-                      <Checkbox
-                        id="terms"
-                        checked={agreeToTerms}
-                        onCheckedChange={(checked) =>
-                          setAgreeToTerms(checked as boolean)
-                        }
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <Label
-                          htmlFor="terms"
-                          className="text-sm leading-6 cursor-pointer"
-                        >
-                          I agree to the{" "}
-                          <Link
-                            href="/terms"
-                            target="_blank"
-                            className="text-primary hover:underline inline-flex items-center"
-                          >
-                            Terms of Service
-                            <ExternalLink className="w-3 h-3 ml-1" />
-                          </Link>{" "}
-                          and{" "}
-                          <Link
-                            href="/privacy"
-                            target="_blank"
-                            className="text-primary hover:underline inline-flex items-center"
-                          >
-                            Privacy Policy
-                            <ExternalLink className="w-3 h-3 ml-1" />
-                          </Link>
-                        </Label>
-                      </div>
-                    </div>
+                  <div className="text-xs text-muted-foreground">
+                    {currentStep === "cart" && "Review your selected services"}
+                    {currentStep === "terms" && "Accept terms and privacy policy"}
+                    {currentStep === "discounts" && "Apply discounts and credits"}
+                    {currentStep === "payment" && "Complete your payment"}
                   </div>
-
-                  {/* Payment Section */}
-                  {agreeToTerms ? (
-                    <div className="space-y-4">
-                      {total <= 0 ? (
-                        <Button
-                          onClick={handleCreditOnlyPayment}
-                          disabled={isProcessing}
-                          className="w-full h-14 text-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg"
-                        >
-                          {isProcessing ? (
-                            <>
-                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                              Processing Order...
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle className="w-5 h-5 mr-2" />
-                              Complete Order - Free!
-                            </>
-                          )}
-                        </Button>
-                      ) : (
-                        <StripePaymentForm
-                          total={total}
-                          onPaymentSuccess={handleStripePaymentSuccess}
-                          onPaymentError={handleStripePaymentError}
-                          isProcessing={isProcessing}
-                          disabled={false}
-                          metadata={{
-                            orderId: `order_${Date.now()}`,
-                            userEmail: user?.email || "",
-                            userName: user?.username || "",
-                          }}
-                        />
-                      )}
-                    </div>
-                  ) : (
-                    <Button disabled className="w-full h-14 text-lg">
-                      <AlertTriangle className="w-5 h-5 mr-2" />
-                      Please accept the terms to continue
-                    </Button>
-                  )}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Security Badges */}
+            {/* Security Badge */}
             <Card className="border-0 shadow-lg bg-gradient-to-br from-green-500/5 to-emerald-500/5">
               <CardContent className="pt-6">
-                <div className="grid grid-cols-1 gap-3">
-                  <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
-                    <CheckCircle className="w-5 h-5 text-green-400" />
-                    <span className="text-sm font-medium">
-                      256-bit SSL encryption
-                    </span>
+                <div className="flex items-center space-x-3 mb-4">
+                  <Shield className="w-6 h-6 text-green-400" />
+                  <div>
+                    <h3 className="font-semibold text-green-400">Secure Checkout</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Your data is protected
+                    </p>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
-                    <Shield className="w-5 h-5 text-blue-400" />
-                    <span className="text-sm font-medium">
-                      Stripe Fraud Protection
-                    </span>
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                  <div className="flex items-center space-x-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                    <span>256-bit SSL encryption</span>
                   </div>
-                  <div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg">
-                    <Trophy className="w-5 h-5 text-purple-400" />
-                    <span className="text-sm font-medium">
-                      Account Safety Guaranteed
-                    </span>
+                  <div className="flex items-center space-x-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-blue-400" />
+                    <span>Stripe Fraud Protection</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-purple-400" />
+                    <span>Account Safety Guaranteed</span>
                   </div>
                 </div>
               </CardContent>
