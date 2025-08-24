@@ -44,8 +44,8 @@ interface NavigationItem {
 
 const navigation: NavigationItem[] = [
   { name: "Services", href: "/", icon: Crown },
-  { name: "Bundles", href: "/bundles", icon: Package, badge: "Popular" },
-  { name: "Custom Order", href: "/custom-order", icon: Settings, isNew: true },
+  { name: "Bundles", href: "/bundles", icon: Package },
+  { name: "Custom Order", href: "/custom-order", icon: Settings },
   { name: "FAQ", href: "/faq" },
   { name: "Contact", href: "/contact" },
 ];
@@ -135,16 +135,6 @@ export function EnhancedNavbar() {
                 >
                   {item.icon && <item.icon className="w-4 h-4" />}
                   {item.name}
-                  {item.badge && (
-                    <Badge variant="secondary" className="text-xs">
-                      {item.badge}
-                    </Badge>
-                  )}
-                  {item.isNew && (
-                    <Badge className="text-xs bg-green-500 hover:bg-green-500">
-                      New
-                    </Badge>
-                  )}
                   {isActive && (
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
                   )}
@@ -260,11 +250,6 @@ export function EnhancedNavbar() {
                     >
                       {item.icon && <item.icon className="w-4 h-4" />}
                       <span>{item.name}</span>
-                      {item.badge && (
-                        <Badge variant="secondary" className="text-xs ml-auto">
-                          {item.badge}
-                        </Badge>
-                      )}
                     </Link>
                   ))}
                 </div>
