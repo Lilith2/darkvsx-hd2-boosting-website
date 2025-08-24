@@ -23,72 +23,72 @@ interface FAQItem {
 const faqData: FAQItem[] = [
   {
     id: "1",
-    question: "How does the boosting process work?",
+    question: "Is this safe?",
     answer:
-      "Once you place an order, our professional players will log into your account using secure methods and complete the requested service. You'll receive regular updates on progress, and we guarantee 100% account safety throughout the process.",
-    category: "General",
-  },
-  {
-    id: "2",
-    question: "Is my account safe during boosting?",
-    answer:
-      "Absolutely! We use VPN protection, never change any account details, and our boosters are highly experienced professionals. We have a 100% safety record with thousands of completed orders.",
+      "This service is about 75% safe, with a 25% uncertainty factor. However, as of now, there have been zero reports of any punishments for clients or boosters - no bans, no account wipes, nothing. While no method is 100% risk-free, the results so far speak for themselves.",
     category: "Security",
   },
   {
-    id: "3",
-    question: "How long does a typical boost take?",
+    id: "2",
+    question: "How does this work?",
     answer:
-      "Delivery times vary by service type. Level boosts typically take 1-3 days, while more complex services like planet liberation can take 3-7 days. We always provide estimated completion times with each service.",
-    category: "Delivery",
+      "It's simple: 1) Add me on Helldivers 2, 2) Join my session. That's it! No password sharing, no shady steps - just drop in and play together. Your account remains completely secure.",
+    category: "General",
   },
   {
-    id: "4",
+    id: "3",
     question: "What payment methods do you accept?",
     answer:
-      "We accept all major payment methods through Stripe, including credit cards, debit cards, ACH transfers, and mobile payments. All transactions are secure and encrypted with industry-leading security standards.",
+      "Currently, we only accept PayPal. We're still working on adding more payment options that don't take huge fees, so we can keep our prices low and fair for everyone.",
     category: "Payment",
   },
   {
-    id: "5",
-    question: "Can I track my order progress?",
+    id: "4",
+    question: "How do I purchase a service?",
     answer:
-      "Yes! You'll receive regular updates via email and can log into your account to see real-time progress updates. Our team also provides screenshots and progress reports for major milestones.",
+      "Here's the process: 1) Open a ticket in our Order channel, 2) Specify if you want a pre-made pack or would like a custom order, 3) After confirming everything looks good, we'll proceed to payment and fulfill your order.",
     category: "General",
+  },
+  {
+    id: "5",
+    question: "Why are your prices lower than others?",
+    answer:
+      "Honestly? They should be. I don't believe simple services should cost a fortune. I respect your time and money, so I keep prices competitive and fair. Boosting in Helldivers 2 shouldn't break the bank.",
+    category: "Payment",
   },
   {
     id: "6",
-    question: "What if I'm not satisfied with the service?",
+    question: "Do I need to share my account credentials?",
     answer:
-      "We offer a 100% satisfaction guarantee. If you're not happy with our service, we'll work to make it right or provide a full refund. Customer satisfaction is our top priority.",
-    category: "General",
+      "No! You never need to share passwords or any account information. We use a session-joining method where you simply add us in-game and we join your session. Your account stays completely secure.",
+    category: "Security",
   },
   {
     id: "7",
-    question: "Do you play during specific hours?",
+    question: "How long does delivery take?",
     answer:
-      "Our team operates 24/7 across multiple time zones, so your boost can be completed at any time. However, we can accommodate specific time preferences if requested.",
+      "Delivery times depend on the specific service you've ordered. Simple boosts can often be completed quickly, while more complex custom orders may take longer. We'll give you an estimated timeframe when you place your order.",
     category: "Delivery",
   },
   {
     id: "8",
-    question: "Will other players know I used a boosting service?",
+    question: "Can I get a custom order?",
     answer:
-      "No, we maintain complete discretion. Our boosters play naturally and don't discuss the service with other players. Your privacy is completely protected.",
-    category: "Security",
+      "Absolutely! We offer both pre-made service packs and fully custom orders tailored to your specific needs. Just let us know what you're looking for when you open your ticket.",
+    category: "General",
   },
   {
     id: "9",
-    question: "Can I pause or cancel my order?",
+    question: "What if something goes wrong?",
     answer:
-      "You can pause or cancel your order before work begins. Once boosting has started, cancellation may result in partial charges based on progress completed.",
+      "While we've had zero issues so far, if anything unexpected happens, we'll work with you to resolve it. Customer satisfaction and account safety are our top priorities.",
     category: "General",
   },
   {
     id: "10",
-    question: "Do you provide support after completion?",
+    question: "Do you offer refunds?",
     answer:
-      "Yes! We offer post-completion support for any questions or issues. Our customer service team is available 24/7 to assist you even after your order is complete.",
+      "We stand behind our service quality. If we can't deliver what was promised or if you're not satisfied, we'll work to make it right. Contact us through our support channels to discuss any concerns.",
     category: "General",
   },
 ];
