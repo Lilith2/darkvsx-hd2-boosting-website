@@ -109,15 +109,16 @@ export default async function handler(
       });
     }
 
-    const { paymentIntentId, orderData }: VerifyPaymentRequest = req.body;
-
-    // Validate required fields
-    if (!paymentIntentId || !orderData) {
+    // Validate and parse request body
+    const parseResult = verifyPaymentSchema.safeParse(req.body);
+    if (!parseResult.success) {
       return res.status(400).json({
-        error: "Missing required fields",
-        details: "paymentIntentId and orderData are required",
+        error: "Invalid request data",
+        details: parseResult.error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`).join(', ')
       });
     }
+
+    const { paymentIntentId, orderData } = parseResult.data;
 
     // Retrieve and verify the PaymentIntent from Stripe
     let paymentIntent: Stripe.PaymentIntent;
