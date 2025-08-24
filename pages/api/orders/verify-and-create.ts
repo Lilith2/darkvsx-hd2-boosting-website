@@ -140,12 +140,46 @@ export default async function handler(
       });
     }
 
-    // Calculate expected total from order data (server-side validation)
+    // Calculate expected total using SERVER-SIDE prices (SECURITY: Never trust client prices)
     const TAX_RATE = 0.08;
-    const subtotal = orderData.services.reduce(
-      (sum, service) => sum + service.price * service.quantity,
-      0,
-    );
+    let servicesTotal = 0;
+
+    // Fetch actual service prices from database - CRITICAL SECURITY
+    if (orderData.services.length > 0) {
+      const serviceIds = orderData.services.map(s => s.id);
+      const { data: dbServices, error: servicesError } = await supabase
+        .from('services')
+        .select('id, price, active, title')
+        .in('id', serviceIds)
+        .eq('active', true);
+
+      if (servicesError) {
+        console.error("Error fetching services for verification:", servicesError);
+        return res.status(500).json({
+          error: "Failed to verify service pricing"
+        });
+      }
+
+      // Verify all requested services exist and are active
+      const foundServiceIds = new Set(dbServices?.map(s => s.id) || []);
+      const missingServices = serviceIds.filter(id => !foundServiceIds.has(id));
+      if (missingServices.length > 0) {
+        return res.status(400).json({
+          error: "Invalid services in order",
+          details: `Services not found or inactive: ${missingServices.join(', ')}`
+        });
+      }
+
+      // Calculate total using DATABASE prices (not client-provided prices)
+      const servicesPriceMap = new Map(dbServices!.map(s => [s.id, s.price]));
+      servicesTotal = orderData.services.reduce((sum, serviceRequest) => {
+        const dbPrice = servicesPriceMap.get(serviceRequest.id);
+        if (!dbPrice) {
+          throw new Error(`Price not found for service ${serviceRequest.id}`);
+        }
+        return sum + (dbPrice * serviceRequest.quantity);
+      }, 0);
+    }
 
     // Add custom order items if present
     let customOrderTotal = 0;
