@@ -30,6 +30,39 @@ interface CustomOrderItem {
   description: string;
 }
 
+// Request validation schema
+const verifyPaymentSchema = z.object({
+  paymentIntentId: z.string().min(1),
+  orderData: z.object({
+    userId: z.string().optional(),
+    customerEmail: z.string().email(),
+    customerName: z.string().min(1),
+    services: z.array(z.object({
+      id: z.string(),
+      name: z.string(),
+      price: z.number(), // This will be ignored - we'll fetch from DB
+      quantity: z.number().positive().int(),
+    })),
+    notes: z.string().optional(),
+    referralCode: z.string().optional(),
+    referralDiscount: z.number().nonnegative().optional(),
+    referralCreditsUsed: z.number().nonnegative().optional(),
+    ipAddress: z.string().optional(),
+    customOrderData: z.object({
+      items: z.array(z.object({
+        category: z.string(),
+        item_name: z.string(),
+        quantity: z.number().positive().int(),
+        price_per_unit: z.number().positive(),
+        total_price: z.number().positive(),
+        description: z.string().optional(),
+      })),
+      special_instructions: z.string().optional(),
+      customer_discord: z.string().optional(),
+    }).optional(),
+  }),
+});
+
 interface VerifyPaymentRequest {
   paymentIntentId: string;
   orderData: {
