@@ -203,6 +203,7 @@ export function useCustomOrders() {
     referralCode?: string;
     referralDiscount?: number;
     userId?: string | null;
+    paymentIntentId?: string; // Add support for payment_intent_id
   }) => {
     try {
       const totalAmount = orderData.items.reduce(
@@ -213,17 +214,26 @@ export function useCustomOrders() {
       // Create the main order
       const customOrderData: any = {
         user_id: orderData.userId,
-        total_amount: totalAmount,
+        total_amount: parseFloat(totalAmount.toFixed(2)), // Fix precision
+        items: orderData.items, // Store items in JSONB column
         special_instructions: orderData.special_instructions,
         customer_email: orderData.customer_email,
         customer_name: orderData.customer_name,
         customer_discord: orderData.customer_discord,
+        currency: "USD",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
+
+      // Add payment information if provided
+      if (orderData.paymentIntentId) {
+        customOrderData.payment_intent_id = orderData.paymentIntentId;
+      }
 
       // Add referral information if provided
       if (orderData.referralCode) {
         customOrderData.referral_code = orderData.referralCode;
-        customOrderData.referral_discount = orderData.referralDiscount || 0;
+        customOrderData.referral_discount = orderData.referralDiscount ? parseFloat(orderData.referralDiscount.toFixed(2)) : 0;
       }
 
       const { data: orderResult, error: orderError } = await supabase
