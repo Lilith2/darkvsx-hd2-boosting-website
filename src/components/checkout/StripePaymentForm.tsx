@@ -46,6 +46,9 @@ interface StripePaymentFormProps {
 
 export function StripePaymentForm({
   total,
+  cartItems,
+  referralDiscount = 0,
+  creditsUsed = 0,
   onPaymentSuccess,
   onPaymentError,
   isProcessing,
