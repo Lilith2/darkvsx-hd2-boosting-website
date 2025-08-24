@@ -427,7 +427,7 @@ export default function AnimatedCheckout() {
   };
 
   // Fallback for credit-only orders (maintains existing functionality)
-  const createOrderDirectly = async (orderData: any) => {
+  const createOrderDirectly = async (orderData: any, paymentIntent?: any) => {
     const customOrderItems = cartItems.filter(
       (item) => item.service.customOrderData,
     );
