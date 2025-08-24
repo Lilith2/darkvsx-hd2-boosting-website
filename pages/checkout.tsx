@@ -555,7 +555,7 @@ export default function AnimatedCheckout() {
       scale: 0.95,
       transition: {
         duration: 0.3,
-        ease: "easeIn",
+        ease: [0.55, 0.06, 0.68, 0.19],
       },
     },
   };
