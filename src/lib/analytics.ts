@@ -275,7 +275,10 @@ export function initializeAnalytics() {
           }
 
           // Ensure we have a proper Error object
-          const errorMessage = reason instanceof Error ? reason.message : String(reason || "Unknown error");
+          const errorMessage =
+            reason instanceof Error
+              ? reason.message
+              : String(reason || "Unknown error");
           trackError(new Error(errorMessage), "unhandled_promise_rejection");
         } catch (error) {
           console.warn("Failed to track promise rejection:", error);

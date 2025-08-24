@@ -97,7 +97,7 @@ export const mobile = {
     if (typeof window === "undefined") return;
 
     resources.forEach((resource) => {
-      if (!resource || typeof resource !== 'string') return;
+      if (!resource || typeof resource !== "string") return;
 
       const link = document.createElement("link");
       link.rel = "preload";
