@@ -89,7 +89,6 @@ export function ServicesSection() {
           </p>
         </div>
 
-
         {/* Category Filter */}
         <div className="mb-12">
           <div className="flex items-center justify-center mb-8">

@@ -32,7 +32,8 @@ export function SimpleHeroSection() {
 
           {/* Subtitle */}
           <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed animate-fade-in-up delay-100">
-            Professional boosting services with fast delivery and expert support for all your Helldivers 2 progression needs.
+            Professional boosting services with fast delivery and expert support
+            for all your Helldivers 2 progression needs.
           </p>
 
           {/* CTA Buttons */}

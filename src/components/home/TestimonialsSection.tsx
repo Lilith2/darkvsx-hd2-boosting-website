@@ -7,7 +7,8 @@ const testimonials = [
     id: 1,
     name: "Alex M.",
     rating: 5,
-    comment: "Incredible service! Got my level boost completed in just 2 hours. Professional team and great communication throughout the process.",
+    comment:
+      "Incredible service! Got my level boost completed in just 2 hours. Professional team and great communication throughout the process.",
     service: "Level Boost",
     verified: true,
   },
@@ -15,7 +16,8 @@ const testimonials = [
     id: 2,
     name: "Sarah K.",
     rating: 5,
-    comment: "Best boosting service I've used. Fast, reliable, and secure. Highly recommend for anyone looking to progress quickly in Helldivers 2.",
+    comment:
+      "Best boosting service I've used. Fast, reliable, and secure. Highly recommend for anyone looking to progress quickly in Helldivers 2.",
     service: "Weapon Unlock",
     verified: true,
   },
@@ -23,7 +25,8 @@ const testimonials = [
     id: 3,
     name: "Michael R.",
     rating: 5,
-    comment: "Amazing experience from start to finish. The booster was skilled and completed everything exactly as promised. Will definitely use again!",
+    comment:
+      "Amazing experience from start to finish. The booster was skilled and completed everything exactly as promised. Will definitely use again!",
     service: "Mission Completion",
     verified: true,
   },
@@ -31,7 +34,8 @@ const testimonials = [
     id: 4,
     name: "Emma T.",
     rating: 5,
-    comment: "Professional service with excellent customer support. They answered all my questions and delivered exactly what was promised.",
+    comment:
+      "Professional service with excellent customer support. They answered all my questions and delivered exactly what was promised.",
     service: "Super Credits",
     verified: true,
   },
@@ -39,7 +43,8 @@ const testimonials = [
     id: 5,
     name: "David L.",
     rating: 5,
-    comment: "Outstanding quality and speed. The team completed my order in record time while maintaining the highest safety standards.",
+    comment:
+      "Outstanding quality and speed. The team completed my order in record time while maintaining the highest safety standards.",
     service: "Samples Farming",
     verified: true,
   },
@@ -47,7 +52,8 @@ const testimonials = [
     id: 6,
     name: "Jessica W.",
     rating: 5,
-    comment: "Exceeded my expectations! Great value for money and the booster was incredibly skilled. Highly recommended for all Helldivers 2 services.",
+    comment:
+      "Exceeded my expectations! Great value for money and the booster was incredibly skilled. Highly recommended for all Helldivers 2 services.",
     service: "Custom Order",
     verified: true,
   },
@@ -63,8 +69,8 @@ export function TestimonialsSection() {
             What Our Customers Say
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Join thousands of satisfied customers who trust us with their Helldivers 2 progression. 
-            Real reviews from real players.
+            Join thousands of satisfied customers who trust us with their
+            Helldivers 2 progression. Real reviews from real players.
           </p>
         </div>
 
