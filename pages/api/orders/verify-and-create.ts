@@ -27,7 +27,7 @@ interface CustomOrderItem {
   quantity: number;
   price_per_unit: number;
   total_price: number;
-  description: string;
+  description?: string;
 }
 
 // Request validation schema
