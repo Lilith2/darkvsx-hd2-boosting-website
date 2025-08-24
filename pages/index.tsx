@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { SEOHead } from "../components/SEOHead";
-import { HeroSection } from "@/components/home/HeroSection";
+import { SimpleHeroSection } from "@/components/home/SimpleHeroSection";
+import { HowItWorksSection } from "@/components/home/HowItWorksSection";
 import { ServicesSection } from "@/components/home/ServicesSection";
 import { TestimonialsSection } from "@/components/home/TestimonialsSection";
-import { FeaturesSection } from "@/components/home/FeaturesSection";
 import { Button } from "@/components/ui/button";
 import { ArrowUp } from "lucide-react";
 
@@ -35,12 +35,12 @@ export default function Index() {
     <>
       <SEOHead
         title="Helldivers 2 Boosting Services - Fast & Professional | HelldiversBoost"
-        description="Premium Helldivers 2 boosting services with 99.9% success rate. Level boosts, weapon unlocks, credit farming, and mission completion. Safe, secure, 24/7 support."
+        description="Professional Helldivers 2 boosting services. Level boosts, weapon unlocks, credit farming, and mission completion. Fast delivery, expert support."
       />
       <div className="bg-gradient-to-br from-background via-background to-background/80">
-        <HeroSection />
+        <SimpleHeroSection />
+        <HowItWorksSection />
         <ServicesSection />
-        <FeaturesSection />
         <TestimonialsSection />
 
         {/* Scroll to Top Button */}
