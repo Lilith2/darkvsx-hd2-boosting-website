@@ -3,7 +3,6 @@ import { SEOHead } from "../components/SEOHead";
 import { SimpleHeroSection } from "@/components/home/SimpleHeroSection";
 import { HowItWorksSection } from "@/components/home/HowItWorksSection";
 import { ServicesSection } from "@/components/home/ServicesSection";
-import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { Button } from "@/components/ui/button";
 import { ArrowUp } from "lucide-react";
 
