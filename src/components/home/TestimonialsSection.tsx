@@ -140,12 +140,11 @@ export function TestimonialsSection() {
             >
               Get Started Today
             </a>
-            <a
-              href="/contact"
-              className="inline-flex items-center justify-center px-8 py-3 border border-border hover:bg-muted/50 font-semibold rounded-lg transition-all"
-            >
-              Contact Support
-            </a>
+            <Link href="/reviews">
+              <span className="inline-flex items-center justify-center px-8 py-3 border border-border hover:bg-muted/50 font-semibold rounded-lg transition-all">
+                View All Reviews
+              </span>
+            </Link>
           </div>
         </div>
       </div>
