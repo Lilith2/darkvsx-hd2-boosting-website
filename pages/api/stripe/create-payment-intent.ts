@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-07-30.basil",
+  apiVersion: "2024-06-20",
 });
 
 // Initialize Supabase with service role key for server-side operations
@@ -145,10 +145,35 @@ export default async function handler(
       });
     }
 
-    // Create payment intent with server-calculated amount
-    const paymentIntent = await stripe.paymentIntents.create({
+    // Configure payment methods - enable all available methods
+    const paymentMethodTypes = [
+      "card",
+      "us_bank_account",
+      "link",
+      "apple_pay",
+      "google_pay",
+      "amazon_pay",
+      "venmo",
+      "cashapp",
+      "klarna",
+      "affirm",
+      "afterpay_clearpay",
+      "alipay",
+      "acss_debit",
+      "bacs_debit",
+      "bancontact",
+      "eps",
+      "giropay",
+      "ideal",
+      "p24",
+      "sepa_debit",
+      "sofort",
+    ];
+
+    // Create payment intent with comprehensive payment method support
+    const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
       amount: Math.round(finalAmount * 100), // Convert to cents
-      currency,
+      currency: currency.toLowerCase(),
       metadata: {
         ...metadata,
         servicesTotal: servicesTotal.toString(),
@@ -158,16 +183,49 @@ export default async function handler(
         creditsUsed: creditsUsed.toString(),
         tax: tax.toString(),
         finalAmount: finalAmount.toString(),
+        venmo_capability: process.env.STRIPE_VENMO_CAPABILITY || "",
       },
       automatic_payment_methods: {
         enabled: true,
+        allow_redirects: "always",
       },
+      payment_method_types: paymentMethodTypes,
+      setup_future_usage: "off_session", // Allow saving payment methods for future use
+      receipt_email: metadata.userEmail,
+      shipping: {
+        name: metadata.userName || "Customer",
+        address: {
+          line1: "Digital Service",
+          city: "Online",
+          state: "Digital",
+          postal_code: "00000",
+          country: "US",
+        },
+      },
+    };
+
+    // Add Venmo-specific configuration if capability is available
+    if (process.env.STRIPE_VENMO_CAPABILITY) {
+      paymentIntentParams.payment_method_configuration = process.env.STRIPE_VENMO_CAPABILITY;
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
+
+    // Log successful creation for debugging
+    console.log("Payment Intent created successfully:", {
+      id: paymentIntent.id,
+      amount: finalAmount,
+      currency: currency,
+      payment_method_types: paymentIntent.payment_method_types,
+      automatic_payment_methods: paymentIntent.automatic_payment_methods,
     });
 
     res.status(200).json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
       amount: finalAmount,
+      currency: currency,
+      supportedPaymentMethods: paymentIntent.payment_method_types,
       breakdown: {
         servicesTotal,
         customOrderTotal,
@@ -181,7 +239,7 @@ export default async function handler(
   } catch (error: any) {
     console.error("Error creating payment intent:", error);
 
-    // Handle specific Stripe errors
+    // Enhanced error handling
     if (error.type === "StripeRateLimitError") {
       return res.status(429).json({
         error: "Too many requests. Please wait a moment and try again.",
@@ -189,22 +247,45 @@ export default async function handler(
     }
 
     if (error.type === "StripeInvalidRequestError") {
+      console.error("Stripe Invalid Request:", error.message, error.param);
       return res.status(400).json({
         error: error.message || "Invalid request parameters",
+        details: error.param ? `Invalid parameter: ${error.param}` : undefined,
       });
     }
 
     if (error.type === "StripeAuthenticationError") {
+      console.error("Stripe Authentication Error:", error.message);
       return res.status(401).json({
         error: "Authentication failed. Please contact support.",
       });
     }
 
-    // Generic error - ensure JSON response
+    if (error.type === "StripeConnectionError") {
+      return res.status(502).json({
+        error: "Connection to payment processor failed. Please try again.",
+      });
+    }
+
+    if (error.type === "StripeAPIError") {
+      console.error("Stripe API Error:", error.message);
+      return res.status(500).json({
+        error: "Payment processor error. Please try again or contact support.",
+      });
+    }
+
+    // Generic error with more details for debugging
+    console.error("Unexpected payment error:", {
+      message: error.message,
+      type: error.type,
+      code: error.code,
+      param: error.param,
+      stack: error.stack,
+    });
+
     res.status(500).json({
       error: error.message || "Failed to create payment intent",
-      details:
-        "An unexpected error occurred while creating the payment intent. Please try again.",
+      details: "An unexpected error occurred while creating the payment intent. Please try again.",
     });
   }
 }
