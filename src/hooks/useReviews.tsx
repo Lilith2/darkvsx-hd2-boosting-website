@@ -206,14 +206,31 @@ export async function getCompletedOrders(params: {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      const result = await response.json();
+      let errorMessage = `Server returned ${response.status} error`;
+      try {
+        const result = await response.json();
+        errorMessage = result.error || errorMessage;
+      } catch (jsonError) {
+        // If response isn't JSON, use the default error message
+        console.warn("Non-JSON error response:", jsonError);
+      }
       return {
         success: false,
-        error: result.error || `Server returned ${response.status} error`,
+        error: errorMessage,
       };
     }
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (jsonError) {
+      console.error("Failed to parse response JSON:", jsonError);
+      return {
+        success: false,
+        error: "Invalid response from server. Please try again.",
+      };
+    }
+
     return { success: true, orders: result.orders };
   } catch (err: any) {
     console.error("Error fetching completed orders:", err);
