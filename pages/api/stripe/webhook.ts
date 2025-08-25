@@ -391,7 +391,7 @@ async function handlePaymentIntentProcessing(
 async function handlePaymentIntentRequiresAction(
   paymentIntent: Stripe.PaymentIntent,
 ) {
-  console.log(`PaymentIntent requires action: ${paymentIntent.id}`);
+  console.log(`[${new Date().toISOString()}] Processing PaymentIntent requires action: ${paymentIntent.id}`);
 
   try {
     // Update any existing orders to require action status
@@ -404,7 +404,8 @@ async function handlePaymentIntentRequiresAction(
       .eq("transaction_id", paymentIntent.id);
 
     if (orderError) {
-      console.error("Error updating requires_action order status:", orderError);
+      console.error(`Error updating requires_action order status for ${paymentIntent.id}:`, orderError);
+      throw new Error(`Failed to update orders: ${orderError.message}`);
     }
 
     // Update any existing custom orders to require action status
@@ -417,16 +418,16 @@ async function handlePaymentIntentRequiresAction(
       .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrderError) {
-      console.error(
-        "Error updating requires_action custom order status:",
-        customOrderError,
-      );
+      console.error(`Error updating requires_action custom order status for ${paymentIntent.id}:`, customOrderError);
+      throw new Error(`Failed to update custom orders: ${customOrderError.message}`);
     }
+
+    console.log(`PaymentIntent ${paymentIntent.id} requires_action status updated successfully`);
   } catch (error: any) {
-    console.error(
-      `Error handling payment requires action for ${paymentIntent.id}:`,
-      error,
-    );
+    console.error(`Error handling payment requires action for ${paymentIntent.id}:`, {
+      error: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 }
@@ -434,7 +435,7 @@ async function handlePaymentIntentRequiresAction(
 async function handlePaymentIntentCanceled(
   paymentIntent: Stripe.PaymentIntent,
 ) {
-  console.log(`PaymentIntent canceled: ${paymentIntent.id}`);
+  console.log(`[${new Date().toISOString()}] Processing PaymentIntent canceled: ${paymentIntent.id}`);
 
   try {
     // Update any existing orders to canceled status
@@ -448,7 +449,8 @@ async function handlePaymentIntentCanceled(
       .eq("transaction_id", paymentIntent.id);
 
     if (orderError) {
-      console.error("Error updating canceled order status:", orderError);
+      console.error(`Error updating canceled order status for ${paymentIntent.id}:`, orderError);
+      throw new Error(`Failed to update orders: ${orderError.message}`);
     }
 
     // Update any existing custom orders to canceled status
@@ -461,16 +463,16 @@ async function handlePaymentIntentCanceled(
       .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrderError) {
-      console.error(
-        "Error updating canceled custom order status:",
-        customOrderError,
-      );
+      console.error(`Error updating canceled custom order status for ${paymentIntent.id}:`, customOrderError);
+      throw new Error(`Failed to update custom orders: ${customOrderError.message}`);
     }
+
+    console.log(`PaymentIntent ${paymentIntent.id} cancellation status updated successfully`);
   } catch (error: any) {
-    console.error(
-      `Error handling payment cancellation for ${paymentIntent.id}:`,
-      error,
-    );
+    console.error(`Error handling payment cancellation for ${paymentIntent.id}:`, {
+      error: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 }
