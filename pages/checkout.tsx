@@ -322,16 +322,25 @@ export default function AnimatedCheckout() {
           }),
         });
 
+        let result;
+        try {
+          const responseText = await response.text();
+          if (!responseText.trim()) {
+            throw new Error("Empty response from server");
+          }
+          result = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error("Failed to parse order verification response:", parseError);
+          throw new Error("Invalid response from order server. Please contact support with your payment ID: " + paymentIntent.id);
+        }
+
         if (!response.ok) {
-          const errorData = await response.json();
           throw new Error(
-            errorData.details ||
-              errorData.error ||
+            result.details ||
+              result.error ||
               "Server verification failed",
           );
         }
-
-        const result = await response.json();
 
         toast({
           title: "Payment successful!",
