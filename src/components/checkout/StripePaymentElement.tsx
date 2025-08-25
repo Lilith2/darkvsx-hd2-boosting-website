@@ -248,7 +248,8 @@ export function StripePaymentElement({
       <Alert className="border-green-200 dark:border-green-800 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
         <Shield className="h-4 w-4 text-green-600" />
         <AlertDescription className="text-green-800 dark:text-green-200">
-          Credit cards are supported - we don't store any of your information, however we strongly recommend using a payment application.
+          Credit cards are supported - we don't store any of your information,
+          however we strongly recommend using a payment application.
         </AlertDescription>
       </Alert>
 
@@ -258,7 +259,10 @@ export function StripePaymentElement({
           <Smartphone className="w-5 h-5 text-green-600" />
           <div className="flex flex-col">
             <span className="text-sm font-medium">Digital Wallets</span>
-            <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 w-fit">
+            <Badge
+              variant="secondary"
+              className="text-xs bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 w-fit"
+            >
               Recommended
             </Badge>
           </div>
@@ -267,7 +271,10 @@ export function StripePaymentElement({
           <Wallet className="w-5 h-5 text-purple-600" />
           <div className="flex flex-col">
             <span className="text-sm font-medium">Venmo & BNPL</span>
-            <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400 w-fit">
+            <Badge
+              variant="secondary"
+              className="text-xs bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400 w-fit"
+            >
               Popular
             </Badge>
           </div>
