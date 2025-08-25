@@ -132,6 +132,7 @@ export function StripePaymentForm({
           total,
           referralDiscount,
           creditsUsed,
+          timestamp: new Date().toISOString(),
         });
 
         // Create payment intent with timeout
