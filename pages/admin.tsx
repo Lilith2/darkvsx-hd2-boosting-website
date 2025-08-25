@@ -1037,6 +1037,14 @@ export default function AdminDashboard() {
               />
             )}
           </TabsContent>
+
+          {/* Reviews Tab */}
+          <TabsContent value="reviews">
+            <AdminReviewsTabLazy
+              loading={isLoading}
+              onInvalidateAll={invalidateAll}
+            />
+          </TabsContent>
         </Tabs>
 
         {/* Modals */}
