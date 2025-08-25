@@ -30,7 +30,7 @@ interface UseReviewsResult {
 }
 
 interface UseReviewsOptions {
-  status?: 'pending' | 'approved' | 'rejected';
+  status?: "pending" | "approved" | "rejected";
   featured?: boolean;
   limit?: number;
   userId?: string;
@@ -47,21 +47,21 @@ export function useReviews(options: UseReviewsOptions = {}): UseReviewsResult {
       setError(null);
 
       let query = supabase
-        .from('reviews')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from("reviews")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       // Apply filters based on options
       if (options.status) {
-        query = query.eq('status', options.status);
+        query = query.eq("status", options.status);
       }
 
       if (options.featured !== undefined) {
-        query = query.eq('featured', options.featured);
+        query = query.eq("featured", options.featured);
       }
 
       if (options.userId) {
-        query = query.eq('user_id', options.userId);
+        query = query.eq("user_id", options.userId);
       }
 
       if (options.limit) {
@@ -76,8 +76,8 @@ export function useReviews(options: UseReviewsOptions = {}): UseReviewsResult {
 
       setReviews(data || []);
     } catch (err: any) {
-      console.error('Error fetching reviews:', err);
-      setError(err.message || 'Failed to fetch reviews');
+      console.error("Error fetching reviews:", err);
+      setError(err.message || "Failed to fetch reviews");
     } finally {
       setLoading(false);
     }
@@ -97,12 +97,12 @@ export function useReviews(options: UseReviewsOptions = {}): UseReviewsResult {
 
 // Hook specifically for approved reviews (public display)
 export function useApprovedReviews(limit?: number): UseReviewsResult {
-  return useReviews({ status: 'approved', limit });
+  return useReviews({ status: "approved", limit });
 }
 
 // Hook specifically for featured reviews
 export function useFeaturedReviews(limit?: number): UseReviewsResult {
-  return useReviews({ status: 'approved', featured: true, limit });
+  return useReviews({ status: "approved", featured: true, limit });
 }
 
 // Hook for user's own reviews
@@ -125,13 +125,15 @@ export async function submitReview(reviewData: {
 }): Promise<{ success: boolean; error?: string; review?: Review }> {
   try {
     const { data, error } = await supabase
-      .from('reviews')
-      .insert([{
-        ...reviewData,
-        status: 'pending', // All new reviews start as pending
-        verified: false,
-        featured: false,
-      }])
+      .from("reviews")
+      .insert([
+        {
+          ...reviewData,
+          status: "pending", // All new reviews start as pending
+          verified: false,
+          featured: false,
+        },
+      ])
       .select()
       .single();
 
@@ -141,35 +143,35 @@ export async function submitReview(reviewData: {
 
     return { success: true, review: data };
   } catch (err: any) {
-    console.error('Error submitting review:', err);
-    return { success: false, error: err.message || 'Failed to submit review' };
+    console.error("Error submitting review:", err);
+    return { success: false, error: err.message || "Failed to submit review" };
   }
 }
 
 // Function to update review status (admin only)
 export async function updateReviewStatus(
-  reviewId: string, 
-  status: 'pending' | 'approved' | 'rejected',
-  featured = false
+  reviewId: string,
+  status: "pending" | "approved" | "rejected",
+  featured = false,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const updateData: any = { 
+    const updateData: any = {
       status,
-      featured: featured && status === 'approved' ? true : false
+      featured: featured && status === "approved" ? true : false,
     };
 
-    if (status === 'approved') {
+    if (status === "approved") {
       updateData.approved_at = new Date().toISOString();
     }
 
-    if (featured && status === 'approved') {
+    if (featured && status === "approved") {
       updateData.featured_at = new Date().toISOString();
     }
 
     const { error } = await supabase
-      .from('reviews')
+      .from("reviews")
       .update(updateData)
-      .eq('id', reviewId);
+      .eq("id", reviewId);
 
     if (error) {
       throw error;
@@ -177,7 +179,10 @@ export async function updateReviewStatus(
 
     return { success: true };
   } catch (err: any) {
-    console.error('Error updating review status:', err);
-    return { success: false, error: err.message || 'Failed to update review status' };
+    console.error("Error updating review status:", err);
+    return {
+      success: false,
+      error: err.message || "Failed to update review status",
+    };
   }
 }

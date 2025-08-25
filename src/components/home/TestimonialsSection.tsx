@@ -16,7 +16,7 @@ const fallbackTestimonials = [
     service_name: "Level Boost",
     verified: true,
     featured: true,
-    status: 'approved' as const,
+    status: "approved" as const,
     created_at: new Date().toISOString(),
   },
   {
@@ -28,7 +28,7 @@ const fallbackTestimonials = [
     service_name: "Weapon Unlock",
     verified: true,
     featured: true,
-    status: 'approved' as const,
+    status: "approved" as const,
     created_at: new Date().toISOString(),
   },
   {
@@ -40,7 +40,7 @@ const fallbackTestimonials = [
     service_name: "Mission Completion",
     verified: true,
     featured: true,
-    status: 'approved' as const,
+    status: "approved" as const,
     created_at: new Date().toISOString(),
   },
   {
@@ -52,7 +52,7 @@ const fallbackTestimonials = [
     service_name: "Super Credits",
     verified: true,
     featured: true,
-    status: 'approved' as const,
+    status: "approved" as const,
     created_at: new Date().toISOString(),
   },
   {
@@ -64,7 +64,7 @@ const fallbackTestimonials = [
     service_name: "Samples Farming",
     verified: true,
     featured: true,
-    status: 'approved' as const,
+    status: "approved" as const,
     created_at: new Date().toISOString(),
   },
   {
@@ -76,7 +76,7 @@ const fallbackTestimonials = [
     service_name: "Custom Order",
     verified: true,
     featured: true,
-    status: 'approved' as const,
+    status: "approved" as const,
     created_at: new Date().toISOString(),
   },
 ];
@@ -85,18 +85,21 @@ export function TestimonialsSection() {
   const { reviews: featuredReviews, loading } = useFeaturedReviews(6);
 
   // Use database reviews if available, otherwise fallback to hardcoded testimonials
-  const displayReviews = featuredReviews.length > 0 ? featuredReviews : fallbackTestimonials.map(testimonial => ({
-    ...testimonial,
-    customer_email: "",
-    user_id: null,
-    title: null,
-    order_id: null,
-    order_number: null,
-    metadata: {},
-    updated_at: testimonial.created_at,
-    approved_at: testimonial.created_at,
-    featured_at: testimonial.created_at,
-  }));
+  const displayReviews =
+    featuredReviews.length > 0
+      ? featuredReviews
+      : fallbackTestimonials.map((testimonial) => ({
+          ...testimonial,
+          customer_email: "",
+          user_id: null,
+          title: null,
+          order_id: null,
+          order_number: null,
+          metadata: {},
+          updated_at: testimonial.created_at,
+          approved_at: testimonial.created_at,
+          featured_at: testimonial.created_at,
+        }));
   return (
     <section className="py-24 bg-gradient-to-br from-muted/20 to-muted/10">
       <div className="container mx-auto px-4">

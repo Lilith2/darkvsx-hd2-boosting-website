@@ -17,12 +17,12 @@ interface ReviewFormProps {
   onCancel?: () => void;
 }
 
-export function ReviewForm({ 
-  orderId, 
-  orderNumber, 
-  serviceName, 
-  onSuccess, 
-  onCancel 
+export function ReviewForm({
+  orderId,
+  orderNumber,
+  serviceName,
+  onSuccess,
+  onCancel,
 }: ReviewFormProps) {
   const { user } = useAuth();
   const [rating, setRating] = useState(0);
@@ -35,7 +35,7 @@ export function ReviewForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (rating === 0) {
       toast.error("Please select a rating");
       return;
@@ -67,8 +67,10 @@ export function ReviewForm({
       });
 
       if (result.success) {
-        toast.success("Review submitted successfully! It will be reviewed before appearing publicly.");
-        
+        toast.success(
+          "Review submitted successfully! It will be reviewed before appearing publicly.",
+        );
+
         // Reset form
         setRating(0);
         setTitle("");
@@ -77,7 +79,7 @@ export function ReviewForm({
           setCustomerName("");
           setCustomerEmail("");
         }
-        
+
         onSuccess?.();
       } else {
         toast.error(result.error || "Failed to submit review");
@@ -189,17 +191,17 @@ export function ReviewForm({
 
           {/* Submit Buttons */}
           <div className="flex space-x-4">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSubmitting || rating === 0}
               className="flex-1"
             >
               {isSubmitting ? "Submitting..." : "Submit Review"}
             </Button>
             {onCancel && (
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={onCancel}
                 disabled={isSubmitting}
               >

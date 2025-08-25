@@ -10,12 +10,17 @@ interface ReviewCardProps {
   onDelete?: (reviewId: string) => void;
 }
 
-export function ReviewCard({ review, showActions = false, onEdit, onDelete }: ReviewCardProps) {
+export function ReviewCard({
+  review,
+  showActions = false,
+  onEdit,
+  onDelete,
+}: ReviewCardProps) {
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -51,7 +56,7 @@ export function ReviewCard({ review, showActions = false, onEdit, onDelete }: Re
                 Featured
               </Badge>
             )}
-            {review.status !== 'approved' && (
+            {review.status !== "approved" && (
               <Badge variant="outline" className="text-xs">
                 {review.status.charAt(0).toUpperCase() + review.status.slice(1)}
               </Badge>
@@ -70,8 +75,8 @@ export function ReviewCard({ review, showActions = false, onEdit, onDelete }: Re
             <Star
               key={i}
               className={`w-4 h-4 ${
-                i < review.rating 
-                  ? "fill-yellow-400 text-yellow-400" 
+                i < review.rating
+                  ? "fill-yellow-400 text-yellow-400"
                   : "text-gray-300"
               }`}
             />
