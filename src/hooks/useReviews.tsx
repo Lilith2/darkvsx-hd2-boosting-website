@@ -74,7 +74,21 @@ export function useReviews(options: UseReviewsOptions = {}): UseReviewsResult {
         throw fetchError;
       }
 
-      setReviews(data || []);
+      // SECURITY: Sanitize reviews for public display
+      const sanitizedReviews = (data || []).map(review => {
+        // If this is for public display (no userId filter), remove sensitive data
+        if (!options.userId) {
+          return {
+            ...review,
+            order_id: null, // Remove order ID from public reviews
+            order_number: null, // Remove order number from public reviews
+            customer_email: null, // Remove email from public reviews
+          };
+        }
+        return review;
+      });
+
+      setReviews(sanitizedReviews);
     } catch (err: any) {
       console.error("Error fetching reviews:", err);
       setError(err.message || "Failed to fetch reviews");
