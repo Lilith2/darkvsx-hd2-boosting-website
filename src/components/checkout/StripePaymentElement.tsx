@@ -30,37 +30,169 @@ export function StripePaymentElement({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!stripe || !elements || isProcessing || disabled) {
+    // Comprehensive validation before proceeding
+    if (!stripe) {
+      const errorMsg = "Stripe not loaded. Please refresh and try again.";
+      setErrorMessage(errorMsg);
+      onPaymentError(errorMsg);
+      return;
+    }
+
+    if (!elements) {
+      const errorMsg = "Payment form not loaded. Please refresh and try again.";
+      setErrorMessage(errorMsg);
+      onPaymentError(errorMsg);
+      return;
+    }
+
+    if (isProcessing || disabled) {
+      console.log("Payment already processing or disabled, ignoring submit");
+      return;
+    }
+
+    if (total <= 0) {
+      const errorMsg = "Invalid payment amount.";
+      setErrorMessage(errorMsg);
+      onPaymentError(errorMsg);
       return;
     }
 
     setIsSubmitting(true);
     setErrorMessage("");
 
+    console.log(`Attempting payment confirmation for $${total.toFixed(2)}`);
+
     try {
-      // Confirm the payment
-      const { error, paymentIntent } = await stripe.confirmPayment({
+      // Validate form completion before confirming
+      const {error: submitError} = await elements.submit();
+      if (submitError) {
+        console.error("Form validation error:", submitError);
+        const errorMsg = submitError.message || "Please complete all required payment fields.";
+        setErrorMessage(errorMsg);
+        onPaymentError(errorMsg);
+        return;
+      }
+
+      // Confirm the payment with enhanced error handling
+      const confirmResult = await stripe.confirmPayment({
         elements,
         redirect: "if_required",
+        confirmParams: {
+          return_url: window.location.origin + "/checkout/success",
+        },
       });
 
+      const { error, paymentIntent } = confirmResult;
+
       if (error) {
-        console.error("Payment error:", error);
-        const errorMsg = error.message || "An unexpected error occurred.";
+        console.error("Payment confirmation error:", {
+          type: error.type,
+          code: error.code,
+          message: error.message,
+          declineCode: error.decline_code
+        });
+
+        let errorMsg = "Payment failed.";
+
+        // Provide specific error messages based on error type
+        switch (error.type) {
+          case "card_error":
+            errorMsg = error.message || "Your card was declined. Please try a different payment method.";
+            break;
+          case "validation_error":
+            errorMsg = error.message || "Please check your payment information and try again.";
+            break;
+          case "api_connection_error":
+            errorMsg = "Network error. Please check your connection and try again.";
+            break;
+          case "api_error":
+            errorMsg = "Payment processing error. Please try again or contact support.";
+            break;
+          case "authentication_error":
+            errorMsg = "Payment authentication failed. Please try again.";
+            break;
+          case "rate_limit_error":
+            errorMsg = "Too many payment attempts. Please wait a moment and try again.";
+            break;
+          default:
+            errorMsg = error.message || "An unexpected payment error occurred.";
+        }
+
         setErrorMessage(errorMsg);
         onPaymentError(errorMsg);
-      } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        console.log("Payment succeeded:", paymentIntent);
-        onPaymentSuccess(paymentIntent);
-      } else {
-        const errorMsg = "Payment was not completed successfully.";
-        setErrorMessage(errorMsg);
-        onPaymentError(errorMsg);
+        return;
       }
+
+      // Validate payment intent status
+      if (!paymentIntent) {
+        const errorMsg = "Payment confirmation failed. Please try again.";
+        setErrorMessage(errorMsg);
+        onPaymentError(errorMsg);
+        return;
+      }
+
+      switch (paymentIntent.status) {
+        case "succeeded":
+          console.log("Payment succeeded:", {
+            id: paymentIntent.id,
+            amount: paymentIntent.amount,
+            status: paymentIntent.status
+          });
+          onPaymentSuccess(paymentIntent);
+          break;
+
+        case "processing":
+          console.log("Payment processing:", paymentIntent.id);
+          // For some payment methods, the payment may still be processing
+          onPaymentSuccess(paymentIntent);
+          break;
+
+        case "requires_payment_method":
+          const errorMsg = "Payment failed. Please try a different payment method.";
+          setErrorMessage(errorMsg);
+          onPaymentError(errorMsg);
+          break;
+
+        case "requires_confirmation":
+          const confirmErrorMsg = "Payment requires additional confirmation. Please try again.";
+          setErrorMessage(confirmErrorMsg);
+          onPaymentError(confirmErrorMsg);
+          break;
+
+        case "requires_action":
+          const actionErrorMsg = "Payment requires additional authentication. Please complete the verification and try again.";
+          setErrorMessage(actionErrorMsg);
+          onPaymentError(actionErrorMsg);
+          break;
+
+        case "canceled":
+          const cancelErrorMsg = "Payment was canceled. Please try again.";
+          setErrorMessage(cancelErrorMsg);
+          onPaymentError(cancelErrorMsg);
+          break;
+
+        default:
+          const statusErrorMsg = `Payment status: ${paymentIntent.status}. Please contact support if this persists.`;
+          setErrorMessage(statusErrorMsg);
+          onPaymentError(statusErrorMsg);
+          break;
+      }
+
     } catch (err: any) {
-      console.error("Unexpected error during payment:", err);
-      const errorMsg =
-        err.message || "An unexpected error occurred during payment.";
+      console.error("Unexpected error during payment confirmation:", {
+        error: err.message,
+        name: err.name,
+        stack: err.stack
+      });
+
+      let errorMsg = "An unexpected error occurred during payment.";
+
+      if (err.name === 'NetworkError') {
+        errorMsg = "Network error. Please check your connection and try again.";
+      } else if (err.message) {
+        errorMsg = err.message;
+      }
+
       setErrorMessage(errorMsg);
       onPaymentError(errorMsg);
     } finally {
