@@ -44,6 +44,7 @@ interface NavigationItem {
 const navigation: NavigationItem[] = [
   { name: "Services", href: "/", icon: Crown },
   { name: "Bundles", href: "/bundles", icon: Package },
+  { name: "Reviews", href: "/reviews", icon: Star },
   { name: "Custom Order", href: "/custom-order", icon: Settings },
   { name: "FAQ", href: "/faq" },
   { name: "Contact", href: "/contact" },
