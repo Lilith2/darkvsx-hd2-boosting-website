@@ -274,7 +274,6 @@ async function createOrdersInDatabase(
   orderData: VerifyPaymentRequest["orderData"],
   transactionId: string,
   totalAmount: number,
-  supabase: ReturnType<typeof createClient>,
 ) {
   const results: any = {};
 
