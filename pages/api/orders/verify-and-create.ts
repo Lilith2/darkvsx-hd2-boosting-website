@@ -265,8 +265,7 @@ async function createOrdersInDatabase(
       user_id: orderData.userId || null,
       customer_email: orderData.customerEmail,
       customer_name: orderData.customerName,
-      // FIX: Use 'services' field instead of 'items'
-      services: orderData.services.map((service) => ({
+      items: orderData.services.map((service) => ({
         service_id: service.id,
         service_name: service.name,
         price: service.price,
@@ -281,8 +280,7 @@ async function createOrdersInDatabase(
       referral_discount: orderData.referralDiscount
         ? parseFloat(orderData.referralDiscount.toFixed(2))
         : null,
-      // FIX: Use 'credits_used' instead of 'referral_credits_used'
-      credits_used: orderData.referralCreditsUsed
+      referral_credits_used: orderData.referralCreditsUsed
         ? parseFloat(orderData.referralCreditsUsed.toFixed(2))
         : null,
       ip_address: orderData.ipAddress || null,
@@ -324,8 +322,7 @@ async function createOrdersInDatabase(
           .toFixed(2),
       ), // Fix precision
       currency: "USD",
-      // FIX: Use 'payment_intent_id' instead of 'transaction_id'
-      payment_intent_id: transactionId,
+      transaction_id: transactionId,
       referral_code: orderData.referralCode || null,
       referral_discount: orderData.referralDiscount
         ? parseFloat(orderData.referralDiscount.toFixed(2))
