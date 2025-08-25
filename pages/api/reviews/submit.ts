@@ -64,7 +64,7 @@ export default async function handler(
     const { order, orderType } = orderValidation;
 
     // 2. Check if user has already reviewed this order
-    const existingReview = await checkExistingReview(reviewData.order_id, reviewData.user_id);
+    const existingReview = await checkExistingReview(reviewData.order_id);
     if (existingReview) {
       return res.status(409).json({
         success: false,
@@ -84,7 +84,7 @@ export default async function handler(
           title: reviewData.title || null,
           comment: reviewData.comment,
           order_id: reviewData.order_id,
-          order_number: orderType === "custom" ? order.order_number : order.id,
+          order_number: orderType === "custom" && "order_number" in order ? order.order_number : order.id,
           service_name: reviewData.service_name || null,
           status: "pending",
           verified: true, // Mark as verified since we validated the order
