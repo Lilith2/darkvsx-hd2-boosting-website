@@ -35,14 +35,25 @@ export function ServiceModal({
   onSave,
   service,
 }: ServiceModalProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    title: string;
+    description: string;
+    price: string;
+    originalPrice: string;
+    duration: string;
+    difficulty: string;
+    category: "Level Boost" | "Medals" | "Samples" | "Super Credits" | "Promotions";
+    features: string[];
+    active: boolean;
+    popular: boolean;
+  }>({
     title: "",
     description: "",
     price: "",
     originalPrice: "",
     duration: "",
     difficulty: "",
-    category: "Level Boost" as const,
+    category: "Level Boost",
     features: [""],
     active: true,
     popular: false,
