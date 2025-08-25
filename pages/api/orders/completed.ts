@@ -6,16 +6,18 @@ import { ORDER_STATUSES } from "@/lib/constants";
 // Create Supabase client with service role for server-side operations
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 // Validation schema for request
-const requestSchema = z.object({
-  user_id: z.string().uuid().optional(),
-  customer_email: z.string().email().optional(),
-}).refine(data => data.user_id || data.customer_email, {
-  message: "Either user_id or customer_email must be provided"
-});
+const requestSchema = z
+  .object({
+    user_id: z.string().uuid().optional(),
+    customer_email: z.string().email().optional(),
+  })
+  .refine((data) => data.user_id || data.customer_email, {
+    message: "Either user_id or customer_email must be provided",
+  });
 
 interface CompletedOrder {
   id: string;
@@ -37,12 +39,12 @@ interface ApiResponse {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse>
+  res: NextApiResponse<ApiResponse>,
 ) {
   if (req.method !== "GET") {
-    return res.status(405).json({ 
-      success: false, 
-      error: "Method not allowed" 
+    return res.status(405).json({
+      success: false,
+      error: "Method not allowed",
     });
   }
 
@@ -52,7 +54,7 @@ export default async function handler(
     if (!parsed.success) {
       return res.status(400).json({
         success: false,
-        error: `Validation error: ${parsed.error.issues.map(i => i.message).join(", ")}`,
+        error: `Validation error: ${parsed.error.issues.map((i) => i.message).join(", ")}`,
       });
     }
 
@@ -62,7 +64,9 @@ export default async function handler(
     // Fetch completed regular orders
     const regularOrdersQuery = supabase
       .from("orders")
-      .select("id, customer_name, services, total_amount, created_at, updated_at")
+      .select(
+        "id, customer_name, services, total_amount, created_at, updated_at",
+      )
       .eq("status", ORDER_STATUSES.COMPLETED);
 
     if (user_id) {
@@ -71,7 +75,8 @@ export default async function handler(
       regularOrdersQuery.eq("customer_email", customer_email);
     }
 
-    const { data: regularOrders, error: regularOrdersError } = await regularOrdersQuery;
+    const { data: regularOrders, error: regularOrdersError } =
+      await regularOrdersQuery;
 
     if (regularOrdersError && regularOrdersError.code !== "PGRST116") {
       console.error("Error fetching regular orders:", regularOrdersError);
@@ -107,7 +112,9 @@ export default async function handler(
     // Fetch completed custom orders
     const customOrdersQuery = supabase
       .from("custom_orders")
-      .select("id, order_number, customer_name, items, total_amount, created_at, completed_at")
+      .select(
+        "id, order_number, customer_name, items, total_amount, created_at, completed_at",
+      )
       .or(`status.eq.${ORDER_STATUSES.COMPLETED},completed_at.not.is.null`);
 
     if (user_id) {
@@ -116,7 +123,8 @@ export default async function handler(
       customOrdersQuery.eq("customer_email", customer_email);
     }
 
-    const { data: customOrders, error: customOrdersError } = await customOrdersQuery;
+    const { data: customOrders, error: customOrdersError } =
+      await customOrdersQuery;
 
     if (customOrdersError && customOrdersError.code !== "PGRST116") {
       console.error("Error fetching custom orders:", customOrdersError);
@@ -151,8 +159,9 @@ export default async function handler(
     }
 
     // Sort by completion date (most recent first)
-    completedOrders.sort((a, b) => 
-      new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime()
+    completedOrders.sort(
+      (a, b) =>
+        new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime(),
     );
 
     return res.status(200).json({

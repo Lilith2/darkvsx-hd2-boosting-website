@@ -4,7 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Star, Package, AlertCircle, CheckCircle } from "lucide-react";
 import { submitReview, getCompletedOrders } from "@/hooks/useReviews";
@@ -33,12 +39,14 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
   const [step, setStep] = useState<"orders" | "review">("orders");
   const [loading, setLoading] = useState(true);
   const [completedOrders, setCompletedOrders] = useState<CompletedOrder[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState<CompletedOrder | null>(null);
-  
+  const [selectedOrder, setSelectedOrder] = useState<CompletedOrder | null>(
+    null,
+  );
+
   // Guest user fields
   const [guestEmail, setGuestEmail] = useState("");
   const [isGuestEmailValid, setIsGuestEmailValid] = useState(false);
-  
+
   // Review form fields
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -66,7 +74,9 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
       });
 
       if (result.success && result.orders) {
-        const reviewableOrders = result.orders.filter(order => !order.has_review);
+        const reviewableOrders = result.orders.filter(
+          (order) => !order.has_review,
+        );
         setCompletedOrders(reviewableOrders);
       } else {
         toast.error(result.error || "Failed to load your orders");
@@ -123,9 +133,13 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
       let serviceName = "";
       if (selectedOrder.services && selectedOrder.services.length > 0) {
         if (selectedOrder.order_type === "regular") {
-          serviceName = selectedOrder.services.map(s => s.service_name).join(", ");
+          serviceName = selectedOrder.services
+            .map((s) => s.service_name)
+            .join(", ");
         } else {
-          serviceName = selectedOrder.services.map(s => s.item_name).join(", ");
+          serviceName = selectedOrder.services
+            .map((s) => s.item_name)
+            .join(", ");
         }
       }
 
@@ -142,7 +156,7 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
 
       if (result.success) {
         toast.success(
-          "Review submitted successfully! It will be reviewed before appearing publicly."
+          "Review submitted successfully! It will be reviewed before appearing publicly.",
         );
 
         // Reset form
@@ -151,7 +165,7 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
         setComment("");
         setSelectedOrder(null);
         setStep("orders");
-        
+
         onSuccess?.();
       } else {
         toast.error(result.error || "Failed to submit review");
@@ -174,11 +188,11 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
 
   const formatOrderServices = (services: any[], orderType: string) => {
     if (!services || services.length === 0) return "No services";
-    
+
     if (orderType === "regular") {
-      return services.map(s => s.service_name).join(", ");
+      return services.map((s) => s.service_name).join(", ");
     } else {
-      return services.map(s => s.item_name).join(", ");
+      return services.map((s) => s.item_name).join(", ");
     }
   };
 
@@ -190,15 +204,15 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
           Write a Review
           {step === "review" && selectedOrder && (
             <Badge variant="outline" className="ml-2">
-              Order #{selectedOrder.order_number || selectedOrder.id.slice(0, 8)}
+              Order #
+              {selectedOrder.order_number || selectedOrder.id.slice(0, 8)}
             </Badge>
           )}
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          {step === "orders" 
+          {step === "orders"
             ? "Select a completed order to review"
-            : "Share your experience with our service"
-          }
+            : "Share your experience with our service"}
         </p>
       </CardHeader>
       <CardContent>
@@ -230,12 +244,13 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
             ) : completedOrders.length === 0 ? (
               <div className="text-center py-8">
                 <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No Reviewable Orders Found</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  No Reviewable Orders Found
+                </h3>
                 <p className="text-muted-foreground mb-4">
                   {!user && (!guestEmail || !isGuestEmailValid)
                     ? "Please enter your email address to find your orders"
-                    : "You don't have any completed orders that haven't been reviewed yet."
-                  }
+                    : "You don't have any completed orders that haven't been reviewed yet."}
                 </p>
                 <Button variant="outline" onClick={onCancel}>
                   Close
@@ -261,9 +276,13 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold">${order.total_amount.toFixed(2)}</p>
+                          <p className="font-semibold">
+                            ${order.total_amount.toFixed(2)}
+                          </p>
                           <Badge variant="secondary" className="text-xs">
-                            {order.order_type === "regular" ? "Service" : "Custom"}
+                            {order.order_type === "regular"
+                              ? "Service"
+                              : "Custom"}
                           </Badge>
                         </div>
                       </div>
@@ -294,7 +313,11 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
             <div className="bg-muted/30 rounded-lg p-4">
               <h4 className="font-medium mb-2">Reviewing Order:</h4>
               <p className="text-sm text-muted-foreground">
-                #{selectedOrder.order_number || selectedOrder.id.slice(0, 8)} - {formatOrderServices(selectedOrder.services, selectedOrder.order_type)}
+                #{selectedOrder.order_number || selectedOrder.id.slice(0, 8)} -{" "}
+                {formatOrderServices(
+                  selectedOrder.services,
+                  selectedOrder.order_type,
+                )}
               </p>
               <p className="text-sm text-muted-foreground">
                 Completed: {formatOrderDate(selectedOrder.completed_at)}
@@ -394,8 +417,9 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
             <div className="flex items-start space-x-2 text-xs text-muted-foreground">
               <CheckCircle className="w-4 h-4 mt-0.5 text-green-600" />
               <p>
-                Your review will be verified and moderated before appearing publicly. 
-                Only customers who have completed orders can write reviews.
+                Your review will be verified and moderated before appearing
+                publicly. Only customers who have completed orders can write
+                reviews.
               </p>
             </div>
           </form>

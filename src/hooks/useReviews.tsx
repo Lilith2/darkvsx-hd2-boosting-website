@@ -133,13 +133,19 @@ export async function submitReview(reviewData: {
     const result = await response.json();
 
     if (!response.ok) {
-      return { success: false, error: result.error || "Failed to submit review" };
+      return {
+        success: false,
+        error: result.error || "Failed to submit review",
+      };
     }
 
     return { success: true, review: result.review };
   } catch (err: any) {
     console.error("Error submitting review:", err);
-    return { success: false, error: "Network error. Please check your connection and try again." };
+    return {
+      success: false,
+      error: "Network error. Please check your connection and try again.",
+    };
   }
 }
 
@@ -165,19 +171,28 @@ export async function getCompletedOrders(params: {
   try {
     const queryParams = new URLSearchParams();
     if (params.user_id) queryParams.append("user_id", params.user_id);
-    if (params.customer_email) queryParams.append("customer_email", params.customer_email);
+    if (params.customer_email)
+      queryParams.append("customer_email", params.customer_email);
 
-    const response = await fetch(`/api/orders/completed?${queryParams.toString()}`);
+    const response = await fetch(
+      `/api/orders/completed?${queryParams.toString()}`,
+    );
     const result = await response.json();
 
     if (!response.ok) {
-      return { success: false, error: result.error || "Failed to fetch orders" };
+      return {
+        success: false,
+        error: result.error || "Failed to fetch orders",
+      };
     }
 
     return { success: true, orders: result.orders };
   } catch (err: any) {
     console.error("Error fetching completed orders:", err);
-    return { success: false, error: "Network error. Please check your connection and try again." };
+    return {
+      success: false,
+      error: "Network error. Please check your connection and try again.",
+    };
   }
 }
 

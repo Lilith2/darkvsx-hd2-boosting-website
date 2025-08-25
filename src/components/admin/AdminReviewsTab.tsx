@@ -1,43 +1,49 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue 
+  SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  useReviews, 
-  updateReviewStatus, 
+import {
+  useReviews,
+  updateReviewStatus,
   Review,
-  submitReview 
+  submitReview,
 } from "@/hooks/useReviews";
 import { ReviewCard } from "@/components/reviews/ReviewCard";
-import { 
-  MessageSquare, 
-  CheckCircle, 
-  XCircle, 
-  Star, 
-  Clock, 
+import {
+  MessageSquare,
+  CheckCircle,
+  XCircle,
+  Star,
+  Clock,
   Award,
   Trash2,
-  Edit
+  Edit,
 } from "lucide-react";
 
 interface AdminReviewsTabProps {
@@ -45,19 +51,28 @@ interface AdminReviewsTabProps {
   onInvalidateAll?: () => void;
 }
 
-export function AdminReviewsTab({ 
-  loading = false, 
-  onInvalidateAll 
+export function AdminReviewsTab({
+  loading = false,
+  onInvalidateAll,
 }: AdminReviewsTabProps) {
   const { toast } = useToast();
-  
+
   // Fetch reviews by status
-  const { reviews: pendingReviews, loading: pendingLoading, refetch: refetchPending } = 
-    useReviews({ status: "pending" });
-  const { reviews: approvedReviews, loading: approvedLoading, refetch: refetchApproved } = 
-    useReviews({ status: "approved" });
-  const { reviews: rejectedReviews, loading: rejectedLoading, refetch: refetchRejected } = 
-    useReviews({ status: "rejected" });
+  const {
+    reviews: pendingReviews,
+    loading: pendingLoading,
+    refetch: refetchPending,
+  } = useReviews({ status: "pending" });
+  const {
+    reviews: approvedReviews,
+    loading: approvedLoading,
+    refetch: refetchApproved,
+  } = useReviews({ status: "approved" });
+  const {
+    reviews: rejectedReviews,
+    loading: rejectedLoading,
+    refetch: refetchRejected,
+  } = useReviews({ status: "rejected" });
 
   // Modal states
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -67,22 +82,22 @@ export function AdminReviewsTab({
     rating: 5,
     title: "",
     comment: "",
-    service_name: ""
+    service_name: "",
   });
 
   // Handle review approval
   const handleApproveReview = async (reviewId: string, featured = false) => {
     try {
       const result = await updateReviewStatus(reviewId, "approved", featured);
-      
+
       if (result.success) {
         toast({
           title: "Review Approved",
-          description: featured 
+          description: featured
             ? "Review has been approved and featured."
             : "Review has been approved.",
         });
-        
+
         // Refresh data
         refetchPending();
         refetchApproved();
@@ -103,13 +118,13 @@ export function AdminReviewsTab({
   const handleRejectReview = async (reviewId: string) => {
     try {
       const result = await updateReviewStatus(reviewId, "rejected");
-      
+
       if (result.success) {
         toast({
           title: "Review Rejected",
           description: "Review has been rejected.",
         });
-        
+
         // Refresh data
         refetchPending();
         refetchRejected();
@@ -128,7 +143,8 @@ export function AdminReviewsTab({
 
   // Handle review deletion
   const handleDeleteReview = async (reviewId: string) => {
-    if (!confirm("Are you sure you want to permanently delete this review?")) return;
+    if (!confirm("Are you sure you want to permanently delete this review?"))
+      return;
 
     try {
       const { supabase } = await import("@/integrations/supabase/client");
@@ -166,7 +182,7 @@ export function AdminReviewsTab({
       rating: review.rating,
       title: review.title || "",
       comment: review.comment,
-      service_name: review.service_name || ""
+      service_name: review.service_name || "",
     });
     setIsEditModalOpen(true);
   };
@@ -185,7 +201,7 @@ export function AdminReviewsTab({
           title: editForm.title || null,
           comment: editForm.comment,
           service_name: editForm.service_name || null,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq("id", editingReview.id);
 
@@ -201,7 +217,7 @@ export function AdminReviewsTab({
       refetchApproved();
       refetchRejected();
       onInvalidateAll?.();
-      
+
       setIsEditModalOpen(false);
       setEditingReview(null);
     } catch (error: any) {
@@ -218,10 +234,10 @@ export function AdminReviewsTab({
     try {
       const { supabase } = await import("@/integrations/supabase/client");
       const newFeaturedStatus = !review.featured;
-      
+
       const updateData: any = {
         featured: newFeaturedStatus,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       if (newFeaturedStatus) {
@@ -255,11 +271,18 @@ export function AdminReviewsTab({
   };
 
   // Statistics
-  const totalReviews = pendingReviews.length + approvedReviews.length + rejectedReviews.length;
-  const avgRating = approvedReviews.length > 0 
-    ? (approvedReviews.reduce((sum, review) => sum + review.rating, 0) / approvedReviews.length).toFixed(1)
-    : 0;
-  const featuredCount = approvedReviews.filter(review => review.featured).length;
+  const totalReviews =
+    pendingReviews.length + approvedReviews.length + rejectedReviews.length;
+  const avgRating =
+    approvedReviews.length > 0
+      ? (
+          approvedReviews.reduce((sum, review) => sum + review.rating, 0) /
+          approvedReviews.length
+        ).toFixed(1)
+      : 0;
+  const featuredCount = approvedReviews.filter(
+    (review) => review.featured,
+  ).length;
 
   return (
     <div className="space-y-6">
@@ -276,7 +299,7 @@ export function AdminReviewsTab({
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
@@ -288,7 +311,7 @@ export function AdminReviewsTab({
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
@@ -300,7 +323,7 @@ export function AdminReviewsTab({
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
@@ -331,7 +354,10 @@ export function AdminReviewsTab({
               <TabsTrigger value="pending" className="relative">
                 Pending
                 {pendingReviews.length > 0 && (
-                  <Badge variant="destructive" className="ml-2 h-5 w-5 p-0 text-xs">
+                  <Badge
+                    variant="destructive"
+                    className="ml-2 h-5 w-5 p-0 text-xs"
+                  >
                     {pendingReviews.length}
                   </Badge>
                 )}
@@ -353,14 +379,18 @@ export function AdminReviewsTab({
               ) : pendingReviews.length === 0 ? (
                 <div className="text-center py-12">
                   <Clock className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                  <h3 className="text-lg font-semibold mb-2">No pending reviews</h3>
-                  <p className="text-muted-foreground">All reviews have been processed.</p>
+                  <h3 className="text-lg font-semibold mb-2">
+                    No pending reviews
+                  </h3>
+                  <p className="text-muted-foreground">
+                    All reviews have been processed.
+                  </p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {pendingReviews.map((review) => (
                     <div key={review.id} className="relative">
-                      <ReviewCard 
+                      <ReviewCard
                         review={review}
                         showActions={true}
                         onEdit={handleEditReview}
@@ -408,14 +438,18 @@ export function AdminReviewsTab({
               ) : approvedReviews.length === 0 ? (
                 <div className="text-center py-12">
                   <CheckCircle className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                  <h3 className="text-lg font-semibold mb-2">No approved reviews</h3>
-                  <p className="text-muted-foreground">Approved reviews will appear here.</p>
+                  <h3 className="text-lg font-semibold mb-2">
+                    No approved reviews
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Approved reviews will appear here.
+                  </p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {approvedReviews.map((review) => (
                     <div key={review.id} className="relative">
-                      <ReviewCard 
+                      <ReviewCard
                         review={review}
                         showActions={true}
                         onEdit={handleEditReview}
@@ -426,7 +460,11 @@ export function AdminReviewsTab({
                           size="sm"
                           variant="outline"
                           onClick={() => handleToggleFeature(review)}
-                          className={review.featured ? "bg-purple-100 border-purple-300" : ""}
+                          className={
+                            review.featured
+                              ? "bg-purple-100 border-purple-300"
+                              : ""
+                          }
                         >
                           <Award className="w-4 h-4 mr-1" />
                           {review.featured ? "Unfeature" : "Feature"}
@@ -456,14 +494,18 @@ export function AdminReviewsTab({
               ) : rejectedReviews.length === 0 ? (
                 <div className="text-center py-12">
                   <XCircle className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                  <h3 className="text-lg font-semibold mb-2">No rejected reviews</h3>
-                  <p className="text-muted-foreground">Rejected reviews will appear here.</p>
+                  <h3 className="text-lg font-semibold mb-2">
+                    No rejected reviews
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Rejected reviews will appear here.
+                  </p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {rejectedReviews.map((review) => (
                     <div key={review.id} className="relative">
-                      <ReviewCard 
+                      <ReviewCard
                         review={review}
                         showActions={true}
                         onEdit={handleEditReview}
@@ -505,7 +547,12 @@ export function AdminReviewsTab({
               <Input
                 id="customer_name"
                 value={editForm.customer_name}
-                onChange={(e) => setEditForm(prev => ({ ...prev, customer_name: e.target.value }))}
+                onChange={(e) =>
+                  setEditForm((prev) => ({
+                    ...prev,
+                    customer_name: e.target.value,
+                  }))
+                }
                 className="col-span-3"
               />
             </div>
@@ -515,7 +562,9 @@ export function AdminReviewsTab({
               </Label>
               <Select
                 value={editForm.rating.toString()}
-                onValueChange={(value) => setEditForm(prev => ({ ...prev, rating: parseInt(value) }))}
+                onValueChange={(value) =>
+                  setEditForm((prev) => ({ ...prev, rating: parseInt(value) }))
+                }
               >
                 <SelectTrigger className="col-span-3">
                   <SelectValue />
@@ -523,7 +572,7 @@ export function AdminReviewsTab({
                 <SelectContent>
                   {[1, 2, 3, 4, 5].map((rating) => (
                     <SelectItem key={rating} value={rating.toString()}>
-                      {rating} Star{rating > 1 ? 's' : ''}
+                      {rating} Star{rating > 1 ? "s" : ""}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -536,7 +585,9 @@ export function AdminReviewsTab({
               <Input
                 id="title"
                 value={editForm.title}
-                onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                onChange={(e) =>
+                  setEditForm((prev) => ({ ...prev, title: e.target.value }))
+                }
                 className="col-span-3"
               />
             </div>
@@ -547,7 +598,12 @@ export function AdminReviewsTab({
               <Input
                 id="service_name"
                 value={editForm.service_name}
-                onChange={(e) => setEditForm(prev => ({ ...prev, service_name: e.target.value }))}
+                onChange={(e) =>
+                  setEditForm((prev) => ({
+                    ...prev,
+                    service_name: e.target.value,
+                  }))
+                }
                 className="col-span-3"
               />
             </div>
@@ -558,7 +614,9 @@ export function AdminReviewsTab({
               <Textarea
                 id="comment"
                 value={editForm.comment}
-                onChange={(e) => setEditForm(prev => ({ ...prev, comment: e.target.value }))}
+                onChange={(e) =>
+                  setEditForm((prev) => ({ ...prev, comment: e.target.value }))
+                }
                 className="col-span-3"
                 rows={4}
               />
@@ -568,9 +626,7 @@ export function AdminReviewsTab({
             <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSaveEditedReview}>
-              Save Changes
-            </Button>
+            <Button onClick={handleSaveEditedReview}>Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

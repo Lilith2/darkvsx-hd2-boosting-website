@@ -6,7 +6,7 @@ import { ORDER_STATUSES } from "@/lib/constants";
 // Create Supabase client with service role for server-side operations
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 // Validation schema for review submission
@@ -31,12 +31,12 @@ interface ApiResponse {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse>
+  res: NextApiResponse<ApiResponse>,
 ) {
   if (req.method !== "POST") {
-    return res.status(405).json({ 
-      success: false, 
-      error: "Method not allowed" 
+    return res.status(405).json({
+      success: false,
+      error: "Method not allowed",
     });
   }
 
@@ -46,7 +46,7 @@ export default async function handler(
     if (!parsed.success) {
       return res.status(400).json({
         success: false,
-        error: `Validation error: ${parsed.error.issues.map(i => i.message).join(", ")}`,
+        error: `Validation error: ${parsed.error.issues.map((i) => i.message).join(", ")}`,
       });
     }
 
@@ -84,7 +84,10 @@ export default async function handler(
           title: reviewData.title || null,
           comment: reviewData.comment,
           order_id: reviewData.order_id,
-          order_number: orderType === "custom" ? (order as CustomOrder).order_number : order.id,
+          order_number:
+            orderType === "custom"
+              ? (order as CustomOrder).order_number
+              : order.id,
           service_name: reviewData.service_name || null,
           status: "pending",
           verified: true, // Mark as verified since we validated the order
@@ -148,7 +151,9 @@ interface ValidationError {
   error: string;
 }
 
-async function validateOrder(reviewData: ReviewSubmissionData): Promise<ValidationSuccess | ValidationError> {
+async function validateOrder(
+  reviewData: ReviewSubmissionData,
+): Promise<ValidationSuccess | ValidationError> {
   const { order_id, user_id, customer_email } = reviewData;
 
   // First, try to find the order in the regular orders table
@@ -174,7 +179,9 @@ async function validateOrder(reviewData: ReviewSubmissionData): Promise<Validati
   if (!order) {
     const { data: customOrder, error: customOrderError } = await supabase
       .from("custom_orders")
-      .select("id, user_id, customer_email, customer_name, status, order_number, completed_at")
+      .select(
+        "id, user_id, customer_email, customer_name, status, order_number, completed_at",
+      )
       .eq("id", order_id)
       .maybeSingle();
 
@@ -201,15 +208,18 @@ async function validateOrder(reviewData: ReviewSubmissionData): Promise<Validati
   }
 
   // Check if order is completed
-  const isCompleted = orderType === "custom"
-    ? (order.status === ORDER_STATUSES.COMPLETED || !!(order as CustomOrder).completed_at)
-    : order.status === ORDER_STATUSES.COMPLETED;
+  const isCompleted =
+    orderType === "custom"
+      ? order.status === ORDER_STATUSES.COMPLETED ||
+        !!(order as CustomOrder).completed_at
+      : order.status === ORDER_STATUSES.COMPLETED;
 
   if (!isCompleted) {
     return {
       success: false,
       statusCode: 403,
-      error: "Cannot review an incomplete order. Please wait until your order is completed.",
+      error:
+        "Cannot review an incomplete order. Please wait until your order is completed.",
     };
   }
 
@@ -229,7 +239,8 @@ async function validateOrder(reviewData: ReviewSubmissionData): Promise<Validati
       return {
         success: false,
         statusCode: 403,
-        error: "Email address does not match the order. Please use the email address used for the order.",
+        error:
+          "Email address does not match the order. Please use the email address used for the order.",
       };
     }
   }
