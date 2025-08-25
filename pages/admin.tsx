@@ -270,6 +270,9 @@ export default function AdminDashboard() {
             setLoadingStates((prev) => ({ ...prev, pricing: true }));
           }
           break;
+        case "reviews":
+          // Reviews tab manages its own data loading
+          break;
       }
     },
     [
