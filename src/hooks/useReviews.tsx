@@ -12,7 +12,7 @@ export interface Review {
   order_id: string | null;
   order_number: string | null;
   service_name: string | null;
-  status: 'pending' | 'approved' | 'rejected';
+  status: string;
   verified: boolean;
   featured: boolean;
   metadata: any;
