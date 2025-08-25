@@ -16,26 +16,35 @@ export default async function handler(
   }
 
   try {
-    const stripe = getStripeInstance();
-    
-    // Test the connection by listing payment methods (this requires valid API key)
-    const paymentMethods = await stripe.paymentMethods.list({
-      limit: 1,
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error("STRIPE_SECRET_KEY not configured");
+    }
+
+    // Test the connection by creating a minimal payment intent (this requires valid API key)
+    const testPaymentIntent = await stripe.paymentIntents.create({
+      amount: 100, // $1.00 in cents
+      currency: "usd",
+      payment_method_types: ["card"],
     });
+
+    // Cancel the test payment intent immediately
+    await stripe.paymentIntents.cancel(testPaymentIntent.id);
 
     return res.status(200).json({
       success: true,
       message: "Stripe connection successful",
       apiKeyStatus: "valid",
+      testPaymentIntentId: testPaymentIntent.id,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
     console.error("Stripe connection test failed:", error);
-    
+
     return res.status(500).json({
       success: false,
       message: "Stripe connection failed",
       error: error.message,
+      type: error.type,
       timestamp: new Date().toISOString(),
     });
   }
