@@ -82,6 +82,23 @@ export default function OrderTracking() {
       } else {
         foundOrder = getOrder(orderId);
       }
+
+      // SECURITY CHECK: Verify user has permission to view this order
+      if (foundOrder) {
+        const hasPermission = user && (
+          foundOrder.user_id === user.id ||
+          foundOrder.customer_email === user.email ||
+          foundOrder.customerEmail === user.email
+        );
+
+        if (!hasPermission) {
+          // User doesn't have permission to view this order
+          setOrder(null);
+          setIsInitialLoad(false);
+          return;
+        }
+      }
+
       setOrder(foundOrder);
 
       // If we still haven't found the order and we're not loading, mark as not found
@@ -101,6 +118,7 @@ export default function OrderTracking() {
     loading,
     customLoading,
     isInitialLoad,
+    user,
   ]);
 
   // Show loading state while orders are being fetched

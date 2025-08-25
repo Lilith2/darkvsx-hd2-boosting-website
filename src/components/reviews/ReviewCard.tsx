@@ -94,8 +94,8 @@ export function ReviewCard({
           </p>
         </div>
 
-        {/* Order Information */}
-        {review.order_number && (
+        {/* Order Information - Only show in admin/private contexts */}
+        {showActions && review.order_number && (
           <div className="mt-4 pt-4 border-t border-border">
             <div className="text-xs text-muted-foreground">
               Order: #{review.order_number}
