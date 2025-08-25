@@ -53,7 +53,7 @@ export function ReferralSection({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Referral Code Section */}
+        {/* Promo Code Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <Label
@@ -61,7 +61,7 @@ export function ReferralSection({
               className="text-base font-medium flex items-center"
             >
               <Gift className="w-5 h-5 mr-2 text-primary" />
-              Referral Code
+              Promo Code
             </Label>
             <Badge variant="outline" className="text-xs">
               Save 10%
@@ -88,7 +88,7 @@ export function ReferralSection({
           </div>
           <p className="text-sm text-muted-foreground flex items-center">
             <Sparkles className="w-4 h-4 mr-1 text-yellow-500" />
-            Get 10% off your entire order with a valid referral code
+            Get up to 15% off your entire order with a valid promo code
           </p>
         </div>
 
