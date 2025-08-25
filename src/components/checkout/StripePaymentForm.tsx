@@ -101,25 +101,24 @@ export function StripePaymentForm({
           }),
         });
 
-        // Parse response with error handling
-        let data;
-        try {
-          const responseText = await response.text();
-          if (!responseText.trim()) {
-            throw new Error("Empty response from server");
+        // Check if response is ok first, then parse once
+        if (!response.ok) {
+          let errorData;
+          try {
+            errorData = await response.json();
+          } catch {
+            errorData = { error: "Network error" };
           }
-          data = JSON.parse(responseText);
-        } catch (parseError) {
-          console.error("Failed to parse JSON response:", parseError);
           throw new Error(
-            "Invalid response from payment server. Please try again.",
+            errorData.error || errorData.details || "Failed to create payment intent",
           );
         }
 
-        if (!response.ok) {
-          throw new Error(
-            data.error || data.details || "Failed to create payment intent",
-          );
+        // Parse successful response
+        const data = await response.json();
+
+        if (!data.clientSecret) {
+          throw new Error("Invalid payment response - missing client secret");
         }
 
         setClientSecret(data.clientSecret);
@@ -135,7 +134,7 @@ export function StripePaymentForm({
     };
 
     initializePayment();
-  }, [total, disabled]); // Simplified dependencies
+  }, [total, cartItems, referralDiscount, creditsUsed, disabled, metadata, onPaymentError]);
 
   const handlePaymentSuccess = (paymentIntent: any) => {
     toast({
