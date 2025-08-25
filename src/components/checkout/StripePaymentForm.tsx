@@ -34,6 +34,7 @@ interface CartItem {
 interface StripePaymentFormProps {
   total: number;
   cartItems: CartItem[];
+  referralCode?: string;
   referralDiscount?: number;
   creditsUsed?: number;
   onPaymentSuccess: (paymentIntent: any) => void;
