@@ -219,19 +219,20 @@ export default async function handler(
       },
     });
 
-    res.status(200).json({
+    // Return successful response
+    return res.status(200).json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
       amount: finalAmount,
       breakdown: {
-        servicesTotal,
-        customOrderTotal,
-        subtotal,
+        servicesTotal: Number(servicesTotal.toFixed(2)),
+        customOrderTotal: Number(customOrderTotal.toFixed(2)),
+        subtotal: Number(subtotal.toFixed(2)),
         referralCode: referralCode || null,
-        referralDiscount: validatedReferralDiscount,
-        tax,
-        creditsUsed: validatedCreditsUsed,
-        finalAmount,
+        referralDiscount: Number(validatedReferralDiscount.toFixed(2)),
+        tax: Number(tax.toFixed(2)),
+        creditsUsed: Number(validatedCreditsUsed.toFixed(2)),
+        finalAmount: Number(finalAmount.toFixed(2)),
       },
     });
   } catch (error: any) {
