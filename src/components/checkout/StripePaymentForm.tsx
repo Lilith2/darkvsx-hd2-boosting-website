@@ -77,14 +77,6 @@ export function StripePaymentForm({
         return;
       }
 
-<<<<<<< HEAD
-      // Check for valid cart and total
-      if (total <= 0 || cartItems.length === 0) {
-        setIsLoading(false);
-        setInitError(
-          "Your cart is empty or the total amount is too low for payment processing.",
-        );
-=======
       // Validate inputs before proceeding
       if (!cartItems || cartItems.length === 0) {
         setInitError("No items in cart");
@@ -95,7 +87,6 @@ export function StripePaymentForm({
       if (total < 0.5) {
         setInitError("Payment amount too low (minimum $0.50)");
         setIsLoading(false);
->>>>>>> ai_main_3cdc03bd478c
         return;
       }
 
@@ -116,17 +107,6 @@ export function StripePaymentForm({
           (item) => item.service.customOrderData,
         )?.service.customOrderData;
 
-<<<<<<< HEAD
-        console.log("Creating payment intent with data:", {
-          services,
-          customOrderData,
-          referralDiscount,
-          creditsUsed,
-          total,
-        });
-
-        // Create payment intent
-=======
         // Validate service data
         if (services.length === 0 && !customOrderData) {
           throw new Error("No valid services found in cart");
@@ -158,7 +138,6 @@ export function StripePaymentForm({
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
->>>>>>> ai_main_3cdc03bd478c
         const response = await fetch("/api/stripe/create-payment-intent", {
           method: "POST",
           headers: {
@@ -168,36 +147,6 @@ export function StripePaymentForm({
           signal: controller.signal,
         });
 
-<<<<<<< HEAD
-        // Check if response is ok first, then parse once
-        if (!response.ok) {
-          let errorData;
-          try {
-            errorData = await response.json();
-          } catch {
-            errorData = {
-              error: `HTTP ${response.status}: ${response.statusText}`,
-            };
-          }
-          throw new Error(
-            errorData.error ||
-              errorData.details ||
-              `Payment server error (${response.status})`,
-          );
-        }
-
-        // Parse successful response
-        const data = await response.json();
-
-        console.log("Payment intent created successfully:", {
-          clientSecret: data.clientSecret ? "✓" : "✗",
-          amount: data.amount,
-          supportedMethods: data.supportedPaymentMethods,
-        });
-
-        if (!data.clientSecret) {
-          throw new Error("Invalid payment response - missing client secret");
-=======
         clearTimeout(timeoutId);
 
         // Parse response with enhanced error handling
@@ -224,7 +173,6 @@ export function StripePaymentForm({
             details: data.details,
           });
           throw new Error(errorMessage);
->>>>>>> ai_main_3cdc03bd478c
         }
 
         // Validate response data
@@ -239,6 +187,7 @@ export function StripePaymentForm({
         console.log("Payment intent created successfully:", {
           paymentIntentId: data.paymentIntentId,
           amount: data.amount,
+          supportedMethods: data.supportedPaymentMethods,
         });
 
         setClientSecret(data.clientSecret);
@@ -284,20 +233,7 @@ export function StripePaymentForm({
     };
 
     initializePayment();
-<<<<<<< HEAD
-  }, [
-    total,
-    cartItems,
-    referralDiscount,
-    creditsUsed,
-    disabled,
-    metadata,
-    onPaymentError,
-    toast,
-  ]);
-=======
-  }, [total, disabled, cartItems.length]); // Added cartItems.length dependency
->>>>>>> ai_main_3cdc03bd478c
+  }, [total, disabled, cartItems.length]); // Only essential dependencies
 
   const handlePaymentSuccess = (paymentIntent: any) => {
     toast({
@@ -329,7 +265,7 @@ export function StripePaymentForm({
           <div className="mt-4 text-center">
             <p className="text-sm text-muted-foreground">
               Setting up all available payment methods including cards, digital
-              wallets, and buy-now-pay-later options
+              wallets, Venmo, and buy-now-pay-later options
             </p>
           </div>
         </CardContent>
@@ -431,7 +367,7 @@ export function StripePaymentForm({
               {supportedMethods.length > 0 && (
                 <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
                   {supportedMethods.length} payment methods available including
-                  cards, digital wallets, and BNPL options
+                  cards, digital wallets, Venmo, and BNPL options
                 </p>
               )}
             </div>
@@ -478,7 +414,7 @@ export function StripePaymentForm({
             </div>
             <div className="flex items-center space-x-3">
               <CheckCircle className="w-5 h-5 text-orange-600" />
-              <span className="text-sm font-medium">Multiple Methods</span>
+              <span className="text-sm font-medium">Venmo & More</span>
             </div>
           </div>
         </CardContent>
