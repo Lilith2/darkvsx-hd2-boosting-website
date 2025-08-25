@@ -104,7 +104,7 @@ export function ServiceModal({
       features: formData.features.filter((feature) => feature.trim() !== ""),
       active: formData.active,
       popular: formData.popular,
-      category: "Level Boost" as const,
+      category: formData.category,
       orders_count: 0,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
