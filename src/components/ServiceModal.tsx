@@ -190,6 +190,27 @@ export function ServiceModal({
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="category">Category *</Label>
+            <Select
+              value={formData.category}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, category: value as any }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select service category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Level Boost">Level Boost</SelectItem>
+                <SelectItem value="Medals">Medals</SelectItem>
+                <SelectItem value="Samples">Samples</SelectItem>
+                <SelectItem value="Super Credits">Super Credits</SelectItem>
+                <SelectItem value="Promotions">Promotions</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="description">Description *</Label>
             <Textarea
               id="description"
