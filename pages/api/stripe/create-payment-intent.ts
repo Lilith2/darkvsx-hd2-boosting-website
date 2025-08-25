@@ -182,15 +182,13 @@ export default async function handler(
 
     // Calculate final amount with validated values
     const TAX_RATE = 0.08;
-    const subtotal = servicesTotal + customOrderTotal;
-    const totalBeforeCredits = subtotal - validatedReferralDiscount;
-    const tax = Math.max(0, totalBeforeCredits * TAX_RATE);
+    const totalAfterDiscount = subtotal - validatedReferralDiscount;
+    const tax = Math.max(0, totalAfterDiscount * TAX_RATE);
+    const totalWithTax = totalAfterDiscount + tax;
 
-    // Validate credits used don't exceed reasonable limits
-    const maxCreditsUsable = totalBeforeCredits + tax;
-    const validatedCreditsUsed = Math.min(creditsUsed, maxCreditsUsable);
-
-    const finalAmount = Math.max(0, totalBeforeCredits + tax - validatedCreditsUsed);
+    // Validate credits used don't exceed the total
+    const validatedCreditsUsed = Math.min(creditsUsed, totalWithTax);
+    const finalAmount = Math.max(0.50, totalWithTax - validatedCreditsUsed); // Stripe minimum $0.50
 
     // Minimum charge validation (Stripe minimum is $0.50)
     if (finalAmount < 0.5) {
