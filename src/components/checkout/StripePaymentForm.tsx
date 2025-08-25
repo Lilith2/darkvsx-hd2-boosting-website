@@ -47,6 +47,7 @@ interface StripePaymentFormProps {
 export function StripePaymentForm({
   total,
   cartItems,
+  referralCode = "",
   referralDiscount = 0,
   creditsUsed = 0,
   onPaymentSuccess,
