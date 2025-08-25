@@ -319,7 +319,16 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   const startTime = Date.now();
   console.log(`[${new Date().toISOString()}] Processing PaymentIntent failed: ${paymentIntent.id} (Amount: $${(paymentIntent.amount / 100).toFixed(2)})`);
 
+  let supabase: ReturnType<typeof createClient>;
+
   try {
+    // Initialize Supabase client
+    try {
+      supabase = getSupabaseClient();
+    } catch (supabaseError: any) {
+      console.error("Supabase initialization failed in webhook handler:", supabaseError.message);
+      throw new Error("Database not properly configured");
+    }
     // Update any existing orders to failed status
     const { error: orderError, count: orderCount } = await supabase
       .from("orders")
@@ -385,7 +394,16 @@ async function handlePaymentIntentProcessing(
 ) {
   console.log(`[${new Date().toISOString()}] Processing PaymentIntent processing status: ${paymentIntent.id}`);
 
+  let supabase: ReturnType<typeof createClient>;
+
   try {
+    // Initialize Supabase client
+    try {
+      supabase = getSupabaseClient();
+    } catch (supabaseError: any) {
+      console.error("Supabase initialization failed in webhook handler:", supabaseError.message);
+      throw new Error("Database not properly configured");
+    }
     // Update any existing orders to processing status
     const { error: orderError } = await supabase
       .from("orders")
@@ -429,7 +447,16 @@ async function handlePaymentIntentRequiresAction(
 ) {
   console.log(`[${new Date().toISOString()}] Processing PaymentIntent requires action: ${paymentIntent.id}`);
 
+  let supabase: ReturnType<typeof createClient>;
+
   try {
+    // Initialize Supabase client
+    try {
+      supabase = getSupabaseClient();
+    } catch (supabaseError: any) {
+      console.error("Supabase initialization failed in webhook handler:", supabaseError.message);
+      throw new Error("Database not properly configured");
+    }
     // Update any existing orders to require action status
     const { error: orderError } = await supabase
       .from("orders")
@@ -473,7 +500,16 @@ async function handlePaymentIntentCanceled(
 ) {
   console.log(`[${new Date().toISOString()}] Processing PaymentIntent canceled: ${paymentIntent.id}`);
 
+  let supabase: ReturnType<typeof createClient>;
+
   try {
+    // Initialize Supabase client
+    try {
+      supabase = getSupabaseClient();
+    } catch (supabaseError: any) {
+      console.error("Supabase initialization failed in webhook handler:", supabaseError.message);
+      throw new Error("Database not properly configured");
+    }
     // Update any existing orders to canceled status
     const { error: orderError } = await supabase
       .from("orders")
