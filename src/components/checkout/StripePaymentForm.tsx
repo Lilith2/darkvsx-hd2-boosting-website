@@ -102,7 +102,7 @@ export function StripePaymentForm({
               referralDiscount,
               creditsUsed,
               currency: "usd",
-              metadata,
+              metadata: memoizedMetadata,
             }),
           },
         );
