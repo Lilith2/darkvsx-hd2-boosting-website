@@ -1019,6 +1019,11 @@ export default function AdminDashboard() {
             )}
           </TabsContent>
 
+          {/* Promo Codes Tab */}
+          <TabsContent value="promo-codes">
+            <AdminPromoCodesTab />
+          </TabsContent>
+
           {/* Orders Tab */}
           <TabsContent value="orders">
             {isLoading && currentTab === "orders" ? (
