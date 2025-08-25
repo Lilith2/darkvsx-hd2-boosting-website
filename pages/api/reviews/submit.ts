@@ -148,7 +148,7 @@ interface ValidationError {
   error: string;
 }
 
-async function validateOrder(reviewData: ReviewSubmissionData) {
+async function validateOrder(reviewData: ReviewSubmissionData): Promise<ValidationSuccess | ValidationError> {
   const { order_id, user_id, customer_email } = reviewData;
 
   // First, try to find the order in the regular orders table
