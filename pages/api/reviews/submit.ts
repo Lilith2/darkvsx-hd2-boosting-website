@@ -136,6 +136,18 @@ interface CustomOrder {
   completed_at: string | null;
 }
 
+interface ValidationSuccess {
+  success: true;
+  order: RegularOrder | CustomOrder;
+  orderType: "regular" | "custom";
+}
+
+interface ValidationError {
+  success: false;
+  statusCode: number;
+  error: string;
+}
+
 async function validateOrder(reviewData: ReviewSubmissionData) {
   const { order_id, user_id, customer_email } = reviewData;
 
