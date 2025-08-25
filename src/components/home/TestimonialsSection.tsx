@@ -1,65 +1,102 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, User, MessageSquare } from "lucide-react";
+import { useFeaturedReviews } from "@/hooks/useReviews";
+import { ReviewCard } from "@/components/reviews/ReviewCard";
+import Link from "next/link";
 
-const testimonials = [
+// Fallback testimonials for when no database reviews are available
+const fallbackTestimonials = [
   {
-    id: 1,
-    name: "Alex M.",
+    id: "1",
+    customer_name: "Alex M.",
     rating: 5,
     comment:
       "Incredible service! Got my level boost completed in just 2 hours. Professional team and great communication throughout the process.",
-    service: "Level Boost",
+    service_name: "Level Boost",
     verified: true,
+    featured: true,
+    status: 'approved' as const,
+    created_at: new Date().toISOString(),
   },
   {
-    id: 2,
-    name: "Sarah K.",
+    id: "2",
+    customer_name: "Sarah K.",
     rating: 5,
     comment:
       "Best boosting service I've used. Fast, reliable, and secure. Highly recommend for anyone looking to progress quickly in Helldivers 2.",
-    service: "Weapon Unlock",
+    service_name: "Weapon Unlock",
     verified: true,
+    featured: true,
+    status: 'approved' as const,
+    created_at: new Date().toISOString(),
   },
   {
-    id: 3,
-    name: "Michael R.",
+    id: "3",
+    customer_name: "Michael R.",
     rating: 5,
     comment:
       "Amazing experience from start to finish. The booster was skilled and completed everything exactly as promised. Will definitely use again!",
-    service: "Mission Completion",
+    service_name: "Mission Completion",
     verified: true,
+    featured: true,
+    status: 'approved' as const,
+    created_at: new Date().toISOString(),
   },
   {
-    id: 4,
-    name: "Emma T.",
+    id: "4",
+    customer_name: "Emma T.",
     rating: 5,
     comment:
       "Professional service with excellent customer support. They answered all my questions and delivered exactly what was promised.",
-    service: "Super Credits",
+    service_name: "Super Credits",
     verified: true,
+    featured: true,
+    status: 'approved' as const,
+    created_at: new Date().toISOString(),
   },
   {
-    id: 5,
-    name: "David L.",
+    id: "5",
+    customer_name: "David L.",
     rating: 5,
     comment:
       "Outstanding quality and speed. The team completed my order in record time while maintaining the highest safety standards.",
-    service: "Samples Farming",
+    service_name: "Samples Farming",
     verified: true,
+    featured: true,
+    status: 'approved' as const,
+    created_at: new Date().toISOString(),
   },
   {
-    id: 6,
-    name: "Jessica W.",
+    id: "6",
+    customer_name: "Jessica W.",
     rating: 5,
     comment:
       "Exceeded my expectations! Great value for money and the booster was incredibly skilled. Highly recommended for all Helldivers 2 services.",
-    service: "Custom Order",
+    service_name: "Custom Order",
     verified: true,
+    featured: true,
+    status: 'approved' as const,
+    created_at: new Date().toISOString(),
   },
 ];
 
 export function TestimonialsSection() {
+  const { reviews: featuredReviews, loading } = useFeaturedReviews(6);
+
+  // Use database reviews if available, otherwise fallback to hardcoded testimonials
+  const displayReviews = featuredReviews.length > 0 ? featuredReviews : fallbackTestimonials.map(testimonial => ({
+    ...testimonial,
+    customer_email: "",
+    user_id: null,
+    title: null,
+    order_id: null,
+    order_number: null,
+    metadata: {},
+    updated_at: testimonial.created_at,
+    approved_at: testimonial.created_at,
+    featured_at: testimonial.created_at,
+  }));
   return (
     <section className="py-24 bg-gradient-to-br from-muted/20 to-muted/10">
       <div className="container mx-auto px-4">
