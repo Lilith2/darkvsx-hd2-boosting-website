@@ -60,6 +60,14 @@ export function StripePaymentForm({
   const [isInitializing, setIsInitializing] = useState(false);
   const { toast } = useToast();
 
+  // Memoize metadata to prevent unnecessary re-renders
+  const memoizedMetadata = useMemo(() => metadata, [JSON.stringify(metadata)]);
+
+  // Memoize error handler
+  const handlePaymentError = useCallback((error: string) => {
+    onPaymentError(error);
+  }, [onPaymentError]);
+
   useEffect(() => {
     const initializePayment = async () => {
       // Prevent concurrent initialization
