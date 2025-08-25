@@ -63,8 +63,15 @@ export function StripePaymentForm({
   useEffect(() => {
     const initializePayment = async () => {
       // Prevent multiple concurrent initializations
-      if (initializingRef.current || total <= 0 || disabled) {
+      if (initializingRef.current || disabled) {
         setIsLoading(false);
+        return;
+      }
+
+      // Check for valid cart and total
+      if (total <= 0 || cartItems.length === 0) {
+        setIsLoading(false);
+        setInitError("Your cart is empty or the total amount is too low for payment processing.");
         return;
       }
 
