@@ -227,9 +227,10 @@ export default async function handler(
         servicesTotal,
         customOrderTotal,
         subtotal,
-        referralDiscount,
+        referralCode: referralCode || null,
+        referralDiscount: validatedReferralDiscount,
         tax,
-        creditsUsed,
+        creditsUsed: validatedCreditsUsed,
         finalAmount,
       },
     });
