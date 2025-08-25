@@ -248,7 +248,7 @@ export function StripePaymentElement({
       <Alert className="border-green-200 dark:border-green-800 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
         <Shield className="h-4 w-4 text-green-600" />
         <AlertDescription className="text-green-800 dark:text-green-200">
-          <strong>Recommended:</strong> For faster and more secure payments, we recommend using digital wallets (Apple Pay, Google Pay) or mobile payment apps (Venmo, Cash App) instead of credit cards.
+          Credit cards are supported - we don't store any of your information, however we strongly recommend using a payment application.
         </AlertDescription>
       </Alert>
 
