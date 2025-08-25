@@ -350,6 +350,9 @@ export default function AdminDashboard() {
         await addBundle(bundleData);
       }
 
+      // Invalidate React Query cache to trigger real-time updates
+      invalidateAll();
+
       toast({
         title: "Success",
         description: `Bundle ${selectedBundle ? "updated" : "created"} successfully.`,
