@@ -229,7 +229,7 @@ async function validateOrder(reviewData: ReviewSubmissionData) {
   };
 }
 
-async function checkExistingReview(orderId: string, userId?: string) {
+async function checkExistingReview(orderId: string) {
   const { data: existingReview } = await supabase
     .from("reviews")
     .select("id")
