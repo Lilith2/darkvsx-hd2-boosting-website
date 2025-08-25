@@ -35,6 +35,7 @@ interface ApiResponse {
   success: boolean;
   error?: string;
   orders?: CompletedOrder[];
+  total?: number;
 }
 
 export default async function handler(
