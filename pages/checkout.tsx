@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
