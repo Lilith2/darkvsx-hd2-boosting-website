@@ -94,18 +94,19 @@ export function StripePaymentForm({
           },
         );
 
+        // Read the response body only once
+        const responseData = await intentResponse.json();
+
         if (!intentResponse.ok) {
-          const errorData = await intentResponse.json();
           if (intentResponse.status === 429) {
             throw new Error(
               "Too many requests. Please wait a moment and try again.",
             );
           }
-          throw new Error(errorData.error || "Failed to create payment intent");
+          throw new Error(responseData.error || "Failed to create payment intent");
         }
 
-        const intentData = await intentResponse.json();
-        setClientSecret(intentData.clientSecret);
+        setClientSecret(responseData.clientSecret);
       } catch (error: any) {
         console.error("Error initializing payment:", error);
         onPaymentError(error.message || "Failed to initialize payment");
