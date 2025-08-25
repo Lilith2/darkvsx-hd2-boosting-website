@@ -371,6 +371,10 @@ export default function AdminDashboard() {
 
     try {
       await deleteBundle(id);
+
+      // Invalidate React Query cache to trigger real-time updates
+      invalidateAll();
+
       toast({
         title: "Success",
         description: "Bundle deleted successfully.",
