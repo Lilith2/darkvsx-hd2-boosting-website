@@ -1150,12 +1150,7 @@ export type Database = {
           code: string;
           user_id: string | null;
         };
-        Returns: {
-          valid: boolean;
-          error?: string;
-          referrer_id?: string;
-          code?: string;
-        };
+        Returns: Json;
       };
       apply_referral_discount: {
         Args: {
