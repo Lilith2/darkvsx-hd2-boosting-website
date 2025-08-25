@@ -1158,11 +1158,7 @@ export type Database = {
           referral_code: string;
           user_id: string | null;
         };
-        Returns: {
-          success: boolean;
-          discount_amount?: number;
-          error?: string;
-        };
+        Returns: Json;
       };
     };
     Enums: {};
