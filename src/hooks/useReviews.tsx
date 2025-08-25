@@ -138,14 +138,31 @@ export async function submitReview(reviewData: {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      const result = await response.json();
+      let errorMessage = `Failed to submit review (${response.status})`;
+      try {
+        const result = await response.json();
+        errorMessage = result.error || errorMessage;
+      } catch (jsonError) {
+        // If response isn't JSON, use the default error message
+        console.warn("Non-JSON error response:", jsonError);
+      }
       return {
         success: false,
-        error: result.error || `Failed to submit review (${response.status})`,
+        error: errorMessage,
       };
     }
 
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (jsonError) {
+      console.error("Failed to parse response JSON:", jsonError);
+      return {
+        success: false,
+        error: "Invalid response from server. Please try again.",
+      };
+    }
+
     return { success: true, review: result.review };
   } catch (err: any) {
     console.error("Error submitting review:", err);
