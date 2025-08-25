@@ -485,24 +485,24 @@ export default function AnimatedCheckout() {
     }
   };
 
-  const handleStripePaymentSuccess = async (paymentIntent: any) => {
+  const handleStripePaymentSuccess = useCallback(async (paymentIntent: any) => {
     console.log("Stripe payment successful:", paymentIntent);
     await processOrder(paymentIntent);
-  };
+  }, []);
 
-  const handleCreditOnlyPayment = async () => {
+  const handleCreditOnlyPayment = useCallback(async () => {
     console.log("Processing credit-only payment");
     await processOrder();
-  };
+  }, []);
 
-  const handleStripePaymentError = (error: string) => {
+  const handleStripePaymentError = useCallback((error: string) => {
     console.error("Stripe payment error:", error);
     toast({
       title: "Payment failed",
       description: `There was an error processing your payment: ${error}`,
       variant: "destructive",
     });
-  };
+  }, [toast]);
 
   if (cartItems.length === 0) {
     return (
