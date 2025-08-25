@@ -214,6 +214,65 @@ export function useOptimizedAdminData() {
     },
   });
 
+  // Real-time subscriptions for live updates
+  useEffect(() => {
+    let ordersSubscription: any;
+    let servicesSubscription: any;
+    let bundlesSubscription: any;
+    let customOrdersSubscription: any;
+
+    const setupSubscriptions = async () => {
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+
+        // Orders subscription
+        ordersSubscription = supabase
+          .channel("admin-orders")
+          .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
+            queryClient.invalidateQueries({ queryKey: adminQueryKeys.orders() });
+          })
+          .subscribe();
+
+        // Services subscription
+        servicesSubscription = supabase
+          .channel("admin-services")
+          .on("postgres_changes", { event: "*", schema: "public", table: "services" }, () => {
+            queryClient.invalidateQueries({ queryKey: adminQueryKeys.services() });
+          })
+          .subscribe();
+
+        // Bundles subscription
+        bundlesSubscription = supabase
+          .channel("admin-bundles")
+          .on("postgres_changes", { event: "*", schema: "public", table: "bundles" }, () => {
+            queryClient.invalidateQueries({ queryKey: adminQueryKeys.bundles() });
+          })
+          .subscribe();
+
+        // Custom orders subscription
+        customOrdersSubscription = supabase
+          .channel("admin-custom-orders")
+          .on("postgres_changes", { event: "*", schema: "public", table: "custom_orders" }, () => {
+            queryClient.invalidateQueries({ queryKey: adminQueryKeys.customOrders() });
+          })
+          .subscribe();
+
+      } catch (error) {
+        console.error("Error setting up real-time subscriptions:", error);
+      }
+    };
+
+    setupSubscriptions();
+
+    // Cleanup subscriptions on unmount
+    return () => {
+      if (ordersSubscription) ordersSubscription.unsubscribe();
+      if (servicesSubscription) servicesSubscription.unsubscribe();
+      if (bundlesSubscription) bundlesSubscription.unsubscribe();
+      if (customOrdersSubscription) customOrdersSubscription.unsubscribe();
+    };
+  }, [queryClient]);
+
   // Calculate analytics data with memoization
   const analytics = useMemo(() => {
     const isLoading = ordersLoading || customOrdersLoading || servicesLoading;
