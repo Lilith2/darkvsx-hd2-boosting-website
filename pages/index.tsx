@@ -40,7 +40,6 @@ export default function Index() {
         <SimpleHeroSection />
         <HowItWorksSection />
         <ServicesSection />
-        <TestimonialsSection />
 
         {/* Scroll to Top Button */}
         {mounted && scrolled && (
