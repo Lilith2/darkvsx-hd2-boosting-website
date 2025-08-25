@@ -132,6 +132,52 @@ export default async function handler(
       );
     }
 
+    // Server-side promo code validation for security
+    let validatedReferralDiscount = 0;
+    if (referralCode && referralCode.trim()) {
+      try {
+        const { data: validation, error: validationError } = await supabase
+          .rpc('validate_referral_code', {
+            code: referralCode.trim(),
+            user_id: null, // We don't require user ID for validation
+          });
+
+        if (validationError) {
+          console.error("Error validating referral code:", validationError);
+          return res.status(400).json({
+            error: "Invalid promo code",
+            details: "Could not validate the provided promo code",
+          });
+        }
+
+        if (validation && validation.valid) {
+          // Apply the discount based on the subtotal
+          const subtotalBeforeDiscount = servicesTotal + customOrderTotal;
+          validatedReferralDiscount = Math.min(
+            referralDiscount,
+            subtotalBeforeDiscount * 0.15 // Max 15% discount for safety
+          );
+        } else {
+          return res.status(400).json({
+            error: "Invalid promo code",
+            details: validation?.error || "The promo code is not valid or has expired",
+          });
+        }
+      } catch (err) {
+        console.error("Error during promo code validation:", err);
+        return res.status(400).json({
+          error: "Invalid promo code",
+          details: "Could not validate the provided promo code",
+        });
+      }
+    } else if (referralDiscount > 0) {
+      // If no code provided but discount claimed, reject
+      return res.status(400).json({
+        error: "Missing promo code",
+        details: "Promo code is required to apply discount",
+      });
+    }
+
     // Calculate final amount
     const TAX_RATE = 0.08;
     const subtotal = servicesTotal + customOrderTotal;
