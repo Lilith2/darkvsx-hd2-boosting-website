@@ -179,9 +179,10 @@ export default async function handler(
       });
     }
 
-    // Generic error
+    // Generic error - ensure JSON response
     res.status(500).json({
       error: error.message || "Failed to create payment intent",
+      details: "An unexpected error occurred while creating the payment intent. Please try again.",
     });
   }
 }
