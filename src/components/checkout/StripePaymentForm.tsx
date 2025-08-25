@@ -57,11 +57,16 @@ export function StripePaymentForm({
 }: StripePaymentFormProps) {
   const [clientSecret, setClientSecret] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isInitializing, setIsInitializing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     const initializePayment = async () => {
+      // Prevent concurrent initialization
+      if (isInitializing) return;
+
       try {
+        setIsInitializing(true);
         setIsLoading(true);
 
         // Prepare secure payment data (server will calculate amounts)
