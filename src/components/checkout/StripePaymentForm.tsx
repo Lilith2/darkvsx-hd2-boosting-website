@@ -108,6 +108,7 @@ export function StripePaymentForm({
         const requestBody = {
           services,
           customOrderData,
+          referralCode: referralCode || "",
           referralDiscount: Math.max(0, referralDiscount || 0),
           creditsUsed: Math.max(0, creditsUsed || 0),
           currency: "usd",
