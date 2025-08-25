@@ -124,7 +124,7 @@ export function StripePaymentForm({
           hasCustomOrder: !!customOrderData,
           total,
           referralDiscount,
-          creditsUsed
+          creditsUsed,
         });
 
         // Create payment intent with timeout
@@ -158,11 +158,12 @@ export function StripePaymentForm({
         }
 
         if (!response.ok) {
-          const errorMessage = data.error || data.details || `Server error: ${response.status}`;
+          const errorMessage =
+            data.error || data.details || `Server error: ${response.status}`;
           console.error("Payment intent creation failed:", {
             status: response.status,
             error: data.error,
-            details: data.details
+            details: data.details,
           });
           throw new Error(errorMessage);
         }
@@ -178,24 +179,25 @@ export function StripePaymentForm({
 
         console.log("Payment intent created successfully:", {
           paymentIntentId: data.paymentIntentId,
-          amount: data.amount
+          amount: data.amount,
         });
 
         setClientSecret(data.clientSecret);
-
       } catch (error: any) {
         console.error("Error initializing payment:", {
           error: error.message,
           name: error.name,
-          stack: error.stack
+          stack: error.stack,
         });
 
         let errorMessage = "Failed to initialize payment";
 
-        if (error.name === 'AbortError') {
-          errorMessage = "Payment initialization timed out. Please check your connection and try again.";
+        if (error.name === "AbortError") {
+          errorMessage =
+            "Payment initialization timed out. Please check your connection and try again.";
         } else if (error.message.includes("fetch")) {
-          errorMessage = "Network error. Please check your connection and try again.";
+          errorMessage =
+            "Network error. Please check your connection and try again.";
         } else if (error.message) {
           errorMessage = error.message;
         }

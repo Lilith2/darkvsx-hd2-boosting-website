@@ -61,15 +61,18 @@ export default async function handler(
       console.error("Missing STRIPE_SECRET_KEY environment variable");
       return res.status(500).json({
         error: "Payment service not configured",
-        details: "Stripe secret key missing"
+        details: "Stripe secret key missing",
       });
     }
 
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
       console.error("Missing Supabase environment variables");
       return res.status(500).json({
         error: "Database service not configured",
-        details: "Supabase credentials missing"
+        details: "Supabase credentials missing",
       });
     }
 
@@ -155,11 +158,13 @@ export default async function handler(
     let validatedReferralDiscount = 0;
     if (referralCode && referralCode.trim()) {
       try {
-        const { data: validation, error: validationError } = await supabase
-          .rpc('validate_referral_code', {
+        const { data: validation, error: validationError } = await supabase.rpc(
+          "validate_referral_code",
+          {
             code: referralCode.trim(),
             user_id: null,
-          });
+          },
+        );
 
         if (validationError) {
           console.error("Error validating referral code:", validationError);
@@ -173,12 +178,13 @@ export default async function handler(
           // Apply the discount (usually 15% as per REFERRAL_CONFIG)
           validatedReferralDiscount = Math.min(
             referralDiscount,
-            subtotal * 0.15 // Max 15% discount for safety
+            subtotal * 0.15, // Max 15% discount for safety
           );
         } else {
           return res.status(400).json({
             error: "Invalid promo code",
-            details: validation?.error || "The promo code is not valid or has expired",
+            details:
+              validation?.error || "The promo code is not valid or has expired",
           });
         }
       } catch (err) {
@@ -198,7 +204,7 @@ export default async function handler(
 
     // Validate credits used don't exceed the total
     const validatedCreditsUsed = Math.min(creditsUsed, totalWithTax);
-    const finalAmount = Math.max(0.50, totalWithTax - validatedCreditsUsed); // Stripe minimum $0.50
+    const finalAmount = Math.max(0.5, totalWithTax - validatedCreditsUsed); // Stripe minimum $0.50
 
     // Minimum charge validation (Stripe minimum is $0.50)
     if (finalAmount < 0.5) {
@@ -216,7 +222,7 @@ export default async function handler(
       validatedReferralDiscount,
       tax,
       validatedCreditsUsed,
-      finalAmount
+      finalAmount,
     });
 
     // Create payment intent following Stripe documentation
@@ -232,7 +238,7 @@ export default async function handler(
         servicesTotal: servicesTotal.toFixed(2),
         customOrderTotal: customOrderTotal.toFixed(2),
         subtotal: subtotal.toFixed(2),
-        referralCode: referralCode || '',
+        referralCode: referralCode || "",
         referralDiscount: validatedReferralDiscount.toFixed(2),
         creditsUsed: validatedCreditsUsed.toFixed(2),
         tax: tax.toFixed(2),

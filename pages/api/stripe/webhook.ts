@@ -29,7 +29,7 @@ export default async function handler(
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Method not allowed",
-      allowed: ["POST"]
+      allowed: ["POST"],
     });
   }
 
@@ -42,7 +42,7 @@ export default async function handler(
       console.error("Missing Stripe environment variables");
       return res.status(500).json({
         error: "Payment service configuration error",
-        details: "Stripe not properly configured"
+        details: "Stripe not properly configured",
       });
     }
     // Get the signature from the request headers
@@ -52,7 +52,7 @@ export default async function handler(
       console.error("Missing stripe-signature header");
       return res.status(400).json({
         error: "Missing stripe signature",
-        details: "Webhook signature is required for security"
+        details: "Webhook signature is required for security",
       });
     }
 
@@ -60,7 +60,7 @@ export default async function handler(
       console.error("Missing STRIPE_WEBHOOK_SECRET environment variable");
       return res.status(500).json({
         error: "Webhook secret not configured",
-        details: "Server configuration error"
+        details: "Server configuration error",
       });
     }
 
@@ -68,13 +68,13 @@ export default async function handler(
     let rawBody: Buffer;
     try {
       rawBody = await buffer(req, {
-        limit: '1mb' // Limit webhook payload size
+        limit: "1mb", // Limit webhook payload size
       });
     } catch (bufferError: any) {
       console.error("Error reading webhook body:", bufferError);
       return res.status(400).json({
         error: "Invalid request body",
-        details: "Could not parse webhook payload"
+        details: "Could not parse webhook payload",
       });
     }
 
@@ -90,20 +90,22 @@ export default async function handler(
         error: err.message,
         type: err.type,
         headers: {
-          'stripe-signature': sig ? 'present' : 'missing',
-          'content-length': req.headers['content-length'],
-        }
+          "stripe-signature": sig ? "present" : "missing",
+          "content-length": req.headers["content-length"],
+        },
       });
 
       return res.status(400).json({
         error: "Webhook signature verification failed",
         details: err.message,
-        type: err.type
+        type: err.type,
       });
     }
 
     // Log event with timing
-    console.log(`[${new Date().toISOString()}] Received webhook event: ${event.type} (ID: ${event.id})`);
+    console.log(
+      `[${new Date().toISOString()}] Received webhook event: ${event.type} (ID: ${event.id})`,
+    );
 
     // Handle the event with enhanced error handling
     try {
@@ -140,18 +142,20 @@ export default async function handler(
 
         default:
           console.log(`Unhandled event type: ${event.type} (ID: ${event.id})`);
-          // Still return success for unhandled but valid events
+        // Still return success for unhandled but valid events
       }
     } catch (handlerError: any) {
       console.error(`Error handling ${event.type} event:`, {
         eventId: event.id,
         error: handlerError.message,
-        stack: handlerError.stack
+        stack: handlerError.stack,
       });
 
       // Don't fail the webhook for individual handler errors
       // Stripe will retry if we return an error status
-      console.warn(`Handler failed for ${event.type}, but acknowledging webhook to prevent retries`);
+      console.warn(
+        `Handler failed for ${event.type}, but acknowledging webhook to prevent retries`,
+      );
     }
 
     const processingTime = Date.now() - startTime;
@@ -162,9 +166,8 @@ export default async function handler(
       received: true,
       eventId: event.id,
       eventType: event.type,
-      processingTime: processingTime
+      processingTime: processingTime,
     });
-
   } catch (error: any) {
     const processingTime = Date.now() - startTime;
     console.error("Webhook handler critical error:", {
@@ -172,16 +175,18 @@ export default async function handler(
       stack: error.stack,
       processingTime,
       headers: {
-        'content-type': req.headers['content-type'],
-        'content-length': req.headers['content-length'],
-        'stripe-signature': req.headers['stripe-signature'] ? 'present' : 'missing'
-      }
+        "content-type": req.headers["content-type"],
+        "content-length": req.headers["content-length"],
+        "stripe-signature": req.headers["stripe-signature"]
+          ? "present"
+          : "missing",
+      },
     });
 
     res.status(500).json({
       error: "Webhook handler failed",
       details: "Internal server error processing webhook",
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 }
@@ -190,10 +195,11 @@ async function handlePaymentIntentSucceeded(
   paymentIntent: Stripe.PaymentIntent,
 ) {
   const startTime = Date.now();
-  console.log(`[${new Date().toISOString()}] Processing PaymentIntent succeeded: ${paymentIntent.id} (Amount: $${(paymentIntent.amount / 100).toFixed(2)})`);
+  console.log(
+    `[${new Date().toISOString()}] Processing PaymentIntent succeeded: ${paymentIntent.id} (Amount: $${(paymentIntent.amount / 100).toFixed(2)})`,
+  );
 
   try {
-
     // Check if we already have orders for this payment intent
     const { data: existingOrders, error: ordersQueryError } = await supabase
       .from("orders")
@@ -201,38 +207,54 @@ async function handlePaymentIntentSucceeded(
       .eq("transaction_id", paymentIntent.id);
 
     if (ordersQueryError) {
-      console.error(`Database error querying orders for ${paymentIntent.id}:`, ordersQueryError);
+      console.error(
+        `Database error querying orders for ${paymentIntent.id}:`,
+        ordersQueryError,
+      );
       throw new Error(`Database query failed: ${ordersQueryError.message}`);
     }
 
-    const { data: existingCustomOrders, error: customOrdersQueryError } = await supabase
-      .from("custom_orders")
-      .select("id, status")
-      .eq("payment_intent_id", paymentIntent.id);
+    const { data: existingCustomOrders, error: customOrdersQueryError } =
+      await supabase
+        .from("custom_orders")
+        .select("id, status")
+        .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrdersQueryError) {
-      console.error(`Database error querying custom orders for ${paymentIntent.id}:`, customOrdersQueryError);
-      throw new Error(`Database query failed: ${customOrdersQueryError.message}`);
+      console.error(
+        `Database error querying custom orders for ${paymentIntent.id}:`,
+        customOrdersQueryError,
+      );
+      throw new Error(
+        `Database query failed: ${customOrdersQueryError.message}`,
+      );
     }
 
     // If orders already exist, update their status
     if (existingOrders && existingOrders.length > 0) {
-      console.log(`Found ${existingOrders.length} existing orders for PaymentIntent ${paymentIntent.id}`);
+      console.log(
+        `Found ${existingOrders.length} existing orders for PaymentIntent ${paymentIntent.id}`,
+      );
 
-      const ordersToUpdate = existingOrders.filter(order => order.payment_status !== "paid");
+      const ordersToUpdate = existingOrders.filter(
+        (order) => order.payment_status !== "paid",
+      );
       if (ordersToUpdate.length > 0) {
         const { error: updateError } = await supabase
           .from("orders")
           .update({
             payment_status: "paid",
             status: "pending",
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq("transaction_id", paymentIntent.id)
           .neq("payment_status", "paid");
 
         if (updateError) {
-          console.error(`Error updating orders for ${paymentIntent.id}:`, updateError);
+          console.error(
+            `Error updating orders for ${paymentIntent.id}:`,
+            updateError,
+          );
           throw new Error(`Failed to update orders: ${updateError.message}`);
         }
         console.log(`Updated ${ordersToUpdate.length} orders to paid status`);
@@ -240,57 +262,86 @@ async function handlePaymentIntentSucceeded(
     }
 
     if (existingCustomOrders && existingCustomOrders.length > 0) {
-      console.log(`Found ${existingCustomOrders.length} existing custom orders for PaymentIntent ${paymentIntent.id}`);
+      console.log(
+        `Found ${existingCustomOrders.length} existing custom orders for PaymentIntent ${paymentIntent.id}`,
+      );
 
-      const customOrdersToUpdate = existingCustomOrders.filter(order => order.status === "pending");
+      const customOrdersToUpdate = existingCustomOrders.filter(
+        (order) => order.status === "pending",
+      );
       if (customOrdersToUpdate.length > 0) {
         const { error: updateError } = await supabase
           .from("custom_orders")
           .update({
             status: "processing",
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq("payment_intent_id", paymentIntent.id)
           .eq("status", "pending");
 
         if (updateError) {
-          console.error(`Error updating custom orders for ${paymentIntent.id}:`, updateError);
-          throw new Error(`Failed to update custom orders: ${updateError.message}`);
+          console.error(
+            `Error updating custom orders for ${paymentIntent.id}:`,
+            updateError,
+          );
+          throw new Error(
+            `Failed to update custom orders: ${updateError.message}`,
+          );
         }
-        console.log(`Updated ${customOrdersToUpdate.length} custom orders to processing status`);
+        console.log(
+          `Updated ${customOrdersToUpdate.length} custom orders to processing status`,
+        );
       }
     }
 
     // If no orders exist, this might be expected (order created via verify-and-create endpoint)
-    if ((!existingOrders || existingOrders.length === 0) &&
-        (!existingCustomOrders || existingCustomOrders.length === 0)) {
-      console.warn(`PaymentIntent succeeded but no orders found: ${paymentIntent.id}`);
-      console.warn("This might be normal if orders are created via the verify-and-create endpoint");
+    if (
+      (!existingOrders || existingOrders.length === 0) &&
+      (!existingCustomOrders || existingCustomOrders.length === 0)
+    ) {
+      console.warn(
+        `PaymentIntent succeeded but no orders found: ${paymentIntent.id}`,
+      );
+      console.warn(
+        "This might be normal if orders are created via the verify-and-create endpoint",
+      );
 
       // Log metadata for debugging
-      if (paymentIntent.metadata && Object.keys(paymentIntent.metadata).length > 0) {
-        console.log("PaymentIntent metadata:", JSON.stringify(paymentIntent.metadata, null, 2));
+      if (
+        paymentIntent.metadata &&
+        Object.keys(paymentIntent.metadata).length > 0
+      ) {
+        console.log(
+          "PaymentIntent metadata:",
+          JSON.stringify(paymentIntent.metadata, null, 2),
+        );
       }
     }
 
     const processingTime = Date.now() - startTime;
-    console.log(`PaymentIntent ${paymentIntent.id} success handler completed in ${processingTime}ms`);
-
+    console.log(
+      `PaymentIntent ${paymentIntent.id} success handler completed in ${processingTime}ms`,
+    );
   } catch (error: any) {
     const processingTime = Date.now() - startTime;
-    console.error(`Error handling payment success for ${paymentIntent.id} (took ${processingTime}ms):`, {
-      error: error.message,
-      stack: error.stack,
-      paymentIntentId: paymentIntent.id,
-      amount: paymentIntent.amount
-    });
+    console.error(
+      `Error handling payment success for ${paymentIntent.id} (took ${processingTime}ms):`,
+      {
+        error: error.message,
+        stack: error.stack,
+        paymentIntentId: paymentIntent.id,
+        amount: paymentIntent.amount,
+      },
+    );
     throw error;
   }
 }
 
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   const startTime = Date.now();
-  console.log(`[${new Date().toISOString()}] Processing PaymentIntent failed: ${paymentIntent.id} (Amount: $${(paymentIntent.amount / 100).toFixed(2)})`);
+  console.log(
+    `[${new Date().toISOString()}] Processing PaymentIntent failed: ${paymentIntent.id} (Amount: $${(paymentIntent.amount / 100).toFixed(2)})`,
+  );
 
   try {
     // Update any existing orders to failed status
@@ -304,12 +355,17 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
       .eq("transaction_id", paymentIntent.id);
 
     if (orderError) {
-      console.error(`Error updating failed order status for ${paymentIntent.id}:`, orderError);
+      console.error(
+        `Error updating failed order status for ${paymentIntent.id}:`,
+        orderError,
+      );
       throw new Error(`Failed to update orders: ${orderError.message}`);
     }
 
     if (orderCount && orderCount > 0) {
-      console.log(`Updated ${orderCount} orders to failed status for PaymentIntent ${paymentIntent.id}`);
+      console.log(
+        `Updated ${orderCount} orders to failed status for PaymentIntent ${paymentIntent.id}`,
+      );
     }
 
     // Update any existing custom orders to failed status
@@ -322,12 +378,19 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
       .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrderError) {
-      console.error(`Error updating failed custom order status for ${paymentIntent.id}:`, customOrderError);
-      throw new Error(`Failed to update custom orders: ${customOrderError.message}`);
+      console.error(
+        `Error updating failed custom order status for ${paymentIntent.id}:`,
+        customOrderError,
+      );
+      throw new Error(
+        `Failed to update custom orders: ${customOrderError.message}`,
+      );
     }
 
     if (customOrderCount && customOrderCount > 0) {
-      console.log(`Updated ${customOrderCount} custom orders to cancelled status for PaymentIntent ${paymentIntent.id}`);
+      console.log(
+        `Updated ${customOrderCount} custom orders to cancelled status for PaymentIntent ${paymentIntent.id}`,
+      );
     }
 
     // Log failure reason if available
@@ -335,20 +398,24 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
       console.log(`Payment failure reason for ${paymentIntent.id}:`, {
         code: paymentIntent.last_payment_error.code,
         message: paymentIntent.last_payment_error.message,
-        type: paymentIntent.last_payment_error.type
+        type: paymentIntent.last_payment_error.type,
       });
     }
 
     const processingTime = Date.now() - startTime;
-    console.log(`PaymentIntent ${paymentIntent.id} failure handler completed in ${processingTime}ms`);
-
+    console.log(
+      `PaymentIntent ${paymentIntent.id} failure handler completed in ${processingTime}ms`,
+    );
   } catch (error: any) {
     const processingTime = Date.now() - startTime;
-    console.error(`Error handling payment failure for ${paymentIntent.id} (took ${processingTime}ms):`, {
-      error: error.message,
-      stack: error.stack,
-      paymentIntentId: paymentIntent.id
-    });
+    console.error(
+      `Error handling payment failure for ${paymentIntent.id} (took ${processingTime}ms):`,
+      {
+        error: error.message,
+        stack: error.stack,
+        paymentIntentId: paymentIntent.id,
+      },
+    );
     throw error;
   }
 }
@@ -356,7 +423,9 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
 async function handlePaymentIntentProcessing(
   paymentIntent: Stripe.PaymentIntent,
 ) {
-  console.log(`[${new Date().toISOString()}] Processing PaymentIntent processing status: ${paymentIntent.id}`);
+  console.log(
+    `[${new Date().toISOString()}] Processing PaymentIntent processing status: ${paymentIntent.id}`,
+  );
 
   try {
     // Update any existing orders to processing status
@@ -369,7 +438,10 @@ async function handlePaymentIntentProcessing(
       .eq("transaction_id", paymentIntent.id);
 
     if (orderError) {
-      console.error(`Error updating processing order status for ${paymentIntent.id}:`, orderError);
+      console.error(
+        `Error updating processing order status for ${paymentIntent.id}:`,
+        orderError,
+      );
       throw new Error(`Failed to update orders: ${orderError.message}`);
     }
 
@@ -383,16 +455,26 @@ async function handlePaymentIntentProcessing(
       .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrderError) {
-      console.error(`Error updating processing custom order status for ${paymentIntent.id}:`, customOrderError);
-      throw new Error(`Failed to update custom orders: ${customOrderError.message}`);
+      console.error(
+        `Error updating processing custom order status for ${paymentIntent.id}:`,
+        customOrderError,
+      );
+      throw new Error(
+        `Failed to update custom orders: ${customOrderError.message}`,
+      );
     }
 
-    console.log(`PaymentIntent ${paymentIntent.id} processing status updated successfully`);
+    console.log(
+      `PaymentIntent ${paymentIntent.id} processing status updated successfully`,
+    );
   } catch (error: any) {
-    console.error(`Error handling payment processing for ${paymentIntent.id}:`, {
-      error: error.message,
-      stack: error.stack
-    });
+    console.error(
+      `Error handling payment processing for ${paymentIntent.id}:`,
+      {
+        error: error.message,
+        stack: error.stack,
+      },
+    );
     throw error;
   }
 }
@@ -400,7 +482,9 @@ async function handlePaymentIntentProcessing(
 async function handlePaymentIntentRequiresAction(
   paymentIntent: Stripe.PaymentIntent,
 ) {
-  console.log(`[${new Date().toISOString()}] Processing PaymentIntent requires action: ${paymentIntent.id}`);
+  console.log(
+    `[${new Date().toISOString()}] Processing PaymentIntent requires action: ${paymentIntent.id}`,
+  );
 
   try {
     // Update any existing orders to require action status
@@ -413,7 +497,10 @@ async function handlePaymentIntentRequiresAction(
       .eq("transaction_id", paymentIntent.id);
 
     if (orderError) {
-      console.error(`Error updating requires_action order status for ${paymentIntent.id}:`, orderError);
+      console.error(
+        `Error updating requires_action order status for ${paymentIntent.id}:`,
+        orderError,
+      );
       throw new Error(`Failed to update orders: ${orderError.message}`);
     }
 
@@ -427,16 +514,26 @@ async function handlePaymentIntentRequiresAction(
       .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrderError) {
-      console.error(`Error updating requires_action custom order status for ${paymentIntent.id}:`, customOrderError);
-      throw new Error(`Failed to update custom orders: ${customOrderError.message}`);
+      console.error(
+        `Error updating requires_action custom order status for ${paymentIntent.id}:`,
+        customOrderError,
+      );
+      throw new Error(
+        `Failed to update custom orders: ${customOrderError.message}`,
+      );
     }
 
-    console.log(`PaymentIntent ${paymentIntent.id} requires_action status updated successfully`);
+    console.log(
+      `PaymentIntent ${paymentIntent.id} requires_action status updated successfully`,
+    );
   } catch (error: any) {
-    console.error(`Error handling payment requires action for ${paymentIntent.id}:`, {
-      error: error.message,
-      stack: error.stack
-    });
+    console.error(
+      `Error handling payment requires action for ${paymentIntent.id}:`,
+      {
+        error: error.message,
+        stack: error.stack,
+      },
+    );
     throw error;
   }
 }
@@ -444,7 +541,9 @@ async function handlePaymentIntentRequiresAction(
 async function handlePaymentIntentCanceled(
   paymentIntent: Stripe.PaymentIntent,
 ) {
-  console.log(`[${new Date().toISOString()}] Processing PaymentIntent canceled: ${paymentIntent.id}`);
+  console.log(
+    `[${new Date().toISOString()}] Processing PaymentIntent canceled: ${paymentIntent.id}`,
+  );
 
   try {
     // Update any existing orders to canceled status
@@ -458,7 +557,10 @@ async function handlePaymentIntentCanceled(
       .eq("transaction_id", paymentIntent.id);
 
     if (orderError) {
-      console.error(`Error updating canceled order status for ${paymentIntent.id}:`, orderError);
+      console.error(
+        `Error updating canceled order status for ${paymentIntent.id}:`,
+        orderError,
+      );
       throw new Error(`Failed to update orders: ${orderError.message}`);
     }
 
@@ -472,16 +574,26 @@ async function handlePaymentIntentCanceled(
       .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrderError) {
-      console.error(`Error updating canceled custom order status for ${paymentIntent.id}:`, customOrderError);
-      throw new Error(`Failed to update custom orders: ${customOrderError.message}`);
+      console.error(
+        `Error updating canceled custom order status for ${paymentIntent.id}:`,
+        customOrderError,
+      );
+      throw new Error(
+        `Failed to update custom orders: ${customOrderError.message}`,
+      );
     }
 
-    console.log(`PaymentIntent ${paymentIntent.id} cancellation status updated successfully`);
+    console.log(
+      `PaymentIntent ${paymentIntent.id} cancellation status updated successfully`,
+    );
   } catch (error: any) {
-    console.error(`Error handling payment cancellation for ${paymentIntent.id}:`, {
-      error: error.message,
-      stack: error.stack
-    });
+    console.error(
+      `Error handling payment cancellation for ${paymentIntent.id}:`,
+      {
+        error: error.message,
+        stack: error.stack,
+      },
+    );
     throw error;
   }
 }

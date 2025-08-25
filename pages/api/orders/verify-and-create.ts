@@ -107,7 +107,10 @@ export default async function handler(
       });
     }
 
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
       console.error("Missing Supabase environment variables");
       return res.status(500).json({
         error: "Server configuration error",
