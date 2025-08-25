@@ -187,6 +187,16 @@ export function StripePaymentForm({
             details: data.details,
             fullResponse: data
           });
+
+          // Handle specific cart cleanup scenario
+          if (data.action === "clear_cart") {
+            // Redirect to cart cleanup page
+            if (typeof window !== "undefined") {
+              window.location.href = "/cart-cleanup";
+              return;
+            }
+          }
+
           throw new Error(errorMessage);
         }
 

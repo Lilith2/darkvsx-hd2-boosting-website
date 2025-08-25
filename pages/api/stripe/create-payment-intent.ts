@@ -140,8 +140,11 @@ export default async function handler(
           missing: missingServices
         });
         return res.status(400).json({
-          error: "Invalid services requested",
-          details: `Services not found or inactive: ${missingServices.join(", ")}`,
+          error: "Invalid services in cart",
+          details: `Some services in your cart are no longer available. Please remove them and add current services.`,
+          invalidServices: missingServices,
+          availableServices: dbServices?.map(s => ({ id: s.id, title: s.title, price: s.price })) || [],
+          action: "clear_cart"
         });
       }
 
