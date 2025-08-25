@@ -68,7 +68,7 @@ export function ServiceModal({
         originalPrice: service.original_price?.toString() || "",
         duration: service.duration,
         difficulty: service.difficulty,
-        category: service.category || "Level Boost",
+        category: (service.category as "Level Boost" | "Medals" | "Samples" | "Super Credits" | "Promotions") || "Level Boost",
         features:
           service.features && service.features.length > 0
             ? service.features
