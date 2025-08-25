@@ -111,57 +111,22 @@ export function TestimonialsSection() {
           </p>
         </div>
 
-        {/* Note: Reviews will be dynamically populated from customer orders in the future */}
+        {/* Loading state */}
+        {loading && (
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p className="mt-2 text-muted-foreground">Loading reviews...</p>
+          </div>
+        )}
 
-        {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {testimonials.map((testimonial) => (
-            <Card
-              key={testimonial.id}
-              className="border-0 shadow-lg bg-card/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 group"
-            >
-              <CardContent className="p-6">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center">
-                      <User className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-semibold">{testimonial.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {testimonial.service}
-                      </div>
-                    </div>
-                  </div>
-                  {testimonial.verified && (
-                    <Badge className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200">
-                      Verified
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Rating */}
-                <div className="flex items-center space-x-1 mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
-                </div>
-
-                {/* Comment */}
-                <div className="relative">
-                  <MessageSquare className="w-5 h-5 text-muted-foreground/30 absolute -top-1 -left-1" />
-                  <p className="text-muted-foreground leading-relaxed pl-6">
-                    "{testimonial.comment}"
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {/* Reviews Grid */}
+        {!loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {displayReviews.map((review) => (
+              <ReviewCard key={review.id} review={review} />
+            ))}
+          </div>
+        )}
 
         {/* Call to Action */}
         <div className="text-center mt-16">
