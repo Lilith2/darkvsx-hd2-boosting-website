@@ -104,6 +104,18 @@ export default function AnimatedCheckout() {
     }
   }, [isAuthenticated, router, toast]);
 
+  // Redirect if cart is empty
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      toast({
+        title: "Cart is empty",
+        description: "Please add some services to your cart before checkout.",
+        variant: "destructive",
+      });
+      router.push("/bundles");
+    }
+  }, [cartItems.length, router, toast]);
+
   const subtotal = getCartTotal();
   const discount = promoDiscount;
   const tax = (subtotal - discount) * PAYMENT_CONSTANTS.TAX_RATE;
