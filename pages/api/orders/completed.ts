@@ -78,12 +78,21 @@ export default async function handler(
     const { data: regularOrders, error: regularOrdersError } =
       await regularOrdersQuery;
 
-    if (regularOrdersError && regularOrdersError.code !== "PGRST116") {
+    if (regularOrdersError) {
       console.error("Error fetching regular orders:", regularOrdersError);
-      return res.status(500).json({
-        success: false,
-        error: "Database error while fetching orders",
-      });
+
+      // Handle specific database errors
+      if (regularOrdersError.code === "PGRST301") {
+        return res.status(401).json({
+          success: false,
+          error: "Authentication required to access orders",
+        });
+      } else if (regularOrdersError.code !== "PGRST116") {
+        return res.status(500).json({
+          success: false,
+          error: "Database error while fetching orders. Please try again.",
+        });
+      }
     }
 
     // Process regular orders
@@ -131,12 +140,21 @@ export default async function handler(
     const { data: customOrders, error: customOrdersError } =
       await customOrdersQuery;
 
-    if (customOrdersError && customOrdersError.code !== "PGRST116") {
+    if (customOrdersError) {
       console.error("Error fetching custom orders:", customOrdersError);
-      return res.status(500).json({
-        success: false,
-        error: "Database error while fetching custom orders",
-      });
+
+      // Handle specific database errors
+      if (customOrdersError.code === "PGRST301") {
+        return res.status(401).json({
+          success: false,
+          error: "Authentication required to access orders",
+        });
+      } else if (customOrdersError.code !== "PGRST116") {
+        return res.status(500).json({
+          success: false,
+          error: "Database error while fetching custom orders. Please try again.",
+        });
+      }
     }
 
     // Process custom orders
@@ -174,9 +192,23 @@ export default async function handler(
         new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime(),
     );
 
+    // Validate that we have the required data
+    for (const order of completedOrders) {
+      if (!order.customer_name) {
+        order.customer_name = "Unknown Customer";
+      }
+      if (!Array.isArray(order.services)) {
+        order.services = [];
+      }
+      if (typeof order.total_amount !== 'number') {
+        order.total_amount = 0;
+      }
+    }
+
     return res.status(200).json({
       success: true,
       orders: completedOrders,
+      total: completedOrders.length,
     });
   } catch (error: any) {
     console.error("Error fetching completed orders:", error);
