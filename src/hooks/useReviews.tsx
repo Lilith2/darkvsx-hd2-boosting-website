@@ -122,26 +122,41 @@ export async function submitReview(reviewData: {
   service_name?: string;
 }): Promise<{ success: boolean; error?: string; review?: Review }> {
   try {
+    // Create an AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
     const response = await fetch("/api/reviews/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(reviewData),
+      signal: controller.signal,
     });
 
-    const result = await response.json();
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
+      const result = await response.json();
       return {
         success: false,
-        error: result.error || "Failed to submit review",
+        error: result.error || `Failed to submit review (${response.status})`,
       };
     }
 
+    const result = await response.json();
     return { success: true, review: result.review };
   } catch (err: any) {
     console.error("Error submitting review:", err);
+
+    if (err.name === 'AbortError') {
+      return {
+        success: false,
+        error: "Request timed out. Please try again.",
+      };
+    }
+
     return {
       success: false,
       error: "Network error. Please check your connection and try again.",
@@ -174,21 +189,42 @@ export async function getCompletedOrders(params: {
     if (params.customer_email)
       queryParams.append("customer_email", params.customer_email);
 
+    // Create an AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
     const response = await fetch(
       `/api/orders/completed?${queryParams.toString()}`,
+      {
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
     );
-    const result = await response.json();
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
+      const result = await response.json();
       return {
         success: false,
-        error: result.error || "Failed to fetch orders",
+        error: result.error || `Server returned ${response.status} error`,
       };
     }
 
+    const result = await response.json();
     return { success: true, orders: result.orders };
   } catch (err: any) {
     console.error("Error fetching completed orders:", err);
+
+    if (err.name === 'AbortError') {
+      return {
+        success: false,
+        error: "Request timed out. Please try again.",
+      };
+    }
+
     return {
       success: false,
       error: "Network error. Please check your connection and try again.",
