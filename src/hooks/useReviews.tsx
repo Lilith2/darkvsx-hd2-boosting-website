@@ -110,7 +110,7 @@ export function useUserReviews(userId: string): UseReviewsResult {
   return useReviews({ userId });
 }
 
-// Function to submit a new review
+// Function to submit a new review with order validation
 export async function submitReview(reviewData: {
   customer_name: string;
   customer_email: string;
@@ -118,33 +118,66 @@ export async function submitReview(reviewData: {
   rating: number;
   title?: string;
   comment: string;
-  order_id?: string;
-  order_number?: string;
+  order_id: string; // Now required for validation
   service_name?: string;
-  metadata?: any;
 }): Promise<{ success: boolean; error?: string; review?: Review }> {
   try {
-    const { data, error } = await supabase
-      .from("reviews")
-      .insert([
-        {
-          ...reviewData,
-          status: "pending", // All new reviews start as pending
-          verified: false,
-          featured: false,
-        },
-      ])
-      .select()
-      .single();
+    const response = await fetch("/api/reviews/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(reviewData),
+    });
 
-    if (error) {
-      throw error;
+    const result = await response.json();
+
+    if (!response.ok) {
+      return { success: false, error: result.error || "Failed to submit review" };
     }
 
-    return { success: true, review: data };
+    return { success: true, review: result.review };
   } catch (err: any) {
     console.error("Error submitting review:", err);
-    return { success: false, error: err.message || "Failed to submit review" };
+    return { success: false, error: "Network error. Please check your connection and try again." };
+  }
+}
+
+// Function to get user's completed orders for review selection
+export async function getCompletedOrders(params: {
+  user_id?: string;
+  customer_email?: string;
+}): Promise<{
+  success: boolean;
+  error?: string;
+  orders?: Array<{
+    id: string;
+    order_number?: string;
+    customer_name: string;
+    services: any[];
+    total_amount: number;
+    completed_at: string;
+    created_at: string;
+    order_type: "regular" | "custom";
+    has_review: boolean;
+  }>;
+}> {
+  try {
+    const queryParams = new URLSearchParams();
+    if (params.user_id) queryParams.append("user_id", params.user_id);
+    if (params.customer_email) queryParams.append("customer_email", params.customer_email);
+
+    const response = await fetch(`/api/orders/completed?${queryParams.toString()}`);
+    const result = await response.json();
+
+    if (!response.ok) {
+      return { success: false, error: result.error || "Failed to fetch orders" };
+    }
+
+    return { success: true, orders: result.orders };
+  } catch (err: any) {
+    console.error("Error fetching completed orders:", err);
+    return { success: false, error: "Network error. Please check your connection and try again." };
   }
 }
 
