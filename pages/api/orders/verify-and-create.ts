@@ -269,6 +269,7 @@ export default async function handler(
       orderData,
       paymentIntentId,
       expectedTotal,
+      supabase,
     );
 
     return res.status(200).json({
