@@ -84,7 +84,7 @@ export default async function handler(
           title: reviewData.title || null,
           comment: reviewData.comment,
           order_id: reviewData.order_id,
-          order_number: orderType === "custom" && "order_number" in order ? order.order_number : order.id,
+          order_number: orderType === "custom" ? (order as CustomOrder).order_number : order.id,
           service_name: reviewData.service_name || null,
           status: "pending",
           verified: true, // Mark as verified since we validated the order
