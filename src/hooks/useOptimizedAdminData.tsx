@@ -4,13 +4,13 @@ import { useToast } from "@/hooks/use-toast";
 
 // Query keys for organized cache management
 export const adminQueryKeys = {
-  all: ['admin'] as const,
-  orders: () => [...adminQueryKeys.all, 'orders'] as const,
-  customOrders: () => [...adminQueryKeys.all, 'customOrders'] as const,
-  services: () => [...adminQueryKeys.all, 'services'] as const,
-  bundles: () => [...adminQueryKeys.all, 'bundles'] as const,
-  customPricing: () => [...adminQueryKeys.all, 'customPricing'] as const,
-  analytics: () => [...adminQueryKeys.all, 'analytics'] as const,
+  all: ["admin"] as const,
+  orders: () => [...adminQueryKeys.all, "orders"] as const,
+  customOrders: () => [...adminQueryKeys.all, "customOrders"] as const,
+  services: () => [...adminQueryKeys.all, "services"] as const,
+  bundles: () => [...adminQueryKeys.all, "bundles"] as const,
+  customPricing: () => [...adminQueryKeys.all, "customPricing"] as const,
+  analytics: () => [...adminQueryKeys.all, "analytics"] as const,
 };
 
 // Fetch functions with error handling
@@ -167,7 +167,13 @@ export function useOptimizedAdminData() {
 
   // Update order status mutation with optimistic updates
   const updateOrderStatusMutation = useMutation({
-    mutationFn: async ({ orderId, status }: { orderId: string; status: string }) => {
+    mutationFn: async ({
+      orderId,
+      status,
+    }: {
+      orderId: string;
+      status: string;
+    }) => {
       const { supabase } = await import("@/integrations/supabase/client");
       const { error } = await supabase
         .from("orders")
@@ -186,8 +192,8 @@ export function useOptimizedAdminData() {
 
       // Optimistically update to the new value
       queryClient.setQueryData(adminQueryKeys.orders(), (old: any[]) => {
-        return old?.map(order => 
-          order.id === orderId ? { ...order, status } : order
+        return old?.map((order) =>
+          order.id === orderId ? { ...order, status } : order,
         );
       });
 
@@ -195,7 +201,10 @@ export function useOptimizedAdminData() {
     },
     onError: (err, variables, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
-      queryClient.setQueryData(adminQueryKeys.orders(), context?.previousOrders);
+      queryClient.setQueryData(
+        adminQueryKeys.orders(),
+        context?.previousOrders,
+      );
       toast({
         title: "Error",
         description: "Failed to update order status. Please try again.",
@@ -228,35 +237,58 @@ export function useOptimizedAdminData() {
         // Orders subscription
         ordersSubscription = supabase
           .channel("admin-orders")
-          .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
-            queryClient.invalidateQueries({ queryKey: adminQueryKeys.orders() });
-          })
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "orders" },
+            () => {
+              queryClient.invalidateQueries({
+                queryKey: adminQueryKeys.orders(),
+              });
+            },
+          )
           .subscribe();
 
         // Services subscription
         servicesSubscription = supabase
           .channel("admin-services")
-          .on("postgres_changes", { event: "*", schema: "public", table: "services" }, () => {
-            queryClient.invalidateQueries({ queryKey: adminQueryKeys.services() });
-          })
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "services" },
+            () => {
+              queryClient.invalidateQueries({
+                queryKey: adminQueryKeys.services(),
+              });
+            },
+          )
           .subscribe();
 
         // Bundles subscription
         bundlesSubscription = supabase
           .channel("admin-bundles")
-          .on("postgres_changes", { event: "*", schema: "public", table: "bundles" }, () => {
-            queryClient.invalidateQueries({ queryKey: adminQueryKeys.bundles() });
-          })
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "bundles" },
+            () => {
+              queryClient.invalidateQueries({
+                queryKey: adminQueryKeys.bundles(),
+              });
+            },
+          )
           .subscribe();
 
         // Custom orders subscription
         customOrdersSubscription = supabase
           .channel("admin-custom-orders")
-          .on("postgres_changes", { event: "*", schema: "public", table: "custom_orders" }, () => {
-            queryClient.invalidateQueries({ queryKey: adminQueryKeys.customOrders() });
-          })
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "custom_orders" },
+            () => {
+              queryClient.invalidateQueries({
+                queryKey: adminQueryKeys.customOrders(),
+              });
+            },
+          )
           .subscribe();
-
       } catch (error) {
         console.error("Error setting up real-time subscriptions:", error);
       }
@@ -276,7 +308,7 @@ export function useOptimizedAdminData() {
   // Calculate analytics data with memoization
   const analytics = useMemo(() => {
     const isLoading = ordersLoading || customOrdersLoading || servicesLoading;
-    
+
     if (isLoading) {
       return {
         totalRevenue: 0,
@@ -296,26 +328,27 @@ export function useOptimizedAdminData() {
       return sum + amount;
     }, 0);
 
-    const pendingOrdersCount = allOrders.filter(order => 
-      order.status === "pending"
+    const pendingOrdersCount = allOrders.filter(
+      (order) => order.status === "pending",
     ).length;
 
-    const completedOrdersCount = allOrders.filter(order => 
-      order.status === "completed"
+    const completedOrdersCount = allOrders.filter(
+      (order) => order.status === "completed",
     ).length;
 
-    const activeServicesCount = services.filter(service => 
-      service.active !== false
+    const activeServicesCount = services.filter(
+      (service) => service.active !== false,
     ).length;
 
     // Extract unique customers
     const uniqueCustomers = new Set();
-    allOrders.forEach(order => {
+    allOrders.forEach((order) => {
       const email = order.customer_email || (order as any).customerEmail;
       if (email) uniqueCustomers.add(email);
     });
 
-    const avgOrderValue = allOrders.length > 0 ? totalRevenue / allOrders.length : 0;
+    const avgOrderValue =
+      allOrders.length > 0 ? totalRevenue / allOrders.length : 0;
 
     return {
       totalRevenue,
@@ -327,7 +360,14 @@ export function useOptimizedAdminData() {
       avgOrderValue,
       isLoading: false,
     };
-  }, [orders, customOrders, services, ordersLoading, customOrdersLoading, servicesLoading]);
+  }, [
+    orders,
+    customOrders,
+    services,
+    ordersLoading,
+    customOrdersLoading,
+    servicesLoading,
+  ]);
 
   // Invalidation functions for manual refresh
   const invalidateOrders = useCallback(() => {
@@ -352,9 +392,12 @@ export function useOptimizedAdminData() {
   }, [queryClient]);
 
   // Update order status with optimistic updates
-  const updateOrderStatus = useCallback((orderId: string, status: string) => {
-    updateOrderStatusMutation.mutate({ orderId, status });
-  }, [updateOrderStatusMutation]);
+  const updateOrderStatus = useCallback(
+    (orderId: string, status: string) => {
+      updateOrderStatusMutation.mutate({ orderId, status });
+    },
+    [updateOrderStatusMutation],
+  );
 
   // Error aggregation
   const errors = {
@@ -365,8 +408,13 @@ export function useOptimizedAdminData() {
     customPricing: customPricingError?.message || null,
   };
 
-  const hasErrors = Object.values(errors).some(error => error !== null);
-  const isLoading = ordersLoading || customOrdersLoading || servicesLoading || bundlesLoading || customPricingLoading;
+  const hasErrors = Object.values(errors).some((error) => error !== null);
+  const isLoading =
+    ordersLoading ||
+    customOrdersLoading ||
+    servicesLoading ||
+    bundlesLoading ||
+    customPricingLoading;
 
   return {
     // Data

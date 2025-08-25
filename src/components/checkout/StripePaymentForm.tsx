@@ -75,14 +75,15 @@ export function StripePaymentForm({
       try {
         // Prepare payment data
         const services = cartItems
-          .filter(item => !item.service.customOrderData)
-          .map(item => ({
+          .filter((item) => !item.service.customOrderData)
+          .map((item) => ({
             id: item.service.id,
             quantity: item.quantity,
           }));
 
-        const customOrderData = cartItems
-          .find(item => item.service.customOrderData)?.service.customOrderData;
+        const customOrderData = cartItems.find(
+          (item) => item.service.customOrderData,
+        )?.service.customOrderData;
 
         // Create payment intent
         const response = await fetch("/api/stripe/create-payment-intent", {
@@ -165,7 +166,8 @@ export function StripePaymentForm({
             Payment Initialization Failed
           </h3>
           <p className="text-muted-foreground mb-4">
-            {initError || "Unable to initialize secure payment. Please try again."}
+            {initError ||
+              "Unable to initialize secure payment. Please try again."}
           </p>
         </CardContent>
       </Card>

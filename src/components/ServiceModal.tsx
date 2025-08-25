@@ -58,7 +58,10 @@ export function ServiceModal({
         duration: service.duration,
         difficulty: service.difficulty,
         category: service.category || "Level Boost",
-        features: service.features && service.features.length > 0 ? service.features : [""],
+        features:
+          service.features && service.features.length > 0
+            ? service.features
+            : [""],
         active: service.active ?? true,
         popular: service.popular || false,
       });
