@@ -3,7 +3,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Lock, CheckCircle, Loader2 } from "lucide-react";
+import { Shield, Lock, CheckCircle, Loader2, AlertTriangle } from "lucide-react";
 import { StripePaymentElement } from "./StripePaymentElement";
 
 const stripePromise = loadStripe(
@@ -57,6 +57,7 @@ export function StripePaymentForm({
   const [clientSecret, setClientSecret] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [initError, setInitError] = useState<string>("");
+  const [supportedMethods, setSupportedMethods] = useState<string[]>([]);
   const { toast } = useToast();
   const initializingRef = useRef(false);
 
@@ -92,6 +93,14 @@ export function StripePaymentForm({
           (item) => item.service.customOrderData,
         )?.service.customOrderData;
 
+        console.log("Creating payment intent with data:", {
+          services,
+          customOrderData,
+          referralDiscount,
+          creditsUsed,
+          total,
+        });
+
         // Create payment intent
         const response = await fetch("/api/stripe/create-payment-intent", {
           method: "POST",
@@ -114,26 +123,47 @@ export function StripePaymentForm({
           try {
             errorData = await response.json();
           } catch {
-            errorData = { error: "Network error" };
+            errorData = { error: `HTTP ${response.status}: ${response.statusText}` };
           }
           throw new Error(
-            errorData.error || errorData.details || "Failed to create payment intent",
+            errorData.error || errorData.details || `Payment server error (${response.status})`,
           );
         }
 
         // Parse successful response
         const data = await response.json();
-
+        
+        console.log("Payment intent created successfully:", {
+          clientSecret: data.clientSecret ? "✓" : "✗",
+          amount: data.amount,
+          supportedMethods: data.supportedPaymentMethods,
+        });
+        
         if (!data.clientSecret) {
           throw new Error("Invalid payment response - missing client secret");
         }
 
         setClientSecret(data.clientSecret);
+        setSupportedMethods(data.supportedPaymentMethods || []);
+        
+        // Show success toast
+        toast({
+          title: "Payment initialized",
+          description: `Ready to process payment of $${data.amount.toFixed(2)}`,
+        });
+
       } catch (error: any) {
         console.error("Error initializing payment:", error);
         const errorMessage = error.message || "Failed to initialize payment";
         setInitError(errorMessage);
         onPaymentError(errorMessage);
+        
+        // Show error toast
+        toast({
+          title: "Payment initialization failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
       } finally {
         setIsLoading(false);
         initializingRef.current = false;
@@ -141,11 +171,11 @@ export function StripePaymentForm({
     };
 
     initializePayment();
-  }, [total, cartItems, referralDiscount, creditsUsed, disabled, metadata, onPaymentError]);
+  }, [total, cartItems, referralDiscount, creditsUsed, disabled, metadata, onPaymentError, toast]);
 
   const handlePaymentSuccess = (paymentIntent: any) => {
     toast({
-      title: "Payment Successful!",
+      title: "Payment Successful! 🎉",
       description: `Payment of $${total.toFixed(2)} processed successfully.`,
     });
     onPaymentSuccess(paymentIntent);
@@ -170,6 +200,11 @@ export function StripePaymentForm({
               Initializing secure payment...
             </span>
           </div>
+          <div className="mt-4 text-center">
+            <p className="text-sm text-muted-foreground">
+              Setting up all available payment methods including cards, digital wallets, and buy-now-pay-later options
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -180,7 +215,7 @@ export function StripePaymentForm({
       <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
         <CardContent className="p-8 text-center">
           <div className="text-red-500 mb-4">
-            <Shield className="w-12 h-12 mx-auto mb-2" />
+            <AlertTriangle className="w-12 h-12 mx-auto mb-2" />
           </div>
           <h3 className="text-lg font-semibold mb-2">
             Payment Initialization Failed
@@ -189,6 +224,11 @@ export function StripePaymentForm({
             {initError ||
               "Unable to initialize secure payment. Please try again."}
           </p>
+          {initError.includes("cart is empty") && (
+            <p className="text-sm text-blue-600 dark:text-blue-400">
+              Please add items to your cart before proceeding to payment.
+            </p>
+          )}
         </CardContent>
       </Card>
     );
@@ -202,14 +242,46 @@ export function StripePaymentForm({
       colorText: "hsl(var(--foreground))",
       colorDanger: "hsl(var(--destructive))",
       fontFamily: "Inter, system-ui, sans-serif",
-      spacingUnit: "4px",
-      borderRadius: "8px",
+      spacingUnit: "6px",
+      borderRadius: "12px",
+      focusBoxShadow: "0 0 0 3px hsla(213, 93%, 68%, 0.2)",
+    },
+    rules: {
+      ".Tab": {
+        padding: "12px 16px",
+        border: "1px solid hsl(var(--border))",
+        borderRadius: "8px",
+        backgroundColor: "hsl(var(--background))",
+        color: "hsl(var(--foreground))",
+        transition: "all 0.2s ease",
+      },
+      ".Tab:hover": {
+        backgroundColor: "hsl(var(--muted))",
+        borderColor: "hsl(var(--primary))",
+      },
+      ".Tab--selected": {
+        backgroundColor: "hsl(var(--primary))",
+        color: "hsl(var(--primary-foreground))",
+        borderColor: "hsl(var(--primary))",
+      },
+      ".Input": {
+        borderRadius: "8px",
+        border: "1px solid hsl(var(--border))",
+        backgroundColor: "hsl(var(--background))",
+        padding: "12px 16px",
+        fontSize: "16px",
+      },
+      ".Input:focus": {
+        borderColor: "hsl(var(--primary))",
+        boxShadow: "0 0 0 3px hsla(213, 93%, 68%, 0.1)",
+      },
     },
   };
 
   const options = {
     clientSecret,
     appearance,
+    loader: "auto" as const,
   };
 
   return (
@@ -221,14 +293,18 @@ export function StripePaymentForm({
             <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
               <Shield className="w-5 h-5 text-blue-600" />
             </div>
-            <div>
+            <div className="flex-1">
               <h4 className="font-semibold text-blue-900 dark:text-blue-100">
                 Secure Payment with Stripe
               </h4>
               <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                Your payment is protected by Stripe's advanced security. We
-                never store your payment information.
+                Your payment is protected by Stripe's advanced security. We never store your payment information.
               </p>
+              {supportedMethods.length > 0 && (
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                  {supportedMethods.length} payment methods available including cards, digital wallets, and BNPL options
+                </p>
+              )}
             </div>
           </div>
         </CardContent>
@@ -239,7 +315,7 @@ export function StripePaymentForm({
         <CardHeader>
           <CardTitle className="flex items-center text-lg">
             <Lock className="w-5 h-5 mr-2 text-green-600" />
-            Payment Details
+            Complete Your Payment
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -258,7 +334,7 @@ export function StripePaymentForm({
       {/* Security Features */}
       <Card className="border-0 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20">
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="flex items-center space-x-3">
               <Lock className="w-5 h-5 text-green-600" />
               <span className="text-sm font-medium">256-bit SSL</span>
@@ -270,6 +346,10 @@ export function StripePaymentForm({
             <div className="flex items-center space-x-3">
               <Shield className="w-5 h-5 text-purple-600" />
               <span className="text-sm font-medium">Fraud Protection</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <CheckCircle className="w-5 h-5 text-orange-600" />
+              <span className="text-sm font-medium">Multiple Methods</span>
             </div>
           </div>
         </CardContent>
