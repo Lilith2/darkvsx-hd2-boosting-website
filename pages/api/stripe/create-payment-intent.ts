@@ -198,24 +198,24 @@ export default async function handler(
       });
     }
 
-    // Create payment intent with server-calculated amount
+    // Create payment intent following Stripe documentation
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(finalAmount * 100), // Convert to cents
-      currency,
-      metadata: {
-        ...metadata,
-        servicesTotal: servicesTotal.toString(),
-        customOrderTotal: customOrderTotal.toString(),
-        subtotal: subtotal.toString(),
-        referralCode: referralCode || '',
-        referralDiscount: validatedReferralDiscount.toString(),
-        creditsUsed: validatedCreditsUsed.toString(),
-        tax: tax.toString(),
-        finalAmount: finalAmount.toString(),
-        calculatedAt: new Date().toISOString(),
-      },
+      amount: Math.round(finalAmount * 100), // Amount in cents
+      currency: currency,
       automatic_payment_methods: {
         enabled: true,
+      },
+      metadata: {
+        ...metadata,
+        servicesTotal: servicesTotal.toFixed(2),
+        customOrderTotal: customOrderTotal.toFixed(2),
+        subtotal: subtotal.toFixed(2),
+        referralCode: referralCode || '',
+        referralDiscount: validatedReferralDiscount.toFixed(2),
+        creditsUsed: validatedCreditsUsed.toFixed(2),
+        tax: tax.toFixed(2),
+        finalAmount: finalAmount.toFixed(2),
+        calculatedAt: new Date().toISOString(),
       },
     });
 
