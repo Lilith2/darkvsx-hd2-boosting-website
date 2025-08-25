@@ -1062,6 +1062,75 @@ export type Database = {
         };
         Relationships: [];
       };
+      promo_codes: {
+        Row: {
+          id: string;
+          code: string;
+          discount_type: string;
+          discount_value: number;
+          max_uses: number | null;
+          current_uses: number | null;
+          is_active: boolean | null;
+          expires_at: string | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          code: string;
+          discount_type: string;
+          discount_value: number;
+          max_uses?: number | null;
+          current_uses?: number | null;
+          is_active?: boolean | null;
+          expires_at?: string | null;
+          created_by?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          code?: string;
+          discount_type?: string;
+          discount_value?: number;
+          max_uses?: number | null;
+          current_uses?: number | null;
+          is_active?: boolean | null;
+          expires_at?: string | null;
+          created_by?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      user_promo_usage: {
+        Row: {
+          id: string;
+          user_id: string;
+          promo_code: string;
+          order_id: string | null;
+          used_at: string | null;
+          discount_amount: number | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          promo_code: string;
+          order_id?: string | null;
+          used_at?: string | null;
+          discount_amount?: number | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          promo_code?: string;
+          order_id?: string | null;
+          used_at?: string | null;
+          discount_amount?: number | null;
+        };
+        Relationships: [];
+      };
     };
     Views: {};
     Functions: {
