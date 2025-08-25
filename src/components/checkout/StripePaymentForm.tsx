@@ -40,6 +40,7 @@ interface CartItem {
 interface StripePaymentFormProps {
   total: number;
   cartItems: CartItem[];
+  referralCode?: string;
   referralDiscount?: number;
   creditsUsed?: number;
   onPaymentSuccess: (paymentIntent: any) => void;
@@ -52,6 +53,7 @@ interface StripePaymentFormProps {
 export function StripePaymentForm({
   total,
   cartItems,
+  referralCode = "",
   referralDiscount = 0,
   creditsUsed = 0,
   onPaymentSuccess,
@@ -75,12 +77,25 @@ export function StripePaymentForm({
         return;
       }
 
+<<<<<<< HEAD
       // Check for valid cart and total
       if (total <= 0 || cartItems.length === 0) {
         setIsLoading(false);
         setInitError(
           "Your cart is empty or the total amount is too low for payment processing.",
         );
+=======
+      // Validate inputs before proceeding
+      if (!cartItems || cartItems.length === 0) {
+        setInitError("No items in cart");
+        setIsLoading(false);
+        return;
+      }
+
+      if (total < 0.5) {
+        setInitError("Payment amount too low (minimum $0.50)");
+        setIsLoading(false);
+>>>>>>> ai_main_3cdc03bd478c
         return;
       }
 
@@ -89,7 +104,7 @@ export function StripePaymentForm({
       setInitError("");
 
       try {
-        // Prepare payment data
+        // Prepare payment data with validation
         const services = cartItems
           .filter((item) => !item.service.customOrderData)
           .map((item) => ({
@@ -101,6 +116,7 @@ export function StripePaymentForm({
           (item) => item.service.customOrderData,
         )?.service.customOrderData;
 
+<<<<<<< HEAD
         console.log("Creating payment intent with data:", {
           services,
           customOrderData,
@@ -110,21 +126,49 @@ export function StripePaymentForm({
         });
 
         // Create payment intent
+=======
+        // Validate service data
+        if (services.length === 0 && !customOrderData) {
+          throw new Error("No valid services found in cart");
+        }
+
+        const requestBody = {
+          services,
+          customOrderData,
+          referralCode: referralCode || "",
+          referralDiscount: Math.max(0, referralDiscount || 0),
+          creditsUsed: Math.max(0, creditsUsed || 0),
+          currency: "usd",
+          metadata: {
+            ...metadata,
+            timestamp: new Date().toISOString(),
+            clientTotal: total.toFixed(2),
+          },
+        };
+
+        console.log("Creating payment intent with data:", {
+          servicesCount: services.length,
+          hasCustomOrder: !!customOrderData,
+          total,
+          referralDiscount,
+          creditsUsed,
+        });
+
+        // Create payment intent with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+>>>>>>> ai_main_3cdc03bd478c
         const response = await fetch("/api/stripe/create-payment-intent", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            services,
-            customOrderData,
-            referralDiscount,
-            creditsUsed,
-            currency: "usd",
-            metadata,
-          }),
+          body: JSON.stringify(requestBody),
+          signal: controller.signal,
         });
 
+<<<<<<< HEAD
         // Check if response is ok first, then parse once
         if (!response.ok) {
           let errorData;
@@ -153,7 +197,49 @@ export function StripePaymentForm({
 
         if (!data.clientSecret) {
           throw new Error("Invalid payment response - missing client secret");
+=======
+        clearTimeout(timeoutId);
+
+        // Parse response with enhanced error handling
+        let data;
+        try {
+          const responseText = await response.text();
+          if (!responseText.trim()) {
+            throw new Error("Empty response from payment server");
+          }
+          data = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error("Failed to parse payment response:", parseError);
+          throw new Error(
+            "Invalid response format from payment server. Please try again or contact support.",
+          );
         }
+
+        if (!response.ok) {
+          const errorMessage =
+            data.error || data.details || `Server error: ${response.status}`;
+          console.error("Payment intent creation failed:", {
+            status: response.status,
+            error: data.error,
+            details: data.details,
+          });
+          throw new Error(errorMessage);
+>>>>>>> ai_main_3cdc03bd478c
+        }
+
+        // Validate response data
+        if (!data.clientSecret) {
+          throw new Error("Invalid payment response: missing client secret");
+        }
+
+        if (!data.paymentIntentId) {
+          console.warn("Payment intent created without ID in response");
+        }
+
+        console.log("Payment intent created successfully:", {
+          paymentIntentId: data.paymentIntentId,
+          amount: data.amount,
+        });
 
         setClientSecret(data.clientSecret);
         setSupportedMethods(data.supportedPaymentMethods || []);
@@ -164,8 +250,24 @@ export function StripePaymentForm({
           description: `Ready to process payment of $${data.amount.toFixed(2)}`,
         });
       } catch (error: any) {
-        console.error("Error initializing payment:", error);
-        const errorMessage = error.message || "Failed to initialize payment";
+        console.error("Error initializing payment:", {
+          error: error.message,
+          name: error.name,
+          stack: error.stack,
+        });
+
+        let errorMessage = "Failed to initialize payment";
+
+        if (error.name === "AbortError") {
+          errorMessage =
+            "Payment initialization timed out. Please check your connection and try again.";
+        } else if (error.message.includes("fetch")) {
+          errorMessage =
+            "Network error. Please check your connection and try again.";
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
         setInitError(errorMessage);
         onPaymentError(errorMessage);
 
@@ -182,6 +284,7 @@ export function StripePaymentForm({
     };
 
     initializePayment();
+<<<<<<< HEAD
   }, [
     total,
     cartItems,
@@ -192,6 +295,9 @@ export function StripePaymentForm({
     onPaymentError,
     toast,
   ]);
+=======
+  }, [total, disabled, cartItems.length]); // Added cartItems.length dependency
+>>>>>>> ai_main_3cdc03bd478c
 
   const handlePaymentSuccess = (paymentIntent: any) => {
     toast({

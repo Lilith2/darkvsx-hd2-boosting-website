@@ -3,13 +3,20 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
+<<<<<<< HEAD
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
+=======
+// Initialize Stripe according to official documentation
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: "2024-11-20.acacia", // Latest stable version
+  typescript: true,
+>>>>>>> ai_main_3cdc03bd478c
 });
 
-// Initialize Supabase with service role key for server-side operations
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+// Initialize Supabase
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // Request validation schema
@@ -36,6 +43,7 @@ const createPaymentIntentSchema = z.object({
       customer_discord: z.string().optional(),
     })
     .optional(),
+  referralCode: z.string().optional(),
   referralDiscount: z.number().nonnegative().optional(),
   creditsUsed: z.number().nonnegative().optional(),
   currency: z.string().default("usd"),
@@ -51,22 +59,37 @@ export default async function handler(
   }
 
   try {
+    console.log("Payment intent creation request received");
+
     // Validate environment variables
     if (!process.env.STRIPE_SECRET_KEY) {
-      console.error("Missing STRIPE_SECRET_KEY");
-      return res
-        .status(500)
-        .json({ error: "Payment service configuration error" });
+      console.error("Missing STRIPE_SECRET_KEY environment variable");
+      return res.status(500).json({
+        error: "Payment service not configured",
+        details: "Stripe secret key missing",
+      });
     }
 
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      console.error("Missing SUPABASE_SERVICE_ROLE_KEY");
-      return res.status(500).json({ error: "Database configuration error" });
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
+      console.error("Missing Supabase environment variables");
+      return res.status(500).json({
+        error: "Database service not configured",
+        details: "Supabase credentials missing",
+      });
     }
+
+    console.log("Environment variables validated successfully");
+
+    // Log request data for debugging
+    console.log("Request body received:", JSON.stringify(req.body, null, 2));
 
     // Validate and parse request body
     const parseResult = createPaymentIntentSchema.safeParse(req.body);
     if (!parseResult.success) {
+      console.error("Request validation failed:", parseResult.error.issues);
       return res.status(400).json({
         error: "Invalid request data",
         details: parseResult.error.issues
@@ -75,9 +98,12 @@ export default async function handler(
       });
     }
 
+    console.log("Request validation successful");
+
     const {
       services,
       customOrderData,
+      referralCode,
       referralDiscount = 0,
       creditsUsed = 0,
       currency,
@@ -130,12 +156,60 @@ export default async function handler(
       );
     }
 
-    // Calculate final amount
-    const TAX_RATE = 0.08;
+    // Calculate totals first
     const subtotal = servicesTotal + customOrderTotal;
-    const totalBeforeCredits = subtotal - referralDiscount;
-    const tax = Math.max(0, totalBeforeCredits * TAX_RATE);
-    const finalAmount = Math.max(0, totalBeforeCredits + tax - creditsUsed);
+
+    // Server-side promo code validation for security
+    let validatedReferralDiscount = 0;
+    if (referralCode && referralCode.trim()) {
+      try {
+        const { data: validation, error: validationError } = await supabase.rpc(
+          "validate_referral_code",
+          {
+            code: referralCode.trim(),
+            user_id: null,
+          },
+        );
+
+        if (validationError) {
+          console.error("Error validating referral code:", validationError);
+          return res.status(400).json({
+            error: "Invalid promo code",
+            details: "Could not validate the provided promo code",
+          });
+        }
+
+        if (validation && validation.valid) {
+          // Apply the discount (usually 15% as per REFERRAL_CONFIG)
+          validatedReferralDiscount = Math.min(
+            referralDiscount,
+            subtotal * 0.15, // Max 15% discount for safety
+          );
+        } else {
+          return res.status(400).json({
+            error: "Invalid promo code",
+            details:
+              validation?.error || "The promo code is not valid or has expired",
+          });
+        }
+      } catch (err) {
+        console.error("Error during promo code validation:", err);
+        return res.status(400).json({
+          error: "Invalid promo code",
+          details: "Could not validate the provided promo code",
+        });
+      }
+    }
+
+    // Calculate final amount with validated values
+    const TAX_RATE = 0.08;
+    const totalAfterDiscount = subtotal - validatedReferralDiscount;
+    const tax = Math.max(0, totalAfterDiscount * TAX_RATE);
+    const totalWithTax = totalAfterDiscount + tax;
+
+    // Validate credits used don't exceed the total
+    const validatedCreditsUsed = Math.min(creditsUsed, totalWithTax);
+    const finalAmount = Math.max(0.5, totalWithTax - validatedCreditsUsed); // Stripe minimum $0.50
 
     // Minimum charge validation (Stripe minimum is $0.50)
     if (finalAmount < 0.5) {
@@ -145,6 +219,7 @@ export default async function handler(
       });
     }
 
+<<<<<<< HEAD
     // Configure payment methods - enable all available methods
     const paymentMethodTypes = [
       "card",
@@ -185,10 +260,29 @@ export default async function handler(
         finalAmount: finalAmount.toString(),
         venmo_capability: process.env.STRIPE_VENMO_CAPABILITY || "",
       },
+=======
+    // Log payment calculation for debugging
+    console.log("Payment calculation:", {
+      servicesTotal,
+      customOrderTotal,
+      subtotal,
+      validatedReferralDiscount,
+      tax,
+      validatedCreditsUsed,
+      finalAmount,
+    });
+
+    // Create payment intent following Stripe documentation
+    console.log("Creating Stripe PaymentIntent...");
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(finalAmount * 100), // Amount in cents
+      currency: currency,
+>>>>>>> ai_main_3cdc03bd478c
       automatic_payment_methods: {
         enabled: true,
         allow_redirects: "always",
       },
+<<<<<<< HEAD
       payment_method_types: paymentMethodTypes,
       setup_future_usage: "off_session", // Allow saving payment methods for future use
       receipt_email: metadata.userEmail,
@@ -220,22 +314,41 @@ export default async function handler(
       currency: currency,
       payment_method_types: paymentIntent.payment_method_types,
       automatic_payment_methods: paymentIntent.automatic_payment_methods,
+=======
+      metadata: {
+        ...metadata,
+        servicesTotal: servicesTotal.toFixed(2),
+        customOrderTotal: customOrderTotal.toFixed(2),
+        subtotal: subtotal.toFixed(2),
+        referralCode: referralCode || "",
+        referralDiscount: validatedReferralDiscount.toFixed(2),
+        creditsUsed: validatedCreditsUsed.toFixed(2),
+        tax: tax.toFixed(2),
+        finalAmount: finalAmount.toFixed(2),
+        calculatedAt: new Date().toISOString(),
+      },
+>>>>>>> ai_main_3cdc03bd478c
     });
 
-    res.status(200).json({
+    // Log successful creation
+    console.log("PaymentIntent created successfully:", paymentIntent.id);
+
+    // Return successful response
+    return res.status(200).json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
       amount: finalAmount,
       currency: currency,
       supportedPaymentMethods: paymentIntent.payment_method_types,
       breakdown: {
-        servicesTotal,
-        customOrderTotal,
-        subtotal,
-        referralDiscount,
-        tax,
-        creditsUsed,
-        finalAmount,
+        servicesTotal: Number(servicesTotal.toFixed(2)),
+        customOrderTotal: Number(customOrderTotal.toFixed(2)),
+        subtotal: Number(subtotal.toFixed(2)),
+        referralCode: referralCode || null,
+        referralDiscount: Number(validatedReferralDiscount.toFixed(2)),
+        tax: Number(tax.toFixed(2)),
+        creditsUsed: Number(validatedCreditsUsed.toFixed(2)),
+        finalAmount: Number(finalAmount.toFixed(2)),
       },
     });
   } catch (error: any) {

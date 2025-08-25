@@ -3,15 +3,15 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-// Initialize Stripe with secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-07-30.basil",
+// Initialize Stripe according to official documentation
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: "2024-11-20.acacia",
+  typescript: true,
 });
 
-// Initialize Supabase with service role key for server-side operations
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
+// Initialize Supabase
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 interface OrderItem {
@@ -100,15 +100,18 @@ export default async function handler(
   try {
     // Validate environment variables
     if (!process.env.STRIPE_SECRET_KEY) {
-      console.error("Missing STRIPE_SECRET_KEY");
+      console.error("Missing STRIPE_SECRET_KEY environment variable");
       return res.status(500).json({
         error: "Server configuration error",
         details: "Payment processing not configured",
       });
     }
 
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      console.error("Missing SUPABASE_SERVICE_ROLE_KEY");
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
+      console.error("Missing Supabase environment variables");
       return res.status(500).json({
         error: "Server configuration error",
         details: "Database access not configured",

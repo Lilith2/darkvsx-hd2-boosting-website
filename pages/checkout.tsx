@@ -1128,6 +1128,7 @@ export default function AnimatedCheckout() {
                           <StripePaymentForm
                             total={total}
                             cartItems={cartItems}
+                            referralCode={promoCode}
                             referralDiscount={promoDiscount}
                             creditsUsed={creditsApplied}
                             onPaymentSuccess={handleStripePaymentSuccess}
