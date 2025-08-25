@@ -10,6 +10,7 @@ import { OptimizedAdminStatsCards } from "@/components/admin/OptimizedAdminStats
 import { OptimizedAdminOrdersTable } from "@/components/admin/OptimizedAdminOrdersTable";
 import { TopServicesCard } from "@/components/admin/TopServicesCard";
 import { RecentOrdersCard } from "@/components/admin/RecentOrdersCard";
+import { AdminPromoCodesTab } from "@/components/admin/AdminPromoCodesTab";
 // These are now lazy loaded above
 
 import { LoadingSpinner } from "@/components/ui/loading";
