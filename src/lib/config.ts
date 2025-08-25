@@ -16,7 +16,7 @@ export const getSiteDomain = (): string => {
 
 // Referral configuration
 export const REFERRAL_CONFIG = {
-  customerDiscount: 0.1, // 10% off for customer using code
-  referrerCommission: 0.05, // 5% commission for referrer
+  customerDiscount: 0.15, // 15% off for customer using code
+  referrerCommission: 0.10, // 10% commission for referrer
   codeFormat: /^HD2BOOST-[A-Z0-9]{6}$/,
 } as const;
