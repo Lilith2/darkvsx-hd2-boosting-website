@@ -3,15 +3,10 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-<<<<<<< HEAD
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20",
-=======
-// Initialize Stripe according to official documentation
+// Initialize Stripe with latest stable API version
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2024-11-20.acacia", // Latest stable version
+  apiVersion: "2024-11-20.acacia",
   typescript: true,
->>>>>>> ai_main_3cdc03bd478c
 });
 
 // Initialize Supabase
@@ -219,48 +214,6 @@ export default async function handler(
       });
     }
 
-<<<<<<< HEAD
-    // Configure payment methods - enable all available methods
-    const paymentMethodTypes = [
-      "card",
-      "us_bank_account",
-      "link",
-      "apple_pay",
-      "google_pay",
-      "amazon_pay",
-      "venmo",
-      "cashapp",
-      "klarna",
-      "affirm",
-      "afterpay_clearpay",
-      "alipay",
-      "acss_debit",
-      "bacs_debit",
-      "bancontact",
-      "eps",
-      "giropay",
-      "ideal",
-      "p24",
-      "sepa_debit",
-      "sofort",
-    ];
-
-    // Create payment intent with comprehensive payment method support
-    const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
-      amount: Math.round(finalAmount * 100), // Convert to cents
-      currency: currency.toLowerCase(),
-      metadata: {
-        ...metadata,
-        servicesTotal: servicesTotal.toString(),
-        customOrderTotal: customOrderTotal.toString(),
-        subtotal: subtotal.toString(),
-        referralDiscount: referralDiscount.toString(),
-        creditsUsed: creditsUsed.toString(),
-        tax: tax.toString(),
-        finalAmount: finalAmount.toString(),
-        venmo_capability: process.env.STRIPE_VENMO_CAPABILITY || "",
-      },
-=======
     // Log payment calculation for debugging
     console.log("Payment calculation:", {
       servicesTotal,
@@ -272,18 +225,29 @@ export default async function handler(
       finalAmount,
     });
 
-    // Create payment intent following Stripe documentation
-    console.log("Creating Stripe PaymentIntent...");
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(finalAmount * 100), // Amount in cents
-      currency: currency,
->>>>>>> ai_main_3cdc03bd478c
+    // Create payment intent with comprehensive payment method support
+    console.log("Creating Stripe PaymentIntent with Venmo support...");
+
+    const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
+      amount: Math.round(finalAmount * 100), // Convert to cents
+      currency: currency.toLowerCase(),
       automatic_payment_methods: {
         enabled: true,
         allow_redirects: "always",
       },
-<<<<<<< HEAD
-      payment_method_types: paymentMethodTypes,
+      metadata: {
+        ...metadata,
+        servicesTotal: servicesTotal.toFixed(2),
+        customOrderTotal: customOrderTotal.toFixed(2),
+        subtotal: subtotal.toFixed(2),
+        referralCode: referralCode || "",
+        referralDiscount: validatedReferralDiscount.toFixed(2),
+        creditsUsed: validatedCreditsUsed.toFixed(2),
+        tax: tax.toFixed(2),
+        finalAmount: finalAmount.toFixed(2),
+        calculatedAt: new Date().toISOString(),
+        venmo_capability: process.env.STRIPE_VENMO_CAPABILITY || "",
+      },
       setup_future_usage: "off_session", // Allow saving payment methods for future use
       receipt_email: metadata.userEmail,
       shipping: {
@@ -304,31 +268,7 @@ export default async function handler(
         process.env.STRIPE_VENMO_CAPABILITY;
     }
 
-    const paymentIntent =
-      await stripe.paymentIntents.create(paymentIntentParams);
-
-    // Log successful creation for debugging
-    console.log("Payment Intent created successfully:", {
-      id: paymentIntent.id,
-      amount: finalAmount,
-      currency: currency,
-      payment_method_types: paymentIntent.payment_method_types,
-      automatic_payment_methods: paymentIntent.automatic_payment_methods,
-=======
-      metadata: {
-        ...metadata,
-        servicesTotal: servicesTotal.toFixed(2),
-        customOrderTotal: customOrderTotal.toFixed(2),
-        subtotal: subtotal.toFixed(2),
-        referralCode: referralCode || "",
-        referralDiscount: validatedReferralDiscount.toFixed(2),
-        creditsUsed: validatedCreditsUsed.toFixed(2),
-        tax: tax.toFixed(2),
-        finalAmount: finalAmount.toFixed(2),
-        calculatedAt: new Date().toISOString(),
-      },
->>>>>>> ai_main_3cdc03bd478c
-    });
+    const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
 
     // Log successful creation
     console.log("PaymentIntent created successfully:", paymentIntent.id);
