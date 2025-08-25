@@ -347,7 +347,7 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
 async function handlePaymentIntentProcessing(
   paymentIntent: Stripe.PaymentIntent,
 ) {
-  console.log(`PaymentIntent processing: ${paymentIntent.id}`);
+  console.log(`[${new Date().toISOString()}] Processing PaymentIntent processing status: ${paymentIntent.id}`);
 
   try {
     // Update any existing orders to processing status
@@ -360,7 +360,8 @@ async function handlePaymentIntentProcessing(
       .eq("transaction_id", paymentIntent.id);
 
     if (orderError) {
-      console.error("Error updating processing order status:", orderError);
+      console.error(`Error updating processing order status for ${paymentIntent.id}:`, orderError);
+      throw new Error(`Failed to update orders: ${orderError.message}`);
     }
 
     // Update any existing custom orders to processing status
@@ -373,16 +374,16 @@ async function handlePaymentIntentProcessing(
       .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrderError) {
-      console.error(
-        "Error updating processing custom order status:",
-        customOrderError,
-      );
+      console.error(`Error updating processing custom order status for ${paymentIntent.id}:`, customOrderError);
+      throw new Error(`Failed to update custom orders: ${customOrderError.message}`);
     }
+
+    console.log(`PaymentIntent ${paymentIntent.id} processing status updated successfully`);
   } catch (error: any) {
-    console.error(
-      `Error handling payment processing for ${paymentIntent.id}:`,
-      error,
-    );
+    console.error(`Error handling payment processing for ${paymentIntent.id}:`, {
+      error: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 }
