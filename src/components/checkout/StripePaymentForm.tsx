@@ -122,7 +122,7 @@ export function StripePaymentForm({
         setClientSecret(responseData.clientSecret);
       } catch (error: any) {
         console.error("Error initializing payment:", error);
-        onPaymentError(error.message || "Failed to initialize payment");
+        handlePaymentError(error.message || "Failed to initialize payment");
       } finally {
         setIsLoading(false);
         setIsInitializing(false);
