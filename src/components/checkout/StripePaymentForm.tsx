@@ -59,6 +59,13 @@ export function StripePaymentForm({
   const [isLoading, setIsLoading] = useState(true);
   const [isInitializing, setIsInitializing] = useState(false);
   const { toast } = useToast();
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Memoize metadata to prevent unnecessary re-renders
   const memoizedMetadata = useMemo(() => metadata, [JSON.stringify(metadata)]);
