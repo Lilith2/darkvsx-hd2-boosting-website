@@ -54,6 +54,8 @@ export default async function handler(
   }
 
   try {
+    console.log("Payment intent creation request received");
+
     // Validate environment variables
     if (!process.env.STRIPE_SECRET_KEY) {
       console.error("Missing STRIPE_SECRET_KEY environment variable");
@@ -70,6 +72,8 @@ export default async function handler(
         details: "Supabase credentials missing"
       });
     }
+
+    console.log("Environment variables validated successfully");
 
     // Validate and parse request body
     const parseResult = createPaymentIntentSchema.safeParse(req.body);
