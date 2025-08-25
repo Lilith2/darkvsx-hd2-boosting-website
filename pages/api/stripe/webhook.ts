@@ -35,14 +35,11 @@ export default async function handler(
 
   const startTime = Date.now();
   let event: Stripe.Event;
-  let stripe: Stripe;
 
   try {
-    // Initialize Stripe with proper error handling
-    try {
-      stripe = getStripeInstance();
-    } catch (stripeError: any) {
-      console.error("Stripe initialization failed in webhook:", stripeError.message);
+    // Validate environment variables
+    if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
+      console.error("Missing Stripe environment variables");
       return res.status(500).json({
         error: "Payment service configuration error",
         details: "Stripe not properly configured"
