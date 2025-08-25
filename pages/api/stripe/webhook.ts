@@ -280,11 +280,12 @@ async function handlePaymentIntentSucceeded(
 }
 
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
-  console.log(`PaymentIntent failed: ${paymentIntent.id}`);
+  const startTime = Date.now();
+  console.log(`[${new Date().toISOString()}] Processing PaymentIntent failed: ${paymentIntent.id} (Amount: $${(paymentIntent.amount / 100).toFixed(2)})`);
 
   try {
     // Update any existing orders to failed status
-    const { error: orderError } = await supabase
+    const { error: orderError, count: orderCount } = await supabase
       .from("orders")
       .update({
         payment_status: "failed",
@@ -294,11 +295,16 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
       .eq("transaction_id", paymentIntent.id);
 
     if (orderError) {
-      console.error("Error updating failed order status:", orderError);
+      console.error(`Error updating failed order status for ${paymentIntent.id}:`, orderError);
+      throw new Error(`Failed to update orders: ${orderError.message}`);
+    }
+
+    if (orderCount && orderCount > 0) {
+      console.log(`Updated ${orderCount} orders to failed status for PaymentIntent ${paymentIntent.id}`);
     }
 
     // Update any existing custom orders to failed status
-    const { error: customOrderError } = await supabase
+    const { error: customOrderError, count: customOrderCount } = await supabase
       .from("custom_orders")
       .update({
         status: "cancelled",
@@ -307,20 +313,33 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
       .eq("payment_intent_id", paymentIntent.id);
 
     if (customOrderError) {
-      console.error(
-        "Error updating failed custom order status:",
-        customOrderError,
-      );
+      console.error(`Error updating failed custom order status for ${paymentIntent.id}:`, customOrderError);
+      throw new Error(`Failed to update custom orders: ${customOrderError.message}`);
     }
 
-    console.log(
-      `Updated orders to failed status for PaymentIntent ${paymentIntent.id}`,
-    );
+    if (customOrderCount && customOrderCount > 0) {
+      console.log(`Updated ${customOrderCount} custom orders to cancelled status for PaymentIntent ${paymentIntent.id}`);
+    }
+
+    // Log failure reason if available
+    if (paymentIntent.last_payment_error) {
+      console.log(`Payment failure reason for ${paymentIntent.id}:`, {
+        code: paymentIntent.last_payment_error.code,
+        message: paymentIntent.last_payment_error.message,
+        type: paymentIntent.last_payment_error.type
+      });
+    }
+
+    const processingTime = Date.now() - startTime;
+    console.log(`PaymentIntent ${paymentIntent.id} failure handler completed in ${processingTime}ms`);
+
   } catch (error: any) {
-    console.error(
-      `Error handling payment failure for ${paymentIntent.id}:`,
-      error,
-    );
+    const processingTime = Date.now() - startTime;
+    console.error(`Error handling payment failure for ${paymentIntent.id} (took ${processingTime}ms):`, {
+      error: error.message,
+      stack: error.stack,
+      paymentIntentId: paymentIntent.id
+    });
     throw error;
   }
 }
