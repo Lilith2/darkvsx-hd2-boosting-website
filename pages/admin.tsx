@@ -776,7 +776,10 @@ export default function AdminDashboard() {
                                     bundle.active ? "default" : "secondary"
                                   }
                                   className="cursor-pointer"
-                                  onClick={() => toggleBundleStatus(bundle.id)}
+                                  onClick={async () => {
+                                    await toggleBundleStatus(bundle.id);
+                                    invalidateAll();
+                                  }}
                                 >
                                   {bundle.active ? "Active" : "Inactive"}
                                 </Badge>
