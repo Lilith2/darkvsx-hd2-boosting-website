@@ -59,7 +59,7 @@ export function ReviewForm({
         customer_email: customerEmail.trim(),
         user_id: user?.id,
         rating,
-        title: title.trim() || null,
+        title: title.trim() || undefined,
         comment: comment.trim(),
         order_id: orderId,
         order_number: orderNumber,
