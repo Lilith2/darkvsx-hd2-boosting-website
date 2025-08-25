@@ -42,6 +42,7 @@ export function ServiceModal({
     originalPrice: "",
     duration: "",
     difficulty: "",
+    category: "Level Boost" as const,
     features: [""],
     active: true,
     popular: false,
