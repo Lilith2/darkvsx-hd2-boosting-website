@@ -123,11 +123,22 @@ export default async function handler(
       }
 
       // Verify all requested services exist and are active
+      console.log("Database services found:", {
+        requested: serviceIds,
+        found: dbServices?.map(s => ({ id: s.id, price: s.price, active: s.active })) || [],
+        count: dbServices?.length || 0
+      });
+
       const foundServiceIds = new Set(dbServices?.map((s) => s.id) || []);
       const missingServices = serviceIds.filter(
         (id) => !foundServiceIds.has(id),
       );
       if (missingServices.length > 0) {
+        console.error("Missing services error:", {
+          requested: serviceIds,
+          found: Array.from(foundServiceIds),
+          missing: missingServices
+        });
         return res.status(400).json({
           error: "Invalid services requested",
           details: `Services not found or inactive: ${missingServices.join(", ")}`,

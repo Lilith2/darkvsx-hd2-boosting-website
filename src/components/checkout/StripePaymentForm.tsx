@@ -151,14 +151,27 @@ export function StripePaymentForm({
 
         // Parse response with enhanced error handling
         let data;
+        let responseText = "";
+
         try {
-          const responseText = await response.text();
+          responseText = await response.text();
+          console.log("Raw API response:", {
+            status: response.status,
+            statusText: response.statusText,
+            ok: response.ok,
+            responseText: responseText.substring(0, 200) + (responseText.length > 200 ? "..." : "")
+          });
+
           if (!responseText.trim()) {
             throw new Error("Empty response from payment server");
           }
           data = JSON.parse(responseText);
         } catch (parseError) {
-          console.error("Failed to parse payment response:", parseError);
+          console.error("Failed to parse payment response:", {
+            error: parseError,
+            responseText: responseText.substring(0, 500),
+            status: response.status
+          });
           throw new Error(
             "Invalid response format from payment server. Please try again or contact support.",
           );
@@ -169,8 +182,10 @@ export function StripePaymentForm({
             data.error || data.details || `Server error: ${response.status}`;
           console.error("Payment intent creation failed:", {
             status: response.status,
+            statusText: response.statusText,
             error: data.error,
             details: data.details,
+            fullResponse: data
           });
           throw new Error(errorMessage);
         }
