@@ -107,9 +107,16 @@ export default async function handler(
       });
     }
 
+    // Remove sensitive information before sending response
+    const sanitizedReview = {
+      ...review,
+      order_id: undefined, // Don't expose order ID in response
+      order_number: undefined, // Don't expose order number in response
+    };
+
     return res.status(200).json({
       success: true,
-      review,
+      review: sanitizedReview,
     });
   } catch (error: any) {
     console.error("Error in review submission:", error);
