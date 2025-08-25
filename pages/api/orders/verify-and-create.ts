@@ -244,10 +244,15 @@ export default async function handler(
   } catch (error: any) {
     console.error("Error in verify-and-create endpoint:", error);
 
+    // Ensure we always return proper JSON
+    const errorMessage = error.message || "Failed to process order";
+    const errorCode = error.code || "UNKNOWN_ERROR";
+
     return res.status(500).json({
       error: "Internal server error",
-      details: error.message || "Failed to process order",
-      code: error.code || "UNKNOWN_ERROR",
+      details: errorMessage,
+      code: errorCode,
+      timestamp: new Date().toISOString(),
     });
   }
 }
