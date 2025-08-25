@@ -1,16 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Stripe from "stripe";
 
-// Initialize Stripe helper
-function getStripeInstance(): Stripe {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
-  if (!secretKey) {
-    throw new Error("STRIPE_SECRET_KEY environment variable is not set");
-  }
-  return new Stripe(secretKey, {
-    apiVersion: "2024-12-18.acacia",
-  });
-}
+// Initialize Stripe according to official documentation
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: "2024-11-20.acacia",
+  typescript: true,
+});
 
 export default async function handler(
   req: NextApiRequest,
