@@ -293,6 +293,9 @@ export default function AdminDashboard() {
         await addService(serviceData);
       }
 
+      // Invalidate React Query cache to trigger real-time updates
+      invalidateAll();
+
       toast({
         title: "Success",
         description: `Service ${editingService ? "updated" : "created"} successfully.`,
