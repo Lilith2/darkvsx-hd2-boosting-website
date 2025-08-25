@@ -149,47 +149,52 @@ export function StripePaymentForm({
 
         clearTimeout(timeoutId);
 
-        // Parse response with enhanced error handling
+        // Parse response with proper error handling
         let data;
-        let responseText = "";
+
+        console.log("API Response Status:", {
+          status: response.status,
+          statusText: response.statusText,
+          ok: response.ok,
+          url: response.url
+        });
 
         try {
-          responseText = await response.text();
-          console.log("Raw API response:", {
+          // Use response.json() directly for JSON responses
+          data = await response.json();
+          console.log("Parsed API response:", {
             status: response.status,
-            statusText: response.statusText,
-            ok: response.ok,
-            responseText: responseText.substring(0, 200) + (responseText.length > 200 ? "..." : "")
+            hasError: !!data.error,
+            hasDetails: !!data.details,
+            action: data.action
           });
-
-          if (!responseText.trim()) {
-            throw new Error("Empty response from payment server");
-          }
-          data = JSON.parse(responseText);
         } catch (parseError) {
-          console.error("Failed to parse payment response:", {
-            error: parseError,
-            responseText: responseText.substring(0, 500),
-            status: response.status
+          console.error("Failed to parse JSON response:", {
+            error: parseError.message,
+            status: response.status,
+            statusText: response.statusText
           });
           throw new Error(
-            "Invalid response format from payment server. Please try again or contact support.",
+            `Failed to parse server response (${response.status}). Please try again or contact support.`,
           );
         }
 
+        // Handle non-OK responses (including 400 errors)
         if (!response.ok) {
-          const errorMessage =
-            data.error || data.details || `Server error: ${response.status}`;
+          const errorMessage = data.error || data.details || `Server error: ${response.status}`;
+
           console.error("Payment intent creation failed:", {
             status: response.status,
             statusText: response.statusText,
             error: data.error,
             details: data.details,
-            fullResponse: data
+            action: data.action,
+            invalidServices: data.invalidServices
           });
 
           // Handle specific cart cleanup scenario
           if (data.action === "clear_cart") {
+            console.log("Redirecting to cart cleanup page...");
             // Redirect to cart cleanup page
             if (typeof window !== "undefined") {
               window.location.href = "/cart-cleanup";
