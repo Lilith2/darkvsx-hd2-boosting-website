@@ -16,7 +16,7 @@ export default function CartCleanup() {
     try {
       clearCart();
       // Small delay to show the action
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       router.push("/bundles");
     } catch (error) {
       console.error("Error clearing cart:", error);
@@ -47,8 +47,9 @@ export default function CartCleanup() {
         <Alert className="mb-8 border-orange-500/30 bg-orange-500/5">
           <AlertTriangle className="h-4 w-4 text-orange-500" />
           <AlertDescription className="text-base">
-            Your cart contains services that are no longer available or have been updated. 
-            Please clear your cart and add current services to continue with checkout.
+            Your cart contains services that are no longer available or have
+            been updated. Please clear your cart and add current services to
+            continue with checkout.
           </AlertDescription>
         </Alert>
 
@@ -116,7 +117,7 @@ export default function CartCleanup() {
               )}
             </Button>
           )}
-          
+
           <Button
             onClick={handleGoToServices}
             size="lg"
@@ -134,11 +135,21 @@ export default function CartCleanup() {
               Available Services
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-              <div className="text-green-700 dark:text-green-300">• Level Boost (1-50) - $5.00</div>
-              <div className="text-green-700 dark:text-green-300">• Level Boost (50-100) - $10.00</div>
-              <div className="text-green-700 dark:text-green-300">• Level Boost (100-150) - $20.00</div>
-              <div className="text-green-700 dark:text-green-300">• Ship Module Unlock - $30.00</div>
-              <div className="text-green-700 dark:text-green-300">• Weapon Mastery - $35.00</div>
+              <div className="text-green-700 dark:text-green-300">
+                • Level Boost (1-50) - $5.00
+              </div>
+              <div className="text-green-700 dark:text-green-300">
+                • Level Boost (50-100) - $10.00
+              </div>
+              <div className="text-green-700 dark:text-green-300">
+                • Level Boost (100-150) - $20.00
+              </div>
+              <div className="text-green-700 dark:text-green-300">
+                • Ship Module Unlock - $30.00
+              </div>
+              <div className="text-green-700 dark:text-green-300">
+                • Weapon Mastery - $35.00
+              </div>
             </div>
           </CardContent>
         </Card>

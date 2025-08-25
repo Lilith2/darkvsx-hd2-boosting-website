@@ -157,7 +157,7 @@ export function StripePaymentForm({
           status: response.status,
           statusText: response.statusText,
           ok: response.ok,
-          url: response.url
+          url: response.url,
         });
 
         try {
@@ -167,13 +167,13 @@ export function StripePaymentForm({
             status: response.status,
             hasError: !!data.error,
             hasDetails: !!data.details,
-            action: data.action
+            action: data.action,
           });
         } catch (parseError) {
           console.error("Failed to parse JSON response:", {
             error: parseError.message,
             status: response.status,
-            statusText: response.statusText
+            statusText: response.statusText,
           });
           throw new Error(
             `Failed to parse server response (${response.status}). Please try again or contact support.`,
@@ -182,7 +182,8 @@ export function StripePaymentForm({
 
         // Handle non-OK responses (including 400 errors)
         if (!response.ok) {
-          const errorMessage = data.error || data.details || `Server error: ${response.status}`;
+          const errorMessage =
+            data.error || data.details || `Server error: ${response.status}`;
 
           console.error("Payment intent creation failed:", {
             status: response.status,
@@ -190,7 +191,7 @@ export function StripePaymentForm({
             error: data.error,
             details: data.details,
             action: data.action,
-            invalidServices: data.invalidServices
+            invalidServices: data.invalidServices,
           });
 
           // Handle specific cart cleanup scenario

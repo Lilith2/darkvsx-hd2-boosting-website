@@ -125,8 +125,13 @@ export default async function handler(
       // Verify all requested services exist and are active
       console.log("Database services found:", {
         requested: serviceIds,
-        found: dbServices?.map(s => ({ id: s.id, price: s.price, active: s.active })) || [],
-        count: dbServices?.length || 0
+        found:
+          dbServices?.map((s) => ({
+            id: s.id,
+            price: s.price,
+            active: s.active,
+          })) || [],
+        count: dbServices?.length || 0,
       });
 
       const foundServiceIds = new Set(dbServices?.map((s) => s.id) || []);
@@ -137,14 +142,19 @@ export default async function handler(
         console.error("Missing services error:", {
           requested: serviceIds,
           found: Array.from(foundServiceIds),
-          missing: missingServices
+          missing: missingServices,
         });
         return res.status(400).json({
           error: "Invalid services in cart",
           details: `Some services in your cart are no longer available. Please remove them and add current services.`,
           invalidServices: missingServices,
-          availableServices: dbServices?.map(s => ({ id: s.id, title: s.title, price: s.price })) || [],
-          action: "clear_cart"
+          availableServices:
+            dbServices?.map((s) => ({
+              id: s.id,
+              title: s.title,
+              price: s.price,
+            })) || [],
+          action: "clear_cart",
         });
       }
 
@@ -282,7 +292,8 @@ export default async function handler(
         process.env.STRIPE_VENMO_CAPABILITY;
     }
 
-    const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
+    const paymentIntent =
+      await stripe.paymentIntents.create(paymentIntentParams);
 
     // Log successful creation with enhanced details
     console.log("PaymentIntent created successfully:", {
