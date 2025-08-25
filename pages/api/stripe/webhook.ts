@@ -181,68 +181,100 @@ export default async function handler(
 async function handlePaymentIntentSucceeded(
   paymentIntent: Stripe.PaymentIntent,
 ) {
-  console.log(`PaymentIntent succeeded: ${paymentIntent.id}`);
+  const startTime = Date.now();
+  console.log(`[${new Date().toISOString()}] Processing PaymentIntent succeeded: ${paymentIntent.id} (Amount: $${(paymentIntent.amount / 100).toFixed(2)})`);
 
   try {
     // Check if we already have orders for this payment intent
-    const { data: existingOrders } = await supabase
+    const { data: existingOrders, error: ordersQueryError } = await supabase
       .from("orders")
-      .select("id, status")
+      .select("id, status, payment_status")
       .eq("transaction_id", paymentIntent.id);
 
-    const { data: existingCustomOrders } = await supabase
+    if (ordersQueryError) {
+      console.error(`Database error querying orders for ${paymentIntent.id}:`, ordersQueryError);
+      throw new Error(`Database query failed: ${ordersQueryError.message}`);
+    }
+
+    const { data: existingCustomOrders, error: customOrdersQueryError } = await supabase
       .from("custom_orders")
       .select("id, status")
       .eq("payment_intent_id", paymentIntent.id);
 
-    // If orders already exist and are paid, no action needed
-    if (
-      (existingOrders && existingOrders.length > 0) ||
-      (existingCustomOrders && existingCustomOrders.length > 0)
-    ) {
-      console.log(`Orders already exist for PaymentIntent ${paymentIntent.id}`);
+    if (customOrdersQueryError) {
+      console.error(`Database error querying custom orders for ${paymentIntent.id}:`, customOrdersQueryError);
+      throw new Error(`Database query failed: ${customOrdersQueryError.message}`);
+    }
 
-      // Update status to paid if not already
-      if (existingOrders && existingOrders.length > 0) {
-        await supabase
+    // If orders already exist, update their status
+    if (existingOrders && existingOrders.length > 0) {
+      console.log(`Found ${existingOrders.length} existing orders for PaymentIntent ${paymentIntent.id}`);
+
+      const ordersToUpdate = existingOrders.filter(order => order.payment_status !== "paid");
+      if (ordersToUpdate.length > 0) {
+        const { error: updateError } = await supabase
           .from("orders")
-          .update({ payment_status: "paid", status: "pending" })
+          .update({
+            payment_status: "paid",
+            status: "pending",
+            updated_at: new Date().toISOString()
+          })
           .eq("transaction_id", paymentIntent.id)
           .neq("payment_status", "paid");
-      }
 
-      if (existingCustomOrders && existingCustomOrders.length > 0) {
-        await supabase
+        if (updateError) {
+          console.error(`Error updating orders for ${paymentIntent.id}:`, updateError);
+          throw new Error(`Failed to update orders: ${updateError.message}`);
+        }
+        console.log(`Updated ${ordersToUpdate.length} orders to paid status`);
+      }
+    }
+
+    if (existingCustomOrders && existingCustomOrders.length > 0) {
+      console.log(`Found ${existingCustomOrders.length} existing custom orders for PaymentIntent ${paymentIntent.id}`);
+
+      const customOrdersToUpdate = existingCustomOrders.filter(order => order.status === "pending");
+      if (customOrdersToUpdate.length > 0) {
+        const { error: updateError } = await supabase
           .from("custom_orders")
-          .update({ status: "processing" })
+          .update({
+            status: "processing",
+            updated_at: new Date().toISOString()
+          })
           .eq("payment_intent_id", paymentIntent.id)
           .eq("status", "pending");
+
+        if (updateError) {
+          console.error(`Error updating custom orders for ${paymentIntent.id}:`, updateError);
+          throw new Error(`Failed to update custom orders: ${updateError.message}`);
+        }
+        console.log(`Updated ${customOrdersToUpdate.length} custom orders to processing status`);
       }
-
-      return;
     }
 
-    // If no orders exist, log for manual review
-    // This might happen if the client-side order creation failed
-    console.warn(
-      `PaymentIntent succeeded but no orders found: ${paymentIntent.id}`,
-    );
-    console.warn("This requires manual order creation or investigation");
+    // If no orders exist, this might be expected (order created via verify-and-create endpoint)
+    if ((!existingOrders || existingOrders.length === 0) &&
+        (!existingCustomOrders || existingCustomOrders.length === 0)) {
+      console.warn(`PaymentIntent succeeded but no orders found: ${paymentIntent.id}`);
+      console.warn("This might be normal if orders are created via the verify-and-create endpoint");
 
-    // You could implement automatic order creation here if you store
-    // order data in the PaymentIntent metadata
-    if (
-      paymentIntent.metadata &&
-      Object.keys(paymentIntent.metadata).length > 0
-    ) {
-      console.log("PaymentIntent metadata:", paymentIntent.metadata);
-      // Could implement order creation from metadata here
+      // Log metadata for debugging
+      if (paymentIntent.metadata && Object.keys(paymentIntent.metadata).length > 0) {
+        console.log("PaymentIntent metadata:", JSON.stringify(paymentIntent.metadata, null, 2));
+      }
     }
+
+    const processingTime = Date.now() - startTime;
+    console.log(`PaymentIntent ${paymentIntent.id} success handler completed in ${processingTime}ms`);
+
   } catch (error: any) {
-    console.error(
-      `Error handling payment success for ${paymentIntent.id}:`,
-      error,
-    );
+    const processingTime = Date.now() - startTime;
+    console.error(`Error handling payment success for ${paymentIntent.id} (took ${processingTime}ms):`, {
+      error: error.message,
+      stack: error.stack,
+      paymentIntentId: paymentIntent.id,
+      amount: paymentIntent.amount
+    });
     throw error;
   }
 }
