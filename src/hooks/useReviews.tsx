@@ -75,7 +75,7 @@ export function useReviews(options: UseReviewsOptions = {}): UseReviewsResult {
       }
 
       // SECURITY: Sanitize reviews for public display
-      const sanitizedReviews = (data || []).map(review => {
+      const sanitizedReviews = (data || []).map((review) => {
         // If this is for public display (no userId filter), remove sensitive data
         if (!options.userId) {
           return {
@@ -235,7 +235,7 @@ export async function submitReview(reviewData: {
   } catch (err: any) {
     console.error("Error submitting review:", err);
 
-    if (err.name === 'AbortError') {
+    if (err.name === "AbortError") {
       return {
         success: false,
         error: "Request timed out. Please try again.",
@@ -283,9 +283,9 @@ export async function getCompletedOrders(params: {
       {
         signal: controller.signal,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     clearTimeout(timeoutId);
@@ -320,7 +320,7 @@ export async function getCompletedOrders(params: {
   } catch (err: any) {
     console.error("Error fetching completed orders:", err);
 
-    if (err.name === 'AbortError') {
+    if (err.name === "AbortError") {
       return {
         success: false,
         error: "Request timed out. Please try again.",

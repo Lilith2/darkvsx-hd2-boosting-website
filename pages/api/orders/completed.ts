@@ -99,7 +99,7 @@ export default async function handler(
     // Process regular orders
     if (regularOrders && regularOrders.length > 0) {
       // Get all reviews for these orders in a single query
-      const orderIds = regularOrders.map(order => order.id);
+      const orderIds = regularOrders.map((order) => order.id);
       const { data: existingReviews } = await supabase
         .from("reviews")
         .select("order_id")
@@ -107,7 +107,7 @@ export default async function handler(
 
       // Create a Set for fast lookup
       const reviewedOrderIds = new Set(
-        existingReviews?.map(review => review.order_id) || []
+        existingReviews?.map((review) => review.order_id) || [],
       );
 
       for (const order of regularOrders) {
@@ -153,7 +153,8 @@ export default async function handler(
       } else if (customOrdersError.code !== "PGRST116") {
         return res.status(500).json({
           success: false,
-          error: "Database error while fetching custom orders. Please try again.",
+          error:
+            "Database error while fetching custom orders. Please try again.",
         });
       }
     }
@@ -161,7 +162,7 @@ export default async function handler(
     // Process custom orders
     if (customOrders && customOrders.length > 0) {
       // Get all reviews for these orders in a single query
-      const customOrderIds = customOrders.map(order => order.id);
+      const customOrderIds = customOrders.map((order) => order.id);
       const { data: existingCustomReviews } = await supabase
         .from("reviews")
         .select("order_id")
@@ -169,7 +170,7 @@ export default async function handler(
 
       // Create a Set for fast lookup
       const reviewedCustomOrderIds = new Set(
-        existingCustomReviews?.map(review => review.order_id) || []
+        existingCustomReviews?.map((review) => review.order_id) || [],
       );
 
       for (const order of customOrders) {
@@ -201,7 +202,7 @@ export default async function handler(
       if (!Array.isArray(order.services)) {
         order.services = [];
       }
-      if (typeof order.total_amount !== 'number') {
+      if (typeof order.total_amount !== "number") {
         order.total_amount = 0;
       }
     }

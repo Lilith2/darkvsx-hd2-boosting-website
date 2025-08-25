@@ -72,7 +72,9 @@ export default function OrderTracking() {
   const [newMessage, setNewMessage] = useState("");
   const [showMessages, setShowMessages] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'timeline' | 'messages'>('overview');
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "timeline" | "messages"
+  >("overview");
 
   useEffect(() => {
     if (orderId) {
@@ -90,13 +92,15 @@ export default function OrderTracking() {
         if (isCustomOrder) {
           // For custom orders
           const customOrder = foundOrder as any;
-          hasPermission = customOrder.user_id === user.id ||
-                         customOrder.customer_email === user.email;
+          hasPermission =
+            customOrder.user_id === user.id ||
+            customOrder.customer_email === user.email;
         } else {
           // For regular orders
           const regularOrder = foundOrder as any;
-          hasPermission = regularOrder.userId === user.id ||
-                         regularOrder.customerEmail === user.email;
+          hasPermission =
+            regularOrder.userId === user.id ||
+            regularOrder.customerEmail === user.email;
         }
 
         if (!hasPermission) {
@@ -166,7 +170,10 @@ export default function OrderTracking() {
               permission to view it.
             </p>
             <Link href="/">
-              <Button size="lg" className="bg-gradient-to-r from-primary to-blue-600">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-primary to-blue-600"
+              >
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Back to Home
               </Button>
@@ -336,22 +343,22 @@ export default function OrderTracking() {
     const progress = getProgressPercentage();
     if (progress >= 100) return "Completed";
     if (progress <= 0) return "Not started";
-    
+
     // Estimate based on typical service duration
     const remainingPercent = 100 - progress;
     const estimatedHours = Math.ceil((remainingPercent / 100) * 24); // Assume 24h max
-    
+
     if (estimatedHours <= 1) return "Less than 1 hour";
     if (estimatedHours <= 24) return `~${estimatedHours} hours`;
     const days = Math.ceil(estimatedHours / 24);
-    return `~${days} day${days > 1 ? 's' : ''}`;
+    return `~${days} day${days > 1 ? "s" : ""}`;
   };
 
   const shareOrder = async () => {
     const orderNumber = isCustomOrder
       ? normalizedOrder?.order_number || `Order #${order.id}`
       : `Order #${order.id.slice(-6)}`;
-    
+
     const shareText = `Check out my ${isCustomOrder ? "custom " : ""}boosting order: ${orderNumber}. Progress: ${getProgressPercentage()}%`;
 
     if (navigator.share) {
@@ -366,7 +373,9 @@ export default function OrderTracking() {
       }
     } else {
       try {
-        await navigator.clipboard.writeText(`${shareText} - ${window.location.href}`);
+        await navigator.clipboard.writeText(
+          `${shareText} - ${window.location.href}`,
+        );
         alert("Order link copied to clipboard!");
       } catch (err) {
         console.log("Error copying to clipboard:", err);
@@ -381,7 +390,11 @@ export default function OrderTracking() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center mb-6">
             <Link href="/account">
-              <Button variant="ghost" size="sm" className="hover:bg-primary/10 group">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hover:bg-primary/10 group"
+              >
                 <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-0.5 transition-transform" />
                 Back to Account
               </Button>
@@ -414,7 +427,7 @@ export default function OrderTracking() {
                   {normalizedOrder?.status}
                 </span>
               </Badge>
-              
+
               <Button
                 variant="outline"
                 size="sm"
@@ -435,12 +448,15 @@ export default function OrderTracking() {
                 <div>
                   <h3 className="text-xl font-semibold">Order Progress</h3>
                   <p className="text-muted-foreground">
-                    {getProgressPercentage()}% complete • {getEstimatedTimeRemaining()} remaining
+                    {getProgressPercentage()}% complete •{" "}
+                    {getEstimatedTimeRemaining()} remaining
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-3xl font-bold text-primary">{getProgressPercentage()}%</div>
+                <div className="text-3xl font-bold text-primary">
+                  {getProgressPercentage()}%
+                </div>
                 <div className="text-sm text-muted-foreground">Complete</div>
               </div>
             </div>
@@ -453,26 +469,33 @@ export default function OrderTracking() {
         {/* Tab Navigation */}
         <div className="flex items-center space-x-1 mb-8 bg-muted/20 p-1 rounded-xl border border-border/50">
           {[
-            { id: 'overview', label: 'Overview', icon: Target },
-            { id: 'timeline', label: 'Timeline', icon: Clock },
-            { id: 'messages', label: 'Messages', icon: MessageSquare },
+            { id: "overview", label: "Overview", icon: Target },
+            { id: "timeline", label: "Timeline", icon: Clock },
+            { id: "messages", label: "Messages", icon: MessageSquare },
           ].map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id as any)}
               className={`flex items-center space-x-2 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                 activeTab === id
-                  ? 'bg-background shadow-sm text-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+                  ? "bg-background shadow-sm text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-background/50"
               }`}
             >
               <Icon className="w-4 h-4" />
               <span>{label}</span>
-              {id === 'messages' && (normalizedOrder.messages || []).filter((m: any) => !m.isRead && m.from !== 'customer').length > 0 && (
-                <Badge className="bg-red-500 text-white text-xs px-2 py-0.5">
-                  {(normalizedOrder.messages || []).filter((m: any) => !m.isRead && m.from !== 'customer').length}
-                </Badge>
-              )}
+              {id === "messages" &&
+                (normalizedOrder.messages || []).filter(
+                  (m: any) => !m.isRead && m.from !== "customer",
+                ).length > 0 && (
+                  <Badge className="bg-red-500 text-white text-xs px-2 py-0.5">
+                    {
+                      (normalizedOrder.messages || []).filter(
+                        (m: any) => !m.isRead && m.from !== "customer",
+                      ).length
+                    }
+                  </Badge>
+                )}
             </button>
           ))}
         </div>
@@ -480,7 +503,7 @@ export default function OrderTracking() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {activeTab === 'overview' && (
+            {activeTab === "overview" && (
               <>
                 {/* Service Details */}
                 <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
@@ -496,34 +519,44 @@ export default function OrderTracking() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {(normalizedOrder.services || []).map((service: any, index: number) => (
-                      <div
-                        key={index}
-                        className="flex items-center space-x-4 p-4 border border-border/50 rounded-xl bg-gradient-to-r from-muted/20 to-muted/10"
-                      >
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-lg flex items-center justify-center">
-                          <Zap className="w-6 h-6 text-primary" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-lg">{service.name}</h4>
-                          <div className="flex items-center space-x-3 mt-1">
-                            <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-950/20">
-                              <Trophy className="w-3 h-3 mr-1" />
-                              Quantity: {service.quantity}
-                            </Badge>
-                            <Badge variant="outline" className="text-xs bg-green-50 dark:bg-green-950/20">
-                              <DollarSign className="w-3 h-3 mr-1" />
-                              ${(service.price * service.quantity).toFixed(2)}
-                            </Badge>
+                    {(normalizedOrder.services || []).map(
+                      (service: any, index: number) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-4 p-4 border border-border/50 rounded-xl bg-gradient-to-r from-muted/20 to-muted/10"
+                        >
+                          <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-lg flex items-center justify-center">
+                            <Zap className="w-6 h-6 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-lg">
+                              {service.name}
+                            </h4>
+                            <div className="flex items-center space-x-3 mt-1">
+                              <Badge
+                                variant="outline"
+                                className="text-xs bg-blue-50 dark:bg-blue-950/20"
+                              >
+                                <Trophy className="w-3 h-3 mr-1" />
+                                Quantity: {service.quantity}
+                              </Badge>
+                              <Badge
+                                variant="outline"
+                                className="text-xs bg-green-50 dark:bg-green-950/20"
+                              >
+                                <DollarSign className="w-3 h-3 mr-1" />$
+                                {(service.price * service.quantity).toFixed(2)}
+                              </Badge>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 rounded-full flex items-center justify-center">
+                              <CheckCircle className="w-6 h-6 text-green-600" />
+                            </div>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 rounded-full flex items-center justify-center">
-                            <CheckCircle className="w-6 h-6 text-green-600" />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </CardContent>
                 </Card>
 
@@ -584,21 +617,53 @@ export default function OrderTracking() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     {[
-                      { label: "Order Confirmed", progress: 100, status: "completed" },
-                      { label: "Booster Assigned", progress: normalizedOrder.status === 'pending' ? 0 : 100, status: normalizedOrder.status === 'pending' ? 'pending' : 'completed' },
-                      { label: "Service In Progress", progress: ['in-progress', 'completed'].includes(normalizedOrder.status) ? 100 : normalizedOrder.status === 'processing' ? 50 : 0, status: normalizedOrder.status },
-                      { label: "Order Completed", progress: normalizedOrder.status === 'completed' ? 100 : 0, status: normalizedOrder.status === 'completed' ? 'completed' : 'pending' },
+                      {
+                        label: "Order Confirmed",
+                        progress: 100,
+                        status: "completed",
+                      },
+                      {
+                        label: "Booster Assigned",
+                        progress:
+                          normalizedOrder.status === "pending" ? 0 : 100,
+                        status:
+                          normalizedOrder.status === "pending"
+                            ? "pending"
+                            : "completed",
+                      },
+                      {
+                        label: "Service In Progress",
+                        progress: ["in-progress", "completed"].includes(
+                          normalizedOrder.status,
+                        )
+                          ? 100
+                          : normalizedOrder.status === "processing"
+                            ? 50
+                            : 0,
+                        status: normalizedOrder.status,
+                      },
+                      {
+                        label: "Order Completed",
+                        progress:
+                          normalizedOrder.status === "completed" ? 100 : 0,
+                        status:
+                          normalizedOrder.status === "completed"
+                            ? "completed"
+                            : "pending",
+                      },
                     ].map((step, index) => (
                       <div key={index} className="space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                              step.progress === 100 
-                                ? 'bg-green-100 dark:bg-green-900/20' 
-                                : step.progress > 0 
-                                  ? 'bg-blue-100 dark:bg-blue-900/20'
-                                  : 'bg-muted'
-                            }`}>
+                            <div
+                              className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                step.progress === 100
+                                  ? "bg-green-100 dark:bg-green-900/20"
+                                  : step.progress > 0
+                                    ? "bg-blue-100 dark:bg-blue-900/20"
+                                    : "bg-muted"
+                              }`}
+                            >
                               {step.progress === 100 ? (
                                 <CheckCircle className="w-4 h-4 text-green-600" />
                               ) : step.progress > 0 ? (
@@ -621,7 +686,7 @@ export default function OrderTracking() {
               </>
             )}
 
-            {activeTab === 'timeline' && (
+            {activeTab === "timeline" && (
               <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center text-xl">
@@ -637,69 +702,84 @@ export default function OrderTracking() {
                 <CardContent>
                   <div className="space-y-6">
                     {/* Default timeline if no tracking events */}
-                    {(!normalizedOrder.tracking || normalizedOrder.tracking.length === 0) && (
+                    {(!normalizedOrder.tracking ||
+                      normalizedOrder.tracking.length === 0) && (
                       <div className="space-y-4">
                         <div className="flex items-start space-x-4">
                           <div className="w-3 h-3 bg-primary rounded-full mt-2 flex-shrink-0" />
                           <div className="flex-1 min-w-0 pb-6 border-l border-border/50 ml-1.5 pl-6">
                             <div className="flex items-center justify-between">
-                              <p className="font-semibold text-lg">Order Placed</p>
+                              <p className="font-semibold text-lg">
+                                Order Placed
+                              </p>
                               <span className="text-sm text-muted-foreground">
                                 {formatDate(normalizedOrder.createdAt)}
                               </span>
                             </div>
                             <p className="text-muted-foreground mt-1">
-                              Your order has been successfully placed and is awaiting processing.
+                              Your order has been successfully placed and is
+                              awaiting processing.
                             </p>
                           </div>
                         </div>
-                        
-                        {normalizedOrder.status !== 'pending' && (
+
+                        {normalizedOrder.status !== "pending" && (
                           <div className="flex items-start space-x-4">
                             <div className="w-3 h-3 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
                             <div className="flex-1 min-w-0 pb-6 border-l border-border/50 ml-1.5 pl-6">
                               <div className="flex items-center justify-between">
-                                <p className="font-semibold text-lg">Processing Started</p>
+                                <p className="font-semibold text-lg">
+                                  Processing Started
+                                </p>
                                 <span className="text-sm text-muted-foreground">
                                   Recently
                                 </span>
                               </div>
                               <p className="text-muted-foreground mt-1">
-                                Your order is being reviewed and a booster will be assigned soon.
+                                Your order is being reviewed and a booster will
+                                be assigned soon.
                               </p>
                             </div>
                           </div>
                         )}
 
-                        {['in-progress', 'completed'].includes(normalizedOrder.status) && (
+                        {["in-progress", "completed"].includes(
+                          normalizedOrder.status,
+                        ) && (
                           <div className="flex items-start space-x-4">
                             <div className="w-3 h-3 bg-purple-500 rounded-full mt-2 flex-shrink-0" />
                             <div className="flex-1 min-w-0 pb-6 border-l border-border/50 ml-1.5 pl-6">
                               <div className="flex items-center justify-between">
-                                <p className="font-semibold text-lg">Service In Progress</p>
+                                <p className="font-semibold text-lg">
+                                  Service In Progress
+                                </p>
                                 <span className="text-sm text-muted-foreground">
                                   In progress
                                 </span>
                               </div>
                               <p className="text-muted-foreground mt-1">
-                                Your boost is currently being completed by our professional team.
+                                Your boost is currently being completed by our
+                                professional team.
                               </p>
                             </div>
                           </div>
                         )}
 
-                        {normalizedOrder.status === 'completed' && (
+                        {normalizedOrder.status === "completed" && (
                           <div className="flex items-start space-x-4">
                             <div className="w-3 h-3 bg-green-500 rounded-full mt-2 flex-shrink-0" />
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between">
-                                <p className="font-semibold text-lg">Order Completed</p>
+                                <p className="font-semibold text-lg">
+                                  Order Completed
+                                </p>
                                 <span className="text-sm text-muted-foreground">
                                   Recently
                                 </span>
                               </div>
                               <p className="text-muted-foreground mt-1">
-                                Your boost has been successfully completed! Enjoy your achievements.
+                                Your boost has been successfully completed!
+                                Enjoy your achievements.
                               </p>
                             </div>
                           </div>
@@ -708,28 +788,32 @@ export default function OrderTracking() {
                     )}
 
                     {/* Actual tracking events if they exist */}
-                    {(normalizedOrder.tracking || []).map((event: any, index: number) => (
-                      <div key={index} className="flex items-start space-x-4">
-                        <div className="w-3 h-3 bg-primary rounded-full mt-2 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <p className="font-semibold text-lg">{event.status}</p>
-                            <span className="text-sm text-muted-foreground">
-                              {formatDate(event.timestamp)}
-                            </span>
+                    {(normalizedOrder.tracking || []).map(
+                      (event: any, index: number) => (
+                        <div key={index} className="flex items-start space-x-4">
+                          <div className="w-3 h-3 bg-primary rounded-full mt-2 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <p className="font-semibold text-lg">
+                                {event.status}
+                              </p>
+                              <span className="text-sm text-muted-foreground">
+                                {formatDate(event.timestamp)}
+                              </span>
+                            </div>
+                            <p className="text-muted-foreground mt-1">
+                              {event.description}
+                            </p>
                           </div>
-                          <p className="text-muted-foreground mt-1">
-                            {event.description}
-                          </p>
                         </div>
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {activeTab === 'messages' && (
+            {activeTab === "messages" && (
               <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between text-xl">
@@ -764,7 +848,8 @@ export default function OrderTracking() {
                           <MessageSquare className="w-8 h-8 text-muted-foreground" />
                         </div>
                         <p className="text-muted-foreground">
-                          No messages yet. Start a conversation with our support team!
+                          No messages yet. Start a conversation with our support
+                          team!
                         </p>
                       </div>
                     ) : (
@@ -780,7 +865,9 @@ export default function OrderTracking() {
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
                               <span className="text-sm font-semibold capitalize">
-                                {message.from === "customer" ? "You" : message.from}
+                                {message.from === "customer"
+                                  ? "You"
+                                  : message.from}
                               </span>
                               {message.from !== "customer" && (
                                 <Badge variant="outline" className="text-xs">
@@ -792,7 +879,9 @@ export default function OrderTracking() {
                               {formatDate(message.timestamp)}
                             </span>
                           </div>
-                          <p className="text-sm leading-relaxed">{message.message}</p>
+                          <p className="text-sm leading-relaxed">
+                            {message.message}
+                          </p>
                         </div>
                       ))
                     )}
@@ -819,7 +908,9 @@ export default function OrderTracking() {
                       className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 h-12 text-base"
                     >
                       <Send className="w-5 h-5 mr-2" />
-                      {isCustomOrder ? "Not Available for Custom Orders" : "Send Message"}
+                      {isCustomOrder
+                        ? "Not Available for Custom Orders"
+                        : "Send Message"}
                     </Button>
                   </div>
                 </CardContent>
@@ -838,22 +929,24 @@ export default function OrderTracking() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {(normalizedOrder.services || []).map((service: any, index: number) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-start p-3 bg-muted/20 rounded-lg"
-                  >
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{service.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        Qty: {service.quantity}
-                      </p>
+                {(normalizedOrder.services || []).map(
+                  (service: any, index: number) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-start p-3 bg-muted/20 rounded-lg"
+                    >
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{service.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Qty: {service.quantity}
+                        </p>
+                      </div>
+                      <span className="font-semibold">
+                        ${(service.price * service.quantity).toFixed(2)}
+                      </span>
                     </div>
-                    <span className="font-semibold">
-                      ${(service.price * service.quantity).toFixed(2)}
-                    </span>
-                  </div>
-                ))}
+                  ),
+                )}
 
                 <Separator />
 
@@ -892,13 +985,19 @@ export default function OrderTracking() {
                 <div className="flex items-center space-x-3 p-3 bg-muted/20 rounded-lg">
                   <Mail className="w-5 h-5 text-primary" />
                   <div>
-                    <p className="font-medium">{normalizedOrder.customerName}</p>
-                    <p className="text-sm text-muted-foreground">{normalizedOrder.customerEmail}</p>
+                    <p className="font-medium">
+                      {normalizedOrder.customerName}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {normalizedOrder.customerEmail}
+                    </p>
                   </div>
                 </div>
                 {normalizedOrder.notes && (
                   <div className="p-3 bg-muted/20 rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">Special Notes</p>
+                    <p className="text-sm text-muted-foreground mb-1">
+                      Special Notes
+                    </p>
                     <p className="font-medium text-sm">
                       {normalizedOrder.notes}
                     </p>
@@ -913,22 +1012,30 @@ export default function OrderTracking() {
                 <CardTitle className="text-lg">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start" asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  asChild
+                >
                   <Link href="/contact">
                     <HelpCircle className="w-4 h-4 mr-3" />
                     Contact Support
                   </Link>
                 </Button>
 
-                <Button variant="outline" className="w-full justify-start" asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  asChild
+                >
                   <Link href="/faq">
                     <HelpCircle className="w-4 h-4 mr-3" />
                     View FAQ
                   </Link>
                 </Button>
 
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full justify-start"
                   onClick={shareOrder}
                 >
@@ -936,7 +1043,11 @@ export default function OrderTracking() {
                   Share Order
                 </Button>
 
-                <Button variant="outline" className="w-full justify-start" asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  asChild
+                >
                   <Link href="/account">
                     <User className="w-4 h-4 mr-3" />
                     My Orders
@@ -946,7 +1057,7 @@ export default function OrderTracking() {
             </Card>
 
             {/* Estimated Completion */}
-            {normalizedOrder.status !== 'completed' && (
+            {normalizedOrder.status !== "completed" && (
               <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50/50 to-cyan-50/50 dark:from-blue-950/20 dark:to-cyan-950/20">
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center text-blue-800 dark:text-blue-200">

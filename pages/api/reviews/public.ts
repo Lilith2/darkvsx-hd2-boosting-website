@@ -19,7 +19,7 @@ interface PublicReview {
   created_at: string;
   // Sensitive fields deliberately omitted:
   // - customer_email
-  // - user_id  
+  // - user_id
   // - order_id
   // - order_number
 }
@@ -47,7 +47,8 @@ export default async function handler(
 
     let query = supabase
       .from("reviews")
-      .select(`
+      .select(
+        `
         id,
         customer_name,
         rating,
@@ -57,7 +58,8 @@ export default async function handler(
         verified,
         featured,
         created_at
-      `)
+      `,
+      )
       .eq("status", status)
       .order("created_at", { ascending: false });
 
@@ -85,7 +87,7 @@ export default async function handler(
     }
 
     // Extra sanitization to ensure no sensitive data leaks
-    const sanitizedReviews: PublicReview[] = (reviews || []).map(review => ({
+    const sanitizedReviews: PublicReview[] = (reviews || []).map((review) => ({
       id: review.id,
       customer_name: review.customer_name,
       rating: review.rating,

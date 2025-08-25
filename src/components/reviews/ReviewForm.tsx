@@ -12,7 +12,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Star, Package, AlertCircle, CheckCircle, RefreshCw } from "lucide-react";
+import {
+  Star,
+  Package,
+  AlertCircle,
+  CheckCircle,
+  RefreshCw,
+} from "lucide-react";
 import { submitReview, getCompletedOrders } from "@/hooks/useReviews";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -84,7 +90,9 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
         setCompletedOrders(reviewableOrders);
 
         if (reviewableOrders.length === 0 && result.orders.length > 0) {
-          setErrorMessage("All your completed orders have already been reviewed.");
+          setErrorMessage(
+            "All your completed orders have already been reviewed.",
+          );
         }
       } else {
         const errorMsg = result.error || "Failed to load your orders";
@@ -94,7 +102,8 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
       }
     } catch (error) {
       console.error("Error loading orders:", error);
-      const errorMsg = "Unable to connect to our servers. Please check your internet connection and try again.";
+      const errorMsg =
+        "Unable to connect to our servers. Please check your internet connection and try again.";
       setErrorMessage(errorMsg);
       toast.error(errorMsg);
       setCompletedOrders([]);
