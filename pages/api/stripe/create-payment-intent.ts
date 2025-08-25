@@ -206,10 +206,12 @@ export default async function handler(
 
     // Add Venmo-specific configuration if capability is available
     if (process.env.STRIPE_VENMO_CAPABILITY) {
-      paymentIntentParams.payment_method_configuration = process.env.STRIPE_VENMO_CAPABILITY;
+      paymentIntentParams.payment_method_configuration =
+        process.env.STRIPE_VENMO_CAPABILITY;
     }
 
-    const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
+    const paymentIntent =
+      await stripe.paymentIntents.create(paymentIntentParams);
 
     // Log successful creation for debugging
     console.log("Payment Intent created successfully:", {
@@ -285,7 +287,8 @@ export default async function handler(
 
     res.status(500).json({
       error: error.message || "Failed to create payment intent",
-      details: "An unexpected error occurred while creating the payment intent. Please try again.",
+      details:
+        "An unexpected error occurred while creating the payment intent. Please try again.",
     });
   }
 }

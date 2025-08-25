@@ -63,7 +63,7 @@ import {
 interface PromoCode {
   id: string;
   code: string;
-  discount_type: 'percentage' | 'fixed_amount';
+  discount_type: "percentage" | "fixed_amount";
   discount_value: number;
   max_uses: number | null;
   current_uses: number;
@@ -78,16 +78,18 @@ export function AdminPromoCodesTab() {
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [editingPromoCode, setEditingPromoCode] = useState<PromoCode | null>(null);
+  const [editingPromoCode, setEditingPromoCode] = useState<PromoCode | null>(
+    null,
+  );
   const { toast } = useToast();
 
   // Form state
   const [formData, setFormData] = useState({
-    code: '',
-    discount_type: 'percentage' as 'percentage' | 'fixed_amount',
+    code: "",
+    discount_type: "percentage" as "percentage" | "fixed_amount",
     discount_value: 0,
     max_uses: null as number | null,
-    expires_at: '',
+    expires_at: "",
     is_active: true,
   });
 
@@ -99,9 +101,9 @@ export function AdminPromoCodesTab() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('promo_codes')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from("promo_codes")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       setPromoCodes(data || []);
@@ -117,21 +119,21 @@ export function AdminPromoCodesTab() {
   };
 
   const generateRandomCode = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = 'PROMO-';
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let code = "PROMO-";
     for (let i = 0; i < 6; i++) {
       code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    setFormData(prev => ({ ...prev, code }));
+    setFormData((prev) => ({ ...prev, code }));
   };
 
   const resetForm = () => {
     setFormData({
-      code: '',
-      discount_type: 'percentage',
+      code: "",
+      discount_type: "percentage",
       discount_value: 0,
       max_uses: null,
-      expires_at: '',
+      expires_at: "",
       is_active: true,
     });
     setEditingPromoCode(null);
@@ -139,7 +141,7 @@ export function AdminPromoCodesTab() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.code.trim()) {
       toast({
         title: "Error",
@@ -171,9 +173,9 @@ export function AdminPromoCodesTab() {
 
       if (editingPromoCode) {
         const { error } = await supabase
-          .from('promo_codes')
+          .from("promo_codes")
           .update(promoData)
-          .eq('id', editingPromoCode.id);
+          .eq("id", editingPromoCode.id);
 
         if (error) throw error;
 
@@ -182,12 +184,12 @@ export function AdminPromoCodesTab() {
           description: "Promo code updated successfully",
         });
       } else {
-        const { error } = await supabase
-          .from('promo_codes')
-          .insert([{
+        const { error } = await supabase.from("promo_codes").insert([
+          {
             ...promoData,
             current_uses: 0,
-          }]);
+          },
+        ]);
 
         if (error) throw error;
 
@@ -216,22 +218,28 @@ export function AdminPromoCodesTab() {
       discount_type: promoCode.discount_type,
       discount_value: promoCode.discount_value,
       max_uses: promoCode.max_uses,
-      expires_at: promoCode.expires_at ? promoCode.expires_at.split('T')[0] : '',
+      expires_at: promoCode.expires_at
+        ? promoCode.expires_at.split("T")[0]
+        : "",
       is_active: promoCode.is_active,
     });
     setIsCreateDialogOpen(true);
   };
 
   const handleDelete = async (promoCode: PromoCode) => {
-    if (!confirm(`Are you sure you want to delete promo code "${promoCode.code}"?`)) {
+    if (
+      !confirm(
+        `Are you sure you want to delete promo code "${promoCode.code}"?`,
+      )
+    ) {
       return;
     }
 
     try {
       const { error } = await supabase
-        .from('promo_codes')
+        .from("promo_codes")
         .delete()
-        .eq('id', promoCode.id);
+        .eq("id", promoCode.id);
 
       if (error) throw error;
 
@@ -253,18 +261,18 @@ export function AdminPromoCodesTab() {
   const handleToggleActive = async (promoCode: PromoCode) => {
     try {
       const { error } = await supabase
-        .from('promo_codes')
-        .update({ 
+        .from("promo_codes")
+        .update({
           is_active: !promoCode.is_active,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', promoCode.id);
+        .eq("id", promoCode.id);
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: `Promo code ${!promoCode.is_active ? 'activated' : 'deactivated'}`,
+        description: `Promo code ${!promoCode.is_active ? "activated" : "deactivated"}`,
       });
 
       fetchPromoCodes();
@@ -286,7 +294,7 @@ export function AdminPromoCodesTab() {
   };
 
   const getDiscountDisplay = (promoCode: PromoCode) => {
-    if (promoCode.discount_type === 'percentage') {
+    if (promoCode.discount_type === "percentage") {
       return `${promoCode.discount_value}%`;
     } else {
       return `$${promoCode.discount_value}`;
@@ -304,16 +312,20 @@ export function AdminPromoCodesTab() {
     if (!promoCode.is_active) {
       return <Badge variant="secondary">Inactive</Badge>;
     }
-    
+
     if (promoCode.expires_at && new Date(promoCode.expires_at) < new Date()) {
       return <Badge variant="destructive">Expired</Badge>;
     }
-    
+
     if (promoCode.max_uses && promoCode.current_uses >= promoCode.max_uses) {
       return <Badge variant="destructive">Used Up</Badge>;
     }
-    
-    return <Badge variant="default" className="bg-green-600">Active</Badge>;
+
+    return (
+      <Badge variant="default" className="bg-green-600">
+        Active
+      </Badge>
+    );
   };
 
   if (loading) {
@@ -337,10 +349,13 @@ export function AdminPromoCodesTab() {
             Create and manage discount codes for your store
           </p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
-          setIsCreateDialogOpen(open);
-          if (!open) resetForm();
-        }}>
+        <Dialog
+          open={isCreateDialogOpen}
+          onOpenChange={(open) => {
+            setIsCreateDialogOpen(open);
+            if (!open) resetForm();
+          }}
+        >
           <DialogTrigger asChild>
             <Button className="bg-gradient-to-r from-primary to-blue-600">
               <Plus className="w-4 h-4 mr-2" />
@@ -350,13 +365,12 @@ export function AdminPromoCodesTab() {
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>
-                {editingPromoCode ? 'Edit Promo Code' : 'Create Promo Code'}
+                {editingPromoCode ? "Edit Promo Code" : "Create Promo Code"}
               </DialogTitle>
               <DialogDescription>
-                {editingPromoCode 
-                  ? 'Update the promo code settings'
-                  : 'Create a new discount code for customers'
-                }
+                {editingPromoCode
+                  ? "Update the promo code settings"
+                  : "Create a new discount code for customers"}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -366,11 +380,20 @@ export function AdminPromoCodesTab() {
                   <Input
                     id="code"
                     value={formData.code}
-                    onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value.toUpperCase() }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        code: e.target.value.toUpperCase(),
+                      }))
+                    }
                     placeholder="PROMO-XXXXXX"
                     className="font-mono"
                   />
-                  <Button type="button" onClick={generateRandomCode} variant="outline">
+                  <Button
+                    type="button"
+                    onClick={generateRandomCode}
+                    variant="outline"
+                  >
                     Generate
                   </Button>
                 </div>
@@ -379,10 +402,10 @@ export function AdminPromoCodesTab() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="discount_type">Discount Type</Label>
-                  <Select 
-                    value={formData.discount_type} 
-                    onValueChange={(value: 'percentage' | 'fixed_amount') => 
-                      setFormData(prev => ({ ...prev, discount_type: value }))
+                  <Select
+                    value={formData.discount_type}
+                    onValueChange={(value: "percentage" | "fixed_amount") =>
+                      setFormData((prev) => ({ ...prev, discount_type: value }))
                     }
                   >
                     <SelectTrigger>
@@ -397,16 +420,29 @@ export function AdminPromoCodesTab() {
 
                 <div className="space-y-2">
                   <Label htmlFor="discount_value">
-                    {formData.discount_type === 'percentage' ? 'Percentage (%)' : 'Amount ($)'}
+                    {formData.discount_type === "percentage"
+                      ? "Percentage (%)"
+                      : "Amount ($)"}
                   </Label>
                   <Input
                     id="discount_value"
                     type="number"
                     min="0"
-                    step={formData.discount_type === 'percentage' ? '1' : '0.01'}
-                    max={formData.discount_type === 'percentage' ? '100' : undefined}
+                    step={
+                      formData.discount_type === "percentage" ? "1" : "0.01"
+                    }
+                    max={
+                      formData.discount_type === "percentage"
+                        ? "100"
+                        : undefined
+                    }
                     value={formData.discount_value}
-                    onChange={(e) => setFormData(prev => ({ ...prev, discount_value: parseFloat(e.target.value) || 0 }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        discount_value: parseFloat(e.target.value) || 0,
+                      }))
+                    }
                   />
                 </div>
               </div>
@@ -418,8 +454,15 @@ export function AdminPromoCodesTab() {
                     id="max_uses"
                     type="number"
                     min="1"
-                    value={formData.max_uses || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, max_uses: e.target.value ? parseInt(e.target.value) : null }))}
+                    value={formData.max_uses || ""}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        max_uses: e.target.value
+                          ? parseInt(e.target.value)
+                          : null,
+                      }))
+                    }
                     placeholder="Unlimited"
                   />
                 </div>
@@ -430,7 +473,12 @@ export function AdminPromoCodesTab() {
                     id="expires_at"
                     type="date"
                     value={formData.expires_at}
-                    onChange={(e) => setFormData(prev => ({ ...prev, expires_at: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        expires_at: e.target.value,
+                      }))
+                    }
                   />
                 </div>
               </div>
@@ -439,17 +487,23 @@ export function AdminPromoCodesTab() {
                 <Switch
                   id="is_active"
                   checked={formData.is_active}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, is_active: checked }))
+                  }
                 />
                 <Label htmlFor="is_active">Active</Label>
               </div>
 
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsCreateDialogOpen(false)}
+                >
                   Cancel
                 </Button>
                 <Button type="submit">
-                  {editingPromoCode ? 'Update' : 'Create'} Promo Code
+                  {editingPromoCode ? "Update" : "Create"} Promo Code
                 </Button>
               </DialogFooter>
             </form>
@@ -475,7 +529,7 @@ export function AdminPromoCodesTab() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {promoCodes.filter(p => p.is_active).length}
+              {promoCodes.filter((p) => p.is_active).length}
             </div>
           </CardContent>
         </Card>
@@ -492,16 +546,28 @@ export function AdminPromoCodesTab() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Discount</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Average Discount
+            </CardTitle>
             <Percent className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {promoCodes.length > 0 
-                ? Math.round(promoCodes.reduce((sum, p) => 
-                    sum + (p.discount_type === 'percentage' ? p.discount_value : 0), 0
-                  ) / promoCodes.filter(p => p.discount_type === 'percentage').length || 0)
-                : 0}%
+              {promoCodes.length > 0
+                ? Math.round(
+                    promoCodes.reduce(
+                      (sum, p) =>
+                        sum +
+                        (p.discount_type === "percentage"
+                          ? p.discount_value
+                          : 0),
+                      0,
+                    ) /
+                      promoCodes.filter((p) => p.discount_type === "percentage")
+                        .length || 0,
+                  )
+                : 0}
+              %
             </div>
           </CardContent>
         </Card>
@@ -548,13 +614,12 @@ export function AdminPromoCodesTab() {
                   <TableCell>{getUsageDisplay(promoCode)}</TableCell>
                   <TableCell>{getStatusBadge(promoCode)}</TableCell>
                   <TableCell>
-                    {promoCode.expires_at 
-                      ? format(new Date(promoCode.expires_at), 'MMM dd, yyyy')
-                      : 'No expiry'
-                    }
+                    {promoCode.expires_at
+                      ? format(new Date(promoCode.expires_at), "MMM dd, yyyy")
+                      : "No expiry"}
                   </TableCell>
                   <TableCell>
-                    {format(new Date(promoCode.created_at), 'MMM dd, yyyy')}
+                    {format(new Date(promoCode.created_at), "MMM dd, yyyy")}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
@@ -565,7 +630,9 @@ export function AdminPromoCodesTab() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => copyToClipboard(promoCode.code)}>
+                        <DropdownMenuItem
+                          onClick={() => copyToClipboard(promoCode.code)}
+                        >
                           <Copy className="mr-2 h-4 w-4" />
                           Copy Code
                         </DropdownMenuItem>
@@ -574,12 +641,14 @@ export function AdminPromoCodesTab() {
                           <Edit className="mr-2 h-4 w-4" />
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleToggleActive(promoCode)}>
+                        <DropdownMenuItem
+                          onClick={() => handleToggleActive(promoCode)}
+                        >
                           <Users className="mr-2 h-4 w-4" />
-                          {promoCode.is_active ? 'Deactivate' : 'Activate'}
+                          {promoCode.is_active ? "Deactivate" : "Activate"}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           className="text-destructive"
                           onClick={() => handleDelete(promoCode)}
                         >
@@ -596,7 +665,9 @@ export function AdminPromoCodesTab() {
           {promoCodes.length === 0 && (
             <div className="text-center py-8">
               <Gift className="mx-auto h-12 w-12 text-muted-foreground" />
-              <h3 className="mt-2 text-sm font-semibold text-muted-foreground">No promo codes</h3>
+              <h3 className="mt-2 text-sm font-semibold text-muted-foreground">
+                No promo codes
+              </h3>
               <p className="mt-1 text-sm text-muted-foreground">
                 Get started by creating your first promo code.
               </p>

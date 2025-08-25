@@ -270,8 +270,8 @@ export default function AnimatedCheckout() {
 
       // Calculate discount based on code type
       let discountAmount = 0;
-      if (validation.type === 'promo') {
-        if (validation.discount_type === 'percentage') {
+      if (validation.type === "promo") {
+        if (validation.discount_type === "percentage") {
           discountAmount = subtotal * (validation.discount_value / 100);
         } else {
           discountAmount = Math.min(validation.discount_value, subtotal);

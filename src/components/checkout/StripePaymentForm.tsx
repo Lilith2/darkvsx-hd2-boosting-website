@@ -3,7 +3,13 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Lock, CheckCircle, Loader2, AlertTriangle } from "lucide-react";
+import {
+  Shield,
+  Lock,
+  CheckCircle,
+  Loader2,
+  AlertTriangle,
+} from "lucide-react";
 import { StripePaymentElement } from "./StripePaymentElement";
 
 const stripePromise = loadStripe(
@@ -72,7 +78,9 @@ export function StripePaymentForm({
       // Check for valid cart and total
       if (total <= 0 || cartItems.length === 0) {
         setIsLoading(false);
-        setInitError("Your cart is empty or the total amount is too low for payment processing.");
+        setInitError(
+          "Your cart is empty or the total amount is too low for payment processing.",
+        );
         return;
       }
 
@@ -123,41 +131,44 @@ export function StripePaymentForm({
           try {
             errorData = await response.json();
           } catch {
-            errorData = { error: `HTTP ${response.status}: ${response.statusText}` };
+            errorData = {
+              error: `HTTP ${response.status}: ${response.statusText}`,
+            };
           }
           throw new Error(
-            errorData.error || errorData.details || `Payment server error (${response.status})`,
+            errorData.error ||
+              errorData.details ||
+              `Payment server error (${response.status})`,
           );
         }
 
         // Parse successful response
         const data = await response.json();
-        
+
         console.log("Payment intent created successfully:", {
           clientSecret: data.clientSecret ? "✓" : "✗",
           amount: data.amount,
           supportedMethods: data.supportedPaymentMethods,
         });
-        
+
         if (!data.clientSecret) {
           throw new Error("Invalid payment response - missing client secret");
         }
 
         setClientSecret(data.clientSecret);
         setSupportedMethods(data.supportedPaymentMethods || []);
-        
+
         // Show success toast
         toast({
           title: "Payment initialized",
           description: `Ready to process payment of $${data.amount.toFixed(2)}`,
         });
-
       } catch (error: any) {
         console.error("Error initializing payment:", error);
         const errorMessage = error.message || "Failed to initialize payment";
         setInitError(errorMessage);
         onPaymentError(errorMessage);
-        
+
         // Show error toast
         toast({
           title: "Payment initialization failed",
@@ -171,7 +182,16 @@ export function StripePaymentForm({
     };
 
     initializePayment();
-  }, [total, cartItems, referralDiscount, creditsUsed, disabled, metadata, onPaymentError, toast]);
+  }, [
+    total,
+    cartItems,
+    referralDiscount,
+    creditsUsed,
+    disabled,
+    metadata,
+    onPaymentError,
+    toast,
+  ]);
 
   const handlePaymentSuccess = (paymentIntent: any) => {
     toast({
@@ -202,7 +222,8 @@ export function StripePaymentForm({
           </div>
           <div className="mt-4 text-center">
             <p className="text-sm text-muted-foreground">
-              Setting up all available payment methods including cards, digital wallets, and buy-now-pay-later options
+              Setting up all available payment methods including cards, digital
+              wallets, and buy-now-pay-later options
             </p>
           </div>
         </CardContent>
@@ -298,11 +319,13 @@ export function StripePaymentForm({
                 Secure Payment with Stripe
               </h4>
               <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                Your payment is protected by Stripe's advanced security. We never store your payment information.
+                Your payment is protected by Stripe's advanced security. We
+                never store your payment information.
               </p>
               {supportedMethods.length > 0 && (
                 <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
-                  {supportedMethods.length} payment methods available including cards, digital wallets, and BNPL options
+                  {supportedMethods.length} payment methods available including
+                  cards, digital wallets, and BNPL options
                 </p>
               )}
             </div>

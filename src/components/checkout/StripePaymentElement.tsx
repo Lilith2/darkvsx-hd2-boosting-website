@@ -5,15 +5,15 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
-import { 
-  Loader2, 
-  CreditCard, 
-  AlertTriangle, 
-  Shield, 
+import {
+  Loader2,
+  CreditCard,
+  AlertTriangle,
+  Shield,
   CheckCircle,
   Smartphone,
   Wallet,
-  DollarSign
+  DollarSign,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -65,7 +65,9 @@ export function StripePaymentElement({
       // Validate form before submitting
       const { error: submitError } = await elements.submit();
       if (submitError) {
-        setErrorMessage(submitError.message || "Please complete all required fields.");
+        setErrorMessage(
+          submitError.message || "Please complete all required fields.",
+        );
         setIsSubmitting(false);
         return;
       }
@@ -87,31 +89,38 @@ export function StripePaymentElement({
       if (error) {
         console.error("Payment error:", error);
         let errorMsg = "An unexpected error occurred.";
-        
+
         // Enhanced error messages based on error types
         switch (error.type) {
           case "card_error":
-            errorMsg = error.message || "Your card was declined. Please try a different payment method.";
+            errorMsg =
+              error.message ||
+              "Your card was declined. Please try a different payment method.";
             break;
           case "validation_error":
-            errorMsg = error.message || "Please check your payment information and try again.";
+            errorMsg =
+              error.message ||
+              "Please check your payment information and try again.";
             break;
           case "api_connection_error":
-            errorMsg = "Network error. Please check your connection and try again.";
+            errorMsg =
+              "Network error. Please check your connection and try again.";
             break;
           case "api_error":
-            errorMsg = "Payment service temporarily unavailable. Please try again in a moment.";
+            errorMsg =
+              "Payment service temporarily unavailable. Please try again in a moment.";
             break;
           case "authentication_error":
             errorMsg = "Payment authentication failed. Please try again.";
             break;
           case "rate_limit_error":
-            errorMsg = "Too many payment attempts. Please wait a moment and try again.";
+            errorMsg =
+              "Too many payment attempts. Please wait a moment and try again.";
             break;
           default:
             errorMsg = error.message || errorMsg;
         }
-        
+
         setErrorMessage(errorMsg);
         onPaymentError(errorMsg);
       } else if (paymentIntent) {
@@ -123,8 +132,12 @@ export function StripePaymentElement({
           // For some payment methods, the payment might be processing
           onPaymentSuccess(paymentIntent);
         } else if (paymentIntent.status === "requires_payment_method") {
-          setErrorMessage("Payment was not successful. Please try a different payment method.");
-          onPaymentError("Payment was not successful. Please try a different payment method.");
+          setErrorMessage(
+            "Payment was not successful. Please try a different payment method.",
+          );
+          onPaymentError(
+            "Payment was not successful. Please try a different payment method.",
+          );
         } else {
           const errorMsg = `Payment status: ${paymentIntent.status}. Please contact support if this persists.`;
           setErrorMessage(errorMsg);
@@ -133,7 +146,8 @@ export function StripePaymentElement({
       }
     } catch (err: any) {
       console.error("Unexpected error during payment:", err);
-      const errorMsg = err.message || "An unexpected error occurred during payment.";
+      const errorMsg =
+        err.message || "An unexpected error occurred during payment.";
       setErrorMessage(errorMsg);
       onPaymentError(errorMsg);
     } finally {
@@ -141,7 +155,8 @@ export function StripePaymentElement({
     }
   };
 
-  const isLoading = !stripe || !elements || isSubmitting || isProcessing || !isElementReady;
+  const isLoading =
+    !stripe || !elements || isSubmitting || isProcessing || !isElementReady;
 
   return (
     <div className="space-y-6">
@@ -169,11 +184,13 @@ export function StripePaymentElement({
               <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-xl z-10">
                 <div className="flex items-center space-x-3">
                   <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                  <span className="text-base font-medium">Loading payment methods...</span>
+                  <span className="text-base font-medium">
+                    Loading payment methods...
+                  </span>
                 </div>
               </div>
             )}
-            
+
             <PaymentElement
               options={{
                 layout: "tabs",
@@ -181,7 +198,7 @@ export function StripePaymentElement({
                   "card",
                   "apple_pay",
                   "google_pay",
-                  "link", 
+                  "link",
                   "venmo",
                   "cashapp",
                   "amazon_pay",
@@ -274,7 +291,9 @@ export function StripePaymentElement({
             {isLoading ? (
               <>
                 <Loader2 className="w-6 h-6 mr-3 animate-spin" />
-                {!isElementReady ? "Loading Payment Methods..." : "Processing Payment..."}
+                {!isElementReady
+                  ? "Loading Payment Methods..."
+                  : "Processing Payment..."}
               </>
             ) : (
               <>
