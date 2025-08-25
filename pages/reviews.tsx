@@ -210,12 +210,12 @@ export default function Reviews() {
                 </h3>
                 <p className="text-muted-foreground mb-4">
                   {ratingFilter === "all"
-                    ? "Be the first to share your experience!"
+                    ? "Be the first to share your experience! Complete an order to write a review."
                     : `Try selecting a different rating filter.`}
                 </p>
                 {ratingFilter === "all" && (
                   <Button onClick={() => setShowReviewForm(true)}>
-                    Write the First Review
+                    Write a Review
                   </Button>
                 )}
               </div>
