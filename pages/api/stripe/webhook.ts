@@ -50,8 +50,19 @@ export default async function handler(
 
   const startTime = Date.now();
   let event: Stripe.Event;
+  let stripe: Stripe;
 
   try {
+    // Initialize Stripe with proper error handling
+    try {
+      stripe = getStripeInstance();
+    } catch (stripeError: any) {
+      console.error("Stripe initialization failed in webhook:", stripeError.message);
+      return res.status(500).json({
+        error: "Payment service configuration error",
+        details: "Stripe not properly configured"
+      });
+    }
     // Get the signature from the request headers
     const sig = req.headers["stripe-signature"];
 
