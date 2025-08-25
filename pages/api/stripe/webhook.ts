@@ -25,9 +25,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  // Security: Only accept POST requests
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({
+      error: "Method not allowed",
+      allowed: ["POST"]
+    });
   }
+
+  const startTime = Date.now();
+  let event: Stripe.Event;
 
   try {
     // Get the signature from the request headers
@@ -35,74 +42,139 @@ export default async function handler(
 
     if (!sig) {
       console.error("Missing stripe-signature header");
-      return res.status(400).json({ error: "Missing stripe signature" });
+      return res.status(400).json({
+        error: "Missing stripe signature",
+        details: "Webhook signature is required for security"
+      });
     }
 
     if (!process.env.STRIPE_WEBHOOK_SECRET) {
       console.error("Missing STRIPE_WEBHOOK_SECRET environment variable");
-      return res.status(500).json({ error: "Webhook secret not configured" });
+      return res.status(500).json({
+        error: "Webhook secret not configured",
+        details: "Server configuration error"
+      });
     }
 
-    // Get the raw body
-    const rawBody = await buffer(req);
-
-    let event: Stripe.Event;
-
+    // Get the raw body with size limit for security
+    let rawBody: Buffer;
     try {
-      // Verify the webhook signature
+      rawBody = await buffer(req, {
+        limit: '1mb' // Limit webhook payload size
+      });
+    } catch (bufferError: any) {
+      console.error("Error reading webhook body:", bufferError);
+      return res.status(400).json({
+        error: "Invalid request body",
+        details: "Could not parse webhook payload"
+      });
+    }
+
+    // Verify the webhook signature with enhanced error handling
+    try {
       event = stripe.webhooks.constructEvent(
         rawBody,
         sig,
         process.env.STRIPE_WEBHOOK_SECRET,
       );
     } catch (err: any) {
-      console.error("Webhook signature verification failed:", err.message);
-      return res.status(400).json({ error: `Webhook error: ${err.message}` });
+      console.error("Webhook signature verification failed:", {
+        error: err.message,
+        type: err.type,
+        headers: {
+          'stripe-signature': sig ? 'present' : 'missing',
+          'content-length': req.headers['content-length'],
+        }
+      });
+
+      return res.status(400).json({
+        error: "Webhook signature verification failed",
+        details: err.message,
+        type: err.type
+      });
     }
 
-    console.log(`Received webhook event: ${event.type}`);
+    // Log event with timing
+    console.log(`[${new Date().toISOString()}] Received webhook event: ${event.type} (ID: ${event.id})`);
 
-    // Handle the event
-    switch (event.type) {
-      case "payment_intent.succeeded":
-        await handlePaymentIntentSucceeded(
-          event.data.object as Stripe.PaymentIntent,
-        );
-        break;
+    // Handle the event with enhanced error handling
+    try {
+      switch (event.type) {
+        case "payment_intent.succeeded":
+          await handlePaymentIntentSucceeded(
+            event.data.object as Stripe.PaymentIntent,
+          );
+          break;
 
-      case "payment_intent.payment_failed":
-        await handlePaymentIntentFailed(
-          event.data.object as Stripe.PaymentIntent,
-        );
-        break;
+        case "payment_intent.payment_failed":
+          await handlePaymentIntentFailed(
+            event.data.object as Stripe.PaymentIntent,
+          );
+          break;
 
-      case "payment_intent.processing":
-        await handlePaymentIntentProcessing(
-          event.data.object as Stripe.PaymentIntent,
-        );
-        break;
+        case "payment_intent.processing":
+          await handlePaymentIntentProcessing(
+            event.data.object as Stripe.PaymentIntent,
+          );
+          break;
 
-      case "payment_intent.requires_action":
-        await handlePaymentIntentRequiresAction(
-          event.data.object as Stripe.PaymentIntent,
-        );
-        break;
+        case "payment_intent.requires_action":
+          await handlePaymentIntentRequiresAction(
+            event.data.object as Stripe.PaymentIntent,
+          );
+          break;
 
-      case "payment_intent.canceled":
-        await handlePaymentIntentCanceled(
-          event.data.object as Stripe.PaymentIntent,
-        );
-        break;
+        case "payment_intent.canceled":
+          await handlePaymentIntentCanceled(
+            event.data.object as Stripe.PaymentIntent,
+          );
+          break;
 
-      default:
-        console.log(`Unhandled event type: ${event.type}`);
+        default:
+          console.log(`Unhandled event type: ${event.type} (ID: ${event.id})`);
+          // Still return success for unhandled but valid events
+      }
+    } catch (handlerError: any) {
+      console.error(`Error handling ${event.type} event:`, {
+        eventId: event.id,
+        error: handlerError.message,
+        stack: handlerError.stack
+      });
+
+      // Don't fail the webhook for individual handler errors
+      // Stripe will retry if we return an error status
+      console.warn(`Handler failed for ${event.type}, but acknowledging webhook to prevent retries`);
     }
+
+    const processingTime = Date.now() - startTime;
+    console.log(`Webhook ${event.type} processed in ${processingTime}ms`);
 
     // Return a response to acknowledge receipt of the event
-    res.status(200).json({ received: true });
+    res.status(200).json({
+      received: true,
+      eventId: event.id,
+      eventType: event.type,
+      processingTime: processingTime
+    });
+
   } catch (error: any) {
-    console.error("Webhook handler error:", error);
-    res.status(500).json({ error: "Webhook handler failed" });
+    const processingTime = Date.now() - startTime;
+    console.error("Webhook handler critical error:", {
+      error: error.message,
+      stack: error.stack,
+      processingTime,
+      headers: {
+        'content-type': req.headers['content-type'],
+        'content-length': req.headers['content-length'],
+        'stripe-signature': req.headers['stripe-signature'] ? 'present' : 'missing'
+      }
+    });
+
+    res.status(500).json({
+      error: "Webhook handler failed",
+      details: "Internal server error processing webhook",
+      timestamp: new Date().toISOString()
+    });
   }
 }
 
