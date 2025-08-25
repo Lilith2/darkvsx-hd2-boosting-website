@@ -109,9 +109,63 @@ export function useReviews(options: UseReviewsOptions = {}): UseReviewsResult {
   };
 }
 
-// Hook specifically for approved reviews (public display)
+// Hook specifically for approved reviews (public display) - uses secure API
 export function useApprovedReviews(limit?: number): UseReviewsResult {
-  return useReviews({ status: "approved", limit });
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPublicReviews = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params = new URLSearchParams();
+      if (limit) params.append("limit", limit.toString());
+
+      const response = await fetch(`/api/reviews/public?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.error || "Failed to fetch reviews");
+      }
+
+      // Convert public reviews to Review format (with sanitized fields)
+      const sanitizedReviews: Review[] = result.reviews.map((review: any) => ({
+        ...review,
+        customer_email: "***", // Hidden for security
+        user_id: null, // Hidden for security
+        order_id: null, // Hidden for security
+        order_number: null, // Hidden for security
+        status: "approved",
+        metadata: {},
+        updated_at: review.created_at,
+        approved_at: review.created_at,
+        featured_at: review.featured ? review.created_at : null,
+      }));
+
+      setReviews(sanitizedReviews);
+    } catch (err: any) {
+      console.error("Error fetching public reviews:", err);
+      setError(err.message || "Failed to fetch reviews");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPublicReviews();
+  }, [limit]);
+
+  return {
+    reviews,
+    loading,
+    error,
+    refetch: fetchPublicReviews,
+  };
 }
 
 // Hook specifically for featured reviews
