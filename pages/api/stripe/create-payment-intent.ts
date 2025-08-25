@@ -270,8 +270,15 @@ export default async function handler(
 
     const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
 
-    // Log successful creation
-    console.log("PaymentIntent created successfully:", paymentIntent.id);
+    // Log successful creation with enhanced details
+    console.log("PaymentIntent created successfully:", {
+      id: paymentIntent.id,
+      amount: finalAmount,
+      currency: currency,
+      payment_method_types: paymentIntent.payment_method_types,
+      automatic_payment_methods: paymentIntent.automatic_payment_methods,
+      venmo_enabled: !!process.env.STRIPE_VENMO_CAPABILITY,
+    });
 
     // Return successful response
     return res.status(200).json({
