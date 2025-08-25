@@ -210,7 +210,17 @@ async function handlePaymentIntentSucceeded(
   const startTime = Date.now();
   console.log(`[${new Date().toISOString()}] Processing PaymentIntent succeeded: ${paymentIntent.id} (Amount: $${(paymentIntent.amount / 100).toFixed(2)})`);
 
+  let supabase: ReturnType<typeof createClient>;
+
   try {
+    // Initialize Supabase client
+    try {
+      supabase = getSupabaseClient();
+    } catch (supabaseError: any) {
+      console.error("Supabase initialization failed in webhook handler:", supabaseError.message);
+      throw new Error("Database not properly configured");
+    }
+
     // Check if we already have orders for this payment intent
     const { data: existingOrders, error: ordersQueryError } = await supabase
       .from("orders")
