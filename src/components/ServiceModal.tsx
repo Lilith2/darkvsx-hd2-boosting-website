@@ -86,7 +86,8 @@ export function ServiceModal({
       !formData.description ||
       !formData.price ||
       !formData.duration ||
-      !formData.difficulty
+      !formData.difficulty ||
+      !formData.category
     ) {
       alert("Please fill in all required fields");
       return;
