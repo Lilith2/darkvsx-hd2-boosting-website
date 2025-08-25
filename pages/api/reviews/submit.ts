@@ -117,6 +117,25 @@ export default async function handler(
   }
 }
 
+interface RegularOrder {
+  id: string;
+  user_id: string | null;
+  customer_email: string;
+  customer_name: string;
+  status: string;
+  services: any;
+}
+
+interface CustomOrder {
+  id: string;
+  user_id: string | null;
+  customer_email: string;
+  customer_name: string;
+  status: string;
+  order_number: string;
+  completed_at: string | null;
+}
+
 async function validateOrder(reviewData: ReviewSubmissionData) {
   const { order_id, user_id, customer_email } = reviewData;
 
@@ -136,7 +155,7 @@ async function validateOrder(reviewData: ReviewSubmissionData) {
     };
   }
 
-  let order = regularOrder;
+  let order: RegularOrder | CustomOrder | null = regularOrder;
   let orderType: "regular" | "custom" = "regular";
 
   // If not found in regular orders, try custom orders
@@ -170,8 +189,8 @@ async function validateOrder(reviewData: ReviewSubmissionData) {
   }
 
   // Check if order is completed
-  const isCompleted = orderType === "custom" 
-    ? (order.status === ORDER_STATUSES.COMPLETED || !!order.completed_at)
+  const isCompleted = orderType === "custom"
+    ? (order.status === ORDER_STATUSES.COMPLETED || !!(order as CustomOrder).completed_at)
     : order.status === ORDER_STATUSES.COMPLETED;
 
   if (!isCompleted) {
