@@ -208,7 +208,19 @@ export default async function handler(
       });
     }
 
+    // Log payment calculation for debugging
+    console.log("Payment calculation:", {
+      servicesTotal,
+      customOrderTotal,
+      subtotal,
+      validatedReferralDiscount,
+      tax,
+      validatedCreditsUsed,
+      finalAmount
+    });
+
     // Create payment intent following Stripe documentation
+    console.log("Creating Stripe PaymentIntent...");
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(finalAmount * 100), // Amount in cents
       currency: currency,
