@@ -87,15 +87,20 @@ export default async function handler(
     }
 
     // Process regular orders
-    if (regularOrders) {
-      for (const order of regularOrders) {
-        // Check if already has a review
-        const { data: existingReview } = await supabase
-          .from("reviews")
-          .select("id")
-          .eq("order_id", order.id)
-          .maybeSingle();
+    if (regularOrders && regularOrders.length > 0) {
+      // Get all reviews for these orders in a single query
+      const orderIds = regularOrders.map(order => order.id);
+      const { data: existingReviews } = await supabase
+        .from("reviews")
+        .select("order_id")
+        .in("order_id", orderIds);
 
+      // Create a Set for fast lookup
+      const reviewedOrderIds = new Set(
+        existingReviews?.map(review => review.order_id) || []
+      );
+
+      for (const order of regularOrders) {
         completedOrders.push({
           id: order.id,
           customer_name: order.customer_name,
@@ -104,7 +109,7 @@ export default async function handler(
           completed_at: order.updated_at || order.created_at,
           created_at: order.created_at,
           order_type: "regular",
-          has_review: !!existingReview,
+          has_review: reviewedOrderIds.has(order.id),
         });
       }
     }
@@ -135,15 +140,20 @@ export default async function handler(
     }
 
     // Process custom orders
-    if (customOrders) {
-      for (const order of customOrders) {
-        // Check if already has a review
-        const { data: existingReview } = await supabase
-          .from("reviews")
-          .select("id")
-          .eq("order_id", order.id)
-          .maybeSingle();
+    if (customOrders && customOrders.length > 0) {
+      // Get all reviews for these orders in a single query
+      const customOrderIds = customOrders.map(order => order.id);
+      const { data: existingCustomReviews } = await supabase
+        .from("reviews")
+        .select("order_id")
+        .in("order_id", customOrderIds);
 
+      // Create a Set for fast lookup
+      const reviewedCustomOrderIds = new Set(
+        existingCustomReviews?.map(review => review.order_id) || []
+      );
+
+      for (const order of customOrders) {
         completedOrders.push({
           id: order.id,
           order_number: order.order_number,
@@ -153,7 +163,7 @@ export default async function handler(
           completed_at: order.completed_at || order.created_at,
           created_at: order.created_at,
           order_type: "custom",
-          has_review: !!existingReview,
+          has_review: reviewedCustomOrderIds.has(order.id),
         });
       }
     }
