@@ -36,6 +36,7 @@ const createPaymentIntentSchema = z.object({
       customer_discord: z.string().optional(),
     })
     .optional(),
+  referralCode: z.string().optional(),
   referralDiscount: z.number().nonnegative().optional(),
   creditsUsed: z.number().nonnegative().optional(),
   currency: z.string().default("usd"),
