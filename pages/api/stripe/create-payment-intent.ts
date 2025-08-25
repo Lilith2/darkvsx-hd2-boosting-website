@@ -75,9 +75,13 @@ export default async function handler(
 
     console.log("Environment variables validated successfully");
 
+    // Log request data for debugging
+    console.log("Request body received:", JSON.stringify(req.body, null, 2));
+
     // Validate and parse request body
     const parseResult = createPaymentIntentSchema.safeParse(req.body);
     if (!parseResult.success) {
+      console.error("Request validation failed:", parseResult.error.issues);
       return res.status(400).json({
         error: "Invalid request data",
         details: parseResult.error.issues
@@ -85,6 +89,8 @@ export default async function handler(
           .join(", "),
       });
     }
+
+    console.log("Request validation successful");
 
     const {
       services,
