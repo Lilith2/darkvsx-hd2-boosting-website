@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, Lock, CheckCircle, Loader2 } from "lucide-react";
@@ -57,34 +56,24 @@ export function StripePaymentForm({
 }: StripePaymentFormProps) {
   const [clientSecret, setClientSecret] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isInitializing, setIsInitializing] = useState(false);
+  const [initError, setInitError] = useState<string>("");
   const { toast } = useToast();
-  const isMountedRef = useRef(true);
-
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
-
-  // Memoize metadata to prevent unnecessary re-renders
-  const memoizedMetadata = useMemo(() => metadata, [JSON.stringify(metadata)]);
-
-  // Memoize error handler
-  const handlePaymentError = useCallback((error: string) => {
-    onPaymentError(error);
-  }, [onPaymentError]);
+  const initializingRef = useRef(false);
 
   useEffect(() => {
     const initializePayment = async () => {
-      // Prevent concurrent initialization
-      if (isInitializing) return;
+      // Prevent multiple concurrent initializations
+      if (initializingRef.current || total <= 0 || disabled) {
+        setIsLoading(false);
+        return;
+      }
+
+      initializingRef.current = true;
+      setIsLoading(true);
+      setInitError("");
 
       try {
-        setIsInitializing(true);
-        setIsLoading(true);
-
-        // Prepare secure payment data (server will calculate amounts)
+        // Prepare payment data
         const services = cartItems
           .filter(item => !item.service.customOrderData)
           .map(item => ({
@@ -95,60 +84,43 @@ export function StripePaymentForm({
         const customOrderData = cartItems
           .find(item => item.service.customOrderData)?.service.customOrderData;
 
-        // Create payment intent with secure server-side pricing
-        const intentResponse = await fetch(
-          "/api/stripe/create-payment-intent",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              services,
-              customOrderData,
-              referralDiscount,
-              creditsUsed,
-              currency: "usd",
-              metadata: memoizedMetadata,
-            }),
+        // Create payment intent
+        const response = await fetch("/api/stripe/create-payment-intent", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+          body: JSON.stringify({
+            services,
+            customOrderData,
+            referralDiscount,
+            creditsUsed,
+            currency: "usd",
+            metadata,
+          }),
+        });
 
-        // Read the response body only once
-        const responseData = await intentResponse.json();
+        // Parse response once
+        const data = await response.json();
 
-        if (!intentResponse.ok) {
-          if (intentResponse.status === 429) {
-            throw new Error(
-              "Too many requests. Please wait a moment and try again.",
-            );
-          }
-          throw new Error(responseData.error || "Failed to create payment intent");
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to create payment intent");
         }
 
-        if (isMountedRef.current) {
-          setClientSecret(responseData.clientSecret);
-        }
+        setClientSecret(data.clientSecret);
       } catch (error: any) {
         console.error("Error initializing payment:", error);
-        if (isMountedRef.current) {
-          handlePaymentError(error.message || "Failed to initialize payment");
-        }
+        const errorMessage = error.message || "Failed to initialize payment";
+        setInitError(errorMessage);
+        onPaymentError(errorMessage);
       } finally {
-        if (isMountedRef.current) {
-          setIsLoading(false);
-          setIsInitializing(false);
-        }
+        setIsLoading(false);
+        initializingRef.current = false;
       }
     };
 
-    if (total > 0 && !disabled && !isInitializing) {
-      // Add a small delay to avoid rate limits
-      const timeoutId = setTimeout(initializePayment, 200);
-      return () => clearTimeout(timeoutId);
-    }
-    return undefined;
-  }, [total, disabled, isInitializing]);
+    initializePayment();
+  }, [total, disabled]); // Simplified dependencies
 
   const handlePaymentSuccess = (paymentIntent: any) => {
     toast({
@@ -158,7 +130,7 @@ export function StripePaymentForm({
     onPaymentSuccess(paymentIntent);
   };
 
-  const handlePaymentError = (error: string) => {
+  const handlePaymentErrorInternal = (error: string) => {
     toast({
       title: "Payment Failed",
       description: error,
@@ -182,7 +154,7 @@ export function StripePaymentForm({
     );
   }
 
-  if (!clientSecret) {
+  if (initError || !clientSecret) {
     return (
       <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
         <CardContent className="p-8 text-center">
@@ -192,8 +164,8 @@ export function StripePaymentForm({
           <h3 className="text-lg font-semibold mb-2">
             Payment Initialization Failed
           </h3>
-          <p className="text-muted-foreground">
-            Unable to initialize secure payment. Please try again.
+          <p className="text-muted-foreground mb-4">
+            {initError || "Unable to initialize secure payment. Please try again."}
           </p>
         </CardContent>
       </Card>
@@ -252,7 +224,7 @@ export function StripePaymentForm({
           <Elements stripe={stripePromise} options={options}>
             <StripePaymentElement
               onPaymentSuccess={handlePaymentSuccess}
-              onPaymentError={handlePaymentError}
+              onPaymentError={handlePaymentErrorInternal}
               isProcessing={isProcessing}
               disabled={disabled}
               total={total}
