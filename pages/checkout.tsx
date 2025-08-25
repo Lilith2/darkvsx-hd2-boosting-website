@@ -330,15 +330,19 @@ export default function AnimatedCheckout() {
           }
           result = JSON.parse(responseText);
         } catch (parseError) {
-          console.error("Failed to parse order verification response:", parseError);
-          throw new Error("Invalid response from order server. Please contact support with your payment ID: " + paymentIntent.id);
+          console.error(
+            "Failed to parse order verification response:",
+            parseError,
+          );
+          throw new Error(
+            "Invalid response from order server. Please contact support with your payment ID: " +
+              paymentIntent.id,
+          );
         }
 
         if (!response.ok) {
           throw new Error(
-            result.details ||
-              result.error ||
-              "Server verification failed",
+            result.details || result.error || "Server verification failed",
           );
         }
 

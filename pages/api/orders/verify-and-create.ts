@@ -37,29 +37,35 @@ const verifyPaymentSchema = z.object({
     userId: z.string().optional(),
     customerEmail: z.string().email(),
     customerName: z.string().min(1),
-    services: z.array(z.object({
-      id: z.string(),
-      name: z.string(),
-      price: z.number(), // This will be ignored - we'll fetch from DB
-      quantity: z.number().positive().int(),
-    })),
+    services: z.array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        price: z.number(), // This will be ignored - we'll fetch from DB
+        quantity: z.number().positive().int(),
+      }),
+    ),
     notes: z.string().optional(),
     referralCode: z.string().optional(),
     referralDiscount: z.number().nonnegative().optional(),
     referralCreditsUsed: z.number().nonnegative().optional(),
     ipAddress: z.string().optional(),
-    customOrderData: z.object({
-      items: z.array(z.object({
-        category: z.string(),
-        item_name: z.string(),
-        quantity: z.number().positive().int(),
-        price_per_unit: z.number().positive(),
-        total_price: z.number().positive(),
-        description: z.string().optional(),
-      })),
-      special_instructions: z.string().optional(),
-      customer_discord: z.string().optional(),
-    }).optional(),
+    customOrderData: z
+      .object({
+        items: z.array(
+          z.object({
+            category: z.string(),
+            item_name: z.string(),
+            quantity: z.number().positive().int(),
+            price_per_unit: z.number().positive(),
+            total_price: z.number().positive(),
+            description: z.string().optional(),
+          }),
+        ),
+        special_instructions: z.string().optional(),
+        customer_discord: z.string().optional(),
+      })
+      .optional(),
   }),
 });
 
@@ -114,7 +120,9 @@ export default async function handler(
     if (!parseResult.success) {
       return res.status(400).json({
         error: "Invalid request data",
-        details: parseResult.error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`).join(', ')
+        details: parseResult.error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", "),
       });
     }
 
@@ -146,38 +154,43 @@ export default async function handler(
 
     // Fetch actual service prices from database - CRITICAL SECURITY
     if (orderData.services.length > 0) {
-      const serviceIds = orderData.services.map(s => s.id);
+      const serviceIds = orderData.services.map((s) => s.id);
       const { data: dbServices, error: servicesError } = await supabase
-        .from('services')
-        .select('id, price, active, title')
-        .in('id', serviceIds)
-        .eq('active', true);
+        .from("services")
+        .select("id, price, active, title")
+        .in("id", serviceIds)
+        .eq("active", true);
 
       if (servicesError) {
-        console.error("Error fetching services for verification:", servicesError);
+        console.error(
+          "Error fetching services for verification:",
+          servicesError,
+        );
         return res.status(500).json({
-          error: "Failed to verify service pricing"
+          error: "Failed to verify service pricing",
         });
       }
 
       // Verify all requested services exist and are active
-      const foundServiceIds = new Set(dbServices?.map(s => s.id) || []);
-      const missingServices = serviceIds.filter(id => !foundServiceIds.has(id));
+      const foundServiceIds = new Set(dbServices?.map((s) => s.id) || []);
+      const missingServices = serviceIds.filter(
+        (id) => !foundServiceIds.has(id),
+      );
       if (missingServices.length > 0) {
         return res.status(400).json({
           error: "Invalid services in order",
-          details: `Services not found or inactive: ${missingServices.join(', ')}`
+          details: `Services not found or inactive: ${missingServices.join(", ")}`,
         });
       }
 
       // Calculate total using DATABASE prices (not client-provided prices)
-      const servicesPriceMap = new Map(dbServices!.map(s => [s.id, s.price]));
+      const servicesPriceMap = new Map(dbServices!.map((s) => [s.id, s.price]));
       servicesTotal = orderData.services.reduce((sum, serviceRequest) => {
         const dbPrice = servicesPriceMap.get(serviceRequest.id);
         if (!dbPrice) {
           throw new Error(`Price not found for service ${serviceRequest.id}`);
         }
-        return sum + (dbPrice * serviceRequest.quantity);
+        return sum + dbPrice * serviceRequest.quantity;
       }, 0);
     }
 

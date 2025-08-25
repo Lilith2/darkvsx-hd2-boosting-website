@@ -111,11 +111,15 @@ export function StripePaymentForm({
           data = JSON.parse(responseText);
         } catch (parseError) {
           console.error("Failed to parse JSON response:", parseError);
-          throw new Error("Invalid response from payment server. Please try again.");
+          throw new Error(
+            "Invalid response from payment server. Please try again.",
+          );
         }
 
         if (!response.ok) {
-          throw new Error(data.error || data.details || "Failed to create payment intent");
+          throw new Error(
+            data.error || data.details || "Failed to create payment intent",
+          );
         }
 
         setClientSecret(data.clientSecret);

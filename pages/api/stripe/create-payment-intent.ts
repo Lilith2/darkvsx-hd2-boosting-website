@@ -14,22 +14,28 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // Request validation schema
 const createPaymentIntentSchema = z.object({
-  services: z.array(z.object({
-    id: z.string(),
-    quantity: z.number().positive().int(),
-  })),
-  customOrderData: z.object({
-    items: z.array(z.object({
-      category: z.string(),
-      item_name: z.string(),
+  services: z.array(
+    z.object({
+      id: z.string(),
       quantity: z.number().positive().int(),
-      price_per_unit: z.number().positive(),
-      total_price: z.number().positive(),
-      description: z.string().optional(),
-    })),
-    special_instructions: z.string().optional(),
-    customer_discord: z.string().optional(),
-  }).optional(),
+    }),
+  ),
+  customOrderData: z
+    .object({
+      items: z.array(
+        z.object({
+          category: z.string(),
+          item_name: z.string(),
+          quantity: z.number().positive().int(),
+          price_per_unit: z.number().positive(),
+          total_price: z.number().positive(),
+          description: z.string().optional(),
+        }),
+      ),
+      special_instructions: z.string().optional(),
+      customer_discord: z.string().optional(),
+    })
+    .optional(),
   referralDiscount: z.number().nonnegative().optional(),
   creditsUsed: z.number().nonnegative().optional(),
   currency: z.string().default("usd"),
@@ -48,7 +54,9 @@ export default async function handler(
     // Validate environment variables
     if (!process.env.STRIPE_SECRET_KEY) {
       console.error("Missing STRIPE_SECRET_KEY");
-      return res.status(500).json({ error: "Payment service configuration error" });
+      return res
+        .status(500)
+        .json({ error: "Payment service configuration error" });
     }
 
     if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -59,44 +67,57 @@ export default async function handler(
     // Validate and parse request body
     const parseResult = createPaymentIntentSchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: "Invalid request data",
-        details: parseResult.error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`).join(', ')
+        details: parseResult.error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", "),
       });
     }
 
-    const { services, customOrderData, referralDiscount = 0, creditsUsed = 0, currency, metadata = {} } = parseResult.data;
+    const {
+      services,
+      customOrderData,
+      referralDiscount = 0,
+      creditsUsed = 0,
+      currency,
+      metadata = {},
+    } = parseResult.data;
 
     // Fetch actual service prices from database
     let servicesTotal = 0;
     if (services.length > 0) {
-      const serviceIds = services.map(s => s.id);
+      const serviceIds = services.map((s) => s.id);
       const { data: dbServices, error: servicesError } = await supabase
-        .from('services')
-        .select('id, price, active')
-        .in('id', serviceIds)
-        .eq('active', true);
+        .from("services")
+        .select("id, price, active")
+        .in("id", serviceIds)
+        .eq("active", true);
 
       if (servicesError) {
         console.error("Error fetching services:", servicesError);
-        return res.status(500).json({ error: "Failed to fetch service pricing" });
+        return res
+          .status(500)
+          .json({ error: "Failed to fetch service pricing" });
       }
 
       // Verify all requested services exist and are active
-      const foundServiceIds = new Set(dbServices?.map(s => s.id) || []);
-      const missingServices = serviceIds.filter(id => !foundServiceIds.has(id));
+      const foundServiceIds = new Set(dbServices?.map((s) => s.id) || []);
+      const missingServices = serviceIds.filter(
+        (id) => !foundServiceIds.has(id),
+      );
       if (missingServices.length > 0) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: "Invalid services requested",
-          details: `Services not found or inactive: ${missingServices.join(', ')}`
+          details: `Services not found or inactive: ${missingServices.join(", ")}`,
         });
       }
 
       // Calculate total using database prices
-      const servicesPriceMap = new Map(dbServices!.map(s => [s.id, s.price]));
+      const servicesPriceMap = new Map(dbServices!.map((s) => [s.id, s.price]));
       servicesTotal = services.reduce((sum, serviceRequest) => {
         const dbPrice = servicesPriceMap.get(serviceRequest.id)!;
-        return sum + (dbPrice * serviceRequest.quantity);
+        return sum + dbPrice * serviceRequest.quantity;
       }, 0);
     }
 
@@ -117,10 +138,10 @@ export default async function handler(
     const finalAmount = Math.max(0, totalBeforeCredits + tax - creditsUsed);
 
     // Minimum charge validation (Stripe minimum is $0.50)
-    if (finalAmount < 0.50) {
-      return res.status(400).json({ 
-        error: "Order total too low", 
-        details: "Minimum payment amount is $0.50"
+    if (finalAmount < 0.5) {
+      return res.status(400).json({
+        error: "Order total too low",
+        details: "Minimum payment amount is $0.50",
       });
     }
 
@@ -155,7 +176,7 @@ export default async function handler(
         tax,
         creditsUsed,
         finalAmount,
-      }
+      },
     });
   } catch (error: any) {
     console.error("Error creating payment intent:", error);
@@ -182,7 +203,8 @@ export default async function handler(
     // Generic error - ensure JSON response
     res.status(500).json({
       error: error.message || "Failed to create payment intent",
-      details: "An unexpected error occurred while creating the payment intent. Please try again.",
+      details:
+        "An unexpected error occurred while creating the payment intent. Please try again.",
     });
   }
 }
