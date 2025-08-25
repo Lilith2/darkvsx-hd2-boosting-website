@@ -241,6 +241,9 @@ export default async function handler(
       },
     });
 
+    // Log successful creation
+    console.log("PaymentIntent created successfully:", paymentIntent.id);
+
     // Return successful response
     return res.status(200).json({
       clientSecret: paymentIntent.client_secret,
