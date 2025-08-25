@@ -256,29 +256,66 @@ export function initializeAnalytics() {
 
       window.addEventListener("unhandledrejection", (event) => {
         try {
-          // Filter out HMR-related errors and fetch errors from external services
-          const reason = event.reason;
-          if (reason && typeof reason === "object" && reason.message) {
-            const message = String(reason.message || "");
+          // Safely extract reason with null checks
+          const reason = event?.reason;
+          if (!reason) return;
 
-            // Skip HMR and development-related errors
-            if (
-              message.includes("Loading CSS chunk") ||
-              message.includes("Loading chunk") ||
-              message.includes("hmr") ||
-              message.includes("fullstory") ||
-              (message.includes("Failed to fetch") &&
-                process.env.NODE_ENV === "development")
-            ) {
-              return;
+          // Convert reason to a safe string for filtering
+          let messageStr = "";
+          try {
+            if (reason instanceof Error) {
+              messageStr = reason.message || "";
+            } else if (typeof reason === "string") {
+              messageStr = reason;
+            } else if (reason && typeof reason === "object") {
+              // Safely extract message property
+              const msgProperty = reason.message;
+              if (typeof msgProperty === "string") {
+                messageStr = msgProperty;
+              } else if (msgProperty != null) {
+                messageStr = String(msgProperty);
+              }
+            } else {
+              messageStr = String(reason);
+            }
+          } catch (stringConversionError) {
+            // If string conversion fails, just use empty string
+            messageStr = "";
+          }
+
+          // Skip HMR and development-related errors only if we have a valid message
+          if (messageStr && typeof messageStr === "string") {
+            try {
+              if (
+                messageStr.includes("Loading CSS chunk") ||
+                messageStr.includes("Loading chunk") ||
+                messageStr.includes("hmr") ||
+                messageStr.includes("fullstory") ||
+                (messageStr.includes("Failed to fetch") &&
+                  process.env.NODE_ENV === "development")
+              ) {
+                return;
+              }
+            } catch (includesError) {
+              // If includes method fails, continue to track the error
+              console.warn("String includes check failed:", includesError);
             }
           }
 
-          // Ensure we have a proper Error object
-          const errorMessage =
-            reason instanceof Error
-              ? reason.message
-              : String(reason || "Unknown error");
+          // Create a safe error message for tracking
+          let errorMessage = "Unknown error";
+          try {
+            if (reason instanceof Error) {
+              errorMessage = reason.message || "Error object with no message";
+            } else if (typeof reason === "string") {
+              errorMessage = reason;
+            } else {
+              errorMessage = messageStr || "Non-string error reason";
+            }
+          } catch (errorMessageError) {
+            errorMessage = "Error processing error message";
+          }
+
           trackError(new Error(errorMessage), "unhandled_promise_rejection");
         } catch (error) {
           console.warn("Failed to track promise rejection:", error);
