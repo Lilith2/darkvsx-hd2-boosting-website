@@ -256,7 +256,19 @@ export default function AnimatedCheckout() {
         return;
       }
 
-      const discountAmount = subtotal * REFERRAL_CONFIG.customerDiscount;
+      // Calculate discount based on code type
+      let discountAmount = 0;
+      if (validation.type === 'promo') {
+        if (validation.discount_type === 'percentage') {
+          discountAmount = subtotal * (validation.discount_value / 100);
+        } else {
+          discountAmount = Math.min(validation.discount_value, subtotal);
+        }
+      } else {
+        // Referral code - 15% discount
+        discountAmount = subtotal * REFERRAL_CONFIG.customerDiscount;
+      }
+
       setPromoDiscount(discountAmount);
       setPromoCodeStatus("applied");
       toast({
