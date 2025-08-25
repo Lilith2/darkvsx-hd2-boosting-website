@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Star, Package, AlertCircle, CheckCircle } from "lucide-react";
+import { Star, Package, AlertCircle, CheckCircle, RefreshCw } from "lucide-react";
 import { submitReview, getCompletedOrders } from "@/hooks/useReviews";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -38,6 +38,7 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
   const { user } = useAuth();
   const [step, setStep] = useState<"orders" | "review">("orders");
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [completedOrders, setCompletedOrders] = useState<CompletedOrder[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<CompletedOrder | null>(
     null,
@@ -63,10 +64,13 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
   const loadCompletedOrders = async () => {
     if (!user && (!guestEmail || !isGuestEmailValid)) {
       setLoading(false);
+      setErrorMessage(null);
       return;
     }
 
     setLoading(true);
+    setErrorMessage(null);
+
     try {
       const result = await getCompletedOrders({
         user_id: user?.id,
@@ -78,13 +82,21 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
           (order) => !order.has_review,
         );
         setCompletedOrders(reviewableOrders);
+
+        if (reviewableOrders.length === 0 && result.orders.length > 0) {
+          setErrorMessage("All your completed orders have already been reviewed.");
+        }
       } else {
-        toast.error(result.error || "Failed to load your orders");
+        const errorMsg = result.error || "Failed to load your orders";
+        setErrorMessage(errorMsg);
+        toast.error(errorMsg);
         setCompletedOrders([]);
       }
     } catch (error) {
       console.error("Error loading orders:", error);
-      toast.error("Failed to load your orders");
+      const errorMsg = "Unable to connect to our servers. Please check your internet connection and try again.";
+      setErrorMessage(errorMsg);
+      toast.error(errorMsg);
       setCompletedOrders([]);
     } finally {
       setLoading(false);
@@ -240,6 +252,31 @@ export function ReviewForm({ onSuccess, onCancel }: ReviewFormProps) {
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
                 <p className="text-muted-foreground">Loading your orders...</p>
+              </div>
+            ) : errorMessage ? (
+              <div className="text-center py-8">
+                <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2 text-red-700 dark:text-red-400">
+                  Unable to Load Orders
+                </h3>
+                <p className="text-muted-foreground mb-4 max-w-md mx-auto">
+                  {errorMessage}
+                </p>
+                <div className="flex justify-center space-x-3">
+                  <Button
+                    variant="outline"
+                    onClick={loadCompletedOrders}
+                    disabled={loading}
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Try Again
+                  </Button>
+                  {onCancel && (
+                    <Button variant="outline" onClick={onCancel}>
+                      Close
+                    </Button>
+                  )}
+                </div>
               </div>
             ) : completedOrders.length === 0 ? (
               <div className="text-center py-8">
