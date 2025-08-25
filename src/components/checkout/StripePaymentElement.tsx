@@ -244,19 +244,37 @@ export function StripePaymentElement({
 
   return (
     <div className="space-y-6">
+      {/* Recommended Payment Notice */}
+      <Alert className="border-green-200 dark:border-green-800 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
+        <Shield className="h-4 w-4 text-green-600" />
+        <AlertDescription className="text-green-800 dark:text-green-200">
+          <strong>Recommended:</strong> For faster and more secure payments, we recommend using digital wallets (Apple Pay, Google Pay) or mobile payment apps (Venmo, Cash App) instead of credit cards.
+        </AlertDescription>
+      </Alert>
+
       {/* Payment Methods Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div className="flex items-center space-x-2 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          <CreditCard className="w-5 h-5 text-blue-600" />
-          <span className="text-sm font-medium">Cards</span>
-        </div>
         <div className="flex items-center space-x-2 p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg border border-green-200 dark:border-green-800">
           <Smartphone className="w-5 h-5 text-green-600" />
-          <span className="text-sm font-medium">Digital Wallets</span>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">Digital Wallets</span>
+            <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400 w-fit">
+              Recommended
+            </Badge>
+          </div>
         </div>
         <div className="flex items-center space-x-2 p-3 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-950/20 dark:to-violet-950/20 rounded-lg border border-purple-200 dark:border-purple-800">
           <Wallet className="w-5 h-5 text-purple-600" />
-          <span className="text-sm font-medium">Venmo & BNPL</span>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">Venmo & BNPL</span>
+            <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400 w-fit">
+              Popular
+            </Badge>
+          </div>
+        </div>
+        <div className="flex items-center space-x-2 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <CreditCard className="w-5 h-5 text-blue-600" />
+          <span className="text-sm font-medium">Credit Cards</span>
         </div>
       </div>
 
