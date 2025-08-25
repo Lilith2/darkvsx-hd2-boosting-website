@@ -137,6 +137,13 @@ export default function AnimatedCheckout() {
   };
   const getProgress = () => ((getCurrentStepIndex() + 1) / STEPS.length) * 100;
 
+  // Memoize metadata to prevent unnecessary re-renders of StripePaymentForm
+  const paymentMetadata = useMemo(() => ({
+    orderId: `order_${Date.now()}`,
+    userEmail: user?.email || "",
+    userName: user?.username || "",
+  }), [user?.email, user?.username]);
+
   const canProceedFromStep = (step: CheckoutStep): boolean => {
     switch (step) {
       case "cart":
