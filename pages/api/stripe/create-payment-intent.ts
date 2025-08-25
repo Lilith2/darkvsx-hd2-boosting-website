@@ -178,12 +178,17 @@ export default async function handler(
       });
     }
 
-    // Calculate final amount
+    // Calculate final amount with validated values
     const TAX_RATE = 0.08;
     const subtotal = servicesTotal + customOrderTotal;
-    const totalBeforeCredits = subtotal - referralDiscount;
+    const totalBeforeCredits = subtotal - validatedReferralDiscount;
     const tax = Math.max(0, totalBeforeCredits * TAX_RATE);
-    const finalAmount = Math.max(0, totalBeforeCredits + tax - creditsUsed);
+
+    // Validate credits used don't exceed reasonable limits
+    const maxCreditsUsable = totalBeforeCredits + tax;
+    const validatedCreditsUsed = Math.min(creditsUsed, maxCreditsUsable);
+
+    const finalAmount = Math.max(0, totalBeforeCredits + tax - validatedCreditsUsed);
 
     // Minimum charge validation (Stripe minimum is $0.50)
     if (finalAmount < 0.5) {
