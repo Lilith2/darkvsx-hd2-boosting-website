@@ -106,6 +106,20 @@ const AdminPricingTabLazy = dynamic(
   },
 );
 
+const AdminReviewsTabLazy = dynamic(
+  () =>
+    import("@/components/admin/AdminReviewsTab").then((mod) => ({
+      default: mod.AdminReviewsTab,
+    })),
+  {
+    loading: () => (
+      <div className="p-8">
+        <LoadingSpinner />
+      </div>
+    ),
+  },
+);
+
 // VirtualizedOrdersTable removed - component was deleted
 
 const SimpleCustomOrders = dynamic(
