@@ -126,13 +126,19 @@ export function StripePaymentForm({
           throw new Error(responseData.error || "Failed to create payment intent");
         }
 
-        setClientSecret(responseData.clientSecret);
+        if (isMountedRef.current) {
+          setClientSecret(responseData.clientSecret);
+        }
       } catch (error: any) {
         console.error("Error initializing payment:", error);
-        handlePaymentError(error.message || "Failed to initialize payment");
+        if (isMountedRef.current) {
+          handlePaymentError(error.message || "Failed to initialize payment");
+        }
       } finally {
-        setIsLoading(false);
-        setIsInitializing(false);
+        if (isMountedRef.current) {
+          setIsLoading(false);
+          setIsInitializing(false);
+        }
       }
     };
 
