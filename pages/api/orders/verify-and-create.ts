@@ -97,25 +97,18 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  let stripe: Stripe;
-  let supabase: ReturnType<typeof createClient>;
-
   try {
-    // Initialize services with proper error handling
-    try {
-      stripe = getStripeInstance();
-    } catch (stripeError: any) {
-      console.error("Stripe initialization failed:", stripeError.message);
+    // Validate environment variables
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error("Missing STRIPE_SECRET_KEY environment variable");
       return res.status(500).json({
         error: "Server configuration error",
         details: "Payment processing not configured",
       });
     }
 
-    try {
-      supabase = getSupabaseClient();
-    } catch (supabaseError: any) {
-      console.error("Supabase initialization failed:", supabaseError.message);
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error("Missing Supabase environment variables");
       return res.status(500).json({
         error: "Server configuration error",
         details: "Database access not configured",
