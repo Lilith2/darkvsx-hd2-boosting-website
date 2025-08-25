@@ -3,14 +3,31 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-07-30.basil",
-});
+// Initialize Stripe inside the handler to ensure environment variables are loaded
+function getStripeInstance(): Stripe {
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) {
+    throw new Error("STRIPE_SECRET_KEY environment variable is not set");
+  }
+  return new Stripe(secretKey, {
+    apiVersion: "2024-12-18.acacia", // Use a valid Stripe API version
+  });
+}
 
-// Initialize Supabase with service role key for server-side operations
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+// Initialize Supabase client helper
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl) {
+    throw new Error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
+  }
+  if (!supabaseServiceKey) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY environment variable is not set");
+  }
+
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 // Request validation schema
 const createPaymentIntentSchema = z.object({
