@@ -101,11 +101,21 @@ export function StripePaymentForm({
           }),
         });
 
-        // Parse response once
-        const data = await response.json();
+        // Parse response with error handling
+        let data;
+        try {
+          const responseText = await response.text();
+          if (!responseText.trim()) {
+            throw new Error("Empty response from server");
+          }
+          data = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error("Failed to parse JSON response:", parseError);
+          throw new Error("Invalid response from payment server. Please try again.");
+        }
 
         if (!response.ok) {
-          throw new Error(data.error || "Failed to create payment intent");
+          throw new Error(data.error || data.details || "Failed to create payment intent");
         }
 
         setClientSecret(data.clientSecret);
