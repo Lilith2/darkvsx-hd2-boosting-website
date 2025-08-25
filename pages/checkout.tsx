@@ -1094,11 +1094,7 @@ export default function AnimatedCheckout() {
                             onPaymentError={handleStripePaymentError}
                             isProcessing={isProcessing}
                             disabled={false}
-                            metadata={{
-                              orderId: `order_${Date.now()}`,
-                              userEmail: user?.email || "",
-                              userName: user?.username || "",
-                            }}
+                            metadata={paymentMetadata}
                           />
                         </div>
                       )}
