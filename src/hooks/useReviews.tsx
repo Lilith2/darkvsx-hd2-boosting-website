@@ -82,7 +82,7 @@ export function useReviews(options: UseReviewsOptions = {}): UseReviewsResult {
             ...review,
             order_id: null, // Remove order ID from public reviews
             order_number: null, // Remove order number from public reviews
-            customer_email: null, // Remove email from public reviews
+            customer_email: "***", // Hide email from public reviews
           };
         }
         return review;

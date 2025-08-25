@@ -84,12 +84,20 @@ export default function OrderTracking() {
       }
 
       // SECURITY CHECK: Verify user has permission to view this order
-      if (foundOrder) {
-        const hasPermission = user && (
-          foundOrder.user_id === user.id ||
-          foundOrder.customer_email === user.email ||
-          foundOrder.customerEmail === user.email
-        );
+      if (foundOrder && user) {
+        let hasPermission = false;
+
+        if (isCustomOrder) {
+          // For custom orders
+          const customOrder = foundOrder as any;
+          hasPermission = customOrder.user_id === user.id ||
+                         customOrder.customer_email === user.email;
+        } else {
+          // For regular orders
+          const regularOrder = foundOrder as any;
+          hasPermission = regularOrder.userId === user.id ||
+                         regularOrder.customerEmail === user.email;
+        }
 
         if (!hasPermission) {
           // User doesn't have permission to view this order
@@ -97,6 +105,11 @@ export default function OrderTracking() {
           setIsInitialLoad(false);
           return;
         }
+      } else if (foundOrder && !user) {
+        // Guest users cannot access order tracking without authentication
+        setOrder(null);
+        setIsInitialLoad(false);
+        return;
       }
 
       setOrder(foundOrder);
