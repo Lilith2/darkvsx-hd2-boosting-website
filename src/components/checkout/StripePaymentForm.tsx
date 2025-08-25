@@ -117,16 +117,17 @@ export function StripePaymentForm({
         onPaymentError(error.message || "Failed to initialize payment");
       } finally {
         setIsLoading(false);
+        setIsInitializing(false);
       }
     };
 
-    if (total > 0 && !disabled) {
+    if (total > 0 && !disabled && !isInitializing) {
       // Add a small delay to avoid rate limits
       const timeoutId = setTimeout(initializePayment, 200);
       return () => clearTimeout(timeoutId);
     }
     return undefined;
-  }, [total, disabled, metadata, onPaymentError]);
+  }, [total, disabled, isInitializing]);
 
   const handlePaymentSuccess = (paymentIntent: any) => {
     toast({
