@@ -225,6 +225,11 @@ export default function CheckoutPage() {
         notes: orderNotes,
         referralCode: promoCode || undefined,
         referralDiscount: promoDiscount || undefined,
+        customOrderData: customOrder ? {
+          items: customOrder.items,
+          special_instructions: customOrder.special_instructions,
+          customer_discord: customOrder.customer_discord,
+        } : undefined,
       };
 
       const response = await fetch("/api/orders/verify-and-create", {
@@ -267,8 +272,9 @@ export default function CheckoutPage() {
         description: `Your order has been confirmed. Payment ID: ${paymentIntent.id}`,
       });
 
-      // Clear cart and redirect
+      // Clear cart and custom order, then redirect
       clearCart();
+      clearCustomOrder();
 
       if (result.orderId) {
         router.push(
