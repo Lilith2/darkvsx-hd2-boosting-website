@@ -263,44 +263,19 @@ export default function CustomOrder() {
     }
 
     try {
-      // Create the custom service for the cart
-      const customService = {
+      // Create the custom order data (separate from regular cart)
+      const customOrderData = {
         id: `custom-order-${Date.now()}`,
-        title: `Custom Order: ${orderItems.map((item) => `${item.quantity}x ${item.item_name}`).join(", ")}`,
-        description: `Custom order with ${orderItems.length} items: ${orderItems
-          .map(
-            (item) =>
-              `${item.quantity} ${item.item_name}${item.quantity > 1 ? "s" : ""}`,
-          )
-          .join(", ")}`,
-        price: getTotalPrice(),
-        category: "Level Boost" as const,
-        image: "/placeholder.svg",
-        features: orderItems.map(
-          (item) =>
-            `${item.quantity} ${item.item_name}${item.quantity > 1 ? "s" : ""} - $${item.total_price.toFixed(2)}`,
-        ),
-        duration: "1-7 days",
-        difficulty: "Custom",
-        popular: false,
-        badge: "Custom",
-        active: true,
-        orders_count: 0,
-        createdAt: new Date().toISOString(),
-        customOrderData: {
-          items: orderItems,
-          notes: orderNotes,
-          customer_email: user?.email,
-          customer_discord: undefined, // Could be added to user profile later
-          special_instructions: orderNotes,
-        },
+        items: orderItems,
+        notes: orderNotes,
+        customer_email: user?.email,
+        customer_discord: undefined, // Could be added to user profile later
+        special_instructions: orderNotes,
+        total: getTotalPrice(),
       };
 
-      // Store order data in the cart for later processing after payment
-      // Database save will happen in checkout after successful payment
-
-      // Add to cart
-      addToCart(customService);
+      // Store in custom order context (separate from regular cart)
+      setCustomOrder(customOrderData);
 
       toast({
         title: "Added to Cart!",
