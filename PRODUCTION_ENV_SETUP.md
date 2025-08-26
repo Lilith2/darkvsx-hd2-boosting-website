@@ -7,17 +7,17 @@
 ### 🔑 **Stripe Configuration (REQUIRED)**
 
 ```
-STRIPE_SECRET_KEY=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
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_51RvPHJK2UdqUm5lUJBDOFvP4HCpMaLNlQVnZCBg7frTXkCHYeTSPKGFzmTHHudVvCdMofdqiRepwYRiyr2PpWFWo00NKBQrZVm
-STRIPE_VENMO_CAPABILITY=cpmt_1RzzPiK2UdqUm5lUjyssa3Tj
+STRIPE_SECRET_KEY=your_stripe_secret_key_here
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key_here
+STRIPE_VENMO_CAPABILITY=your_venmo_capability_id_here
 ```
 
 ### 🗄️ **Supabase Configuration (REQUIRED)**
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://ahqqptrclqtwqjgmtesv.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFocXFwdHJjbHF0d3FqZ210ZXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzNDM3NTMsImV4cCI6MjA2OTkxOTc1M30.FRFHf-XvnBLzZvcGseS82HJIORQXs_8OEEVq0RpabN0
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFocXFwdHJjbHF0d3FqZ210ZXN2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDM0Mzc1MywiZXhwIjoyMDY5OTE5NzUzfQ._x3WRpU9q2Wxlynp91tf6znUMEYiHmn1kejxf4dFPmY
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_key_here
 ```
 
 ### 📧 **Email Configuration (REQUIRED)**
@@ -25,10 +25,10 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhY
 ```
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=465
-SMTP_USER=robcatservice@gmail.com
-SMTP_PASS=jipd aerq hawp ygjq
-EMAIL_FROM=robcatservice@gmail.com
-EMAIL_FROM_NAME=HellDivers 2 Boosting
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password_here
+EMAIL_FROM=your_email@gmail.com
+EMAIL_FROM_NAME=Your Business Name
 ```
 
 ### 🔧 **Optional**

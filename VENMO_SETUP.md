@@ -8,9 +8,9 @@ Your Stripe payment integration now supports Venmo payments through Stripe's com
 
 ✅ **Environment Variables Set:**
 
-- `STRIPE_SECRET_KEY`: `sk_live_51RvPHJK2UdqUm5lU...` (Live mode)
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: `pk_live_51RvPHJK2UdqUm5lU...` (Live mode)
-- `STRIPE_VENMO_CAPABILITY`: `cpmt_1RzzPiK2UdqUm5lUjyssa3Tj`
+- `STRIPE_SECRET_KEY`: `your_stripe_secret_key` (Live mode)
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: `your_stripe_publishable_key` (Live mode)
+- `STRIPE_VENMO_CAPABILITY`: `your_venmo_capability_id`
 
 ✅ **Code Integration:**
 
