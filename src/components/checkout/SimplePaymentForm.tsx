@@ -147,10 +147,15 @@ export function SimplePaymentForm({
             );
           } else if (response.status === 400) {
             // Try to extract any error information from the response text
-            let errorMessage = "Invalid cart data. Please clear your cart and try again.";
-            if (responseText && responseText.includes('payment_method_configuration')) {
-              errorMessage = "Payment configuration error. Please try again or contact support.";
-            } else if (responseText && responseText.includes('Stripe')) {
+            let errorMessage =
+              "Invalid cart data. Please clear your cart and try again.";
+            if (
+              responseText &&
+              responseText.includes("payment_method_configuration")
+            ) {
+              errorMessage =
+                "Payment configuration error. Please try again or contact support.";
+            } else if (responseText && responseText.includes("Stripe")) {
               errorMessage = "Payment processor error. Please try again.";
             }
             throw new Error(errorMessage);

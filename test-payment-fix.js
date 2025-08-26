@@ -7,8 +7,8 @@ async function testPaymentAPI() {
     services: [
       {
         id: "5265efed-3187-4ede-943c-e01be26ef4f8", // Level Boost (1-50)
-        quantity: 1
-      }
+        quantity: 1,
+      },
     ],
     referralCode: "",
     referralDiscount: 0,
@@ -19,24 +19,30 @@ async function testPaymentAPI() {
       userEmail: "test@example.com",
       userName: "Test User",
       timestamp: new Date().toISOString(),
-      clientTotal: "5.40"
-    }
+      clientTotal: "5.40",
+    },
   };
 
   try {
     console.log("Testing payment API...");
     console.log("Request payload:", JSON.stringify(testPayload, null, 2));
 
-    const response = await fetch("http://localhost:3000/api/stripe/create-payment-intent", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      "http://localhost:3000/api/stripe/create-payment-intent",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(testPayload),
       },
-      body: JSON.stringify(testPayload),
-    });
+    );
 
     console.log("Response status:", response.status);
-    console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+    console.log(
+      "Response headers:",
+      Object.fromEntries(response.headers.entries()),
+    );
 
     const responseText = await response.text();
     console.log("Raw response:", responseText);
@@ -66,11 +72,13 @@ async function testPaymentAPI() {
 
 // Run the test
 testPaymentAPI()
-  .then(success => {
-    console.log(success ? "\n🎉 Payment API test PASSED" : "\n💥 Payment API test FAILED");
+  .then((success) => {
+    console.log(
+      success ? "\n🎉 Payment API test PASSED" : "\n💥 Payment API test FAILED",
+    );
     process.exit(success ? 0 : 1);
   })
-  .catch(error => {
+  .catch((error) => {
     console.error("💥 Test runner error:", error);
     process.exit(1);
   });

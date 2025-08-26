@@ -64,8 +64,15 @@ interface PaymentMetadata {
 }
 
 export default function CheckoutPage() {
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart, validateAndCleanCart, isHydrated } =
-    useCart();
+  const {
+    cartItems,
+    updateQuantity,
+    removeFromCart,
+    getCartTotal,
+    clearCart,
+    validateAndCleanCart,
+    isHydrated,
+  } = useCart();
   const { customOrder, clearCustomOrder } = useCustomOrderCart();
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();

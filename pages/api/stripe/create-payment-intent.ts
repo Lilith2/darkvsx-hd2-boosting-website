@@ -53,7 +53,10 @@ export default async function handler(
   if (req.method === "OPTIONS") {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization",
+    );
     res.setHeader("Access-Control-Max-Age", "86400"); // 24 hours
     return res.status(200).end();
   }
@@ -152,7 +155,7 @@ export default async function handler(
           .from("bundles")
           .select("id, name, discounted_price, active")
           .in("id", allIds)
-          .eq("active", true)
+          .eq("active", true),
       ]);
 
       if (servicesResult.error) {
@@ -183,13 +186,13 @@ export default async function handler(
           id: s.id,
           price: s.price,
           active: s.active,
-          type: 'service'
+          type: "service",
         })),
         foundBundles: dbBundles.map((b: any) => ({
           id: b.id,
           price: b.discounted_price,
           active: b.active,
-          type: 'bundle'
+          type: "bundle",
         })),
         serviceCount: dbServices.length,
         bundleCount: dbBundles.length,
@@ -216,22 +219,26 @@ export default async function handler(
               id: s.id,
               title: s.title,
               price: s.price,
-              type: 'service'
+              type: "service",
             })),
             ...dbBundles.map((b: any) => ({
               id: b.id,
               title: b.name,
               price: b.discounted_price,
-              type: 'bundle'
-            }))
+              type: "bundle",
+            })),
           ],
           action: "clear_cart",
         });
       }
 
       // Calculate total using database prices for both services and bundles
-      const servicesPriceMap = new Map(dbServices.map((s) => [s.id, parseFloat(s.price)]));
-      const bundlesPriceMap = new Map(dbBundles.map((b: any) => [b.id, parseFloat(b.discounted_price)]));
+      const servicesPriceMap = new Map(
+        dbServices.map((s) => [s.id, parseFloat(s.price)]),
+      );
+      const bundlesPriceMap = new Map(
+        dbBundles.map((b: any) => [b.id, parseFloat(b.discounted_price)]),
+      );
 
       servicesTotal = services.reduce((sum, serviceRequest) => {
         // Check both services and bundles for price
@@ -252,7 +259,7 @@ export default async function handler(
         requestedItems: allIds.length,
         servicesFound: dbServices.length,
         bundlesFound: dbBundles.length,
-        calculatedTotal: servicesTotal
+        calculatedTotal: servicesTotal,
       });
     }
 

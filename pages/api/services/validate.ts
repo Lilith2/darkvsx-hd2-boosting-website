@@ -42,14 +42,8 @@ export default async function handler(
 
     // Query database for both services and bundles
     const [servicesResult, bundlesResult] = await Promise.all([
-      supabase
-        .from("services")
-        .select("id, active")
-        .in("id", serviceIds),
-      supabase
-        .from("bundles")
-        .select("id, active")
-        .in("id", serviceIds)
+      supabase.from("services").select("id, active").in("id", serviceIds),
+      supabase.from("bundles").select("id, active").in("id", serviceIds),
     ]);
 
     if (servicesResult.error) {
@@ -73,24 +67,27 @@ export default async function handler(
 
     // Determine valid service IDs (active services)
     const validServices = services
-      .filter(service => service.active === true)
-      .map(service => service.id);
+      .filter((service) => service.active === true)
+      .map((service) => service.id);
 
     // Determine valid bundle IDs (active bundles)
     const validBundles = bundles
-      .filter(bundle => bundle.active === true)
-      .map(bundle => bundle.id);
+      .filter((bundle) => bundle.active === true)
+      .map((bundle) => bundle.id);
 
     // Combine valid IDs from both services and bundles
     const validServiceIds = [...validServices, ...validBundles];
 
     // Find all IDs that were found in either table
-    const foundServiceIds = [...services.map(s => s.id), ...bundles.map(b => b.id)];
+    const foundServiceIds = [
+      ...services.map((s) => s.id),
+      ...bundles.map((b) => b.id),
+    ];
 
     // Invalid IDs are those not found anywhere or found but inactive
-    const invalidServiceIds = serviceIds.filter(id => {
-      const serviceRecord = services.find(service => service.id === id);
-      const bundleRecord = bundles.find(bundle => bundle.id === id);
+    const invalidServiceIds = serviceIds.filter((id) => {
+      const serviceRecord = services.find((service) => service.id === id);
+      const bundleRecord = bundles.find((bundle) => bundle.id === id);
 
       // If not found in either table, it's invalid
       if (!serviceRecord && !bundleRecord) return true;
@@ -111,7 +108,7 @@ export default async function handler(
       breakdown: {
         services: services.length,
         bundles: bundles.length,
-      }
+      },
     });
 
     return res.status(200).json({
@@ -123,7 +120,6 @@ export default async function handler(
         invalid: invalidServiceIds.length,
       },
     });
-
   } catch (error: any) {
     console.error("Error in service validation:", error);
     return res.status(500).json({

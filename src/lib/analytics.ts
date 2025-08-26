@@ -286,11 +286,18 @@ export function initializeAnalytics() {
           } catch (stringConversionError) {
             // If string conversion fails, just use empty string
             messageStr = "";
-            console.warn("Failed to convert reason to string:", stringConversionError);
+            console.warn(
+              "Failed to convert reason to string:",
+              stringConversionError,
+            );
           }
 
           // Skip HMR and development-related errors only if we have a valid message
-          if (messageStr && typeof messageStr === "string" && messageStr.length > 0) {
+          if (
+            messageStr &&
+            typeof messageStr === "string" &&
+            messageStr.length > 0
+          ) {
             try {
               // Additional safety check to ensure messageStr is actually a string with includes method
               if (typeof messageStr.includes === "function") {
@@ -315,12 +322,17 @@ export function initializeAnalytics() {
           let errorMessage = "Unknown error";
           try {
             if (reason instanceof Error) {
-              errorMessage = (reason.message && typeof reason.message === "string")
-                ? reason.message
-                : "Error object with no message";
+              errorMessage =
+                reason.message && typeof reason.message === "string"
+                  ? reason.message
+                  : "Error object with no message";
             } else if (typeof reason === "string" && reason.length > 0) {
               errorMessage = reason;
-            } else if (messageStr && typeof messageStr === "string" && messageStr.length > 0) {
+            } else if (
+              messageStr &&
+              typeof messageStr === "string" &&
+              messageStr.length > 0
+            ) {
               errorMessage = messageStr;
             } else {
               errorMessage = "Non-string error reason";
@@ -331,7 +343,11 @@ export function initializeAnalytics() {
           }
 
           // Only track if we have a meaningful error message
-          if (errorMessage && typeof errorMessage === "string" && errorMessage.length > 0) {
+          if (
+            errorMessage &&
+            typeof errorMessage === "string" &&
+            errorMessage.length > 0
+          ) {
             trackError(new Error(errorMessage), "unhandled_promise_rejection");
           }
         } catch (error) {
@@ -340,7 +356,8 @@ export function initializeAnalytics() {
             error,
             originalReason: event?.reason,
             errorType: typeof error,
-            errorMessage: error instanceof Error ? error.message : String(error)
+            errorMessage:
+              error instanceof Error ? error.message : String(error),
           });
         }
       });

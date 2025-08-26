@@ -30,7 +30,13 @@ import {
 import Link from "next/link";
 
 export default function Cart() {
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal, isHydrated } = useCart();
+  const {
+    cartItems,
+    updateQuantity,
+    removeFromCart,
+    getCartTotal,
+    isHydrated,
+  } = useCart();
 
   // Show loading state while cart is hydrating to prevent layout shift
   if (!isHydrated) {

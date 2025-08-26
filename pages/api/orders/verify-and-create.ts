@@ -170,7 +170,7 @@ export default async function handler(
           .from("bundles")
           .select("id, discounted_price, active, name")
           .in("id", allIds)
-          .eq("active", true)
+          .eq("active", true),
       ]);
 
       if (servicesResult.error) {
@@ -207,7 +207,7 @@ export default async function handler(
           requestedIds: allIds,
           foundServices: Array.from(foundServiceIds),
           foundBundles: Array.from(foundBundleIds),
-          missing: missingItems
+          missing: missingItems,
         });
         return res.status(400).json({
           error: "Invalid items in order",
@@ -217,8 +217,12 @@ export default async function handler(
 
       // Calculate total using DATABASE prices (not client-provided prices)
       // Combine services and bundles price maps
-      const servicesPriceMap = new Map(dbServices.map((s) => [s.id, parseFloat(s.price)]));
-      const bundlesPriceMap = new Map(dbBundles.map((b: any) => [b.id, parseFloat(b.discounted_price)]));
+      const servicesPriceMap = new Map(
+        dbServices.map((s) => [s.id, parseFloat(s.price)]),
+      );
+      const bundlesPriceMap = new Map(
+        dbBundles.map((b: any) => [b.id, parseFloat(b.discounted_price)]),
+      );
 
       servicesTotal = orderData.services.reduce((sum, serviceRequest) => {
         // Check both services and bundles for price
@@ -237,7 +241,7 @@ export default async function handler(
         requestedItems: allIds.length,
         servicesFound: dbServices.length,
         bundlesFound: dbBundles.length,
-        calculatedTotal: servicesTotal
+        calculatedTotal: servicesTotal,
       });
     }
 

@@ -41,25 +41,25 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
 
   // Safe localStorage operations
   const saveToLocalStorage = useCallback((cartItems: CartItem[]) => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       try {
         const cartData = {
           items: cartItems,
           timestamp: Date.now(),
-          version: '1.0'
+          version: "1.0",
         };
-        localStorage.setItem('helldivers_cart', JSON.stringify(cartData));
+        localStorage.setItem("helldivers_cart", JSON.stringify(cartData));
       } catch (error) {
-        console.warn('Failed to save cart to localStorage:', error);
+        console.warn("Failed to save cart to localStorage:", error);
       }
     }
   }, []);
 
   const loadFromLocalStorage = useCallback((): CartItem[] => {
-    if (typeof window === 'undefined') return [];
+    if (typeof window === "undefined") return [];
 
     try {
-      const saved = localStorage.getItem('helldivers_cart');
+      const saved = localStorage.getItem("helldivers_cart");
       if (!saved) return [];
 
       const cartData = JSON.parse(saved);
@@ -67,27 +67,28 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
       // Check if cart data is expired (older than 7 days)
       const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
       if (Date.now() - cartData.timestamp > maxAge) {
-        localStorage.removeItem('helldivers_cart');
+        localStorage.removeItem("helldivers_cart");
         return [];
       }
 
       // Validate cart structure
       if (Array.isArray(cartData.items)) {
-        return cartData.items.filter((item: any) =>
-          item &&
-          typeof item.id === 'string' &&
-          item.service &&
-          typeof item.quantity === 'number' &&
-          item.quantity > 0
+        return cartData.items.filter(
+          (item: any) =>
+            item &&
+            typeof item.id === "string" &&
+            item.service &&
+            typeof item.quantity === "number" &&
+            item.quantity > 0,
         );
       }
 
       return [];
     } catch (error) {
-      console.warn('Failed to load cart from localStorage:', error);
+      console.warn("Failed to load cart from localStorage:", error);
       // Clear corrupted data
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('helldivers_cart');
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("helldivers_cart");
       }
       return [];
     }
@@ -135,17 +136,20 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.filter((item) => item.service.id !== id));
   }, []);
 
-  const updateQuantity = useCallback((id: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeItem(id);
-      return;
-    }
-    setItems((prev) =>
-      prev.map((item) =>
-        item.service.id === id ? { ...item, quantity } : item,
-      ),
-    );
-  }, [removeItem]);
+  const updateQuantity = useCallback(
+    (id: string, quantity: number) => {
+      if (quantity <= 0) {
+        removeItem(id);
+        return;
+      }
+      setItems((prev) =>
+        prev.map((item) =>
+          item.service.id === id ? { ...item, quantity } : item,
+        ),
+      );
+    },
+    [removeItem],
+  );
 
   const clearCart = useCallback(() => {
     setItems([]);
@@ -157,13 +161,13 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
 
     try {
       // Get current active services from API
-      const response = await fetch('/api/services/validate', {
-        method: 'POST',
+      const response = await fetch("/api/services/validate", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          serviceIds: items.map(item => item.service.id)
+          serviceIds: items.map((item) => item.service.id),
         }),
       });
 
@@ -172,15 +176,18 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
 
         if (invalidServiceIds.length > 0) {
           // Remove invalid items from cart
-          setItems(prev =>
-            prev.filter(item => validServiceIds.includes(item.service.id))
+          setItems((prev) =>
+            prev.filter((item) => validServiceIds.includes(item.service.id)),
           );
 
-          console.warn('Removed invalid services from cart:', invalidServiceIds);
+          console.warn(
+            "Removed invalid services from cart:",
+            invalidServiceIds,
+          );
         }
       }
     } catch (error) {
-      console.warn('Failed to validate cart:', error);
+      console.warn("Failed to validate cart:", error);
       // Don't clear cart on network errors, just log the issue
     }
   }, [items]);
@@ -205,34 +212,49 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
   const cartItems = items; // Alias
 
   // Memoize context value to prevent unnecessary rerenders
-  const contextValue = useMemo(() => ({
-    items,
-    cartItems,
-    addItem,
-    addToCart,
-    removeItem,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-    total,
-    itemCount,
-    getCartItemCount,
-    getCartTotal,
-    isHydrated,
-    validateAndCleanCart,
-  }), [items, addItem, removeItem, updateQuantity, clearCart, total, itemCount, getCartItemCount, getCartTotal, isHydrated, validateAndCleanCart]);
+  const contextValue = useMemo(
+    () => ({
+      items,
+      cartItems,
+      addItem,
+      addToCart,
+      removeItem,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      total,
+      itemCount,
+      getCartItemCount,
+      getCartTotal,
+      isHydrated,
+      validateAndCleanCart,
+    }),
+    [
+      items,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+      total,
+      itemCount,
+      getCartItemCount,
+      getCartTotal,
+      isHydrated,
+      validateAndCleanCart,
+    ],
+  );
 
   return (
-    <CartContext.Provider value={contextValue}>
-      {children}
-    </CartContext.Provider>
+    <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>
   );
 }
 
 export function useOptimizedCart() {
   const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error("useOptimizedCart must be used within an OptimizedCartProvider");
+    throw new Error(
+      "useOptimizedCart must be used within an OptimizedCartProvider",
+    );
   }
   return context;
 }
