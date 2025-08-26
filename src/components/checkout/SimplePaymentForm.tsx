@@ -113,7 +113,15 @@ export function SimplePaymentForm({
             status: response.status,
             statusText: response.statusText,
           });
-          throw new Error("Invalid response from payment server");
+
+          // Try to provide a more helpful error message based on status
+          if (response.status === 500) {
+            throw new Error("Server error occurred. Please try again or clear your cart if the issue persists.");
+          } else if (response.status === 400) {
+            throw new Error("Invalid cart data. Please clear your cart and try again.");
+          } else {
+            throw new Error(`Payment server error (${response.status}). Please try again.`);
+          }
         }
 
         if (!response.ok) {
