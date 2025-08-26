@@ -2,9 +2,9 @@ import dynamic from 'next/dynamic';
 import { ComponentType } from 'react';
 
 // Dynamically import the navbar with no SSR to prevent router issues during build
-const EnhancedNavbar = dynamic(
+const ClientOnlyNavbar = dynamic(
   () => import('./EnhancedNavbar').then(mod => mod.EnhancedNavbar),
-  { 
+  {
     ssr: false,
     loading: () => (
       <nav className="fixed top-0 left-0 right-0 z-50 h-16 bg-background/95 backdrop-blur-md border-b border-border transition-colors">
@@ -24,4 +24,4 @@ const EnhancedNavbar = dynamic(
   }
 );
 
-export { EnhancedNavbar as ClientOnlyNavbar };
+export { ClientOnlyNavbar };
