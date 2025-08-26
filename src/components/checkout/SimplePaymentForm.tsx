@@ -96,14 +96,20 @@ export function SimplePaymentForm({
         });
 
         let data;
+        let responseText = "";
         try {
-          const responseText = await response.text();
+          responseText = await response.text();
           if (!responseText.trim()) {
             throw new Error("Empty response from server");
           }
           data = JSON.parse(responseText);
         } catch (parseError) {
-          console.error("Failed to parse response:", parseError);
+          console.error("Failed to parse response:", {
+            error: parseError instanceof Error ? parseError.message : String(parseError),
+            responseText: responseText.substring(0, 500), // Log first 500 chars for debugging
+            status: response.status,
+            statusText: response.statusText
+          });
           throw new Error("Invalid response from payment server");
         }
 

@@ -228,13 +228,13 @@ export function checkPerformanceBudget(): void {
   };
 
   resources.forEach((resource) => {
-    if (!resource || !resource.name) return;
+    if (!resource || !resource.name || typeof resource.name !== 'string') return;
 
     if (resource.name.includes(".js")) {
       usage["bundle-js"] += resource.transferSize || 0;
     } else if (resource.name.includes(".css")) {
       usage["bundle-css"] += resource.transferSize || 0;
-    } else if (resource.name.match(/\.(jpg|jpeg|png|gif|webp|avif)$/i)) {
+    } else if (/\.(jpg|jpeg|png|gif|webp|avif)$/i.test(resource.name)) {
       usage["images"] += resource.transferSize || 0;
     }
   });
