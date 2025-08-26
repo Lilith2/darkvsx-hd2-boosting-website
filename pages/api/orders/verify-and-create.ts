@@ -155,46 +155,90 @@ export default async function handler(
     const TAX_RATE = 0.08;
     let servicesTotal = 0;
 
-    // Fetch actual service prices from database - CRITICAL SECURITY
+    // Fetch actual service AND bundle prices from database - CRITICAL SECURITY
     if (orderData.services.length > 0) {
-      const serviceIds = orderData.services.map((s) => s.id);
-      const { data: dbServices, error: servicesError } = await supabase
-        .from("services")
-        .select("id, price, active, title")
-        .in("id", serviceIds)
-        .eq("active", true);
+      const allIds = orderData.services.map((s) => s.id);
 
-      if (servicesError) {
+      // Query both services and bundles tables to support both types
+      const [servicesResult, bundlesResult] = await Promise.all([
+        supabase
+          .from("services")
+          .select("id, price, active, title")
+          .in("id", allIds)
+          .eq("active", true),
+        supabase
+          .from("bundles")
+          .select("id, discounted_price as price, active, name as title")
+          .in("id", allIds)
+          .eq("active", true)
+      ]);
+
+      if (servicesResult.error) {
         console.error(
           "Error fetching services for verification:",
-          servicesError,
+          servicesResult.error,
         );
         return res.status(500).json({
           error: "Failed to verify service pricing",
         });
       }
 
-      // Verify all requested services exist and are active
-      const foundServiceIds = new Set(dbServices?.map((s) => s.id) || []);
-      const missingServices = serviceIds.filter(
-        (id) => !foundServiceIds.has(id),
-      );
-      if (missingServices.length > 0) {
+      if (bundlesResult.error) {
+        console.error(
+          "Error fetching bundles for verification:",
+          bundlesResult.error,
+        );
+        return res.status(500).json({
+          error: "Failed to verify bundle pricing",
+        });
+      }
+
+      const dbServices = servicesResult.data || [];
+      const dbBundles = bundlesResult.data || [];
+
+      // Verify all requested items exist and are active (services OR bundles)
+      const foundServiceIds = new Set(dbServices.map((s) => s.id));
+      const foundBundleIds = new Set(dbBundles.map((b) => b.id));
+      const allFoundIds = new Set([...foundServiceIds, ...foundBundleIds]);
+
+      const missingItems = allIds.filter((id) => !allFoundIds.has(id));
+      if (missingItems.length > 0) {
+        console.error("Missing items in order verification:", {
+          requestedIds: allIds,
+          foundServices: Array.from(foundServiceIds),
+          foundBundles: Array.from(foundBundleIds),
+          missing: missingItems
+        });
         return res.status(400).json({
-          error: "Invalid services in order",
-          details: `Services not found or inactive: ${missingServices.join(", ")}`,
+          error: "Invalid items in order",
+          details: `Items not found or inactive: ${missingItems.join(", ")}`,
         });
       }
 
       // Calculate total using DATABASE prices (not client-provided prices)
-      const servicesPriceMap = new Map(dbServices!.map((s) => [s.id, s.price]));
+      // Combine services and bundles price maps
+      const servicesPriceMap = new Map(dbServices.map((s) => [s.id, parseFloat(s.price)]));
+      const bundlesPriceMap = new Map(dbBundles.map((b) => [b.id, parseFloat(b.price)]));
+
       servicesTotal = orderData.services.reduce((sum, serviceRequest) => {
-        const dbPrice = servicesPriceMap.get(serviceRequest.id);
-        if (!dbPrice) {
-          throw new Error(`Price not found for service ${serviceRequest.id}`);
+        // Check both services and bundles for price
+        let dbPrice = servicesPriceMap.get(serviceRequest.id);
+        if (dbPrice === undefined) {
+          dbPrice = bundlesPriceMap.get(serviceRequest.id);
+        }
+
+        if (dbPrice === undefined) {
+          throw new Error(`Price not found for item ${serviceRequest.id}`);
         }
         return sum + dbPrice * serviceRequest.quantity;
       }, 0);
+
+      console.log("Order verification pricing:", {
+        requestedItems: allIds.length,
+        servicesFound: dbServices.length,
+        bundlesFound: dbBundles.length,
+        calculatedTotal: servicesTotal
+      });
     }
 
     // Add custom order items if present
