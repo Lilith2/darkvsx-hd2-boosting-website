@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useMemo,
   ReactNode,
+  useEffect,
 } from "react";
 
 import { ServiceData } from "./useServices";
@@ -28,12 +29,84 @@ interface CartContextType {
   itemCount: number;
   getCartItemCount: () => number; // Compatibility method
   getCartTotal: () => number; // Compatibility method
+  isHydrated: boolean; // Indicates if cart data has been loaded from localStorage
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function OptimizedCartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Safe localStorage operations
+  const saveToLocalStorage = useCallback((cartItems: CartItem[]) => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cartData = {
+          items: cartItems,
+          timestamp: Date.now(),
+          version: '1.0'
+        };
+        localStorage.setItem('helldivers_cart', JSON.stringify(cartData));
+      } catch (error) {
+        console.warn('Failed to save cart to localStorage:', error);
+      }
+    }
+  }, []);
+
+  const loadFromLocalStorage = useCallback((): CartItem[] => {
+    if (typeof window === 'undefined') return [];
+
+    try {
+      const saved = localStorage.getItem('helldivers_cart');
+      if (!saved) return [];
+
+      const cartData = JSON.parse(saved);
+
+      // Check if cart data is expired (older than 7 days)
+      const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+      if (Date.now() - cartData.timestamp > maxAge) {
+        localStorage.removeItem('helldivers_cart');
+        return [];
+      }
+
+      // Validate cart structure
+      if (Array.isArray(cartData.items)) {
+        return cartData.items.filter((item: any) =>
+          item &&
+          typeof item.id === 'string' &&
+          item.service &&
+          typeof item.quantity === 'number' &&
+          item.quantity > 0
+        );
+      }
+
+      return [];
+    } catch (error) {
+      console.warn('Failed to load cart from localStorage:', error);
+      // Clear corrupted data
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('helldivers_cart');
+      }
+      return [];
+    }
+  }, []);
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    const savedItems = loadFromLocalStorage();
+    if (savedItems.length > 0) {
+      setItems(savedItems);
+    }
+    setIsHydrated(true);
+  }, [loadFromLocalStorage]);
+
+  // Save cart to localStorage whenever items change (but only after hydration)
+  useEffect(() => {
+    if (isHydrated) {
+      saveToLocalStorage(items);
+    }
+  }, [items, isHydrated, saveToLocalStorage]);
 
   // Memoize callback functions to prevent unnecessary rerenders
   const addItem = useCallback((service: ServiceData) => {
