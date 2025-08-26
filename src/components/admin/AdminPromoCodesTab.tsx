@@ -229,9 +229,7 @@ export function AdminPromoCodesTab() {
       discount_type: promoCode.discount_type,
       discount_value: promoCode.discount_value,
       max_uses: promoCode.max_uses,
-      expires_at: promoCode.expires_at
-        ? promoCode.expires_at.split("T")[0]
-        : "",
+      expires_at: promoCode.expires_at?.split("T")[0] || "",
       is_active: promoCode.is_active,
     });
     setIsCreateDialogOpen(true);
