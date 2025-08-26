@@ -44,7 +44,8 @@ const nextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "payment=(self \"https://js.stripe.com\" \"https://*.stripe.com\"), camera=(), microphone=(), geolocation=()"
+            value:
+              'payment=(self "https://js.stripe.com" "https://*.stripe.com"), camera=(), microphone=(), geolocation=()',
           },
           // Removed restrictive CSP and frame policies for better integration compatibility
         ],
