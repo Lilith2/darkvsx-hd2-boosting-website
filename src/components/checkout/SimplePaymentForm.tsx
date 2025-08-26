@@ -32,9 +32,27 @@ interface PaymentMetadata {
   userName: string;
 }
 
+interface CustomOrderData {
+  id: string;
+  items: Array<{
+    category: string;
+    item_name: string;
+    quantity: number;
+    price_per_unit: number;
+    total_price: number;
+    description?: string;
+  }>;
+  notes: string;
+  customer_email?: string;
+  customer_discord?: string;
+  special_instructions: string;
+  total: number;
+}
+
 interface SimplePaymentFormProps {
   total: number;
   cartItems: CartItem[];
+  customOrderData?: CustomOrderData | null;
   referralCode?: string;
   referralDiscount?: number;
   onPaymentSuccess: (paymentIntent: any) => void;
@@ -46,6 +64,7 @@ interface SimplePaymentFormProps {
 export function SimplePaymentForm({
   total,
   cartItems,
+  customOrderData = null,
   referralCode = "",
   referralDiscount = 0,
   onPaymentSuccess,
@@ -74,6 +93,11 @@ export function SimplePaymentForm({
             id: item.service.id,
             quantity: item.quantity,
           })),
+          customOrderData: customOrderData ? {
+            items: customOrderData.items,
+            special_instructions: customOrderData.special_instructions,
+            customer_discord: customOrderData.customer_discord,
+          } : undefined,
           referralCode: referralCode || "",
           referralDiscount: Math.max(0, referralDiscount || 0),
           creditsUsed: 0,
