@@ -110,12 +110,13 @@ export default function CheckoutPage() {
 
   // Clean cart items - remove any with invalid data
   const cleanedCartItems = useMemo(() => {
-    return cartItems.filter(item => 
-      item.service && 
-      item.service.id && 
-      item.service.title && 
-      typeof item.service.price === 'number' &&
-      item.quantity > 0
+    return cartItems.filter(
+      (item) =>
+        item.service &&
+        item.service.id &&
+        item.service.title &&
+        typeof item.service.price === "number" &&
+        item.quantity > 0,
     );
   }, [cartItems]);
 
@@ -241,7 +242,10 @@ export default function CheckoutPage() {
         }
         result = JSON.parse(responseText);
       } catch (parseError) {
-        console.error("Failed to parse order verification response:", parseError);
+        console.error(
+          "Failed to parse order verification response:",
+          parseError,
+        );
         throw new Error(
           "Invalid response from order server. Please contact support with your payment ID: " +
             paymentIntent.id,
@@ -301,7 +305,9 @@ export default function CheckoutPage() {
 
   // Cart management
   const handleUpdateQuantity = (serviceId: string, change: number) => {
-    const currentItem = cleanedCartItems.find((item) => item.service.id === serviceId);
+    const currentItem = cleanedCartItems.find(
+      (item) => item.service.id === serviceId,
+    );
     if (currentItem) {
       const newQuantity = Math.max(1, currentItem.quantity + change);
       updateQuantity(serviceId, newQuantity);
@@ -414,7 +420,8 @@ export default function CheckoutPage() {
                     variant="secondary"
                     className="ml-auto bg-primary/10 text-primary"
                   >
-                    {cleanedCartItems.length} item{cleanedCartItems.length !== 1 ? "s" : ""}
+                    {cleanedCartItems.length} item
+                    {cleanedCartItems.length !== 1 ? "s" : ""}
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -428,7 +435,9 @@ export default function CheckoutPage() {
                       <Trophy className="w-8 h-8 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-lg">{item.service.title}</h4>
+                      <h4 className="font-semibold text-lg">
+                        {item.service.title}
+                      </h4>
                       <div className="flex items-center space-x-3 mt-2">
                         <Badge variant="outline" className="text-xs">
                           <Clock className="w-3 h-3 mr-1" />
@@ -446,14 +455,18 @@ export default function CheckoutPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleUpdateQuantity(item.service.id, -1)}
+                        onClick={() =>
+                          handleUpdateQuantity(item.service.id, -1)
+                        }
                         disabled={item.quantity <= 1}
                         className="w-8 h-8 p-0"
                       >
                         <Minus className="w-4 h-4" />
                       </Button>
                       <div className="w-12 h-8 bg-muted rounded-lg flex items-center justify-center">
-                        <span className="font-semibold text-sm">{item.quantity}</span>
+                        <span className="font-semibold text-sm">
+                          {item.quantity}
+                        </span>
                       </div>
                       <Button
                         variant="outline"
@@ -490,7 +503,9 @@ export default function CheckoutPage() {
             {/* Order Notes */}
             <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-lg">Order Notes (Optional)</CardTitle>
+                <CardTitle className="text-lg">
+                  Order Notes (Optional)
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <Textarea
@@ -513,7 +528,9 @@ export default function CheckoutPage() {
                   <div className="flex-1 relative">
                     <Input
                       value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                      onChange={(e) =>
+                        setPromoCode(e.target.value.toUpperCase())
+                      }
                       placeholder="Enter promo code"
                       className="h-12 pr-10 border-border/50 focus:border-primary/50 text-base"
                       disabled={promoCodeStatus === "loading"}
@@ -524,7 +541,9 @@ export default function CheckoutPage() {
                   </div>
                   <Button
                     onClick={() => validatePromoCode(promoCode)}
-                    disabled={!promoCode.trim() || promoCodeStatus === "loading"}
+                    disabled={
+                      !promoCode.trim() || promoCodeStatus === "loading"
+                    }
                     className="h-12 px-6"
                   >
                     {promoCodeStatus === "loading" ? (
@@ -552,11 +571,16 @@ export default function CheckoutPage() {
                   <Checkbox
                     id="terms"
                     checked={agreeToTerms}
-                    onCheckedChange={(checked) => setAgreeToTerms(checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      setAgreeToTerms(checked as boolean)
+                    }
                     className="mt-1 w-5 h-5"
                   />
                   <div className="flex-1">
-                    <Label htmlFor="terms" className="text-base leading-7 cursor-pointer">
+                    <Label
+                      htmlFor="terms"
+                      className="text-base leading-7 cursor-pointer"
+                    >
                       I agree to the{" "}
                       <Link
                         href="/terms"
@@ -616,9 +640,7 @@ export default function CheckoutPage() {
                   <Separator className="my-4" />
                   <div className="flex justify-between items-center text-2xl font-bold">
                     <span>Total</span>
-                    <span className="text-primary">
-                      ${total.toFixed(2)}
-                    </span>
+                    <span className="text-primary">${total.toFixed(2)}</span>
                   </div>
                 </div>
               </CardContent>
@@ -677,7 +699,8 @@ export default function CheckoutPage() {
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  Please agree to the Terms of Service and Privacy Policy to proceed with payment.
+                  Please agree to the Terms of Service and Privacy Policy to
+                  proceed with payment.
                 </AlertDescription>
               </Alert>
             )}
@@ -687,7 +710,8 @@ export default function CheckoutPage() {
               <Alert variant="destructive">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  Minimum payment amount is $0.50. Please add more items to your cart.
+                  Minimum payment amount is $0.50. Please add more items to your
+                  cart.
                 </AlertDescription>
               </Alert>
             )}

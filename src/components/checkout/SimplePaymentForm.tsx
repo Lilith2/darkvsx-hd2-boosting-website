@@ -114,8 +114,9 @@ export function SimplePaymentForm({
             window.location.href = "/cart-cleanup";
             return;
           }
-          
-          const errorMessage = data.error || data.details || `Server error: ${response.status}`;
+
+          const errorMessage =
+            data.error || data.details || `Server error: ${response.status}`;
           throw new Error(errorMessage);
         }
 
@@ -148,7 +149,8 @@ export function SimplePaymentForm({
     event.preventDefault();
 
     if (!stripe || !elements || !clientSecret) {
-      const errorMsg = "Payment system not ready. Please refresh and try again.";
+      const errorMsg =
+        "Payment system not ready. Please refresh and try again.";
       setErrorMessage(errorMsg);
       onPaymentError(errorMsg);
       return;
@@ -165,7 +167,9 @@ export function SimplePaymentForm({
       // Validate form
       const { error: submitError } = await elements.submit();
       if (submitError) {
-        throw new Error(submitError.message || "Please complete all required payment fields");
+        throw new Error(
+          submitError.message || "Please complete all required payment fields",
+        );
       }
 
       // Confirm payment
@@ -192,19 +196,25 @@ export function SimplePaymentForm({
 
         switch (error.type) {
           case "card_error":
-            errorMsg = error.message || "Your card was declined. Please try a different payment method.";
+            errorMsg =
+              error.message ||
+              "Your card was declined. Please try a different payment method.";
             break;
           case "validation_error":
-            errorMsg = error.message || "Please check your payment information and try again.";
+            errorMsg =
+              error.message ||
+              "Please check your payment information and try again.";
             break;
           case "api_connection_error":
-            errorMsg = "Network error. Please check your connection and try again.";
+            errorMsg =
+              "Network error. Please check your connection and try again.";
             break;
           case "authentication_error":
             errorMsg = "Payment authentication failed. Please try again.";
             break;
           case "rate_limit_error":
-            errorMsg = "Too many payment attempts. Please wait a moment and try again.";
+            errorMsg =
+              "Too many payment attempts. Please wait a moment and try again.";
             break;
           default:
             errorMsg = error.message || "An unexpected payment error occurred.";
@@ -226,19 +236,28 @@ export function SimplePaymentForm({
           onPaymentSuccess(paymentIntent);
           break;
         case "requires_payment_method":
-          throw new Error("Payment failed. Please try a different payment method.");
+          throw new Error(
+            "Payment failed. Please try a different payment method.",
+          );
         case "requires_confirmation":
-          throw new Error("Payment requires additional confirmation. Please try again.");
+          throw new Error(
+            "Payment requires additional confirmation. Please try again.",
+          );
         case "requires_action":
-          throw new Error("Payment requires additional authentication. Please complete the verification and try again.");
+          throw new Error(
+            "Payment requires additional authentication. Please complete the verification and try again.",
+          );
         case "canceled":
           throw new Error("Payment was canceled. Please try again.");
         default:
-          throw new Error(`Payment status: ${paymentIntent.status}. Please contact support if this persists.`);
+          throw new Error(
+            `Payment status: ${paymentIntent.status}. Please contact support if this persists.`,
+          );
       }
     } catch (err: any) {
       console.error("Payment error:", err);
-      const errorMsg = err.message || "An unexpected error occurred during payment.";
+      const errorMsg =
+        err.message || "An unexpected error occurred during payment.";
       setErrorMessage(errorMsg);
       onPaymentError(errorMsg);
     } finally {
@@ -252,7 +271,9 @@ export function SimplePaymentForm({
         <div className="flex items-center justify-center py-12">
           <div className="flex items-center space-x-3">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
-            <span className="text-lg font-medium">Initializing secure payment...</span>
+            <span className="text-lg font-medium">
+              Initializing secure payment...
+            </span>
           </div>
         </div>
       </div>
@@ -360,7 +381,13 @@ export function SimplePaymentForm({
         <div className="space-y-4">
           <Button
             type="submit"
-            disabled={!stripe || !elements || isSubmitting || isProcessing || !clientSecret}
+            disabled={
+              !stripe ||
+              !elements ||
+              isSubmitting ||
+              isProcessing ||
+              !clientSecret
+            }
             className="w-full h-14 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-lg"
           >
             {isSubmitting || isProcessing ? (
