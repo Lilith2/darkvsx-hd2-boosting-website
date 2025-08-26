@@ -264,7 +264,7 @@ export default function AnimatedCheckout() {
         return;
       }
 
-      const validation = data as ValidationResponse;
+      const validation = data as unknown as ValidationResponse;
 
       if (!validation || !validation.valid) {
         setPromoCodeStatus("error");
