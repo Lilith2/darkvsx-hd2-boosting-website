@@ -81,8 +81,10 @@ export default function CheckoutPage() {
     "idle" | "loading" | "applied" | "error"
   >("idle");
 
-  // Calculations
-  const subtotal = getCartTotal();
+  // Calculations (include both cart items and custom orders)
+  const cartSubtotal = getCartTotal();
+  const customOrderSubtotal = customOrder?.total || 0;
+  const subtotal = cartSubtotal + customOrderSubtotal;
   const tax = (subtotal - promoDiscount) * PAYMENT_CONSTANTS.TAX_RATE;
   const total = Math.max(0, subtotal - promoDiscount + tax);
 
@@ -100,7 +102,7 @@ export default function CheckoutPage() {
 
   // Empty cart redirect
   useEffect(() => {
-    if (cartItems.length === 0) {
+    if (cartItems.length === 0 && !customOrder) {
       toast({
         title: "Cart is empty",
         description: "Please add some services to your cart before checkout.",
@@ -108,7 +110,7 @@ export default function CheckoutPage() {
       });
       router.push("/bundles");
     }
-  }, [cartItems.length, router, toast]);
+  }, [cartItems.length, customOrder, router, toast]);
 
   // Clean cart items - remove any with invalid data
   const cleanedCartItems = useMemo(() => {
