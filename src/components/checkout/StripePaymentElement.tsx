@@ -336,15 +336,6 @@ export function StripePaymentElement({
                 },
                 terms: {
                   card: "never",
-                  bancontact: "never",
-                  eps: "never",
-                  fpx: "never",
-                  giropay: "never",
-                  grabPay: "never",
-                  ideal: "never",
-                  p24: "never",
-                  sepaDebit: "never",
-                  sofort: "never",
                   usBankAccount: "never",
                 },
                 wallets: {
