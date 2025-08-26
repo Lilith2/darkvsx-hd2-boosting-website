@@ -228,7 +228,8 @@ export function checkPerformanceBudget(): void {
   };
 
   resources.forEach((resource) => {
-    if (!resource || !resource.name || typeof resource.name !== 'string') return;
+    if (!resource || !resource.name || typeof resource.name !== "string")
+      return;
 
     if (resource.name.includes(".js")) {
       usage["bundle-js"] += resource.transferSize || 0;

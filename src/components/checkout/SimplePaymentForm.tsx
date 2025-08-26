@@ -105,10 +105,13 @@ export function SimplePaymentForm({
           data = JSON.parse(responseText);
         } catch (parseError) {
           console.error("Failed to parse response:", {
-            error: parseError instanceof Error ? parseError.message : String(parseError),
+            error:
+              parseError instanceof Error
+                ? parseError.message
+                : String(parseError),
             responseText: responseText.substring(0, 500), // Log first 500 chars for debugging
             status: response.status,
-            statusText: response.statusText
+            statusText: response.statusText,
           });
           throw new Error("Invalid response from payment server");
         }
