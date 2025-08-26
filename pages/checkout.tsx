@@ -257,11 +257,11 @@ export default function AnimatedCheckout() {
 
       const validation = data;
 
-      if (!validation.valid) {
+      if (!validation || !validation.valid) {
         setPromoCodeStatus("error");
         toast({
           title: "Invalid promo code",
-          description: validation.error || "Please enter a valid promo code.",
+          description: validation?.error || "Please enter a valid promo code.",
           variant: "destructive",
         });
         setPromoDiscount(0);
