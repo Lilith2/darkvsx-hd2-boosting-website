@@ -19,7 +19,7 @@ export default async function handler(
         supabase_url: hasSupabaseUrl,
         supabase_service_key: hasSupabaseServiceKey,
         stripe_public_key: !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-        venmo_capability: !!process.env.STRIPE_VENMO_CAPABILITY,
+        venmo_capability_removed: "Invalid configuration ID removed",
       },
       status: "Environment variables loaded successfully",
     });
