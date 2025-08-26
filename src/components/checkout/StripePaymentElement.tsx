@@ -336,7 +336,6 @@ export function StripePaymentElement({
                 },
                 terms: {
                   card: "never",
-                  auBankAccount: "never",
                   bancontact: "never",
                   eps: "never",
                   fpx: "never",
