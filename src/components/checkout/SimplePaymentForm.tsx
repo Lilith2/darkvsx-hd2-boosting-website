@@ -126,14 +126,16 @@ export function SimplePaymentForm({
 
         if (!response.ok) {
           // Handle specific error cases
-          if (data.action === "clear_cart") {
+          if (data && data.action === "clear_cart") {
+            console.log("Cart cleanup required:", data.details);
             // Redirect to cart cleanup
             window.location.href = "/cart-cleanup";
             return;
           }
 
-          const errorMessage =
-            data.error || data.details || `Server error: ${response.status}`;
+          const errorMessage = data
+            ? (data.error || data.details || `Server error: ${response.status}`)
+            : `HTTP error: ${response.status} ${response.statusText}`;
           throw new Error(errorMessage);
         }
 
