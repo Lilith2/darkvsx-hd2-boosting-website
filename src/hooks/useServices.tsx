@@ -5,7 +5,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client-no-realtime";
 import type { Tables } from "@/integrations/supabase/types";
 
 export type Service = Tables<"services">;
