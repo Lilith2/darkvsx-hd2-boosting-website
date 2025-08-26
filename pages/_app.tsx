@@ -9,6 +9,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProviderWrapper } from "@/components/providers/ThemeProviderWrapper";
 import { CoreDataProvider } from "@/components/providers/CoreDataProvider";
+import { CustomOrderCartProvider } from "@/hooks/useCustomOrderCart";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AccessibilityWrapper } from "@/components/AccessibilityWrapper";
 import { SEOHead } from "@/components/SEOHead";
@@ -75,11 +76,13 @@ export default function App({ Component, pageProps }: AppProps) {
               <QueryClientProvider client={queryClient}>
                 <TooltipProvider>
                   <CoreDataProvider>
-                    <Layout>
-                      <Component {...pageProps} />
-                      <Toaster />
-                      <Sonner />
-                    </Layout>
+                    <CustomOrderCartProvider>
+                      <Layout>
+                        <Component {...pageProps} />
+                        <Toaster />
+                        <Sonner />
+                      </Layout>
+                    </CustomOrderCartProvider>
                   </CoreDataProvider>
                 </TooltipProvider>
               </QueryClientProvider>
