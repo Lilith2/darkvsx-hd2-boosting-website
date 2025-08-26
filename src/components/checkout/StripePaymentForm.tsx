@@ -171,7 +171,10 @@ export function StripePaymentForm({
           });
         } catch (parseError) {
           console.error("Failed to parse JSON response:", {
-            error: parseError instanceof Error ? parseError.message : String(parseError),
+            error:
+              parseError instanceof Error
+                ? parseError.message
+                : String(parseError),
             status: response.status,
             statusText: response.statusText,
           });
