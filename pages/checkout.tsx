@@ -64,7 +64,7 @@ interface PaymentMetadata {
 }
 
 export default function CheckoutPage() {
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart } =
+  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart, validateAndCleanCart, isHydrated } =
     useCart();
   const { customOrder, clearCustomOrder } = useCustomOrderCart();
   const { user, isAuthenticated } = useAuth();
@@ -100,9 +100,16 @@ export default function CheckoutPage() {
     }
   }, [isAuthenticated, router, toast]);
 
+  // Validate cart items when page loads and cart is hydrated
+  useEffect(() => {
+    if (isHydrated && cartItems.length > 0) {
+      validateAndCleanCart();
+    }
+  }, [isHydrated, validateAndCleanCart]);
+
   // Empty cart redirect
   useEffect(() => {
-    if (cartItems.length === 0 && !customOrder) {
+    if (isHydrated && cartItems.length === 0 && !customOrder) {
       toast({
         title: "Cart is empty",
         description: "Please add some services to your cart before checkout.",
@@ -110,7 +117,7 @@ export default function CheckoutPage() {
       });
       router.push("/bundles");
     }
-  }, [cartItems.length, customOrder, router, toast]);
+  }, [cartItems.length, customOrder, router, toast, isHydrated]);
 
   // Clean cart items - remove any with invalid data
   const cleanedCartItems = useMemo(() => {
