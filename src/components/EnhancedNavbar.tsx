@@ -61,7 +61,7 @@ export function EnhancedNavbar() {
   }
 
   const { user, isAuthenticated, logout } = useAuth();
-  const { cartItems } = useCart();
+  const { cartItems, itemCount, isHydrated } = useCart();
   const { theme, setTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -87,7 +87,8 @@ export function EnhancedNavbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [mounted]);
 
-  const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  // Use optimized cart count and handle hydration
+  const cartItemCount = isHydrated ? itemCount : 0;
 
   const handleLogout = useCallback(async () => {
     try {
