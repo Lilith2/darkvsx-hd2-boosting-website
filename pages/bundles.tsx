@@ -35,7 +35,7 @@ export default function Bundles() {
   const { toast } = useToast();
 
   const handleAddBundle = (bundle: any) => {
-    // Create a bundle service object for cart
+    // Create a bundle service object for cart with bundle identification
     const bundleService = {
       id: bundle.id,
       title: bundle.name,
@@ -50,6 +50,13 @@ export default function Bundles() {
       category: "Level Boost" as const,
       createdAt: bundle.created_at || new Date().toISOString(),
       orders_count: bundle.orders_count || 0,
+      // Add bundle identification for better handling
+      isBundle: true,
+      bundleData: {
+        originalBundleId: bundle.id,
+        services: bundle.services || [],
+        discount: bundle.discount || 0,
+      },
     };
 
     addToCart(bundleService);
