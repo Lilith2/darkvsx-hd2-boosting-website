@@ -57,7 +57,7 @@ export function EnhancedNavbar() {
     router = useRouter();
   } catch (error) {
     // Router not available during SSG, use fallback
-    router = { pathname: '', push: () => Promise.resolve(true) };
+    router = { pathname: "", push: () => Promise.resolve(true) };
   }
 
   const { user, isAuthenticated, logout } = useAuth();
@@ -67,7 +67,8 @@ export function EnhancedNavbar() {
   const [mounted, setMounted] = useState(false);
 
   // Check if router is available (prevents SSG errors)
-  const isRouterReady = router && typeof router.pathname !== 'undefined' && router.pathname !== '';
+  const isRouterReady =
+    router && typeof router.pathname !== "undefined" && router.pathname !== "";
 
   // Handle mounting
   useEffect(() => {

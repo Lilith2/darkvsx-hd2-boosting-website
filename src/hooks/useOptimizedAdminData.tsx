@@ -16,7 +16,9 @@ export const adminQueryKeys = {
 // Fetch functions with error handling
 const fetchOrders = async () => {
   try {
-    const { supabase } = await import("@/integrations/supabase/client-no-realtime");
+    const { supabase } = await import(
+      "@/integrations/supabase/client-no-realtime"
+    );
     const { data, error } = await supabase
       .from("orders")
       .select("*")
@@ -32,7 +34,9 @@ const fetchOrders = async () => {
 
 const fetchCustomOrders = async () => {
   try {
-    const { supabase } = await import("@/integrations/supabase/client-no-realtime");
+    const { supabase } = await import(
+      "@/integrations/supabase/client-no-realtime"
+    );
     const { data, error } = await supabase
       .from("custom_orders")
       .select("*")
@@ -48,7 +52,9 @@ const fetchCustomOrders = async () => {
 
 const fetchServices = async () => {
   try {
-    const { supabase } = await import("@/integrations/supabase/client-no-realtime");
+    const { supabase } = await import(
+      "@/integrations/supabase/client-no-realtime"
+    );
     const { data, error } = await supabase
       .from("services")
       .select("*")
@@ -64,7 +70,9 @@ const fetchServices = async () => {
 
 const fetchBundles = async () => {
   try {
-    const { supabase } = await import("@/integrations/supabase/client-no-realtime");
+    const { supabase } = await import(
+      "@/integrations/supabase/client-no-realtime"
+    );
     const { data, error } = await supabase
       .from("bundles")
       .select("*")
@@ -80,7 +88,9 @@ const fetchBundles = async () => {
 
 const fetchCustomPricing = async () => {
   try {
-    const { supabase } = await import("@/integrations/supabase/client-no-realtime");
+    const { supabase } = await import(
+      "@/integrations/supabase/client-no-realtime"
+    );
     const { data, error } = await supabase
       .from("custom_pricing")
       .select("*")
@@ -174,7 +184,9 @@ export function useOptimizedAdminData() {
       orderId: string;
       status: string;
     }) => {
-      const { supabase } = await import("@/integrations/supabase/client-no-realtime");
+      const { supabase } = await import(
+        "@/integrations/supabase/client-no-realtime"
+      );
       const { error } = await supabase
         .from("orders")
         .update({ status })
@@ -232,7 +244,9 @@ export function useOptimizedAdminData() {
 
     const setupSubscriptions = async () => {
       try {
-        const { supabase } = await import("@/integrations/supabase/client-no-realtime");
+        const { supabase } = await import(
+          "@/integrations/supabase/client-no-realtime"
+        );
 
         // Orders subscription
         ordersSubscription = supabase
