@@ -4,6 +4,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { motion } from "framer-motion";
 import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
+import { useCustomOrderCart } from "@/hooks/useCustomOrderCart";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { PAYMENT_CONSTANTS } from "@/lib/constants";
