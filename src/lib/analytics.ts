@@ -256,7 +256,7 @@ export function initializeAnalytics() {
 
       window.addEventListener("unhandledrejection", (event) => {
         try {
-          // Safely extract reason with null checks
+          // Safely extract reason with comprehensive null checks
           const reason = event?.reason;
           if (!reason) return;
 
@@ -268,33 +268,42 @@ export function initializeAnalytics() {
             } else if (typeof reason === "string") {
               messageStr = reason;
             } else if (reason && typeof reason === "object") {
-              // Safely extract message property
-              const msgProperty = reason.message;
-              if (typeof msgProperty === "string") {
-                messageStr = msgProperty;
-              } else if (msgProperty != null) {
-                messageStr = String(msgProperty);
+              // Safely extract message property with additional checks
+              try {
+                const msgProperty = reason.message;
+                if (typeof msgProperty === "string") {
+                  messageStr = msgProperty;
+                } else if (msgProperty != null && msgProperty !== undefined) {
+                  messageStr = String(msgProperty);
+                }
+              } catch (propertyAccessError) {
+                // Handle cases where accessing .message property fails
+                messageStr = "";
               }
-            } else {
+            } else if (reason != null && reason !== undefined) {
               messageStr = String(reason);
             }
           } catch (stringConversionError) {
             // If string conversion fails, just use empty string
             messageStr = "";
+            console.warn("Failed to convert reason to string:", stringConversionError);
           }
 
           // Skip HMR and development-related errors only if we have a valid message
-          if (messageStr && typeof messageStr === "string") {
+          if (messageStr && typeof messageStr === "string" && messageStr.length > 0) {
             try {
-              if (
-                messageStr.includes("Loading CSS chunk") ||
-                messageStr.includes("Loading chunk") ||
-                messageStr.includes("hmr") ||
-                messageStr.includes("fullstory") ||
-                (messageStr.includes("Failed to fetch") &&
-                  process.env.NODE_ENV === "development")
-              ) {
-                return;
+              // Additional safety check to ensure messageStr is actually a string with includes method
+              if (typeof messageStr.includes === "function") {
+                if (
+                  messageStr.includes("Loading CSS chunk") ||
+                  messageStr.includes("Loading chunk") ||
+                  messageStr.includes("hmr") ||
+                  messageStr.includes("fullstory") ||
+                  (messageStr.includes("Failed to fetch") &&
+                    process.env.NODE_ENV === "development")
+                ) {
+                  return;
+                }
               }
             } catch (includesError) {
               // If includes method fails, continue to track the error
@@ -302,23 +311,37 @@ export function initializeAnalytics() {
             }
           }
 
-          // Create a safe error message for tracking
+          // Create a safe error message for tracking with comprehensive checks
           let errorMessage = "Unknown error";
           try {
             if (reason instanceof Error) {
-              errorMessage = reason.message || "Error object with no message";
-            } else if (typeof reason === "string") {
+              errorMessage = (reason.message && typeof reason.message === "string")
+                ? reason.message
+                : "Error object with no message";
+            } else if (typeof reason === "string" && reason.length > 0) {
               errorMessage = reason;
+            } else if (messageStr && typeof messageStr === "string" && messageStr.length > 0) {
+              errorMessage = messageStr;
             } else {
-              errorMessage = messageStr || "Non-string error reason";
+              errorMessage = "Non-string error reason";
             }
           } catch (errorMessageError) {
             errorMessage = "Error processing error message";
+            console.warn("Error message processing failed:", errorMessageError);
           }
 
-          trackError(new Error(errorMessage), "unhandled_promise_rejection");
+          // Only track if we have a meaningful error message
+          if (errorMessage && typeof errorMessage === "string" && errorMessage.length > 0) {
+            trackError(new Error(errorMessage), "unhandled_promise_rejection");
+          }
         } catch (error) {
-          console.warn("Failed to track promise rejection:", error);
+          // Enhanced error logging for debugging
+          console.warn("Failed to track promise rejection:", {
+            error,
+            originalReason: event?.reason,
+            errorType: typeof error,
+            errorMessage: error instanceof Error ? error.message : String(error)
+          });
         }
       });
     }
