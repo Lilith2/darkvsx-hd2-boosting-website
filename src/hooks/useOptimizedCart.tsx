@@ -183,7 +183,8 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
     itemCount,
     getCartItemCount,
     getCartTotal,
-  }), [items, addItem, removeItem, updateQuantity, clearCart, total, itemCount, getCartItemCount, getCartTotal]);
+    isHydrated,
+  }), [items, addItem, removeItem, updateQuantity, clearCart, total, itemCount, getCartItemCount, getCartTotal, isHydrated]);
 
   return (
     <CartContext.Provider value={contextValue}>
