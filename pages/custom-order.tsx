@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
+import { useCustomOrderCart } from "@/hooks/useCustomOrderCart";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,7 @@ interface OrderItem {
 
 export default function CustomOrder() {
   const router = useRouter();
-  const { addToCart } = useCart();
+  const { setCustomOrder } = useCustomOrderCart();
   const { toast } = useToast();
   const { user } = useAuth();
 
