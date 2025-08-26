@@ -58,6 +58,9 @@ export function EnhancedNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  // Check if router is available (prevents SSG errors)
+  const isRouterReady = router && typeof router.pathname !== 'undefined';
+
   // Handle mounting
   useEffect(() => {
     setMounted(true);
