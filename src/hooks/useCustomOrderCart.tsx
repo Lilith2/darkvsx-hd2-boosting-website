@@ -33,7 +33,9 @@ interface CustomOrderCartContextType {
   hasCustomOrder: boolean;
 }
 
-const CustomOrderCartContext = createContext<CustomOrderCartContextType | undefined>(undefined);
+const CustomOrderCartContext = createContext<
+  CustomOrderCartContextType | undefined
+>(undefined);
 
 export function CustomOrderCartProvider({ children }: { children: ReactNode }) {
   const [customOrder, setCustomOrderState] = useState<CustomOrder | null>(null);
@@ -48,12 +50,15 @@ export function CustomOrderCartProvider({ children }: { children: ReactNode }) {
 
   const hasCustomOrder = useMemo(() => customOrder !== null, [customOrder]);
 
-  const contextValue = useMemo(() => ({
-    customOrder,
-    setCustomOrder,
-    clearCustomOrder,
-    hasCustomOrder,
-  }), [customOrder, setCustomOrder, clearCustomOrder, hasCustomOrder]);
+  const contextValue = useMemo(
+    () => ({
+      customOrder,
+      setCustomOrder,
+      clearCustomOrder,
+      hasCustomOrder,
+    }),
+    [customOrder, setCustomOrder, clearCustomOrder, hasCustomOrder],
+  );
 
   return (
     <CustomOrderCartContext.Provider value={contextValue}>
@@ -65,7 +70,9 @@ export function CustomOrderCartProvider({ children }: { children: ReactNode }) {
 export function useCustomOrderCart() {
   const context = useContext(CustomOrderCartContext);
   if (context === undefined) {
-    throw new Error("useCustomOrderCart must be used within a CustomOrderCartProvider");
+    throw new Error(
+      "useCustomOrderCart must be used within a CustomOrderCartProvider",
+    );
   }
   return context;
 }

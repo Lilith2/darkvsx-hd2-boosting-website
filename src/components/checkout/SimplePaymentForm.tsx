@@ -93,11 +93,13 @@ export function SimplePaymentForm({
             id: item.service.id,
             quantity: item.quantity,
           })),
-          customOrderData: customOrderData ? {
-            items: customOrderData.items,
-            special_instructions: customOrderData.special_instructions,
-            customer_discord: customOrderData.customer_discord,
-          } : undefined,
+          customOrderData: customOrderData
+            ? {
+                items: customOrderData.items,
+                special_instructions: customOrderData.special_instructions,
+                customer_discord: customOrderData.customer_discord,
+              }
+            : undefined,
           referralCode: referralCode || "",
           referralDiscount: Math.max(0, referralDiscount || 0),
           creditsUsed: 0,
@@ -140,11 +142,17 @@ export function SimplePaymentForm({
 
           // Try to provide a more helpful error message based on status
           if (response.status === 500) {
-            throw new Error("Server error occurred. Please try again or clear your cart if the issue persists.");
+            throw new Error(
+              "Server error occurred. Please try again or clear your cart if the issue persists.",
+            );
           } else if (response.status === 400) {
-            throw new Error("Invalid cart data. Please clear your cart and try again.");
+            throw new Error(
+              "Invalid cart data. Please clear your cart and try again.",
+            );
           } else {
-            throw new Error(`Payment server error (${response.status}). Please try again.`);
+            throw new Error(
+              `Payment server error (${response.status}). Please try again.`,
+            );
           }
         }
 
@@ -158,7 +166,7 @@ export function SimplePaymentForm({
           }
 
           const errorMessage = data
-            ? (data.error || data.details || `Server error: ${response.status}`)
+            ? data.error || data.details || `Server error: ${response.status}`
             : `HTTP error: ${response.status} ${response.statusText}`;
           throw new Error(errorMessage);
         }

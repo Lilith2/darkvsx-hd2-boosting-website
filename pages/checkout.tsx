@@ -225,11 +225,13 @@ export default function CheckoutPage() {
         notes: orderNotes,
         referralCode: promoCode || undefined,
         referralDiscount: promoDiscount || undefined,
-        customOrderData: customOrder ? {
-          items: customOrder.items,
-          special_instructions: customOrder.special_instructions,
-          customer_discord: customOrder.customer_discord,
-        } : undefined,
+        customOrderData: customOrder
+          ? {
+              items: customOrder.items,
+              special_instructions: customOrder.special_instructions,
+              customer_discord: customOrder.customer_discord,
+            }
+          : undefined,
       };
 
       const response = await fetch("/api/orders/verify-and-create", {
