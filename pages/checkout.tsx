@@ -54,6 +54,15 @@ import {
 import Link from "next/link";
 import { StripePaymentForm } from "@/components/checkout/StripePaymentForm";
 
+// Type for the validation response from Supabase RPC
+interface ValidationResponse {
+  valid: boolean;
+  error?: string;
+  type?: "promo" | "referral";
+  discount_type?: "percentage" | "fixed";
+  discount_value?: number;
+}
+
 type CheckoutStep = "cart" | "terms" | "discounts" | "payment";
 
 const STEPS = [
