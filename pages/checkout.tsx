@@ -692,6 +692,7 @@ export default function CheckoutPage() {
                     <SimplePaymentForm
                       total={total}
                       cartItems={cleanedCartItems}
+                      customOrderData={customOrder}
                       referralCode={promoCode}
                       referralDiscount={promoDiscount}
                       onPaymentSuccess={handlePaymentSuccess}
