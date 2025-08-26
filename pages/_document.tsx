@@ -95,14 +95,7 @@ export default function Document() {
           }}
         />
 
-        {/* Performance optimizations */}
-        <link rel="preload" href="/sw.js" as="script" />
-        <link
-          rel="preload"
-          href="/api/ping"
-          as="fetch"
-          crossOrigin="anonymous"
-        />
+        {/* Performance optimizations - removed problematic preloads that cause warnings */}
       </Head>
       <body className="antialiased" suppressHydrationWarning>
         <Main />
