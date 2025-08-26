@@ -25,6 +25,7 @@ interface CartContextType {
   removeFromCart: (id: string) => void; // Compatibility alias
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
+  validateAndCleanCart: () => Promise<void>;
   total: number;
   itemCount: number;
   getCartItemCount: () => number; // Compatibility method
@@ -150,6 +151,40 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
     setItems([]);
   }, []);
 
+  // Validate cart items against current services and remove invalid ones
+  const validateAndCleanCart = useCallback(async () => {
+    if (items.length === 0) return;
+
+    try {
+      // Get current active services from API
+      const response = await fetch('/api/services/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          serviceIds: items.map(item => item.service.id)
+        }),
+      });
+
+      if (response.ok) {
+        const { validServiceIds, invalidServiceIds } = await response.json();
+
+        if (invalidServiceIds.length > 0) {
+          // Remove invalid items from cart
+          setItems(prev =>
+            prev.filter(item => validServiceIds.includes(item.service.id))
+          );
+
+          console.warn('Removed invalid services from cart:', invalidServiceIds);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to validate cart:', error);
+      // Don't clear cart on network errors, just log the issue
+    }
+  }, [items]);
+
   // Memoize computed values to prevent unnecessary recalculations
   const total = useMemo(() => {
     return items.reduce(
@@ -184,7 +219,8 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
     getCartItemCount,
     getCartTotal,
     isHydrated,
-  }), [items, addItem, removeItem, updateQuantity, clearCart, total, itemCount, getCartItemCount, getCartTotal, isHydrated]);
+    validateAndCleanCart,
+  }), [items, addItem, removeItem, updateQuantity, clearCart, total, itemCount, getCartItemCount, getCartTotal, isHydrated, validateAndCleanCart]);
 
   return (
     <CartContext.Provider value={contextValue}>

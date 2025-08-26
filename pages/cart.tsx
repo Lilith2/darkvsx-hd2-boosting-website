@@ -30,7 +30,23 @@ import {
 import Link from "next/link";
 
 export default function Cart() {
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, getCartTotal, isHydrated } = useCart();
+
+  // Show loading state while cart is hydrating to prevent layout shift
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading cart...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleUpdateQuantity = (serviceId: string, change: number) => {
     const currentItem = cartItems.find((item) => item.service.id === serviceId);
