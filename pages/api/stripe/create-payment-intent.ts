@@ -360,7 +360,7 @@ export default async function handler(
         tax: tax.toFixed(2),
         finalAmount: finalAmount.toFixed(2),
         calculatedAt: new Date().toISOString(),
-        venmo_capability: process.env.STRIPE_VENMO_CAPABILITY || "",
+        venmo_capability: "removed_invalid_config",
       },
       setup_future_usage: "off_session", // Allow saving payment methods for future use
       receipt_email: metadata.userEmail,
@@ -376,11 +376,8 @@ export default async function handler(
       },
     };
 
-    // Add Venmo-specific configuration if capability is available
-    if (process.env.STRIPE_VENMO_CAPABILITY) {
-      paymentIntentParams.payment_method_configuration =
-        process.env.STRIPE_VENMO_CAPABILITY;
-    }
+    // Note: Venmo configuration removed due to invalid configuration ID
+    // The payment methods will still work through automatic_payment_methods
 
     const paymentIntent =
       await stripe.paymentIntents.create(paymentIntentParams);
@@ -392,7 +389,7 @@ export default async function handler(
       currency: currency,
       payment_method_types: paymentIntent.payment_method_types,
       automatic_payment_methods: paymentIntent.automatic_payment_methods,
-      venmo_enabled: !!process.env.STRIPE_VENMO_CAPABILITY,
+      venmo_enabled: false, // Configuration removed due to invalid ID
     });
 
     // Return successful response
