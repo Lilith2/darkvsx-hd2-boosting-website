@@ -105,6 +105,22 @@ export default async function handler(
       metadata = {},
     } = parseResult.data;
 
+    // Validate service IDs first - check for custom orders mixed with regular services
+    if (services.length > 0) {
+      const serviceIds = services.map((s) => s.id);
+      const customOrderIds = serviceIds.filter(id => id.startsWith('custom-order-'));
+
+      if (customOrderIds.length > 0) {
+        console.log("Custom order IDs detected in services array:", customOrderIds);
+        return res.status(400).json({
+          error: "Invalid cart configuration",
+          details: "Custom orders should not be processed as regular services. Please clear your cart and try again.",
+          action: "clear_cart",
+          invalidServices: customOrderIds,
+        });
+      }
+    }
+
     // Fetch actual service prices from database
     let servicesTotal = 0;
     if (services.length > 0) {
@@ -117,9 +133,11 @@ export default async function handler(
 
       if (servicesError) {
         console.error("Error fetching services:", servicesError);
-        return res
-          .status(500)
-          .json({ error: "Failed to fetch service pricing" });
+        return res.status(500).json({
+          error: "Failed to fetch service pricing",
+          details: "Database error occurred while validating services",
+          code: servicesError.code || "DATABASE_ERROR"
+        });
       }
 
       // Verify all requested services exist and are active
