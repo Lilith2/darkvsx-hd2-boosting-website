@@ -88,7 +88,7 @@ export function AdminPerformanceMonitor() {
   const measureDatabasePerformance = useCallback(async () => {
     const startTime = performance.now();
     try {
-      const { supabase } = await import("@/integrations/supabase/client");
+      const { supabase } = await import("@/integrations/supabase/client-no-realtime");
 
       // Simple health check query
       const { data, error } = await supabase

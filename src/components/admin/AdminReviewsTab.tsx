@@ -147,7 +147,7 @@ export function AdminReviewsTab({
       return;
 
     try {
-      const { supabase } = await import("@/integrations/supabase/client");
+      const { supabase } = await import("@/integrations/supabase/client-no-realtime");
       const { error } = await supabase
         .from("reviews")
         .delete()
@@ -192,7 +192,7 @@ export function AdminReviewsTab({
     if (!editingReview) return;
 
     try {
-      const { supabase } = await import("@/integrations/supabase/client");
+      const { supabase } = await import("@/integrations/supabase/client-no-realtime");
       const { error } = await supabase
         .from("reviews")
         .update({
@@ -232,7 +232,7 @@ export function AdminReviewsTab({
   // Feature/unfeature review
   const handleToggleFeature = async (review: Review) => {
     try {
-      const { supabase } = await import("@/integrations/supabase/client");
+      const { supabase } = await import("@/integrations/supabase/client-no-realtime");
       const newFeaturedStatus = !review.featured;
 
       const updateData: any = {
