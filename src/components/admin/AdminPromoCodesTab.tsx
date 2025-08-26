@@ -106,7 +106,18 @@ export function AdminPromoCodesTab() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setPromoCodes(data || []);
+
+      // Type-safe transformation of the data
+      const typedData: PromoCode[] = (data || []).map(item => ({
+        ...item,
+        discount_type: item.discount_type as "percentage" | "fixed_amount",
+        current_uses: item.current_uses || 0,
+        is_active: item.is_active ?? true,
+        created_at: item.created_at || new Date().toISOString(),
+        updated_at: item.updated_at || new Date().toISOString(),
+      }));
+
+      setPromoCodes(typedData);
     } catch (error: any) {
       toast({
         title: "Error",
