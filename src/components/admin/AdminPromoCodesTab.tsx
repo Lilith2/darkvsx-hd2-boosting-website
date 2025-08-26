@@ -108,7 +108,7 @@ export function AdminPromoCodesTab() {
       if (error) throw error;
 
       // Type-safe transformation of the data
-      const typedData: PromoCode[] = (data || []).map(item => ({
+      const typedData: PromoCode[] = (data || []).map((item) => ({
         ...item,
         discount_type: item.discount_type as "percentage" | "fixed_amount",
         current_uses: item.current_uses || 0,
