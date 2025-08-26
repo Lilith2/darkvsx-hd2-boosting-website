@@ -51,7 +51,15 @@ const navigation: NavigationItem[] = [
 ];
 
 export function EnhancedNavbar() {
-  const router = useRouter();
+  // Safely initialize router to prevent SSG errors
+  let router;
+  try {
+    router = useRouter();
+  } catch (error) {
+    // Router not available during SSG, use fallback
+    router = { pathname: '', push: () => Promise.resolve(true) };
+  }
+
   const { user, isAuthenticated, logout } = useAuth();
   const { cartItems } = useCart();
   const { theme, setTheme } = useTheme();
@@ -59,7 +67,7 @@ export function EnhancedNavbar() {
   const [mounted, setMounted] = useState(false);
 
   // Check if router is available (prevents SSG errors)
-  const isRouterReady = router && typeof router.pathname !== 'undefined';
+  const isRouterReady = router && typeof router.pathname !== 'undefined' && router.pathname !== '';
 
   // Handle mounting
   useEffect(() => {
