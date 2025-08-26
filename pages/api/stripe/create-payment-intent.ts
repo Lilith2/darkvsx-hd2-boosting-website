@@ -136,67 +136,124 @@ export default async function handler(
       }
     }
 
-    // Fetch actual service prices from database
+    // Fetch actual service AND bundle prices from database
     let servicesTotal = 0;
     if (services.length > 0) {
-      const serviceIds = services.map((s) => s.id);
-      const { data: dbServices, error: servicesError } = await supabase
-        .from("services")
-        .select("id, title, price, active")
-        .in("id", serviceIds)
-        .eq("active", true);
+      const allIds = services.map((s) => s.id);
 
-      if (servicesError) {
-        console.error("Error fetching services:", servicesError);
+      // Query both services and bundles tables in parallel
+      const [servicesResult, bundlesResult] = await Promise.all([
+        supabase
+          .from("services")
+          .select("id, title, price, active")
+          .in("id", allIds)
+          .eq("active", true),
+        supabase
+          .from("bundles")
+          .select("id, name as title, discounted_price as price, active")
+          .in("id", allIds)
+          .eq("active", true)
+      ]);
+
+      if (servicesResult.error) {
+        console.error("Error fetching services:", servicesResult.error);
         return res.status(500).json({
           error: "Failed to fetch service pricing",
           details: "Database error occurred while validating services",
-          code: servicesError.code || "DATABASE_ERROR",
+          code: servicesResult.error.code || "DATABASE_ERROR",
         });
       }
 
-      // Verify all requested services exist and are active
-      console.log("Database services found:", {
-        requested: serviceIds,
-        found:
-          dbServices?.map((s) => ({
-            id: s.id,
-            price: s.price,
-            active: s.active,
-          })) || [],
-        count: dbServices?.length || 0,
+      if (bundlesResult.error) {
+        console.error("Error fetching bundles:", bundlesResult.error);
+        return res.status(500).json({
+          error: "Failed to fetch bundle pricing",
+          details: "Database error occurred while validating bundles",
+          code: bundlesResult.error.code || "DATABASE_ERROR",
+        });
+      }
+
+      const dbServices = servicesResult.data || [];
+      const dbBundles = bundlesResult.data || [];
+
+      // Verify all requested items exist and are active (services OR bundles)
+      console.log("Database services and bundles found:", {
+        requested: allIds,
+        foundServices: dbServices.map((s) => ({
+          id: s.id,
+          price: s.price,
+          active: s.active,
+          type: 'service'
+        })),
+        foundBundles: dbBundles.map((b) => ({
+          id: b.id,
+          price: b.price,
+          active: b.active,
+          type: 'bundle'
+        })),
+        serviceCount: dbServices.length,
+        bundleCount: dbBundles.length,
       });
 
-      const foundServiceIds = new Set(dbServices?.map((s) => s.id) || []);
-      const missingServices = serviceIds.filter(
-        (id) => !foundServiceIds.has(id),
-      );
-      if (missingServices.length > 0) {
-        console.error("Missing services error:", {
-          requested: serviceIds,
-          found: Array.from(foundServiceIds),
-          missing: missingServices,
+      const foundServiceIds = new Set(dbServices.map((s) => s.id));
+      const foundBundleIds = new Set(dbBundles.map((b) => b.id));
+      const allFoundIds = new Set([...foundServiceIds, ...foundBundleIds]);
+
+      const missingItems = allIds.filter((id) => !allFoundIds.has(id));
+      if (missingItems.length > 0) {
+        console.error("Missing items error:", {
+          requested: allIds,
+          foundServices: Array.from(foundServiceIds),
+          foundBundles: Array.from(foundBundleIds),
+          missing: missingItems,
         });
         return res.status(400).json({
-          error: "Invalid services in cart",
-          details: `Some services in your cart are no longer available. Please remove them and add current services.`,
-          invalidServices: missingServices,
-          availableServices:
-            dbServices?.map((s) => ({
+          error: "Invalid items in cart",
+          details: `Some items in your cart are no longer available. Please remove them and add current items.`,
+          invalidServices: missingItems,
+          availableServices: [
+            ...dbServices.map((s) => ({
               id: s.id,
               title: s.title,
               price: s.price,
-            })) || [],
+              type: 'service'
+            })),
+            ...dbBundles.map((b) => ({
+              id: b.id,
+              title: b.title,
+              price: b.price,
+              type: 'bundle'
+            }))
+          ],
           action: "clear_cart",
         });
       }
 
-      // Calculate total using database prices
-      const servicesPriceMap = new Map(dbServices!.map((s) => [s.id, s.price]));
+      // Calculate total using database prices for both services and bundles
+      const servicesPriceMap = new Map(dbServices.map((s) => [s.id, parseFloat(s.price)]));
+      const bundlesPriceMap = new Map(dbBundles.map((b) => [b.id, parseFloat(b.price)]));
+
       servicesTotal = services.reduce((sum, serviceRequest) => {
-        const dbPrice = servicesPriceMap.get(serviceRequest.id)!;
+        // Check both services and bundles for price
+        let dbPrice = servicesPriceMap.get(serviceRequest.id);
+        if (dbPrice === undefined) {
+          dbPrice = bundlesPriceMap.get(serviceRequest.id);
+        }
+
+        if (dbPrice === undefined) {
+          console.error(`Price not found for item ${serviceRequest.id}`);
+          return sum;
+        }
+
         return sum + dbPrice * serviceRequest.quantity;
       }, 0);
+
+      console.log("Payment calculation:", {
+        requestedItems: allIds.length,
+        servicesFound: dbServices.length,
+        bundlesFound: dbBundles.length,
+        calculatedTotal: servicesTotal
+      });
     }
 
     // Calculate custom order total (these are pre-calculated by admin)
