@@ -18,6 +18,7 @@ if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+// Create a single shared Supabase client instance to prevent multiple GoTrueClient instances
 export const supabase = createClient<Database>(
   SUPABASE_URL,
   SUPABASE_PUBLISHABLE_KEY,
@@ -27,17 +28,17 @@ export const supabase = createClient<Database>(
       persistSession: true,
       autoRefreshToken: true,
     },
+    // Disable realtime by default to prevent issues - can be enabled per subscription if needed
     realtime: {
-      // Disable realtime to prevent webpack issues
       params: {
-        eventsPerSecond: 1,
+        eventsPerSecond: 0, // Disable realtime events
       },
-      heartbeatIntervalMs: 30000,
-      reconnectAfterMs: (tries: number) => Math.min(tries * 1000, 10000),
+      heartbeatIntervalMs: 60000,
+      reconnectAfterMs: () => 10000,
     },
     global: {
       headers: {
-        'X-Client-Info': 'helldivers2-boost-app',
+        'X-Client-Info': 'helldivers2-boost-app-unified',
       },
     },
   },
