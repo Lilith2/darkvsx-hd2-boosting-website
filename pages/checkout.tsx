@@ -40,7 +40,7 @@ import {
   Minus,
 } from "lucide-react";
 import Link from "next/link";
-import { SimplePaymentForm } from "@/components/checkout/SimplePaymentForm";
+import { SimplePaymentForm } from "../src/components/checkout/SimplePaymentForm";
 
 // Initialize Stripe
 const stripePromise = loadStripe(
