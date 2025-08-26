@@ -83,18 +83,21 @@ export function EnhancedNavbar() {
   const handleLogout = useCallback(async () => {
     try {
       await logout();
-      router.push("/");
+      if (isRouterReady) {
+        router.push("/");
+      }
     } catch (error) {
       console.error("Logout error:", error);
     }
-  }, [logout, router]);
+  }, [logout, router, isRouterReady]);
 
   const isActivePath = useCallback(
     (path: string) => {
+      if (!isRouterReady) return false;
       if (path === "/" && router.pathname !== "/") return false;
       return router.pathname === path || router.pathname.startsWith(path + "/");
     },
-    [router.pathname],
+    [router.pathname, isRouterReady],
   );
 
   return (
