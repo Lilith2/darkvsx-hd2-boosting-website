@@ -168,7 +168,7 @@ export default async function handler(
           .eq("active", true),
         supabase
           .from("bundles")
-          .select("id, discounted_price as price, active, name as title")
+          .select("id, discounted_price, active, name")
           .in("id", allIds)
           .eq("active", true)
       ]);
@@ -218,7 +218,7 @@ export default async function handler(
       // Calculate total using DATABASE prices (not client-provided prices)
       // Combine services and bundles price maps
       const servicesPriceMap = new Map(dbServices.map((s) => [s.id, parseFloat(s.price)]));
-      const bundlesPriceMap = new Map(dbBundles.map((b) => [b.id, parseFloat(b.price)]));
+      const bundlesPriceMap = new Map(dbBundles.map((b: any) => [b.id, parseFloat(b.discounted_price)]));
 
       servicesTotal = orderData.services.reduce((sum, serviceRequest) => {
         // Check both services and bundles for price
