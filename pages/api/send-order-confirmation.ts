@@ -86,8 +86,11 @@ export default async function handler(
     const htmlContent = generateOrderConfirmationHTML(emailData);
 
     // Email options
+    const fromName = process.env.SMTP_FROM_NAME || "HellDivers 2 Boosting";
+    const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER;
+
     const mailOptions = {
-      from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
+      from: `"${fromName}" <${fromEmail}>`,
       to: emailData.customerEmail,
       subject: `Order Confirmation - ${emailData.orderNumber}`,
       html: htmlContent,
