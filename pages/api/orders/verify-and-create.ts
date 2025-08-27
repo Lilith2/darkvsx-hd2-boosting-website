@@ -317,6 +317,11 @@ export default async function handler(
         paid: paidAmount,
         expected: expectedTotal,
         difference: Math.abs(paidAmount - expectedTotal),
+        subtotal,
+        validatedDiscountAmount,
+        tax,
+        creditsUsed,
+        promoCode: orderData.referralCode,
       });
       return res.status(400).json({
         error: "Payment amount mismatch",
