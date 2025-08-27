@@ -169,6 +169,16 @@ export function PaymentStep({
           transition={{ delay: 0.2, duration: 0.5 }}
           className="space-y-4"
         >
+          {/* Discord Username Requirement Alert */}
+          {!stepData.discordUsername.trim() && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                Please go back to Step 2 and enter your Discord username. This is required for communication during your boosting service.
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Terms Requirement Alert */}
           {!stepData.agreeToTerms && (
             <Alert variant="destructive">
