@@ -350,6 +350,7 @@ export default async function handler(
       orderData,
       paymentIntentId,
       expectedTotal,
+      validatedDiscountAmount,
     );
 
     return res.status(200).json({
