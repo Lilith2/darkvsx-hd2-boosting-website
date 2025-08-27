@@ -411,12 +411,19 @@ async function createOrdersInDatabase(
       user_id: orderData.userId || null,
       customer_email: orderData.customerEmail,
       customer_name: orderData.customerName,
-      items: orderData.services.map((service) => ({
-        service_id: service.id,
-        service_name: service.name,
-        price: service.price,
-        quantity: service.quantity,
-      })),
+      items: orderData.services.map((service) => {
+        // Use server-validated price from database, not client-provided price
+        let dbPrice = servicesPriceMap.get(service.id);
+        if (dbPrice === undefined) {
+          dbPrice = bundlesPriceMap.get(service.id);
+        }
+        return {
+          service_id: service.id,
+          service_name: service.name,
+          price: dbPrice || 0, // Use server price for security
+          quantity: service.quantity,
+        };
+      }),
       status: "pending",
       payment_status: "paid",
       total_amount: parseFloat(totalAmount.toFixed(2)), // Fix precision
