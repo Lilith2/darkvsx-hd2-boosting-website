@@ -446,7 +446,7 @@ async function createOrdersInDatabase(
     const customOrderRecord = {
       customer_email: orderData.customerEmail,
       customer_name: orderData.customerName,
-      customer_discord: orderData.customOrderData.customer_discord || null,
+      customer_discord: orderData.customerDiscord,
       items: orderData.customOrderData.items,
       special_instructions:
         orderData.customOrderData.special_instructions ||
