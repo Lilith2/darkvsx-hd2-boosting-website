@@ -18,7 +18,7 @@ export function SEOHead({
 }: SEOHeadProps) {
   const router = useRouter()
   const siteName = "Helldivers 2 Boosting"
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://helldivers2boost.com"
+  const siteUrl = getSiteUrl()
   const fullUrl = `${siteUrl}${router.asPath}`
   const canonicalUrl = canonical || fullUrl
 

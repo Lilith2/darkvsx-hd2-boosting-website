@@ -5,8 +5,19 @@ export const getSiteUrl = (): string => {
     return window.location.origin;
   }
 
-  // Fallback for SSR or initial load
-  return process.env.NEXT_PUBLIC_SITE_URL || "https://helldivers-boost.com";
+  // Fallback for SSR or initial load - use env var or error in production
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+
+  // Dev fallback only
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:3000';
+  }
+
+  // Production should always have NEXT_PUBLIC_SITE_URL set
+  console.warn('NEXT_PUBLIC_SITE_URL not set in production!');
+  return 'https://helldivers2boost.com'; // Last resort fallback
 };
 
 export const getSiteDomain = (): string => {
