@@ -40,11 +40,40 @@ export default async function handler(
       });
     }
 
-    // Query database for both services and bundles
-    const [servicesResult, bundlesResult] = await Promise.all([
-      supabase.from("services").select("id, active").in("id", serviceIds),
-      supabase.from("bundles").select("id, active").in("id", serviceIds),
-    ]);
+    // Filter out non-UUID IDs and keep track of them
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const uuidServiceIds = serviceIds.filter(id => uuidRegex.test(id));
+    const nonUuidIds = serviceIds.filter(id => !uuidRegex.test(id));
+
+    // Only query database if there are UUID IDs to check
+    let services: any[] = [];
+    let bundles: any[] = [];
+
+    if (uuidServiceIds.length > 0) {
+      const [servicesResult, bundlesResult] = await Promise.all([
+        supabase.from("services").select("id, active").in("id", uuidServiceIds),
+        supabase.from("bundles").select("id, active").in("id", uuidServiceIds),
+      ]);
+
+      if (servicesResult.error) {
+        console.error("Error validating services:", servicesResult.error);
+        return res.status(500).json({
+          error: "Failed to validate services",
+          details: "Database error occurred while checking services",
+        });
+      }
+
+      if (bundlesResult.error) {
+        console.error("Error validating bundles:", bundlesResult.error);
+        return res.status(500).json({
+          error: "Failed to validate bundles",
+          details: "Database error occurred while checking bundles",
+        });
+      }
+
+      services = servicesResult.data || [];
+      bundles = bundlesResult.data || [];
+    }
 
     if (servicesResult.error) {
       console.error("Error validating services:", servicesResult.error);
