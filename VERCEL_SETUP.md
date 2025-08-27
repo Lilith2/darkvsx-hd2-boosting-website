@@ -3,6 +3,7 @@
 ## 🚀 Quick Setup for hellboost.vercel.app
 
 ### 1. Environment Variables
+
 In your Vercel dashboard, go to: **Settings** → **Environment Variables**
 
 Add these **exact** values:
@@ -39,13 +40,16 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhY
 ### 4. Test Your Deployment
 
 #### ✅ These should return **405 Method Not Allowed** (correct):
+
 - https://hellboost.vercel.app/api/stripe/create-payment-intent
 - https://hellboost.vercel.app/api/stripe/webhook
 
 #### ✅ This should return **200 OK** with ping response:
+
 - https://hellboost.vercel.app/api/ping
 
 #### ✅ Test payment flow:
+
 1. Go to https://hellboost.vercel.app
 2. Add items to cart
 3. Proceed to checkout
@@ -54,12 +58,14 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhY
 ### 5. Common Issues
 
 If you get **405 errors**:
+
 - ✅ **Fixed**: Hardcoded localhost URLs
 - ✅ **Fixed**: Environment variables
-- ⚠️  **Check**: Webhook URL in Stripe Dashboard
-- ⚠️  **Check**: All env vars are set in Vercel
+- ⚠️ **Check**: Webhook URL in Stripe Dashboard
+- ⚠️ **Check**: All env vars are set in Vercel
 
 If payment fails:
+
 - Check Stripe Dashboard for webhook delivery status
 - Check Vercel function logs
 - Verify all environment variables are set correctly

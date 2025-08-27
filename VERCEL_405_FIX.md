@@ -3,10 +3,12 @@
 ## Issues Fixed ✅
 
 ### 1. Hardcoded localhost URL in test-payment-fix.js
+
 - **Problem**: `http://localhost:3000/api/stripe/create-payment-intent`
 - **Fix**: Changed to relative URL `/api/stripe/create-payment-intent`
 
 ### 2. Domain Inconsistencies
+
 - **Problem**: Mixed domains (helldivers-boost.com vs helldivers2boost.com)
 - **Fix**: Standardized to use `NEXT_PUBLIC_SITE_URL` environment variable
 
@@ -31,11 +33,13 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 After deployment, test these URLs directly in browser:
 
 1. **Should return 405** (correct behavior):
+
    ```
    https://hellboost.vercel.app/api/stripe/create-payment-intent
    ```
 
 2. **Should return 200** with ping response:
+
    ```
    https://hellboost.vercel.app/api/ping
    ```
@@ -57,8 +61,8 @@ After deployment, test these URLs directly in browser:
 - ✅ **Fixed**: Hardcoded localhost URLs
 - ✅ **Fixed**: Missing environment variables
 - ✅ **Fixed**: Domain inconsistencies
-- ⚠️  **Check**: Stripe webhook endpoint URL in dashboard
-- ⚠️  **Check**: CORS headers (handled automatically by Next.js API routes)
+- ⚠️ **Check**: Stripe webhook endpoint URL in dashboard
+- ⚠️ **Check**: CORS headers (handled automatically by Next.js API routes)
 
 ## If Still Getting 405
 

@@ -1,13 +1,13 @@
-import Head from 'next/head'
-import { useRouter } from 'next/router'
-import { getSiteUrl } from '@/lib/config'
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { getSiteUrl } from "@/lib/config";
 
 interface SEOHeadProps {
-  title?: string
-  description?: string
-  image?: string
-  noindex?: boolean
-  canonical?: string
+  title?: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+  canonical?: string;
 }
 
 export function SEOHead({
@@ -17,11 +17,11 @@ export function SEOHead({
   noindex = false,
   canonical,
 }: SEOHeadProps) {
-  const router = useRouter()
-  const siteName = "Helldivers 2 Boosting"
-  const siteUrl = getSiteUrl()
-  const fullUrl = `${siteUrl}${router.asPath}`
-  const canonicalUrl = canonical || fullUrl
+  const router = useRouter();
+  const siteName = "Helldivers 2 Boosting";
+  const siteUrl = getSiteUrl();
+  const fullUrl = `${siteUrl}${router.asPath}`;
+  const canonicalUrl = canonical || fullUrl;
 
   return (
     <Head>
@@ -29,13 +29,13 @@ export function SEOHead({
       <title>{title}</title>
       <meta name="description" content={description} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
-      
+
       {/* Robots */}
       {noindex && <meta name="robots" content="noindex, nofollow" />}
-      
+
       {/* Canonical URL */}
       <link rel="canonical" href={canonicalUrl} />
-      
+
       {/* Open Graph */}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
@@ -43,18 +43,21 @@ export function SEOHead({
       <meta property="og:url" content={fullUrl} />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content={siteName} />
-      
+
       {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={`${siteUrl}${image}`} />
-      
+
       {/* Additional SEO */}
       <meta name="theme-color" content="#0ea5e9" />
-      <meta name="keywords" content="helldivers 2, boosting, gaming, achievements, rank up, professional gaming" />
+      <meta
+        name="keywords"
+        content="helldivers 2, boosting, gaming, achievements, rank up, professional gaming"
+      />
       <meta name="author" content={siteName} />
-      
+
       {/* Structured Data */}
       <script
         type="application/ld+json"
@@ -62,15 +65,15 @@ export function SEOHead({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": siteName,
-            "url": siteUrl,
-            "description": description,
-            "sameAs": [
+            name: siteName,
+            url: siteUrl,
+            description: description,
+            sameAs: [
               // Add social media URLs here
-            ]
-          })
+            ],
+          }),
         }}
       />
     </Head>
-  )
+  );
 }

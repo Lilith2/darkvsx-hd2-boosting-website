@@ -11,13 +11,13 @@ export const getSiteUrl = (): string => {
   }
 
   // Dev fallback only
-  if (process.env.NODE_ENV === 'development') {
-    return 'http://localhost:3000';
+  if (process.env.NODE_ENV === "development") {
+    return "http://localhost:3000";
   }
 
   // Production should always have NEXT_PUBLIC_SITE_URL set
-  console.warn('NEXT_PUBLIC_SITE_URL not set in production!');
-  return 'https://hellboost.vercel.app'; // Last resort fallback
+  console.warn("NEXT_PUBLIC_SITE_URL not set in production!");
+  return "https://hellboost.vercel.app"; // Last resort fallback
 };
 
 export const getSiteDomain = (): string => {

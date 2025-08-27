@@ -27,16 +27,13 @@ async function testPaymentAPI() {
     console.log("Testing payment API...");
     console.log("Request payload:", JSON.stringify(testPayload, null, 2));
 
-    const response = await fetch(
-      "/api/stripe/create-payment-intent",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(testPayload),
+    const response = await fetch("/api/stripe/create-payment-intent", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify(testPayload),
+    });
 
     console.log("Response status:", response.status);
     console.log(
