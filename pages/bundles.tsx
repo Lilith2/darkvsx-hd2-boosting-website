@@ -35,38 +35,55 @@ export default function Bundles() {
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const handleAddBundle = (bundle: any) => {
-    // Create a bundle service object for cart with bundle identification
-    const bundleService = {
-      id: bundle.id,
-      title: bundle.name,
-      description: bundle.description,
-      price: bundle.discounted_price,
-      originalPrice: bundle.original_price,
-      duration: bundle.duration,
-      difficulty: "Bundle",
-      features: bundle.features || [],
-      active: bundle.active ?? true,
-      popular: bundle.popular ?? false,
-      category: "Level Boost" as const,
-      createdAt: bundle.created_at || new Date().toISOString(),
-      orders_count: bundle.orders_count || 0,
-      // Add bundle identification for better handling
-      isBundle: true,
-      bundleData: {
-        originalBundleId: bundle.id,
-        services: bundle.services || [],
-        discount: bundle.discount || 0,
-      },
-    };
+  const handleAddBundle = async (bundle: any) => {
+    setIsAddingToCart(bundle.id);
+    try {
+      // Create a bundle service object for cart with bundle identification
+      const bundleService = {
+        id: bundle.id,
+        title: bundle.name,
+        description: bundle.description,
+        price: bundle.discounted_price,
+        originalPrice: bundle.original_price,
+        duration: bundle.duration,
+        difficulty: "Bundle",
+        features: bundle.features || [],
+        active: bundle.active ?? true,
+        popular: bundle.popular ?? false,
+        category: "Level Boost" as const,
+        createdAt: bundle.created_at || new Date().toISOString(),
+        orders_count: bundle.orders_count || 0,
+        // Add bundle identification for better handling
+        isBundle: true,
+        bundleData: {
+          originalBundleId: bundle.id,
+          services: bundle.services || [],
+          discount: bundle.discount || 0,
+        },
+      };
 
-    addToCart(bundleService);
-    toast({
-      title: "Bundle added to cart!",
-      description: `${bundle.name} has been added to your cart.`,
-    });
-    // Redirect to unified checkout for streamlined experience
-    router.push("/checkout");
+      addToCart(bundleService);
+
+      toast({
+        title: "Bundle added to cart!",
+        description: `${bundle.name} has been added to your cart.`,
+      });
+
+      // Small delay to ensure cart state is updated
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Redirect to unified checkout for streamlined experience
+      router.push("/checkout");
+    } catch (error) {
+      console.error("Error adding bundle to cart:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add bundle to cart. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingToCart(null);
+    }
   };
 
   if (loading) {
