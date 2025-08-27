@@ -17,7 +17,7 @@
 Set these in your Vercel dashboard (Project → Settings → Environment Variables):
 
 ```
-NEXT_PUBLIC_SITE_URL=https://your-production-domain.vercel.app
+NEXT_PUBLIC_SITE_URL=https://hellboost.vercel.app
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_51RvPHJK2UdqUm5lUJBDOFvP4HCpMaLNlQVnZCBg7frTXkCHYeTSPKGFzmTHHudVvCdMofdqiRepwYRiyr2PpWFWo00NKBQrZVm
 STRIPE_SECRET_KEY=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
 STRIPE_WEBHOOK_SECRET=whsec_bSk9XaelQRi31111CNbe7fWJzldQ7shu
@@ -32,24 +32,24 @@ After deployment, test these URLs directly in browser:
 
 1. **Should return 405** (correct behavior):
    ```
-   https://your-domain.vercel.app/api/stripe/create-payment-intent
+   https://hellboost.vercel.app/api/stripe/create-payment-intent
    ```
-   
+
 2. **Should return 200** with ping response:
    ```
-   https://your-domain.vercel.app/api/ping
+   https://hellboost.vercel.app/api/ping
    ```
 
 3. **Should return 405** (correct - POST only):
    ```
-   https://your-domain.vercel.app/api/stripe/webhook
+   https://hellboost.vercel.app/api/stripe/webhook
    ```
 
 ## Deployment Steps
 
 1. **Set Environment Variables** in Vercel dashboard
 2. **Redeploy** your application
-3. **Update Stripe Webhook URL** to: `https://your-domain.vercel.app/api/stripe/webhook`
+3. **Update Stripe Webhook URL** to: `https://hellboost.vercel.app/api/stripe/webhook`
 4. **Test payment flow** on production
 
 ## Common 405 Causes on Vercel
