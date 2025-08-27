@@ -30,6 +30,7 @@ import {
 
 export default function Bundles() {
   const router = useRouter();
+  const [isAddingToCart, setIsAddingToCart] = useState<string | null>(null);
   const { bundles, loading, error } = useBundles();
   const { addToCart } = useCart();
   const { toast } = useToast();
