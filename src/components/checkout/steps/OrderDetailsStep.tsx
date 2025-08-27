@@ -13,9 +13,11 @@ import {
   Loader2, 
   AlertTriangle,
   DollarSign,
-  Shield
+  Shield,
+  MessageSquare
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { security } from "@/lib/security";
 import Link from "next/link";
 
 interface OrderDetailsStepProps {
@@ -24,6 +26,7 @@ interface OrderDetailsStepProps {
     promoCode: string;
     promoDiscount: number;
     agreeToTerms: boolean;
+    discordUsername: string;
   };
   updateStepData: (data: any) => void;
   user: any;
@@ -46,6 +49,31 @@ export function OrderDetailsStep({
 }: OrderDetailsStepProps) {
   const { toast } = useToast();
   const [promoCodeStatus, setPromoCodeStatus] = useState<"idle" | "loading" | "applied" | "error">("idle");
+  const [discordError, setDiscordError] = useState<string>("");
+
+  const validateDiscordUsername = (username: string) => {
+    if (!username.trim()) {
+      setDiscordError("Discord username is required for communication.");
+      return false;
+    }
+    
+    if (!security.validateDiscordTag(username.trim())) {
+      setDiscordError("Please enter a valid Discord username (e.g., YourUsername#1234 or YourUsername).");
+      return false;
+    }
+    
+    setDiscordError("");
+    return true;
+  };
+
+  const handleDiscordChange = (value: string) => {
+    updateStepData({ discordUsername: value });
+    if (value.trim()) {
+      validateDiscordUsername(value);
+    } else {
+      setDiscordError("Discord username is required for communication.");
+    }
+  };
 
   const validatePromoCode = async (code: string) => {
     if (!code.trim()) {
@@ -137,117 +165,167 @@ export function OrderDetailsStep({
           </div>
           <h2 className="text-3xl font-bold mb-2">Order Details</h2>
           <p className="text-muted-foreground text-lg">
-            Add any special instructions and apply promo codes
+            Provide your Discord username and optional preferences
           </p>
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Order Notes */}
+      <div className="space-y-6">
+        {/* Discord Username - Required */}
         <motion.div
           variants={formVariants}
           initial="hidden"
           animate="visible"
           transition={{ delay: 0.1, duration: 0.5 }}
         >
-          <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm h-fit">
+          <Card className="border-2 border-primary/20 shadow-lg bg-card/50 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center">
-                <FileText className="w-5 h-5 mr-2" />
-                Order Notes (Optional)
+              <CardTitle className="text-lg flex items-center text-primary">
+                <MessageSquare className="w-5 h-5 mr-2" />
+                Discord Username <span className="text-destructive ml-1">*</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="orderNotes" className="text-base">
-                  Special Instructions
+                <Label htmlFor="discordUsername" className="text-base font-medium">
+                  Your Discord Username
                 </Label>
-                <Textarea
-                  id="orderNotes"
-                  value={stepData.orderNotes}
-                  onChange={(e) => updateStepData({ orderNotes: e.target.value })}
-                  placeholder="Include your Discord username, preferred gaming hours, or any specific requirements..."
-                  rows={4}
-                  className="resize-none border-border/50 focus:border-primary/50 bg-background/50 mt-2"
+                <Input
+                  id="discordUsername"
+                  value={stepData.discordUsername}
+                  onChange={(e) => handleDiscordChange(e.target.value)}
+                  onBlur={() => validateDiscordUsername(stepData.discordUsername)}
+                  placeholder="YourUsername#1234 or YourUsername"
+                  className="h-12 border-border/50 focus:border-primary/50 bg-background/50 mt-2"
+                  required
                 />
+                <p className="text-sm text-muted-foreground mt-2">
+                  Required for communication during your boosting service
+                </p>
+                {discordError && (
+                  <Alert variant="destructive" className="mt-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>{discordError}</AlertDescription>
+                  </Alert>
+                )}
               </div>
-              <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
-                <Shield className="h-4 w-4 text-blue-600" />
-                <AlertDescription className="text-blue-800 dark:text-blue-200">
-                  <strong>Tip:</strong> Include your Discord username for faster communication during the boosting process.
+              <Alert className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20">
+                <MessageSquare className="h-4 w-4 text-red-600" />
+                <AlertDescription className="text-red-800 dark:text-red-200">
+                  <strong>Important:</strong> A valid Discord username is absolutely required for our team to communicate with you during the boosting process.
                 </AlertDescription>
               </Alert>
             </CardContent>
           </Card>
         </motion.div>
 
-        {/* Promo Code */}
-        <motion.div
-          variants={formVariants}
-          initial="hidden"
-          animate="visible"
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm h-fit">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center">
-                <DollarSign className="w-5 h-5 mr-2" />
-                Promo Code
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <Label htmlFor="promoCode" className="text-base">
-                  Enter Code
-                </Label>
-                <div className="flex space-x-3">
-                  <div className="flex-1 relative">
-                    <Input
-                      id="promoCode"
-                      value={stepData.promoCode}
-                      onChange={(e) => updateStepData({ promoCode: e.target.value.toUpperCase() })}
-                      placeholder="Enter promo code"
-                      className="h-12 pr-10 border-border/50 focus:border-primary/50 text-base"
-                      disabled={promoCodeStatus === "loading"}
-                    />
-                    {promoCodeStatus === "applied" && (
-                      <CheckCircle className="w-5 h-5 text-green-600 absolute right-3 top-3.5" />
-                    )}
-                  </div>
-                  <Button
-                    onClick={() => validatePromoCode(stepData.promoCode)}
-                    disabled={!stepData.promoCode.trim() || promoCodeStatus === "loading"}
-                    className="h-12 px-6"
-                  >
-                    {promoCodeStatus === "loading" ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      "Apply"
-                    )}
-                  </Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Order Notes */}
+          <motion.div
+            variants={formVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm h-fit">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center">
+                  <FileText className="w-5 h-5 mr-2" />
+                  Order Notes (Optional)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="orderNotes" className="text-base">
+                    Special Instructions
+                  </Label>
+                  <Textarea
+                    id="orderNotes"
+                    value={stepData.orderNotes}
+                    onChange={(e) => updateStepData({ orderNotes: e.target.value })}
+                    placeholder="Include preferred gaming hours, specific requirements, or any other notes..."
+                    rows={4}
+                    className="resize-none border-border/50 focus:border-primary/50 bg-background/50 mt-2"
+                  />
                 </div>
-                
-                {stepData.promoDiscount > 0 && (
-                  <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <AlertDescription className="text-green-800 dark:text-green-200">
-                      <strong>Promo code applied!</strong> You saved ${stepData.promoDiscount.toFixed(2)}
-                    </AlertDescription>
-                  </Alert>
-                )}
-                
-                {promoCodeStatus === "error" && (
-                  <Alert variant="destructive">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                      Invalid promo code. Please check the code and try again.
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+                <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
+                  <Shield className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-800 dark:text-blue-200">
+                    <strong>Tip:</strong> Let us know your preferred gaming hours or any specific requirements for your service.
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Promo Code */}
+          <motion.div
+            variants={formVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm h-fit">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center">
+                  <DollarSign className="w-5 h-5 mr-2" />
+                  Promo Code
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <Label htmlFor="promoCode" className="text-base">
+                    Enter Code
+                  </Label>
+                  <div className="flex space-x-3">
+                    <div className="flex-1 relative">
+                      <Input
+                        id="promoCode"
+                        value={stepData.promoCode}
+                        onChange={(e) => updateStepData({ promoCode: e.target.value.toUpperCase() })}
+                        placeholder="Enter promo code"
+                        className="h-12 pr-10 border-border/50 focus:border-primary/50 text-base"
+                        disabled={promoCodeStatus === "loading"}
+                      />
+                      {promoCodeStatus === "applied" && (
+                        <CheckCircle className="w-5 h-5 text-green-600 absolute right-3 top-3.5" />
+                      )}
+                    </div>
+                    <Button
+                      onClick={() => validatePromoCode(stepData.promoCode)}
+                      disabled={!stepData.promoCode.trim() || promoCodeStatus === "loading"}
+                      className="h-12 px-6"
+                    >
+                      {promoCodeStatus === "loading" ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        "Apply"
+                      )}
+                    </Button>
+                  </div>
+                  
+                  {stepData.promoDiscount > 0 && (
+                    <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <AlertDescription className="text-green-800 dark:text-green-200">
+                        <strong>Promo code applied!</strong> You saved ${stepData.promoDiscount.toFixed(2)}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  
+                  {promoCodeStatus === "error" && (
+                    <Alert variant="destructive">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>
+                        Invalid promo code. Please check the code and try again.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
       </div>
 
       {/* Terms Agreement */}
@@ -255,7 +333,7 @@ export function OrderDetailsStep({
         variants={formVariants}
         initial="hidden"
         animate="visible"
-        transition={{ delay: 0.3, duration: 0.5 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
       >
         <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
           <CardContent className="pt-6">
@@ -294,16 +372,18 @@ export function OrderDetailsStep({
         </Card>
       </motion.div>
 
-      {!stepData.agreeToTerms && (
+      {(!stepData.agreeToTerms || !stepData.discordUsername.trim() || discordError) && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.3 }}
+          transition={{ delay: 0.5, duration: 0.3 }}
         >
-          <Alert>
+          <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              Please agree to the Terms of Service and Privacy Policy to continue.
+              {!stepData.discordUsername.trim() && "Please enter your Discord username. "}
+              {discordError && `${discordError} `}
+              {!stepData.agreeToTerms && "Please agree to the Terms of Service and Privacy Policy to continue."}
             </AlertDescription>
           </Alert>
         </motion.div>
