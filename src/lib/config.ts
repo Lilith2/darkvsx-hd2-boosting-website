@@ -17,7 +17,7 @@ export const getSiteUrl = (): string => {
 
   // Production should always have NEXT_PUBLIC_SITE_URL set
   console.warn('NEXT_PUBLIC_SITE_URL not set in production!');
-  return 'https://helldivers2boost.com'; // Last resort fallback
+  return 'https://hellboost.vercel.app'; // Last resort fallback
 };
 
 export const getSiteDomain = (): string => {
