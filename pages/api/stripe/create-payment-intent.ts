@@ -296,11 +296,17 @@ export default async function handler(
         }
 
         if (validation && validation.valid) {
-          // Apply the discount (usually 15% as per REFERRAL_CONFIG)
-          validatedReferralDiscount = Math.min(
-            referralDiscount,
-            subtotal * 0.15, // Max 15% discount for safety
-          );
+          // Calculate discount server-side based on validation type
+          if (validation.type === "promo") {
+            if (validation.discount_type === "percentage") {
+              validatedReferralDiscount = subtotal * (validation.discount_value / 100);
+            } else {
+              validatedReferralDiscount = Math.min(validation.discount_value, subtotal);
+            }
+          } else {
+            // Referral code - 15% discount (standardized)
+            validatedReferralDiscount = subtotal * 0.15;
+          }
         } else {
           return res.status(400).json({
             error: "Invalid promo code",
