@@ -419,7 +419,7 @@ async function createOrdersInDatabase(
         validatedDiscountAmount > 0
           ? parseFloat(validatedDiscountAmount.toFixed(2))
           : null,
-      referral_credits_used: orderData.referralCreditsUsed
+      referral_credits_used: orderData.referralCreditsUsed != null
         ? parseFloat(orderData.referralCreditsUsed.toFixed(2))
         : null,
       ip_address: orderData.ipAddress || null,
