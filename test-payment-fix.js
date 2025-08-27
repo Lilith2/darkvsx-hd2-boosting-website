@@ -28,7 +28,7 @@ async function testPaymentAPI() {
     console.log("Request payload:", JSON.stringify(testPayload, null, 2));
 
     const response = await fetch(
-      "http://localhost:3000/api/stripe/create-payment-intent",
+      "/api/stripe/create-payment-intent",
       {
         method: "POST",
         headers: {
