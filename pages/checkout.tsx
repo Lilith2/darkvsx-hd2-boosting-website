@@ -28,17 +28,8 @@ export default function CheckoutPage() {
   // Form states
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Authentication redirect
-  useEffect(() => {
-    if (!isAuthenticated) {
-      toast({
-        title: "Authentication Required",
-        description: "Please log in to complete your checkout.",
-        variant: "destructive",
-      });
-      router.push("/login?redirect=/checkout");
-    }
-  }, [isAuthenticated, router, toast]);
+  // Note: Removed authentication requirement here to allow guest checkout
+  // Authentication will be handled in the payment step if needed
 
   // Validate cart items when page loads and cart is hydrated
   useEffect(() => {
