@@ -52,15 +52,12 @@ export function ServicesSection() {
   const handleAddToCart = async (service: any) => {
     setIsAddingToCart(service.id);
     try {
-      addToCart(service);
+      await addToCart(service);
 
       toast({
         title: "Added to cart!",
         description: `${service.title} has been added to your cart.`,
       });
-
-      // Small delay to ensure cart state is updated
-      await new Promise(resolve => setTimeout(resolve, 100));
 
       // Redirect to unified checkout for streamlined experience
       router.push("/checkout");
