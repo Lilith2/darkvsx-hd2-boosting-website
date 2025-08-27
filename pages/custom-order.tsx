@@ -263,6 +263,7 @@ export default function CustomOrder() {
       return;
     }
 
+    setIsAddingToCart(true);
     try {
       // Create the custom order data (separate from regular cart)
       const customOrderData = {
@@ -283,6 +284,9 @@ export default function CustomOrder() {
         description: "Your custom order has been added to the cart.",
       });
 
+      // Small delay to ensure custom order state is updated
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       router.push("/checkout");
     } catch (error: any) {
       console.error("Error processing order:", error);
@@ -296,6 +300,8 @@ export default function CustomOrder() {
         description: `Failed to process your order: ${errorMessage}`,
         variant: "destructive",
       });
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
