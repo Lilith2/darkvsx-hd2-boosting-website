@@ -449,6 +449,7 @@ async function createOrdersInDatabase(
       customer_discord: orderData.customerDiscord,
       items: orderData.customOrderData.items,
       special_instructions:
+        orderData.orderNotes ||
         orderData.customOrderData.special_instructions ||
         orderData.notes ||
         null,
