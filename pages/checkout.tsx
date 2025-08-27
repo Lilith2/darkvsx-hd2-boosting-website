@@ -63,7 +63,7 @@ export default function CheckoutPage() {
   }, [cartItems.length, customOrder, router, toast, isHydrated]);
 
   // Handle payment success
-  const handlePaymentSuccess = async (paymentIntent: any) => {
+  const handlePaymentSuccess = async (paymentIntent: any, stepData?: any) => {
     setIsProcessing(true);
 
     try {
@@ -72,6 +72,8 @@ export default function CheckoutPage() {
         userId: user?.id || null,
         customerEmail: user?.email || "",
         customerName: user?.username || "",
+        customerDiscord: stepData?.discordUsername || "",
+        orderNotes: stepData?.orderNotes || "",
         services: cartItems.map((item) => ({
           id: item.service.id,
           name: item.service.title,
@@ -81,8 +83,8 @@ export default function CheckoutPage() {
         customOrderData: customOrder
           ? {
               items: customOrder.items,
-              special_instructions: customOrder.special_instructions,
-              customer_discord: customOrder.customer_discord,
+              special_instructions: customOrder.special_instructions || stepData?.orderNotes || "",
+              customer_discord: stepData?.discordUsername || customOrder.customer_discord,
             }
           : undefined,
       };
