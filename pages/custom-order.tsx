@@ -536,10 +536,15 @@ export default function CustomOrder() {
                       onClick={addToCartAndNavigate}
                       className="w-full"
                       size="sm"
+                      disabled={isAddingToCart}
                     >
-                      <ShoppingCart className="w-3 h-3 mr-2" />
-                      Add to Cart
-                      <ArrowRight className="w-3 h-3 ml-2" />
+                      {isAddingToCart ? (
+                        <div className="w-3 h-3 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <ShoppingCart className="w-3 h-3 mr-2" />
+                      )}
+                      {isAddingToCart ? "Adding..." : "Add to Cart"}
+                      {!isAddingToCart && <ArrowRight className="w-3 h-3 ml-2" />}
                     </Button>
 
                     <div className="flex items-center justify-center space-x-1 text-xs text-muted-foreground">
