@@ -3,16 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  Package, 
-  DollarSign, 
-  Trophy, 
-  CheckCircle, 
+import {
+  Package,
+  DollarSign,
+  Trophy,
+  CheckCircle,
   FileText,
   Clock,
   Star,
   Sparkles,
-  AlertTriangle
+  AlertTriangle,
+  MessageSquare
 } from "lucide-react";
 
 interface CartItem {
@@ -32,6 +33,7 @@ interface OrderSummaryStepProps {
     promoCode: string;
     promoDiscount: number;
     agreeToTerms: boolean;
+    discordUsername: string;
   };
   subtotal: number;
   tax: number;
@@ -169,6 +171,31 @@ export function OrderSummaryStep({
                     </div>
                   </motion.div>
                 )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Discord Username */}
+          <motion.div
+            variants={summaryVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center text-lg">
+                  <MessageSquare className="w-5 h-5 mr-2 text-primary" />
+                  Discord Username
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
+                  <p className="font-medium text-primary">{stepData.discordUsername}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Our team will contact you on Discord
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </motion.div>
