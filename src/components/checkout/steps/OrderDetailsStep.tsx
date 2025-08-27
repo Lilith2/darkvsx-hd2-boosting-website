@@ -1,0 +1,313 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { 
+  FileText, 
+  CheckCircle, 
+  Loader2, 
+  AlertTriangle,
+  DollarSign,
+  Shield
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
+
+interface OrderDetailsStepProps {
+  stepData: {
+    orderNotes: string;
+    promoCode: string;
+    promoDiscount: number;
+    agreeToTerms: boolean;
+  };
+  updateStepData: (data: any) => void;
+  user: any;
+  subtotal: number;
+}
+
+interface ValidationResponse {
+  valid: boolean;
+  error?: string;
+  type?: "promo" | "referral";
+  discount_type?: "percentage" | "fixed";
+  discount_value?: number;
+}
+
+export function OrderDetailsStep({
+  stepData,
+  updateStepData,
+  user,
+  subtotal,
+}: OrderDetailsStepProps) {
+  const { toast } = useToast();
+  const [promoCodeStatus, setPromoCodeStatus] = useState<"idle" | "loading" | "applied" | "error">("idle");
+
+  const validatePromoCode = async (code: string) => {
+    if (!code.trim()) {
+      updateStepData({ promoDiscount: 0 });
+      setPromoCodeStatus("idle");
+      return;
+    }
+
+    setPromoCodeStatus("loading");
+
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+
+      const { data, error } = await supabase.rpc("validate_referral_code", {
+        code: code.trim(),
+        user_id: user?.id || null,
+      });
+
+      if (error) {
+        console.error("Error validating promo code:", error);
+        setPromoCodeStatus("error");
+        toast({
+          title: "Error",
+          description: "Could not validate promo code. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const validation = data as unknown as ValidationResponse;
+
+      if (!validation || !validation.valid) {
+        setPromoCodeStatus("error");
+        toast({
+          title: "Invalid promo code",
+          description: validation?.error || "Please enter a valid promo code.",
+          variant: "destructive",
+        });
+        updateStepData({ promoDiscount: 0 });
+        return;
+      }
+
+      // Calculate discount
+      let discountAmount = 0;
+      if (validation.type === "promo") {
+        if (validation.discount_type === "percentage") {
+          discountAmount = subtotal * (validation.discount_value! / 100);
+        } else {
+          discountAmount = Math.min(validation.discount_value!, subtotal);
+        }
+      } else {
+        // Referral code - use standardized discount from constants
+        const { REFERRAL_CONSTANTS } = await import("@/lib/constants");
+        discountAmount = subtotal * REFERRAL_CONSTANTS.CUSTOMER_DISCOUNT;
+      }
+
+      updateStepData({ promoDiscount: discountAmount });
+      setPromoCodeStatus("applied");
+      toast({
+        title: "Promo code applied!",
+        description: `You saved $${discountAmount.toFixed(2)} with the promo code.`,
+      });
+    } catch (err) {
+      console.error("Unexpected error validating promo code:", err);
+      setPromoCodeStatus("error");
+      toast({
+        title: "Error",
+        description: "Could not validate promo code. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const formVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  return (
+    <div className="space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-gradient-to-br from-primary to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FileText className="w-8 h-8 text-white" />
+          </div>
+          <h2 className="text-3xl font-bold mb-2">Order Details</h2>
+          <p className="text-muted-foreground text-lg">
+            Add any special instructions and apply promo codes
+          </p>
+        </div>
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Order Notes */}
+        <motion.div
+          variants={formVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.1, duration: 0.5 }}
+        >
+          <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm h-fit">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center">
+                <FileText className="w-5 h-5 mr-2" />
+                Order Notes (Optional)
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="orderNotes" className="text-base">
+                  Special Instructions
+                </Label>
+                <Textarea
+                  id="orderNotes"
+                  value={stepData.orderNotes}
+                  onChange={(e) => updateStepData({ orderNotes: e.target.value })}
+                  placeholder="Include your Discord username, preferred gaming hours, or any specific requirements..."
+                  rows={4}
+                  className="resize-none border-border/50 focus:border-primary/50 bg-background/50 mt-2"
+                />
+              </div>
+              <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
+                <Shield className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-800 dark:text-blue-200">
+                  <strong>Tip:</strong> Include your Discord username for faster communication during the boosting process.
+                </AlertDescription>
+              </Alert>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Promo Code */}
+        <motion.div
+          variants={formVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm h-fit">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center">
+                <DollarSign className="w-5 h-5 mr-2" />
+                Promo Code
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <Label htmlFor="promoCode" className="text-base">
+                  Enter Code
+                </Label>
+                <div className="flex space-x-3">
+                  <div className="flex-1 relative">
+                    <Input
+                      id="promoCode"
+                      value={stepData.promoCode}
+                      onChange={(e) => updateStepData({ promoCode: e.target.value.toUpperCase() })}
+                      placeholder="Enter promo code"
+                      className="h-12 pr-10 border-border/50 focus:border-primary/50 text-base"
+                      disabled={promoCodeStatus === "loading"}
+                    />
+                    {promoCodeStatus === "applied" && (
+                      <CheckCircle className="w-5 h-5 text-green-600 absolute right-3 top-3.5" />
+                    )}
+                  </div>
+                  <Button
+                    onClick={() => validatePromoCode(stepData.promoCode)}
+                    disabled={!stepData.promoCode.trim() || promoCodeStatus === "loading"}
+                    className="h-12 px-6"
+                  >
+                    {promoCodeStatus === "loading" ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "Apply"
+                    )}
+                  </Button>
+                </div>
+                
+                {stepData.promoDiscount > 0 && (
+                  <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertDescription className="text-green-800 dark:text-green-200">
+                      <strong>Promo code applied!</strong> You saved ${stepData.promoDiscount.toFixed(2)}
+                    </AlertDescription>
+                  </Alert>
+                )}
+                
+                {promoCodeStatus === "error" && (
+                  <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                      Invalid promo code. Please check the code and try again.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* Terms Agreement */}
+      <motion.div
+        variants={formVariants}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.3, duration: 0.5 }}
+      >
+        <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
+          <CardContent className="pt-6">
+            <div className="flex items-start space-x-4">
+              <Checkbox
+                id="terms"
+                checked={stepData.agreeToTerms}
+                onCheckedChange={(checked) => updateStepData({ agreeToTerms: checked as boolean })}
+                className="mt-1 w-5 h-5"
+              />
+              <div className="flex-1">
+                <Label htmlFor="terms" className="text-base leading-7 cursor-pointer">
+                  I agree to the{" "}
+                  <Link
+                    href="/terms"
+                    target="_blank"
+                    className="text-primary hover:underline font-medium"
+                  >
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    href="/privacy"
+                    target="_blank"
+                    className="text-primary hover:underline font-medium"
+                  >
+                    Privacy Policy
+                  </Link>
+                </Label>
+                <p className="text-sm text-muted-foreground mt-1">
+                  You must agree to our terms to proceed with your order
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {!stepData.agreeToTerms && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, duration: 0.3 }}
+        >
+          <Alert>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              Please agree to the Terms of Service and Privacy Policy to continue.
+            </AlertDescription>
+          </Alert>
+        </motion.div>
+      )}
+    </div>
+  );
+}
