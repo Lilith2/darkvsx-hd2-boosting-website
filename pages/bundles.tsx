@@ -62,15 +62,12 @@ export default function Bundles() {
         },
       };
 
-      addToCart(bundleService);
+      await addToCart(bundleService);
 
       toast({
         title: "Bundle added to cart!",
         description: `${bundle.name} has been added to your cart.`,
       });
-
-      // Small delay to ensure cart state is updated
-      await new Promise(resolve => setTimeout(resolve, 100));
 
       // Redirect to unified checkout for streamlined experience
       router.push("/checkout");
