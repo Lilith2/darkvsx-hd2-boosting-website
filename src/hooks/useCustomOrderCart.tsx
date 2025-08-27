@@ -41,7 +41,11 @@ export function CustomOrderCartProvider({ children }: { children: ReactNode }) {
   const [customOrder, setCustomOrderState] = useState<CustomOrder | null>(null);
 
   const setCustomOrder = useCallback((order: CustomOrder) => {
-    setCustomOrderState(order);
+    return new Promise<void>((resolve) => {
+      setCustomOrderState(order);
+      // Resolve after state update
+      setTimeout(() => resolve(), 0);
+    });
   }, []);
 
   const clearCustomOrder = useCallback(() => {
