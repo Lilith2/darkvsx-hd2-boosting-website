@@ -188,10 +188,15 @@ export function ServicesSection() {
                       </div>
                       <Button
                         onClick={() => handleAddToCart(service)}
+                        disabled={isAddingToCart === service.id}
                         className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all group"
                       >
-                        <ShoppingCart className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                        Add to Cart
+                        {isAddingToCart === service.id ? (
+                          <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <ShoppingCart className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+                        )}
+                        {isAddingToCart === service.id ? "Adding..." : "Add to Cart"}
                       </Button>
                     </div>
                   </div>
