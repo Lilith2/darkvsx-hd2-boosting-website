@@ -477,7 +477,6 @@ async function createOrdersInDatabase(
           .toFixed(2),
       ), // Fix precision
       currency: "USD",
-      transaction_id: transactionId,
       payment_intent_id: transactionId, // Fix: webhooks query by payment_intent_id
       referral_code: orderData.referralCode || null,
       referral_discount:
