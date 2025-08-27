@@ -299,9 +299,13 @@ export default async function handler(
           // Calculate discount server-side based on validation type
           if (validation.type === "promo") {
             if (validation.discount_type === "percentage") {
-              validatedReferralDiscount = subtotal * (validation.discount_value / 100);
+              validatedReferralDiscount =
+                subtotal * (validation.discount_value / 100);
             } else {
-              validatedReferralDiscount = Math.min(validation.discount_value, subtotal);
+              validatedReferralDiscount = Math.min(
+                validation.discount_value,
+                subtotal,
+              );
             }
           } else {
             // Referral code - 15% discount (standardized)

@@ -265,7 +265,7 @@ export default async function handler(
           {
             code: orderData.referralCode.trim(),
             user_id: orderData.userId || null,
-          }
+          },
         );
 
         if (validationError) {
@@ -280,9 +280,13 @@ export default async function handler(
           // Calculate discount server-side based on type
           if (validation.type === "promo") {
             if (validation.discount_type === "percentage") {
-              validatedDiscountAmount = subtotal * (validation.discount_value / 100);
+              validatedDiscountAmount =
+                subtotal * (validation.discount_value / 100);
             } else {
-              validatedDiscountAmount = Math.min(validation.discount_value, subtotal);
+              validatedDiscountAmount = Math.min(
+                validation.discount_value,
+                subtotal,
+              );
             }
           } else {
             // Referral code - 15% discount (from constants)
@@ -291,7 +295,8 @@ export default async function handler(
         } else {
           return res.status(400).json({
             error: "Invalid promo code",
-            details: validation?.error || "Promo code is not valid or has expired",
+            details:
+              validation?.error || "Promo code is not valid or has expired",
           });
         }
       } catch (err) {
@@ -400,9 +405,10 @@ async function createOrdersInDatabase(
       notes: orderData.notes || null,
       transaction_id: transactionId,
       referral_code: orderData.referralCode || null,
-      referral_discount: validatedDiscountAmount > 0
-        ? parseFloat(validatedDiscountAmount.toFixed(2))
-        : null,
+      referral_discount:
+        validatedDiscountAmount > 0
+          ? parseFloat(validatedDiscountAmount.toFixed(2))
+          : null,
       referral_credits_used: orderData.referralCreditsUsed
         ? parseFloat(orderData.referralCreditsUsed.toFixed(2))
         : null,
@@ -447,9 +453,10 @@ async function createOrdersInDatabase(
       currency: "USD",
       transaction_id: transactionId,
       referral_code: orderData.referralCode || null,
-      referral_discount: validatedDiscountAmount > 0
-        ? parseFloat(validatedDiscountAmount.toFixed(2))
-        : null,
+      referral_discount:
+        validatedDiscountAmount > 0
+          ? parseFloat(validatedDiscountAmount.toFixed(2))
+          : null,
       user_id: orderData.userId || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

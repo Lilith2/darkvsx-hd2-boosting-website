@@ -88,7 +88,7 @@ export function ReferralSection({
           </div>
           <p className="text-sm text-muted-foreground flex items-center">
             <Sparkles className="w-4 h-4 mr-1 text-yellow-500" />
-Get up to 15% off your entire order with a valid promo code
+            Get up to 15% off your entire order with a valid promo code
           </p>
         </div>
 
