@@ -42,6 +42,7 @@ const verifyPaymentSchema = z.object({
       (discord) => security.validateDiscordTag(discord.trim()),
       { message: "Invalid Discord username format" }
     ),
+    orderNotes: z.string().optional(),
     services: z.array(
       z.object({
         id: z.string(),
