@@ -199,8 +199,9 @@ export default function CheckoutPage() {
           discountAmount = Math.min(validation.discount_value!, subtotal);
         }
       } else {
-        // Referral code - 15% discount
-        discountAmount = subtotal * 0.15;
+        // Referral code - use standardized discount from constants
+        const { REFERRAL_CONSTANTS } = await import("@/lib/constants");
+        discountAmount = subtotal * REFERRAL_CONSTANTS.CUSTOMER_DISCOUNT;
       }
 
       setPromoDiscount(discountAmount);

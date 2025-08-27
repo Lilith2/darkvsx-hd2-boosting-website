@@ -14,7 +14,7 @@ export const UI_CONSTANTS = {
 
 // Referral System Constants
 export const REFERRAL_CONSTANTS = {
-  CUSTOMER_DISCOUNT: 0.1, // 10%
+  CUSTOMER_DISCOUNT: 0.15, // 15% - standardized with config.ts
   REFERRER_COMMISSION: 0.05, // 5%
   CODE_FORMAT: /^HD2BOOST-[A-Z0-9]{6}$/,
   CODE_PREFIX: "HD2BOOST-",
