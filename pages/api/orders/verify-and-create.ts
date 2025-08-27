@@ -81,6 +81,8 @@ interface VerifyPaymentRequest {
     userId?: string;
     customerEmail: string;
     customerName: string;
+    customerDiscord: string;
+    orderNotes?: string;
     services: OrderItem[];
     notes?: string;
     referralCode?: string;
