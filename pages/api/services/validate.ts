@@ -125,6 +125,8 @@ export default async function handler(
 
     console.log("Service and bundle validation results:", {
       requested: serviceIds.length,
+      uuidIds: uuidServiceIds.length,
+      nonUuidIds: nonUuidIds.length,
       validServices: validServices.length,
       validBundles: validBundles.length,
       totalValid: validServiceIds.length,
