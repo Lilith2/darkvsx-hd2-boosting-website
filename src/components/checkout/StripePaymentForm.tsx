@@ -268,7 +268,7 @@ export function StripePaymentForm({
     };
 
     initializePayment();
-  }, [total, disabled, cartItems.length]); // Only essential dependencies
+  }, [total, disabled, cartItems.length, referralCode, referralDiscount, creditsUsed]); // Include all used variables
 
   const handlePaymentSuccess = (paymentIntent: any) => {
     toast({
