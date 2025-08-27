@@ -58,8 +58,8 @@ export default function CheckoutPage() {
       // Call secure server endpoint to verify payment and create order
       const orderData = {
         userId: user?.id || null,
-        customerEmail: user?.email || "",
-        customerName: user?.username || "",
+        customerEmail: user?.email || stepData?.guestEmail || "",
+        customerName: user?.username || stepData?.guestName || "",
         customerDiscord: stepData?.discordUsername || "",
         orderNotes: stepData?.orderNotes || "",
         services: cartItems.map((item) => ({
