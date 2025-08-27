@@ -8,7 +8,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 const validateRequestSchema = z.object({
-  serviceIds: z.array(z.string().uuid()),
+  serviceIds: z.array(z.string()),
 });
 
 export default async function handler(
