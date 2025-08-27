@@ -153,7 +153,7 @@ export function PaymentStep({
                   customOrderData={customOrder}
                   referralCode={stepData.promoCode}
                   referralDiscount={stepData.promoDiscount}
-                  onPaymentSuccess={onPaymentSuccess}
+                  onPaymentSuccess={(paymentIntent) => onPaymentSuccess(paymentIntent, stepData)}
                   onPaymentError={onPaymentError}
                   isProcessing={isProcessing}
                   metadata={paymentMetadata}
