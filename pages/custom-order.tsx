@@ -277,15 +277,12 @@ export default function CustomOrder() {
       };
 
       // Store in custom order context (separate from regular cart)
-      setCustomOrder(customOrderData);
+      await setCustomOrder(customOrderData);
 
       toast({
         title: "Added to Cart!",
         description: "Your custom order has been added to the cart.",
       });
-
-      // Small delay to ensure custom order state is updated
-      await new Promise(resolve => setTimeout(resolve, 100));
 
       router.push("/checkout");
     } catch (error: any) {
