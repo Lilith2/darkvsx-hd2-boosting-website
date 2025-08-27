@@ -410,7 +410,7 @@ async function createOrdersInDatabase(
       status: "pending",
       payment_status: "paid",
       total_amount: parseFloat(totalAmount.toFixed(2)), // Fix precision
-      notes: orderData.notes || null,
+      notes: `Discord: ${orderData.customerDiscord}${orderData.orderNotes || orderData.notes ? ` | Notes: ${orderData.orderNotes || orderData.notes}` : ''}`,
       transaction_id: transactionId,
       referral_code: orderData.referralCode || null,
       referral_discount:
