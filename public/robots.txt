@@ -19,4 +19,4 @@ Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
 
-Sitemap: https://helldivers2boost.com/sitemap.xml
+Sitemap: /sitemap.xml
