@@ -63,7 +63,7 @@ export function PaymentStep({
   };
 
   const canProceedToPayment = () => {
-    return cleanedCartItems.length > 0 && stepData.agreeToTerms && total >= 0.5;
+    return cleanedCartItems.length > 0 && stepData.agreeToTerms && stepData.discordUsername.trim() && total >= 0.5;
   };
 
   return (
