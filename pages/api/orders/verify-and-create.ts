@@ -345,11 +345,19 @@ export default async function handler(
     }
 
     // Check if order already exists with this transaction ID (idempotency)
-    const { data: existingOrder } = await supabase
+    const { data: existingOrder, error: existingOrderError } = await supabase
       .from("orders")
       .select("id")
       .eq("transaction_id", paymentIntentId)
-      .single();
+      .maybeSingle();
+
+    if (existingOrderError) {
+      console.error("Error checking for existing order:", existingOrderError);
+      return res.status(500).json({
+        error: "Database error",
+        details: "Failed to check for existing orders",
+      });
+    }
 
     if (existingOrder) {
       return res.status(200).json({
