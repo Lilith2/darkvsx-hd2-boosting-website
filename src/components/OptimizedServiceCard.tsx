@@ -25,6 +25,7 @@ export const OptimizedServiceCard = memo<OptimizedServiceCardProps>(
     const router = useRouter();
     const { addToCart } = useCart();
     const { toast } = useToast();
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
 
     const handleAddToCart = useCallback(() => {
       addToCart(service);
