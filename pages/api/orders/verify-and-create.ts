@@ -400,8 +400,8 @@ async function createOrdersInDatabase(
       notes: orderData.notes || null,
       transaction_id: transactionId,
       referral_code: orderData.referralCode || null,
-      referral_discount: orderData.referralDiscount
-        ? parseFloat(orderData.referralDiscount.toFixed(2))
+      referral_discount: validatedDiscountAmount > 0
+        ? parseFloat(validatedDiscountAmount.toFixed(2))
         : null,
       referral_credits_used: orderData.referralCreditsUsed
         ? parseFloat(orderData.referralCreditsUsed.toFixed(2))
