@@ -255,9 +255,56 @@ export default async function handler(
     }
 
     const subtotal = servicesTotal + customOrderTotal;
-    const discountAmount = orderData.referralDiscount || 0;
+
+    // SECURITY: Server-side promo code validation (never trust client discount amounts)
+    let validatedDiscountAmount = 0;
+    if (orderData.referralCode && orderData.referralCode.trim()) {
+      try {
+        const { data: validation, error: validationError } = await supabase.rpc(
+          "validate_referral_code",
+          {
+            code: orderData.referralCode.trim(),
+            user_id: orderData.userId || null,
+          }
+        );
+
+        if (validationError) {
+          console.error("Server-side promo validation error:", validationError);
+          return res.status(400).json({
+            error: "Invalid promo code",
+            details: "Could not validate promo code on server",
+          });
+        }
+
+        if (validation && validation.valid) {
+          // Calculate discount server-side based on type
+          if (validation.type === "promo") {
+            if (validation.discount_type === "percentage") {
+              validatedDiscountAmount = subtotal * (validation.discount_value / 100);
+            } else {
+              validatedDiscountAmount = Math.min(validation.discount_value, subtotal);
+            }
+          } else {
+            // Referral code - 15% discount (from constants)
+            validatedDiscountAmount = subtotal * 0.15;
+          }
+        } else {
+          return res.status(400).json({
+            error: "Invalid promo code",
+            details: validation?.error || "Promo code is not valid or has expired",
+          });
+        }
+      } catch (err) {
+        console.error("Error during server-side promo validation:", err);
+        return res.status(400).json({
+          error: "Promo code validation failed",
+          details: "Could not validate promo code",
+        });
+      }
+    }
+
     const creditsUsed = orderData.referralCreditsUsed || 0;
-    const totalBeforeCredits = subtotal - discountAmount;
+    const totalBeforeCredits = subtotal - validatedDiscountAmount;
     const tax = Math.max(0, totalBeforeCredits * TAX_RATE);
     const expectedTotal = Math.max(0, totalBeforeCredits + tax - creditsUsed);
 
