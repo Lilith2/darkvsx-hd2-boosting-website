@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { getSiteUrl } from '@/lib/config'
 
 interface SEOHeadProps {
   title?: string
