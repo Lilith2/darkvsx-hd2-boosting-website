@@ -322,7 +322,7 @@ export function StripePaymentForm({
             {initError ||
               "Unable to initialize secure payment. Please try again."}
           </p>
-          {initError.includes("cart is empty") && (
+          {(initError.includes("cart is empty") || initError.includes("No items in cart")) && (
             <p className="text-sm text-blue-600 dark:text-blue-400">
               Please add items to your cart before proceeding to payment.
             </p>
