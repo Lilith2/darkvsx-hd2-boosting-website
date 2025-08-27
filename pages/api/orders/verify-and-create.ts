@@ -378,6 +378,7 @@ async function createOrdersInDatabase(
   orderData: VerifyPaymentRequest["orderData"],
   transactionId: string,
   totalAmount: number,
+  validatedDiscountAmount: number,
 ) {
   const results: any = {};
 
