@@ -447,8 +447,8 @@ async function createOrdersInDatabase(
       currency: "USD",
       transaction_id: transactionId,
       referral_code: orderData.referralCode || null,
-      referral_discount: orderData.referralDiscount
-        ? parseFloat(orderData.referralDiscount.toFixed(2))
+      referral_discount: validatedDiscountAmount > 0
+        ? parseFloat(validatedDiscountAmount.toFixed(2))
         : null,
       user_id: orderData.userId || null,
       created_at: new Date().toISOString(),
