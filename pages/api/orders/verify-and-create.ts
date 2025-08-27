@@ -38,6 +38,10 @@ const verifyPaymentSchema = z.object({
     userId: z.string().optional(),
     customerEmail: z.string().email(),
     customerName: z.string().min(1),
+    customerDiscord: z.string().min(1, "Discord username is required").refine(
+      (discord) => security.validateDiscordTag(discord.trim()),
+      { message: "Invalid Discord username format" }
+    ),
     services: z.array(
       z.object({
         id: z.string(),
