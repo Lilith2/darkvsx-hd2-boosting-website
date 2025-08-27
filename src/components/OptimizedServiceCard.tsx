@@ -179,9 +179,17 @@ export const OptimizedServiceCard = memo<OptimizedServiceCardProps>(
           <div className="flex gap-2 w-full">
             <Button
               onClick={handleAddToCart}
+              disabled={isAddingToCart}
               className="flex-1 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
             >
-              Add to Cart
+              {isAddingToCart ? (
+                <>
+                  <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Adding...
+                </>
+              ) : (
+                "Add to Cart"
+              )}
             </Button>
             {onQuickView && (
               <Button
