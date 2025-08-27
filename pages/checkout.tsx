@@ -5,10 +5,7 @@ import { useCustomOrderCart } from "@/hooks/useCustomOrderCart";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Package, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { StepperCheckout } from "../src/components/checkout/StepperCheckout";
@@ -83,8 +80,10 @@ export default function CheckoutPage() {
         customOrderData: customOrder
           ? {
               items: customOrder.items,
-              special_instructions: customOrder.special_instructions || stepData?.orderNotes || "",
-              customer_discord: stepData?.discordUsername || customOrder.customer_discord,
+              special_instructions:
+                customOrder.special_instructions || stepData?.orderNotes || "",
+              customer_discord:
+                stepData?.discordUsername || customOrder.customer_discord,
             }
           : undefined,
       };

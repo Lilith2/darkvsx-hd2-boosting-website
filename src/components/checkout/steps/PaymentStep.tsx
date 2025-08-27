@@ -4,12 +4,12 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { 
-  CreditCard, 
-  Shield, 
-  CheckCircle, 
+import {
+  CreditCard,
+  Shield,
+  CheckCircle,
   Loader2,
-  AlertTriangle 
+  AlertTriangle,
 } from "lucide-react";
 import { SimplePaymentForm } from "../SimplePaymentForm";
 
@@ -63,7 +63,12 @@ export function PaymentStep({
   };
 
   const canProceedToPayment = () => {
-    return cleanedCartItems.length > 0 && stepData.agreeToTerms && stepData.discordUsername.trim() && total >= 0.5;
+    return (
+      cleanedCartItems.length > 0 &&
+      stepData.agreeToTerms &&
+      stepData.discordUsername.trim() &&
+      total >= 0.5
+    );
   };
 
   return (
@@ -92,15 +97,24 @@ export function PaymentStep({
         className="flex justify-center"
       >
         <div className="flex items-center space-x-4">
-          <Badge variant="outline" className="bg-green-500/10 border-green-500/30 px-4 py-2">
+          <Badge
+            variant="outline"
+            className="bg-green-500/10 border-green-500/30 px-4 py-2"
+          >
             <Shield className="w-4 h-4 mr-2 text-green-400" />
             <span className="text-green-300">SSL Secured</span>
           </Badge>
-          <Badge variant="outline" className="bg-blue-500/10 border-blue-500/30 px-4 py-2">
+          <Badge
+            variant="outline"
+            className="bg-blue-500/10 border-blue-500/30 px-4 py-2"
+          >
             <CheckCircle className="w-4 h-4 mr-2 text-blue-400" />
             <span className="text-blue-300">PCI Compliant</span>
           </Badge>
-          <Badge variant="outline" className="bg-purple-500/10 border-purple-500/30 px-4 py-2">
+          <Badge
+            variant="outline"
+            className="bg-purple-500/10 border-purple-500/30 px-4 py-2"
+          >
             <Shield className="w-4 h-4 mr-2 text-purple-400" />
             <span className="text-purple-300">Fraud Protected</span>
           </Badge>
@@ -153,7 +167,9 @@ export function PaymentStep({
                   customOrderData={customOrder}
                   referralCode={stepData.promoCode}
                   referralDiscount={stepData.promoDiscount}
-                  onPaymentSuccess={(paymentIntent) => onPaymentSuccess(paymentIntent, stepData)}
+                  onPaymentSuccess={(paymentIntent) =>
+                    onPaymentSuccess(paymentIntent, stepData)
+                  }
                   onPaymentError={onPaymentError}
                   isProcessing={isProcessing}
                   metadata={paymentMetadata}
@@ -174,7 +190,8 @@ export function PaymentStep({
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                Please go back to Step 2 and enter your Discord username. This is required for communication during your boosting service.
+                Please go back to Step 2 and enter your Discord username. This
+                is required for communication during your boosting service.
               </AlertDescription>
             </Alert>
           )}
@@ -184,7 +201,8 @@ export function PaymentStep({
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                Please go back to Step 2 and agree to the Terms of Service and Privacy Policy to proceed with payment.
+                Please go back to Step 2 and agree to the Terms of Service and
+                Privacy Policy to proceed with payment.
               </AlertDescription>
             </Alert>
           )}
@@ -194,7 +212,8 @@ export function PaymentStep({
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                Minimum payment amount is $0.50. Please go back to Step 1 and add more items to your cart.
+                Minimum payment amount is $0.50. Please go back to Step 1 and
+                add more items to your cart.
               </AlertDescription>
             </Alert>
           )}
@@ -204,7 +223,8 @@ export function PaymentStep({
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                Your cart is empty. Please go back to Step 1 and add services to your cart.
+                Your cart is empty. Please go back to Step 1 and add services to
+                your cart.
               </AlertDescription>
             </Alert>
           )}
@@ -241,7 +261,8 @@ export function PaymentStep({
           <AlertDescription className="text-blue-800 dark:text-blue-200">
             <div className="flex items-center justify-between">
               <span>
-                <strong>Order Summary:</strong> {cleanedCartItems.length} item{cleanedCartItems.length !== 1 ? "s" : ""}
+                <strong>Order Summary:</strong> {cleanedCartItems.length} item
+                {cleanedCartItems.length !== 1 ? "s" : ""}
                 {stepData.promoCode && ` • Code: ${stepData.promoCode}`}
               </span>
               <span className="font-bold">${total.toFixed(2)}</span>

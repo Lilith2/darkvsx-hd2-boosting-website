@@ -3,14 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { 
-  CheckCircle, 
-  ArrowLeft, 
-  ArrowRight, 
-  ShoppingCart, 
-  FileText, 
-  Package, 
-  CreditCard 
+import {
+  CheckCircle,
+  ArrowLeft,
+  ArrowRight,
+  ShoppingCart,
+  FileText,
+  Package,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +49,7 @@ const steps: StepData[] = [
   },
   {
     id: 2,
-    title: "Order Details", 
+    title: "Order Details",
     icon: FileText,
     component: OrderDetailsStep,
   },
@@ -103,7 +103,12 @@ export function StepperCheckout({
       case 3:
         return cartItems.length > 0; // Must have items
       case 4:
-        return cartItems.length > 0 && stepData.agreeToTerms && stepData.discordUsername.trim() !== "" && total >= 0.5;
+        return (
+          cartItems.length > 0 &&
+          stepData.agreeToTerms &&
+          stepData.discordUsername.trim() !== "" &&
+          total >= 0.5
+        );
       default:
         return false;
     }
@@ -111,14 +116,14 @@ export function StepperCheckout({
 
   const nextStep = () => {
     if (currentStep < steps.length && canProceedToStep(currentStep + 1)) {
-      setCompletedSteps(prev => [...prev, currentStep]);
-      setCurrentStep(prev => prev + 1);
+      setCompletedSteps((prev) => [...prev, currentStep]);
+      setCurrentStep((prev) => prev + 1);
     }
   };
 
   const prevStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep((prev) => prev - 1);
     }
   };
 
@@ -130,7 +135,7 @@ export function StepperCheckout({
 
   // Update step data from child components
   const updateStepData = (data: Partial<typeof stepData>) => {
-    setStepData(prev => ({ ...prev, ...data }));
+    setStepData((prev) => ({ ...prev, ...data }));
   };
 
   // Animation variants
@@ -171,21 +176,21 @@ export function StepperCheckout({
                 Step {currentStep} of {steps.length}
               </div>
             </div>
-            
+
             {/* Progress Bar */}
             <div className="space-y-3">
-              <Progress 
-                value={(currentStep / steps.length) * 100} 
+              <Progress
+                value={(currentStep / steps.length) * 100}
                 className="h-2"
               />
-              
+
               {/* Step Indicators */}
               <div className="flex items-center justify-between">
                 {steps.map((step, index) => {
                   const isCompleted = completedSteps.includes(step.id);
                   const isCurrent = currentStep === step.id;
                   const isAccessible = step.id <= currentStep || isCompleted;
-                  
+
                   return (
                     <button
                       key={step.id}
@@ -193,7 +198,9 @@ export function StepperCheckout({
                       disabled={!isAccessible}
                       className={cn(
                         "flex flex-col items-center space-y-2 p-2 rounded-lg transition-all",
-                        isAccessible ? "cursor-pointer hover:bg-muted/50" : "opacity-50 cursor-not-allowed"
+                        isAccessible
+                          ? "cursor-pointer hover:bg-muted/50"
+                          : "opacity-50 cursor-not-allowed",
                       )}
                     >
                       <div
@@ -202,10 +209,10 @@ export function StepperCheckout({
                           isCompleted
                             ? "bg-green-500 border-green-500 text-white"
                             : isCurrent
-                            ? "bg-primary border-primary text-white"
-                            : isAccessible
-                            ? "border-primary text-primary"
-                            : "border-muted-foreground text-muted-foreground"
+                              ? "bg-primary border-primary text-white"
+                              : isAccessible
+                                ? "border-primary text-primary"
+                                : "border-muted-foreground text-muted-foreground",
                         )}
                       >
                         {isCompleted ? (
@@ -217,7 +224,7 @@ export function StepperCheckout({
                       <span
                         className={cn(
                           "text-xs font-medium",
-                          isCurrent ? "text-primary" : "text-muted-foreground"
+                          isCurrent ? "text-primary" : "text-muted-foreground",
                         )}
                       >
                         {step.title}

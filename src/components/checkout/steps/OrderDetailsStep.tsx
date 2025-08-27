@@ -7,14 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  FileText, 
-  CheckCircle, 
-  Loader2, 
+import {
+  FileText,
+  CheckCircle,
+  Loader2,
   AlertTriangle,
   DollarSign,
   Shield,
-  MessageSquare
+  MessageSquare,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { security } from "@/lib/security";
@@ -48,7 +48,9 @@ export function OrderDetailsStep({
   subtotal,
 }: OrderDetailsStepProps) {
   const { toast } = useToast();
-  const [promoCodeStatus, setPromoCodeStatus] = useState<"idle" | "loading" | "applied" | "error">("idle");
+  const [promoCodeStatus, setPromoCodeStatus] = useState<
+    "idle" | "loading" | "applied" | "error"
+  >("idle");
   const [discordError, setDiscordError] = useState<string>("");
 
   const validateDiscordUsername = (username: string) => {
@@ -56,12 +58,14 @@ export function OrderDetailsStep({
       setDiscordError("Discord username is required for communication.");
       return false;
     }
-    
+
     if (!security.validateDiscordTag(username.trim())) {
-      setDiscordError("Please enter a valid Discord username (e.g., YourUsername#1234 or YourUsername).");
+      setDiscordError(
+        "Please enter a valid Discord username (e.g., YourUsername#1234 or YourUsername).",
+      );
       return false;
     }
-    
+
     setDiscordError("");
     return true;
   };
@@ -182,19 +186,25 @@ export function OrderDetailsStep({
             <CardHeader>
               <CardTitle className="text-lg flex items-center text-primary">
                 <MessageSquare className="w-5 h-5 mr-2" />
-                Discord Username <span className="text-destructive ml-1">*</span>
+                Discord Username{" "}
+                <span className="text-destructive ml-1">*</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="discordUsername" className="text-base font-medium">
+                <Label
+                  htmlFor="discordUsername"
+                  className="text-base font-medium"
+                >
                   Your Discord Username
                 </Label>
                 <Input
                   id="discordUsername"
                   value={stepData.discordUsername}
                   onChange={(e) => handleDiscordChange(e.target.value)}
-                  onBlur={() => validateDiscordUsername(stepData.discordUsername)}
+                  onBlur={() =>
+                    validateDiscordUsername(stepData.discordUsername)
+                  }
                   placeholder="YourUsername#1234 or YourUsername"
                   className="h-12 border-border/50 focus:border-primary/50 bg-background/50 mt-2"
                   required
@@ -212,7 +222,9 @@ export function OrderDetailsStep({
               <Alert className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/20">
                 <MessageSquare className="h-4 w-4 text-red-600" />
                 <AlertDescription className="text-red-800 dark:text-red-200">
-                  <strong>Important:</strong> A valid Discord username is absolutely required for our team to communicate with you during the boosting process.
+                  <strong>Important:</strong> A valid Discord username is
+                  absolutely required for our team to communicate with you
+                  during the boosting process.
                 </AlertDescription>
               </Alert>
             </CardContent>
@@ -242,7 +254,9 @@ export function OrderDetailsStep({
                   <Textarea
                     id="orderNotes"
                     value={stepData.orderNotes}
-                    onChange={(e) => updateStepData({ orderNotes: e.target.value })}
+                    onChange={(e) =>
+                      updateStepData({ orderNotes: e.target.value })
+                    }
                     placeholder="Include preferred gaming hours, specific requirements, or any other notes..."
                     rows={4}
                     className="resize-none border-border/50 focus:border-primary/50 bg-background/50 mt-2"
@@ -251,7 +265,8 @@ export function OrderDetailsStep({
                 <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
                   <Shield className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-800 dark:text-blue-200">
-                    <strong>Tip:</strong> Let us know your preferred gaming hours or any specific requirements for your service.
+                    <strong>Tip:</strong> Let us know your preferred gaming
+                    hours or any specific requirements for your service.
                   </AlertDescription>
                 </Alert>
               </CardContent>
@@ -282,7 +297,11 @@ export function OrderDetailsStep({
                       <Input
                         id="promoCode"
                         value={stepData.promoCode}
-                        onChange={(e) => updateStepData({ promoCode: e.target.value.toUpperCase() })}
+                        onChange={(e) =>
+                          updateStepData({
+                            promoCode: e.target.value.toUpperCase(),
+                          })
+                        }
                         placeholder="Enter promo code"
                         className="h-12 pr-10 border-border/50 focus:border-primary/50 text-base"
                         disabled={promoCodeStatus === "loading"}
@@ -293,7 +312,10 @@ export function OrderDetailsStep({
                     </div>
                     <Button
                       onClick={() => validatePromoCode(stepData.promoCode)}
-                      disabled={!stepData.promoCode.trim() || promoCodeStatus === "loading"}
+                      disabled={
+                        !stepData.promoCode.trim() ||
+                        promoCodeStatus === "loading"
+                      }
                       className="h-12 px-6"
                     >
                       {promoCodeStatus === "loading" ? (
@@ -303,16 +325,17 @@ export function OrderDetailsStep({
                       )}
                     </Button>
                   </div>
-                  
+
                   {stepData.promoDiscount > 0 && (
                     <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20">
                       <CheckCircle className="h-4 w-4 text-green-600" />
                       <AlertDescription className="text-green-800 dark:text-green-200">
-                        <strong>Promo code applied!</strong> You saved ${stepData.promoDiscount.toFixed(2)}
+                        <strong>Promo code applied!</strong> You saved $
+                        {stepData.promoDiscount.toFixed(2)}
                       </AlertDescription>
                     </Alert>
                   )}
-                  
+
                   {promoCodeStatus === "error" && (
                     <Alert variant="destructive">
                       <AlertTriangle className="h-4 w-4" />
@@ -341,11 +364,16 @@ export function OrderDetailsStep({
               <Checkbox
                 id="terms"
                 checked={stepData.agreeToTerms}
-                onCheckedChange={(checked) => updateStepData({ agreeToTerms: checked as boolean })}
+                onCheckedChange={(checked) =>
+                  updateStepData({ agreeToTerms: checked as boolean })
+                }
                 className="mt-1 w-5 h-5"
               />
               <div className="flex-1">
-                <Label htmlFor="terms" className="text-base leading-7 cursor-pointer">
+                <Label
+                  htmlFor="terms"
+                  className="text-base leading-7 cursor-pointer"
+                >
                   I agree to the{" "}
                   <Link
                     href="/terms"
@@ -372,7 +400,9 @@ export function OrderDetailsStep({
         </Card>
       </motion.div>
 
-      {(!stepData.agreeToTerms || !stepData.discordUsername.trim() || discordError) && (
+      {(!stepData.agreeToTerms ||
+        !stepData.discordUsername.trim() ||
+        discordError) && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -381,9 +411,11 @@ export function OrderDetailsStep({
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
-              {!stepData.discordUsername.trim() && "Please enter your Discord username. "}
+              {!stepData.discordUsername.trim() &&
+                "Please enter your Discord username. "}
               {discordError && `${discordError} `}
-              {!stepData.agreeToTerms && "Please agree to the Terms of Service and Privacy Policy to continue."}
+              {!stepData.agreeToTerms &&
+                "Please agree to the Terms of Service and Privacy Policy to continue."}
             </AlertDescription>
           </Alert>
         </motion.div>

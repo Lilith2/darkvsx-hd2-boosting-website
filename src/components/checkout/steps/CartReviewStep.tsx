@@ -2,14 +2,14 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Trophy, 
-  Clock, 
-  Star, 
-  Plus, 
-  Minus, 
+import {
+  Trophy,
+  Clock,
+  Star,
+  Plus,
+  Minus,
   Trash2,
-  ShoppingCart 
+  ShoppingCart,
 } from "lucide-react";
 
 interface CartItem {
@@ -35,7 +35,7 @@ export function CartReviewStep({
   removeFromCart,
 }: CartReviewStepProps) {
   const handleUpdateQuantity = (serviceId: string, change: number) => {
-    const currentItem = cartItems.find(item => item.service.id === serviceId);
+    const currentItem = cartItems.find((item) => item.service.id === serviceId);
     if (currentItem) {
       const newQuantity = Math.max(1, currentItem.quantity + change);
       updateQuantity(serviceId, newQuantity);
@@ -88,9 +88,11 @@ export function CartReviewStep({
                   <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-blue-600/20 rounded-xl flex items-center justify-center">
                     <Trophy className="w-8 h-8 text-primary" />
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-lg">{item.service.title}</h4>
+                    <h4 className="font-semibold text-lg">
+                      {item.service.title}
+                    </h4>
                     <div className="flex items-center space-x-3 mt-2">
                       <Badge variant="outline" className="text-xs">
                         <Clock className="w-3 h-3 mr-1" />
@@ -114,11 +116,13 @@ export function CartReviewStep({
                     >
                       <Minus className="w-4 h-4" />
                     </Button>
-                    
+
                     <div className="w-16 h-10 bg-muted rounded-lg flex items-center justify-center">
-                      <span className="font-semibold text-lg">{item.quantity}</span>
+                      <span className="font-semibold text-lg">
+                        {item.quantity}
+                      </span>
                     </div>
-                    
+
                     <Button
                       variant="outline"
                       size="sm"
@@ -170,7 +174,9 @@ export function CartReviewStep({
               <CardContent className="space-y-2">
                 {customOrder.items?.map((item: any, index: number) => (
                   <div key={index} className="flex justify-between text-sm">
-                    <span>{item.item_name} x{item.quantity}</span>
+                    <span>
+                      {item.item_name} x{item.quantity}
+                    </span>
                     <span className="font-medium">
                       ${(item.price_per_unit * item.quantity).toFixed(2)}
                     </span>
@@ -179,7 +185,9 @@ export function CartReviewStep({
                 <div className="pt-2 border-t border-primary/20">
                   <div className="flex justify-between font-semibold">
                     <span>Custom Order Total:</span>
-                    <span className="text-primary">${customOrder.total?.toFixed(2)}</span>
+                    <span className="text-primary">
+                      ${customOrder.total?.toFixed(2)}
+                    </span>
                   </div>
                 </div>
               </CardContent>

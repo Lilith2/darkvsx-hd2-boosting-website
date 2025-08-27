@@ -13,7 +13,7 @@ import {
   Star,
   Sparkles,
   AlertTriangle,
-  MessageSquare
+  MessageSquare,
 } from "lucide-react";
 
 interface CartItem {
@@ -191,7 +191,9 @@ export function OrderSummaryStep({
               </CardHeader>
               <CardContent>
                 <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
-                  <p className="font-medium text-primary">{stepData.discordUsername}</p>
+                  <p className="font-medium text-primary">
+                    {stepData.discordUsername}
+                  </p>
                   <p className="text-sm text-muted-foreground mt-1">
                     Our team will contact you on Discord
                   </p>
@@ -217,7 +219,9 @@ export function OrderSummaryStep({
                 </CardHeader>
                 <CardContent>
                   <div className="bg-muted/20 p-4 rounded-lg">
-                    <p className="text-sm whitespace-pre-wrap">{stepData.orderNotes}</p>
+                    <p className="text-sm whitespace-pre-wrap">
+                      {stepData.orderNotes}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -244,9 +248,11 @@ export function OrderSummaryStep({
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-base">Subtotal</span>
-                    <span className="font-semibold text-lg">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold text-lg">
+                      ${subtotal.toFixed(2)}
+                    </span>
                   </div>
-                  
+
                   {stepData.promoDiscount > 0 && (
                     <div className="flex justify-between items-center text-green-600">
                       <span className="flex items-center">
@@ -258,14 +264,14 @@ export function OrderSummaryStep({
                       </span>
                     </div>
                   )}
-                  
+
                   <div className="flex justify-between items-center text-muted-foreground">
                     <span>Tax (8%)</span>
                     <span>${tax.toFixed(2)}</span>
                   </div>
-                  
+
                   <Separator className="my-4" />
-                  
+
                   <div className="flex justify-between items-center text-2xl font-bold">
                     <span>Total</span>
                     <span className="text-primary">${total.toFixed(2)}</span>
@@ -279,13 +285,20 @@ export function OrderSummaryStep({
                     <AlertDescription className="text-green-800 dark:text-green-200">
                       <strong>Code "{stepData.promoCode}" applied</strong>
                       <br />
-                      You saved ${stepData.promoDiscount.toFixed(2)} on this order!
+                      You saved ${stepData.promoDiscount.toFixed(2)} on this
+                      order!
                     </AlertDescription>
                   </Alert>
                 )}
 
                 {/* Terms Status */}
-                <Alert className={stepData.agreeToTerms ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20" : "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20"}>
+                <Alert
+                  className={
+                    stepData.agreeToTerms
+                      ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/20"
+                      : "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20"
+                  }
+                >
                   {stepData.agreeToTerms ? (
                     <>
                       <CheckCircle className="h-4 w-4 text-green-600" />
@@ -308,7 +321,8 @@ export function OrderSummaryStep({
                   <Alert variant="destructive">
                     <AlertTriangle className="h-4 w-4" />
                     <AlertDescription>
-                      Minimum payment amount is $0.50. Please add more items to your cart.
+                      Minimum payment amount is $0.50. Please add more items to
+                      your cart.
                     </AlertDescription>
                   </Alert>
                 )}
@@ -326,7 +340,8 @@ export function OrderSummaryStep({
             <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
               <Package className="h-4 w-4 text-blue-600" />
               <AlertDescription className="text-blue-800 dark:text-blue-200">
-                <strong>Next:</strong> Complete your secure payment with Stripe to finalize your order.
+                <strong>Next:</strong> Complete your secure payment with Stripe
+                to finalize your order.
               </AlertDescription>
             </Alert>
           </motion.div>

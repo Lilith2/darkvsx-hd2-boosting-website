@@ -38,10 +38,12 @@ const verifyPaymentSchema = z.object({
     userId: z.string().optional(),
     customerEmail: z.string().email(),
     customerName: z.string().min(1),
-    customerDiscord: z.string().min(1, "Discord username is required").refine(
-      (discord) => security.validateDiscordTag(discord.trim()),
-      { message: "Invalid Discord username format" }
-    ),
+    customerDiscord: z
+      .string()
+      .min(1, "Discord username is required")
+      .refine((discord) => security.validateDiscordTag(discord.trim()), {
+        message: "Invalid Discord username format",
+      }),
     orderNotes: z.string().optional(),
     services: z.array(
       z.object({
@@ -410,7 +412,7 @@ async function createOrdersInDatabase(
       status: "pending",
       payment_status: "paid",
       total_amount: parseFloat(totalAmount.toFixed(2)), // Fix precision
-      notes: `Discord: ${orderData.customerDiscord}${orderData.orderNotes || orderData.notes ? ` | Notes: ${orderData.orderNotes || orderData.notes}` : ''}`,
+      notes: `Discord: ${orderData.customerDiscord}${orderData.orderNotes || orderData.notes ? ` | Notes: ${orderData.orderNotes || orderData.notes}` : ""}`,
       transaction_id: transactionId,
       referral_code: orderData.referralCode || null,
       referral_discount:
