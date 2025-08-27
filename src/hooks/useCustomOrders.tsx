@@ -225,9 +225,10 @@ export function useCustomOrders() {
         updated_at: new Date().toISOString(),
       };
 
-      // Add payment information if provided
+      // Add payment information if provided (use both for compatibility)
       if (orderData.paymentIntentId) {
         customOrderData.payment_intent_id = orderData.paymentIntentId;
+        customOrderData.transaction_id = orderData.paymentIntentId; // Keep both for compatibility
       }
 
       // Add referral information if provided
