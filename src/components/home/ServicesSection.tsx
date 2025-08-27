@@ -49,14 +49,31 @@ export function ServicesSection() {
     {} as Record<string, number>,
   );
 
-  const handleAddToCart = (service: any) => {
-    addToCart(service);
-    toast({
-      title: "Added to cart!",
-      description: `${service.title} has been added to your cart.`,
-    });
-    // Redirect to unified checkout for streamlined experience
-    router.push("/checkout");
+  const handleAddToCart = async (service: any) => {
+    setIsAddingToCart(service.id);
+    try {
+      addToCart(service);
+
+      toast({
+        title: "Added to cart!",
+        description: `${service.title} has been added to your cart.`,
+      });
+
+      // Small delay to ensure cart state is updated
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Redirect to unified checkout for streamlined experience
+      router.push("/checkout");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAddingToCart(null);
+    }
   };
 
   const categories: ServiceCategory[] = [
