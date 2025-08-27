@@ -85,6 +85,7 @@ export function StepperCheckout({
     promoCode: "",
     promoDiscount: 0,
     agreeToTerms: false,
+    discordUsername: "",
   });
 
   // Calculate totals
@@ -102,7 +103,7 @@ export function StepperCheckout({
       case 3:
         return cartItems.length > 0; // Must have items
       case 4:
-        return cartItems.length > 0 && stepData.agreeToTerms && total >= 0.5;
+        return cartItems.length > 0 && stepData.agreeToTerms && stepData.discordUsername.trim() !== "" && total >= 0.5;
       default:
         return false;
     }
