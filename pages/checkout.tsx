@@ -160,14 +160,14 @@ export default function CheckoutPage() {
     });
   };
 
-  // Loading state while authentication is being checked
-  if (!isAuthenticated) {
+  // Show loading while cart is hydrating (no authentication check needed)
+  if (!isHydrated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            <span className="ml-2">Checking authentication...</span>
+            <Loader2 className="w-8 h-8 animate-spin text-primary mr-2" />
+            <span>Loading checkout...</span>
           </div>
         </div>
       </div>
