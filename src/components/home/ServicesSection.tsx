@@ -25,6 +25,7 @@ type ServiceCategory =
 export function ServicesSection() {
   const [selectedCategory, setSelectedCategory] =
     useState<ServiceCategory>("All");
+  const [isAddingToCart, setIsAddingToCart] = useState<string | null>(null);
   const router = useRouter();
   const { services } = useServices();
   const { addToCart } = useCart();
