@@ -107,8 +107,9 @@ export default async function handler(
     // Combine valid IDs from both services and bundles
     const validServiceIds = [...validServices, ...validBundles];
 
-    // Invalid IDs are UUID IDs that are not found or inactive
-    const invalidUuidIds = uuidServiceIds.filter((id) => {
+    // Invalid IDs are only UUID IDs that are not found or inactive
+    // Non-UUID IDs are ignored as they represent special items handled elsewhere
+    const invalidServiceIds = uuidServiceIds.filter((id) => {
       const serviceRecord = services.find((service) => service.id === id);
       const bundleRecord = bundles.find((bundle) => bundle.id === id);
 
@@ -121,10 +122,6 @@ export default async function handler(
 
       return false;
     });
-
-    // Non-UUID IDs are considered invalid for database items but might be valid for special items
-    // (like custom orders), so we'll mark them as invalid for database validation
-    const invalidServiceIds = [...invalidUuidIds, ...nonUuidIds];
 
     console.log("Service and bundle validation results:", {
       requested: serviceIds.length,
