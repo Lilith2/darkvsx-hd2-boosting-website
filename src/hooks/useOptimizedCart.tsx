@@ -168,30 +168,59 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
     if (items.length === 0) return;
 
     try {
-      // Get current active services from API
-      const response = await fetch("/api/services/validate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          serviceIds: items.map((item) => item.service.id),
-        }),
-      });
+      // Separate regular services/bundles from special items (like custom orders)
+      const regularItems = items.filter(
+        (item) =>
+          !item.service.id.startsWith("custom-order-") &&
+          !item.service.isBundle
+      );
 
-      if (response.ok) {
-        const { validServiceIds, invalidServiceIds } = await response.json();
+      const bundleItems = items.filter(
+        (item) => item.service.isBundle === true
+      );
 
-        if (invalidServiceIds.length > 0) {
-          // Remove invalid items from cart
-          setItems((prev) =>
-            prev.filter((item) => validServiceIds.includes(item.service.id)),
-          );
+      const customOrderItems = items.filter(
+        (item) => item.service.id.startsWith("custom-order-")
+      );
 
-          console.warn(
-            "Removed invalid services from cart:",
-            invalidServiceIds,
-          );
+      // Only validate regular services and bundles if there are any
+      if (regularItems.length > 0 || bundleItems.length > 0) {
+        const serviceIds = [
+          ...regularItems.map((item) => item.service.id),
+          ...bundleItems.map((item) => item.service.id),
+        ];
+
+        const response = await fetch("/api/services/validate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            serviceIds: serviceIds,
+          }),
+        });
+
+        if (response.ok) {
+          const { validServiceIds, invalidServiceIds } = await response.json();
+
+          if (invalidServiceIds.length > 0) {
+            // Remove only the invalid regular items, keep custom orders
+            setItems((prev) =>
+              prev.filter((item) => {
+                // Keep custom orders always
+                if (item.service.id.startsWith("custom-order-")) return true;
+                // Keep valid services/bundles
+                return validServiceIds.includes(item.service.id);
+              }),
+            );
+
+            console.warn(
+              "Removed invalid services from cart:",
+              invalidServiceIds,
+            );
+          }
+        } else {
+          console.warn("Service validation request failed:", response.status);
         }
       }
     } catch (error) {
