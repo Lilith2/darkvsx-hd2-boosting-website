@@ -319,10 +319,17 @@ export default function Bundles() {
                             : "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
                         }`}
                         onClick={() => handleAddBundle(bundle)}
+                        disabled={isAddingToCart === bundle.id}
                       >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        Add Bundle to Cart
-                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                        {isAddingToCart === bundle.id ? (
+                          <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <ShoppingCart className="w-4 h-4 mr-2" />
+                        )}
+                        {isAddingToCart === bundle.id ? "Adding..." : "Add Bundle to Cart"}
+                        {isAddingToCart !== bundle.id && (
+                          <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                        )}
                       </Button>
                     </div>
                   </CardContent>
