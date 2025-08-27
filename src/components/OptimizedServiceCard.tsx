@@ -27,15 +27,31 @@ export const OptimizedServiceCard = memo<OptimizedServiceCardProps>(
     const { toast } = useToast();
     const [isAddingToCart, setIsAddingToCart] = useState(false);
 
-    const handleAddToCart = useCallback(() => {
-      addToCart(service);
-      toast({
-        title: "Added to cart!",
-        description: `${service.title} has been added to your cart.`,
-        duration: 2000,
-      });
-      // Redirect to unified checkout for streamlined experience
-      router.push("/checkout");
+    const handleAddToCart = useCallback(async () => {
+      setIsAddingToCart(true);
+      try {
+        addToCart(service);
+        toast({
+          title: "Added to cart!",
+          description: `${service.title} has been added to your cart.`,
+          duration: 2000,
+        });
+
+        // Small delay to ensure cart state is updated
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Redirect to unified checkout for streamlined experience
+        router.push("/checkout");
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        toast({
+          title: "Error",
+          description: "Failed to add item to cart. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsAddingToCart(false);
+      }
     }, [service, addToCart, toast, router]);
 
     const handleQuickView = useCallback(() => {
