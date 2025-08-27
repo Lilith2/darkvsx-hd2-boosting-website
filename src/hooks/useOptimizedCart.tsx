@@ -112,23 +112,31 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
 
   // Memoize callback functions to prevent unnecessary rerenders
   const addItem = useCallback((service: ServiceData) => {
-    setItems((prev) => {
-      const existing = prev.find((item) => item.service.id === service.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.service.id === service.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
-      }
-      return [
-        ...prev,
-        {
-          id: service.id,
-          service,
-          quantity: 1,
-        },
-      ];
+    return new Promise<void>((resolve) => {
+      setItems((prev) => {
+        const existing = prev.find((item) => item.service.id === service.id);
+        let newItems;
+        if (existing) {
+          newItems = prev.map((item) =>
+            item.service.id === service.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item,
+          );
+        } else {
+          newItems = [
+            ...prev,
+            {
+              id: service.id,
+              service,
+              quantity: 1,
+            },
+          ];
+        }
+
+        // Resolve after state update
+        setTimeout(() => resolve(), 0);
+        return newItems;
+      });
     });
   }, []);
 
