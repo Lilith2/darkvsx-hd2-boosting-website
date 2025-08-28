@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { useCustomOrderCart } from "@/hooks/useCustomOrderCart";
+import { useUnifiedCart } from "@/hooks/useUnifiedCart";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,7 @@ interface OrderItem {
 
 export default function CustomOrder() {
   const router = useRouter();
-  const { setCustomOrder } = useCustomOrderCart();
+  const { addItem } = useUnifiedCart();
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -265,26 +265,58 @@ export default function CustomOrder() {
 
     setIsAddingToCart(true);
     try {
-      // Create the custom order data (separate from regular cart)
-      const customOrderData = {
-        id: `custom-order-${Date.now()}`,
-        items: orderItems,
-        notes: orderNotes,
-        customer_email: user?.email,
-        customer_discord: undefined, // Could be added to user profile later
-        special_instructions: orderNotes,
-        total: getTotalPrice(),
-      };
+      // Add each custom order item as a unified product
+      for (const item of orderItems) {
+        const unifiedProduct = {
+          id: `custom-${item.category}-${item.item_name}-${Date.now()}-${Math.random()}`,
+          name: `${item.item_name} (Custom Order)`,
+          slug: `custom-${item.category}-${item.item_name}`.toLowerCase().replace(/\s+/g, '-'),
+          description: item.description || `Custom ${item.item_name} order`,
+          short_description: `${item.quantity} ${item.item_name}${item.quantity > 1 ? 's' : ''}`,
+          product_type: 'custom_item' as const,
+          category: item.category,
+          subcategory: 'custom_order',
+          base_price: item.price_per_unit,
+          price_per_unit: item.price_per_unit,
+          minimum_quantity: 1,
+          maximum_quantity: 999,
+          status: 'active' as const,
+          visibility: 'public' as const,
+          featured: false,
+          popular: false,
+          specifications: {
+            customOrder: true,
+            originalCategory: item.category,
+            originalItemName: item.item_name,
+            specialInstructions: orderNotes,
+          },
+          // Legacy compatibility
+          title: `${item.item_name} (Custom)`,
+          price: item.total_price,
+        };
 
-      // Store in custom order context (separate from regular cart)
-      await setCustomOrder(customOrderData);
+        await addItem(unifiedProduct, item.quantity, {
+          instructions: orderNotes,
+          notes: `Custom order: ${item.quantity} ${item.item_name}${item.quantity > 1 ? 's' : ''}`,
+          customOrderData: {
+            category: item.category,
+            itemName: item.item_name,
+            pricePerUnit: item.price_per_unit,
+            originalQuantity: item.quantity,
+          },
+        });
+      }
 
       toast({
         title: "Added to Cart!",
-        description: "Your custom order has been added to the cart.",
+        description: `Your custom order with ${orderItems.length} item type${orderItems.length > 1 ? 's' : ''} has been added to the cart.`,
       });
 
-      router.push("/checkout");
+      // Clear local state after successful addition
+      setOrderItems([]);
+      setOrderNotes("");
+
+      router.push("/unified-checkout");
     } catch (error: any) {
       console.error("Error processing order:", error);
       const errorMessage =
