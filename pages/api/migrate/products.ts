@@ -16,7 +16,10 @@ export default async function handler(
 
   try {
     // Validate environment variables
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
       console.error("Missing Supabase environment variables");
       return res.status(500).json({
         error: "Server configuration error",
@@ -72,8 +75,8 @@ export default async function handler(
         // Create slug from title
         const slug = service.title
           .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-|-$/g, '');
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "");
 
         // Migrate service to products table
         const productData = {
@@ -81,15 +84,17 @@ export default async function handler(
           name: service.title,
           slug: slug,
           description: service.description,
-          product_type: 'service',
-          category: service.category || 'Level Boost',
+          product_type: "service",
+          category: service.category || "Level Boost",
           base_price: parseFloat(service.price),
           sale_price: service.original_price ? parseFloat(service.price) : null,
           features: service.features || [],
-          estimated_duration_hours: service.duration ? parseInt(service.duration.replace(/[^0-9]/g, '')) || null : null,
-          difficulty_level: service.difficulty?.toLowerCase() || 'medium',
-          status: service.active ? 'active' : 'inactive',
-          visibility: 'public',
+          estimated_duration_hours: service.duration
+            ? parseInt(service.duration.replace(/[^0-9]/g, "")) || null
+            : null,
+          difficulty_level: service.difficulty?.toLowerCase() || "medium",
+          status: service.active ? "active" : "inactive",
+          visibility: "public",
           popular: service.popular || false,
           order_count: service.orders_count || 0,
           created_at: service.created_at,
@@ -104,7 +109,9 @@ export default async function handler(
         if (insertError) {
           console.error(`Error migrating service ${service.id}:`, insertError);
           migrationResults.services.errors++;
-          migrationResults.errors.push(`Service ${service.title}: ${insertError.message}`);
+          migrationResults.errors.push(
+            `Service ${service.title}: ${insertError.message}`,
+          );
         } else {
           migrationResults.services.migrated++;
           migrationResults.totalMigrated++;
@@ -112,7 +119,9 @@ export default async function handler(
       } catch (error: any) {
         console.error(`Error processing service ${service.id}:`, error);
         migrationResults.services.errors++;
-        migrationResults.errors.push(`Service ${service.title}: ${error.message}`);
+        migrationResults.errors.push(
+          `Service ${service.title}: ${error.message}`,
+        );
       }
     }
 
@@ -148,8 +157,8 @@ export default async function handler(
         // Create slug from name
         const slug = bundle.name
           .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-|-$/g, '');
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "");
 
         // Migrate bundle to products table
         const productData = {
@@ -157,18 +166,20 @@ export default async function handler(
           name: bundle.name,
           slug: slug,
           description: bundle.description,
-          product_type: 'bundle',
-          category: 'Bundles',
+          product_type: "bundle",
+          category: "Bundles",
           base_price: parseFloat(bundle.original_price),
           sale_price: parseFloat(bundle.discounted_price),
           features: bundle.features || [],
-          estimated_duration_hours: bundle.duration ? parseInt(bundle.duration.replace(/[^0-9]/g, '')) || null : null,
-          status: bundle.active ? 'active' : 'inactive',
-          visibility: 'public',
+          estimated_duration_hours: bundle.duration
+            ? parseInt(bundle.duration.replace(/[^0-9]/g, "")) || null
+            : null,
+          status: bundle.active ? "active" : "inactive",
+          visibility: "public",
           popular: bundle.popular || false,
           order_count: bundle.orders_count || 0,
           bundled_products: bundle.services || [],
-          bundle_type: 'fixed',
+          bundle_type: "fixed",
           specifications: {
             original_price: parseFloat(bundle.original_price),
             discount_percentage: bundle.discount,
@@ -186,7 +197,9 @@ export default async function handler(
         if (insertError) {
           console.error(`Error migrating bundle ${bundle.id}:`, insertError);
           migrationResults.bundles.errors++;
-          migrationResults.errors.push(`Bundle ${bundle.name}: ${insertError.message}`);
+          migrationResults.errors.push(
+            `Bundle ${bundle.name}: ${insertError.message}`,
+          );
         } else {
           migrationResults.bundles.migrated++;
           migrationResults.totalMigrated++;
@@ -206,12 +219,18 @@ export default async function handler(
       results: migrationResults,
       summary: {
         totalMigrated: migrationResults.totalMigrated,
-        totalErrors: migrationResults.services.errors + migrationResults.bundles.errors,
-        servicesProcessed: migrationResults.services.migrated + migrationResults.services.skipped + migrationResults.services.errors,
-        bundlesProcessed: migrationResults.bundles.migrated + migrationResults.bundles.skipped + migrationResults.bundles.errors,
+        totalErrors:
+          migrationResults.services.errors + migrationResults.bundles.errors,
+        servicesProcessed:
+          migrationResults.services.migrated +
+          migrationResults.services.skipped +
+          migrationResults.services.errors,
+        bundlesProcessed:
+          migrationResults.bundles.migrated +
+          migrationResults.bundles.skipped +
+          migrationResults.bundles.errors,
       },
     });
-
   } catch (error: any) {
     console.error("Error in product migration:", error);
 

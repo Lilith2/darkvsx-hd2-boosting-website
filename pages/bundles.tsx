@@ -42,27 +42,30 @@ export default function Bundles() {
       const unifiedProduct = {
         id: bundle.id,
         name: bundle.name,
-        slug: bundle.slug || bundle.name.toLowerCase().replace(/\s+/g, '-'),
+        slug: bundle.slug || bundle.name.toLowerCase().replace(/\s+/g, "-"),
         description: bundle.description,
         short_description: bundle.description,
-        product_type: 'bundle' as const,
+        product_type: "bundle" as const,
         category: bundle.category || "Bundle",
         base_price: bundle.original_price,
         sale_price: bundle.discounted_price,
         minimum_quantity: 1,
         maximum_quantity: 1, // Bundles are typically single purchase
         features: bundle.features || [],
-        bundled_products: bundle.services?.map((service: string, index: number) => ({
-          id: `service-${index}`,
-          name: service,
-          quantity: 1,
-        })) || [],
-        bundle_type: 'fixed' as const,
-        status: 'active' as const,
-        visibility: 'public' as const,
+        bundled_products:
+          bundle.services?.map((service: string, index: number) => ({
+            id: `service-${index}`,
+            name: service,
+            quantity: 1,
+          })) || [],
+        bundle_type: "fixed" as const,
+        status: "active" as const,
+        visibility: "public" as const,
         featured: bundle.popular || false,
         popular: bundle.popular || false,
-        estimated_duration_hours: bundle.duration ? parseInt(bundle.duration.replace(/[^0-9]/g, '')) || 48 : 48,
+        estimated_duration_hours: bundle.duration
+          ? parseInt(bundle.duration.replace(/[^0-9]/g, "")) || 48
+          : 48,
         specifications: {
           originalPrice: bundle.original_price,
           discount: bundle.discount || 0,
@@ -336,7 +339,9 @@ export default function Bundles() {
                         ) : (
                           <ShoppingCart className="w-4 h-4 mr-2" />
                         )}
-                        {isAddingToCart === bundle.id ? "Adding..." : "Add Bundle to Cart"}
+                        {isAddingToCart === bundle.id
+                          ? "Adding..."
+                          : "Add Bundle to Cart"}
                         {isAddingToCart !== bundle.id && (
                           <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                         )}

@@ -270,18 +270,20 @@ export default function CustomOrder() {
         const unifiedProduct = {
           id: `custom-${item.category}-${item.item_name}-${Date.now()}-${Math.random()}`,
           name: `${item.item_name} (Custom Order)`,
-          slug: `custom-${item.category}-${item.item_name}`.toLowerCase().replace(/\s+/g, '-'),
+          slug: `custom-${item.category}-${item.item_name}`
+            .toLowerCase()
+            .replace(/\s+/g, "-"),
           description: item.description || `Custom ${item.item_name} order`,
-          short_description: `${item.quantity} ${item.item_name}${item.quantity > 1 ? 's' : ''}`,
-          product_type: 'custom_item' as const,
+          short_description: `${item.quantity} ${item.item_name}${item.quantity > 1 ? "s" : ""}`,
+          product_type: "custom_item" as const,
           category: item.category,
-          subcategory: 'custom_order',
+          subcategory: "custom_order",
           base_price: item.price_per_unit,
           price_per_unit: item.price_per_unit,
           minimum_quantity: 1,
           maximum_quantity: 999,
-          status: 'active' as const,
-          visibility: 'public' as const,
+          status: "active" as const,
+          visibility: "public" as const,
           featured: false,
           popular: false,
           specifications: {
@@ -297,7 +299,7 @@ export default function CustomOrder() {
 
         await addItem(unifiedProduct, item.quantity, {
           instructions: orderNotes,
-          notes: `Custom order: ${item.quantity} ${item.item_name}${item.quantity > 1 ? 's' : ''}`,
+          notes: `Custom order: ${item.quantity} ${item.item_name}${item.quantity > 1 ? "s" : ""}`,
           customOrderData: {
             category: item.category,
             itemName: item.item_name,
@@ -309,7 +311,7 @@ export default function CustomOrder() {
 
       toast({
         title: "Added to Cart!",
-        description: `Your custom order with ${orderItems.length} item type${orderItems.length > 1 ? 's' : ''} has been added to the cart.`,
+        description: `Your custom order with ${orderItems.length} item type${orderItems.length > 1 ? "s" : ""} has been added to the cart.`,
       });
 
       // Clear local state after successful addition
@@ -573,7 +575,9 @@ export default function CustomOrder() {
                         <ShoppingCart className="w-3 h-3 mr-2" />
                       )}
                       {isAddingToCart ? "Adding..." : "Add to Cart"}
-                      {!isAddingToCart && <ArrowRight className="w-3 h-3 ml-2" />}
+                      {!isAddingToCart && (
+                        <ArrowRight className="w-3 h-3 ml-2" />
+                      )}
                     </Button>
 
                     <div className="flex items-center justify-center space-x-1 text-xs text-muted-foreground">

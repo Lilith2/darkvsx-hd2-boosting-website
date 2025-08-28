@@ -6,7 +6,6 @@ interface SendEmailParams {
   customerName: string;
 }
 
-
 interface SendOrderConfirmationParams {
   customerEmail: string;
   customerName: string;
@@ -72,7 +71,10 @@ export async function sendOrderConfirmationEmail(
   params: SendOrderConfirmationParams,
 ): Promise<EmailResponse> {
   try {
-    console.log("Attempting to send order confirmation email to:", params.customerEmail);
+    console.log(
+      "Attempting to send order confirmation email to:",
+      params.customerEmail,
+    );
 
     const response = await fetch("/api/send-order-confirmation", {
       method: "POST",
@@ -96,7 +98,7 @@ export async function sendOrderConfirmationEmail(
           status: response.status,
           error: errorMessage,
           details: errorDetails,
-          code: errorData.code
+          code: errorData.code,
         });
       } catch (jsonError) {
         // If we can't read the response body, use status text
@@ -104,7 +106,9 @@ export async function sendOrderConfirmationEmail(
         console.error("Failed to parse error response:", jsonError);
       }
 
-      const fullErrorMessage = errorDetails ? `${errorMessage}: ${errorDetails}` : errorMessage;
+      const fullErrorMessage = errorDetails
+        ? `${errorMessage}: ${errorDetails}`
+        : errorMessage;
       throw new Error(fullErrorMessage);
     }
 
@@ -116,7 +120,6 @@ export async function sendOrderConfirmationEmail(
     throw new Error(error.message || "Failed to send order confirmation email");
   }
 }
-
 
 export function generateTicketSubject(originalSubject: string): string {
   // Remove "Support:" prefix if it exists and clean up the subject

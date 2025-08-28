@@ -56,20 +56,22 @@ export function ServicesSection() {
       const unifiedProduct = {
         id: service.id,
         name: service.title,
-        slug: service.slug || service.title.toLowerCase().replace(/\s+/g, '-'),
+        slug: service.slug || service.title.toLowerCase().replace(/\s+/g, "-"),
         description: service.description,
         short_description: service.description,
-        product_type: 'service' as const,
+        product_type: "service" as const,
         category: service.category,
         base_price: service.price,
         sale_price: service.salePrice || null,
         minimum_quantity: 1,
         maximum_quantity: 10,
-        status: 'active' as const,
-        visibility: 'public' as const,
+        status: "active" as const,
+        visibility: "public" as const,
         featured: service.popular || false,
         popular: service.popular || false,
-        estimated_duration_hours: service.duration ? parseInt(service.duration.replace(/[^0-9]/g, '')) || 24 : 24,
+        estimated_duration_hours: service.duration
+          ? parseInt(service.duration.replace(/[^0-9]/g, "")) || 24
+          : 24,
         // Legacy compatibility
         title: service.title,
         price: service.price,
@@ -217,7 +219,9 @@ export function ServicesSection() {
                         ) : (
                           <ShoppingCart className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
                         )}
-                        {isAddingToCart === service.id ? "Adding..." : "Add to Cart"}
+                        {isAddingToCart === service.id
+                          ? "Adding..."
+                          : "Add to Cart"}
                       </Button>
                     </div>
                   </div>

@@ -24,7 +24,7 @@ export default function UnifiedCheckoutPage() {
     taxAmount,
     total,
   } = useUnifiedCart();
-  
+
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const router = useRouter();

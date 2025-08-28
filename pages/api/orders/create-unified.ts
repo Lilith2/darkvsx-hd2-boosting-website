@@ -37,9 +37,9 @@ const createUnifiedOrderSchema = z.object({
         unit_price: z.number().positive(),
         total_price: z.number().positive(),
         product_name: z.string(),
-        product_type: z.enum(['service', 'bundle', 'custom_item']),
+        product_type: z.enum(["service", "bundle", "custom_item"]),
         custom_options: z.record(z.any()).optional(),
-      })
+      }),
     ),
     referralCode: z.string().optional(),
     referralDiscount: z.number().nonnegative().optional(),
@@ -54,7 +54,7 @@ interface OrderItem {
   unit_price: number;
   total_price: number;
   product_name: string;
-  product_type: 'service' | 'bundle' | 'custom_item';
+  product_type: "service" | "bundle" | "custom_item";
   custom_options?: Record<string, any>;
 }
 
@@ -76,7 +76,10 @@ export default async function handler(
       });
     }
 
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
       console.error("Missing Supabase environment variables");
       return res.status(500).json({
         error: "Server configuration error",
@@ -118,12 +121,18 @@ export default async function handler(
     }
 
     // Calculate totals and validate against payment intent
-    const subtotalAmount = orderData.items.reduce((sum, item) => sum + item.total_price, 0);
+    const subtotalAmount = orderData.items.reduce(
+      (sum, item) => sum + item.total_price,
+      0,
+    );
     const discountAmount = orderData.referralDiscount || 0;
     const creditsUsed = orderData.creditsUsed || 0;
     const subtotalAfterDiscount = subtotalAmount - discountAmount;
     const taxAmount = Math.max(0, subtotalAfterDiscount * 0.08); // 8% tax
-    const totalAmount = Math.max(0.5, subtotalAfterDiscount + taxAmount - creditsUsed);
+    const totalAmount = Math.max(
+      0.5,
+      subtotalAfterDiscount + taxAmount - creditsUsed,
+    );
 
     // Verify payment amount matches calculated total (within 1 cent tolerance)
     const paidAmount = paymentIntent.amount / 100; // Convert from cents
@@ -165,17 +174,23 @@ export default async function handler(
     }
 
     // Determine order type based on items
-    let orderType: 'standard' | 'custom' | 'bundle' = 'standard';
-    const hasCustomItems = orderData.items.some(item => item.product_type === 'custom_item');
-    const hasBundles = orderData.items.some(item => item.product_type === 'bundle');
-    const hasServices = orderData.items.some(item => item.product_type === 'service');
+    let orderType: "standard" | "custom" | "bundle" = "standard";
+    const hasCustomItems = orderData.items.some(
+      (item) => item.product_type === "custom_item",
+    );
+    const hasBundles = orderData.items.some(
+      (item) => item.product_type === "bundle",
+    );
+    const hasServices = orderData.items.some(
+      (item) => item.product_type === "service",
+    );
 
     if (hasCustomItems && !hasBundles && !hasServices) {
-      orderType = 'custom';
+      orderType = "custom";
     } else if (hasBundles && !hasCustomItems && !hasServices) {
-      orderType = 'bundle';
+      orderType = "bundle";
     } else if (hasCustomItems || (hasBundles && hasServices)) {
-      orderType = 'custom'; // Mixed orders are treated as custom
+      orderType = "custom"; // Mixed orders are treated as custom
     }
 
     // Server-side referral code validation if provided
@@ -191,7 +206,10 @@ export default async function handler(
         );
 
         if (validationError) {
-          console.error("Server-side referral validation error:", validationError);
+          console.error(
+            "Server-side referral validation error:",
+            validationError,
+          );
           return res.status(400).json({
             error: "Invalid referral code",
             details: "Could not validate referral code on server",
@@ -201,9 +219,13 @@ export default async function handler(
         if (validation && validation.valid) {
           if (validation.type === "promo") {
             if (validation.discount_type === "percentage") {
-              validatedReferralDiscount = subtotalAmount * (validation.discount_value / 100);
+              validatedReferralDiscount =
+                subtotalAmount * (validation.discount_value / 100);
             } else {
-              validatedReferralDiscount = Math.min(validation.discount_value, subtotalAmount);
+              validatedReferralDiscount = Math.min(
+                validation.discount_value,
+                subtotalAmount,
+              );
             }
           } else {
             validatedReferralDiscount = subtotalAmount * 0.15; // 15% for referral codes
@@ -211,7 +233,9 @@ export default async function handler(
         } else {
           return res.status(400).json({
             error: "Invalid referral code",
-            details: validation?.error || "The referral code is not valid or has expired",
+            details:
+              validation?.error ||
+              "The referral code is not valid or has expired",
           });
         }
       } catch (err) {
@@ -254,7 +278,10 @@ export default async function handler(
         payment_amount_cents: paymentIntent.amount,
         calculated_total: totalAmount,
         item_count: orderData.items.length,
-        total_quantity: orderData.items.reduce((sum, item) => sum + item.quantity, 0),
+        total_quantity: orderData.items.reduce(
+          (sum, item) => sum + item.quantity,
+          0,
+        ),
       },
       status_history: [
         {
@@ -298,7 +325,6 @@ export default async function handler(
       totalAmount: totalAmount,
       paymentIntentId: paymentIntentId,
     });
-
   } catch (error: any) {
     console.error("Error in unified order creation:", error);
 

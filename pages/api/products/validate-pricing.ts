@@ -13,15 +13,15 @@ const validatePricingSchema = z.object({
     z.object({
       product_id: z.string().uuid(),
       quantity: z.number().positive().int(),
-      product_type: z.enum(['service', 'bundle', 'custom_item']),
-    })
+      product_type: z.enum(["service", "bundle", "custom_item"]),
+    }),
   ),
 });
 
 interface CartItem {
   product_id: string;
   quantity: number;
-  product_type: 'service' | 'bundle' | 'custom_item';
+  product_type: "service" | "bundle" | "custom_item";
 }
 
 interface ValidatedItem {
@@ -48,7 +48,10 @@ export default async function handler(
 
   try {
     // Validate environment variables
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
       console.error("Missing Supabase environment variables");
       return res.status(500).json({
         error: "Server configuration error",
@@ -77,12 +80,14 @@ export default async function handler(
     }
 
     // Extract product IDs
-    const productIds = items.map(item => item.product_id);
+    const productIds = items.map((item) => item.product_id);
 
     // Fetch products from unified products table
     const { data: products, error: productsError } = await supabase
       .from("products")
-      .select("id, name, product_type, base_price, sale_price, price_per_unit, minimum_quantity, maximum_quantity, status, visibility")
+      .select(
+        "id, name, product_type, base_price, sale_price, price_per_unit, minimum_quantity, maximum_quantity, status, visibility",
+      )
       .in("id", productIds)
       .eq("status", "active")
       .in("visibility", ["public"]);
@@ -101,7 +106,7 @@ export default async function handler(
 
     // Process each cart item
     for (const item of items) {
-      const product = products?.find(p => p.id === item.product_id);
+      const product = products?.find((p) => p.id === item.product_id);
 
       if (!product) {
         invalidItems.push({
@@ -120,7 +125,10 @@ export default async function handler(
         continue;
       }
 
-      if (product.maximum_quantity && item.quantity > product.maximum_quantity) {
+      if (
+        product.maximum_quantity &&
+        item.quantity > product.maximum_quantity
+      ) {
         invalidItems.push({
           product_id: item.product_id,
           reason: `Maximum quantity is ${product.maximum_quantity}`,
@@ -130,21 +138,21 @@ export default async function handler(
 
       // Calculate pricing based on product type
       let unitPrice: number;
-      
+
       switch (product.product_type) {
-        case 'service':
-        case 'bundle':
+        case "service":
+        case "bundle":
           // Use sale_price if available, otherwise base_price
           unitPrice = parseFloat(product.sale_price || product.base_price);
           break;
-          
-        case 'custom_item':
+
+        case "custom_item":
           // For custom items, base_price + (price_per_unit * quantity)
           const basePrice = parseFloat(product.base_price);
           const pricePerUnit = parseFloat(product.price_per_unit || 0);
-          unitPrice = basePrice + (pricePerUnit * item.quantity);
+          unitPrice = basePrice + pricePerUnit * item.quantity;
           break;
-          
+
         default:
           invalidItems.push({
             product_id: item.product_id,
@@ -170,7 +178,10 @@ export default async function handler(
       requestedItems: items.length,
       validatedItems: validatedItems.length,
       invalidItems: invalidItems.length,
-      totalValidatedValue: validatedItems.reduce((sum, item) => sum + item.total_price, 0),
+      totalValidatedValue: validatedItems.reduce(
+        (sum, item) => sum + item.total_price,
+        0,
+      ),
     });
 
     return res.status(200).json({
@@ -180,10 +191,12 @@ export default async function handler(
         requested: items.length,
         validated: validatedItems.length,
         invalid: invalidItems.length,
-        totalValue: validatedItems.reduce((sum, item) => sum + item.total_price, 0),
+        totalValue: validatedItems.reduce(
+          (sum, item) => sum + item.total_price,
+          0,
+        ),
       },
     });
-
   } catch (error: any) {
     console.error("Error in product pricing validation:", error);
 
