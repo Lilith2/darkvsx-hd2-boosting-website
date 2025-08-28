@@ -29,7 +29,7 @@ interface PaymentStepProps {
     discordUsername: string;
   };
   total: number;
-  onPaymentSuccess: (paymentIntent: any) => void;
+  onPaymentSuccess: (paymentIntent: any, stepData?: any) => void;
   onPaymentError: (error: string) => void;
   isProcessing: boolean;
   user: any;

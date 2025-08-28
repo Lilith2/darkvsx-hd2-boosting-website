@@ -32,7 +32,7 @@ interface StepperCheckoutProps {
   cartItems: any[];
   customOrder: any;
   user: any;
-  onPaymentSuccess: (paymentIntent: any) => void;
+  onPaymentSuccess: (paymentIntent: any, stepData?: any) => void;
   onPaymentError: (error: string) => void;
   isProcessing: boolean;
   updateQuantity: (serviceId: string, quantity: number) => void;
@@ -162,7 +162,15 @@ export function StepperCheckout({
     setPage([currentStep, currentStep > page ? 1 : -1]);
   }, [currentStep]);
 
-  const CurrentStepComponent = steps[currentStep - 1].component;
+  // Safe component access with bounds checking
+  const currentStepData = steps[currentStep - 1];
+  const CurrentStepComponent = currentStepData?.component;
+
+  // If no valid step found, default to first step
+  if (!CurrentStepComponent) {
+    console.error(`Invalid step: ${currentStep}, falling back to step 1`);
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
