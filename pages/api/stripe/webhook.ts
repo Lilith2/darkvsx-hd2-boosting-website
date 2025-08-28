@@ -303,6 +303,14 @@ async function handlePaymentIntentSucceeded(
       console.error(`Failed to send purchase receipt email for ${paymentIntent.id}:`, emailError);
     }
 
+    // Send purchase receipt emails for successful payments
+    try {
+      await sendPurchaseReceiptEmails(paymentIntent, existingOrders, existingCustomOrders);
+    } catch (emailError: any) {
+      // Don't fail the webhook if email sending fails
+      console.error(`Failed to send purchase receipt email for ${paymentIntent.id}:`, emailError);
+    }
+
     // If no orders exist, this might be expected (order created via verify-and-create endpoint)
     if (
       (!existingOrders || existingOrders.length === 0) &&
