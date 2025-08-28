@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { buffer } from "micro";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
-import nodemailer from "nodemailer";
 
 // Initialize Stripe according to official documentation
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
@@ -295,21 +294,8 @@ async function handlePaymentIntentSucceeded(
       }
     }
 
-    // Send purchase receipt emails for successful payments
-    try {
-      await sendPurchaseReceiptEmails(paymentIntent, existingOrders, existingCustomOrders);
-    } catch (emailError: any) {
-      // Don't fail the webhook if email sending fails
-      console.error(`Failed to send purchase receipt email for ${paymentIntent.id}:`, emailError);
-    }
-
-    // Send purchase receipt emails for successful payments
-    try {
-      await sendPurchaseReceiptEmails(paymentIntent, existingOrders, existingCustomOrders);
-    } catch (emailError: any) {
-      // Don't fail the webhook if email sending fails
-      console.error(`Failed to send purchase receipt email for ${paymentIntent.id}:`, emailError);
-    }
+    // Note: Purchase receipts are now handled automatically by Stripe
+    // Configure in Stripe Dashboard: Settings > Emails > "Successful payments"
 
     // If no orders exist, this might be expected (order created via verify-and-create endpoint)
     if (
