@@ -3,7 +3,7 @@ import Link from "next/link";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useBundles } from "@/hooks/useBundles";
-import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
+import { useUnifiedCart } from "@/hooks/useUnifiedCart";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,37 +32,50 @@ export default function Bundles() {
   const router = useRouter();
   const [isAddingToCart, setIsAddingToCart] = useState<string | null>(null);
   const { bundles, loading, error } = useBundles();
-  const { addToCart } = useCart();
+  const { addItem } = useUnifiedCart();
   const { toast } = useToast();
 
   const handleAddBundle = async (bundle: any) => {
     setIsAddingToCart(bundle.id);
     try {
-      // Create a bundle service object for cart with bundle identification
-      const bundleService = {
+      // Convert bundle to unified product format
+      const unifiedProduct = {
         id: bundle.id,
-        title: bundle.name,
+        name: bundle.name,
+        slug: bundle.slug || bundle.name.toLowerCase().replace(/\s+/g, '-'),
         description: bundle.description,
-        price: bundle.discounted_price,
-        originalPrice: bundle.original_price,
-        duration: bundle.duration,
-        difficulty: "Bundle",
+        short_description: bundle.description,
+        product_type: 'bundle' as const,
+        category: bundle.category || "Bundle",
+        base_price: bundle.original_price,
+        sale_price: bundle.discounted_price,
+        minimum_quantity: 1,
+        maximum_quantity: 1, // Bundles are typically single purchase
         features: bundle.features || [],
-        active: bundle.active ?? true,
-        popular: bundle.popular ?? false,
-        category: "Level Boost" as const,
-        createdAt: bundle.created_at || new Date().toISOString(),
-        orders_count: bundle.orders_count || 0,
-        // Add bundle identification for better handling
-        isBundle: true,
-        bundleData: {
-          originalBundleId: bundle.id,
-          services: bundle.services || [],
+        bundled_products: bundle.services?.map((service: string, index: number) => ({
+          id: `service-${index}`,
+          name: service,
+          quantity: 1,
+        })) || [],
+        bundle_type: 'fixed' as const,
+        status: 'active' as const,
+        visibility: 'public' as const,
+        featured: bundle.popular || false,
+        popular: bundle.popular || false,
+        estimated_duration_hours: bundle.duration ? parseInt(bundle.duration.replace(/[^0-9]/g, '')) || 48 : 48,
+        specifications: {
+          originalPrice: bundle.original_price,
           discount: bundle.discount || 0,
+          services: bundle.services || [],
         },
+        // Legacy compatibility
+        title: bundle.name,
+        price: bundle.discounted_price,
+        duration: bundle.duration,
+        isBundle: true,
       };
 
-      await addToCart(bundleService);
+      await addItem(unifiedProduct, 1);
 
       toast({
         title: "Bundle added to cart!",
@@ -70,7 +83,7 @@ export default function Bundles() {
       });
 
       // Redirect to unified checkout for streamlined experience
-      router.push("/checkout");
+      router.push("/unified-checkout");
     } catch (error) {
       console.error("Error adding bundle to cart:", error);
       toast({
