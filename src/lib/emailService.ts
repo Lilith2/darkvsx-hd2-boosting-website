@@ -6,17 +6,6 @@ interface SendEmailParams {
   customerName: string;
 }
 
-interface SendWelcomeEmailParams {
-  customerEmail: string;
-  customerName?: string;
-  confirmationUrl?: string;
-}
-
-interface SendPasswordResetParams {
-  customerEmail: string;
-  customerName?: string;
-  resetUrl: string;
-}
 
 interface SendOrderConfirmationParams {
   customerEmail: string;
@@ -128,99 +117,6 @@ export async function sendOrderConfirmationEmail(
   }
 }
 
-export async function sendWelcomeEmail(
-  params: SendWelcomeEmailParams,
-): Promise<EmailResponse> {
-  try {
-    console.log("Attempting to send welcome email to:", params.customerEmail);
-
-    const response = await fetch("/api/send-welcome-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    });
-
-    if (!response.ok) {
-      let errorMessage = "Failed to send welcome email";
-      let errorDetails = "";
-
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.error || errorData.message || errorMessage;
-        errorDetails = errorData.details || "";
-
-        console.error("Welcome Email API Error Response:", {
-          status: response.status,
-          error: errorMessage,
-          details: errorDetails,
-          code: errorData.code
-        });
-      } catch (jsonError) {
-        errorMessage = `HTTP ${response.status}: ${response.statusText || errorMessage}`;
-        console.error("Failed to parse error response:", jsonError);
-      }
-
-      const fullErrorMessage = errorDetails ? `${errorMessage}: ${errorDetails}` : errorMessage;
-      throw new Error(fullErrorMessage);
-    }
-
-    const data: EmailResponse = await response.json();
-    console.log("Welcome email sent successfully:", data);
-    return data;
-  } catch (error: any) {
-    console.error("Welcome email service error:", error);
-    throw new Error(error.message || "Failed to send welcome email");
-  }
-}
-
-export async function sendPasswordResetEmail(
-  params: SendPasswordResetParams,
-): Promise<EmailResponse> {
-  try {
-    console.log("Attempting to send password reset email to:", params.customerEmail);
-
-    const response = await fetch("/api/send-password-reset", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    });
-
-    if (!response.ok) {
-      let errorMessage = "Failed to send password reset email";
-      let errorDetails = "";
-
-      try {
-        const errorData = await response.json();
-        errorMessage = errorData.error || errorData.message || errorMessage;
-        errorDetails = errorData.details || "";
-
-        console.error("Password Reset Email API Error Response:", {
-          status: response.status,
-          error: errorMessage,
-          details: errorDetails,
-          code: errorData.code
-        });
-      } catch (jsonError) {
-        errorMessage = `HTTP ${response.status}: ${response.statusText || errorMessage}`;
-        console.error("Failed to parse error response:", jsonError);
-      }
-
-      const fullErrorMessage = errorDetails ? `${errorMessage}: ${errorDetails}` : errorMessage;
-      throw new Error(fullErrorMessage);
-    }
-
-    const data: EmailResponse = await response.json();
-    console.log("Password reset email sent successfully:", data);
-    return data;
-  } catch (error: any) {
-    console.error("Password reset email service error:", error);
-    throw new Error(error.message || "Failed to send password reset email");
-  }
-}
 
 export function generateTicketSubject(originalSubject: string): string {
   // Remove "Support:" prefix if it exists and clean up the subject
