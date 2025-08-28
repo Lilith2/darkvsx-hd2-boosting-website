@@ -32,7 +32,7 @@ interface StepperCheckoutProps {
   cartItems: any[];
   customOrder: any;
   user: any;
-  onPaymentSuccess: (paymentIntent: any) => void;
+  onPaymentSuccess: (paymentIntent: any, stepData?: any) => void;
   onPaymentError: (error: string) => void;
   isProcessing: boolean;
   updateQuantity: (serviceId: string, quantity: number) => void;
