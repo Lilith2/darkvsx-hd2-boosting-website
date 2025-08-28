@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { useServices } from "@/hooks/useServices";
-import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
+import { useUnifiedCart } from "@/hooks/useUnifiedCart";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +28,7 @@ export function ServicesSection() {
   const [isAddingToCart, setIsAddingToCart] = useState<string | null>(null);
   const router = useRouter();
   const { services } = useServices();
-  const { addToCart } = useCart();
+  const { addItem } = useUnifiedCart();
   const { toast } = useToast();
 
   // Filter services by category and active status
@@ -52,7 +52,31 @@ export function ServicesSection() {
   const handleAddToCart = async (service: any) => {
     setIsAddingToCart(service.id);
     try {
-      await addToCart(service);
+      // Convert service to unified product format
+      const unifiedProduct = {
+        id: service.id,
+        name: service.title,
+        slug: service.slug || service.title.toLowerCase().replace(/\s+/g, '-'),
+        description: service.description,
+        short_description: service.description,
+        product_type: 'service' as const,
+        category: service.category,
+        base_price: service.price,
+        sale_price: service.salePrice || null,
+        minimum_quantity: 1,
+        maximum_quantity: 10,
+        status: 'active' as const,
+        visibility: 'public' as const,
+        featured: service.popular || false,
+        popular: service.popular || false,
+        estimated_duration_hours: service.duration ? parseInt(service.duration.replace(/[^0-9]/g, '')) || 24 : 24,
+        // Legacy compatibility
+        title: service.title,
+        price: service.price,
+        duration: service.duration,
+      };
+
+      await addItem(unifiedProduct, 1);
 
       toast({
         title: "Added to cart!",
@@ -60,7 +84,7 @@ export function ServicesSection() {
       });
 
       // Redirect to unified checkout for streamlined experience
-      router.push("/checkout");
+      router.push("/unified-checkout");
     } catch (error) {
       console.error("Error adding to cart:", error);
       toast({
