@@ -1,28 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { useOptimizedCart as useCart } from "@/hooks/useOptimizedCart";
-import { useCustomOrderCart } from "@/hooks/useCustomOrderCart";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Package, Loader2 } from "lucide-react";
-import Link from "next/link";
-import { StepperCheckout } from "../src/components/checkout/StepperCheckout";
 
 export default function CheckoutPage() {
-  const {
-    cartItems,
-    updateQuantity,
-    removeFromCart,
-    getCartTotal,
-    clearCart,
-    validateAndCleanCart,
-    isHydrated,
-  } = useCart();
-  const { customOrder, clearCustomOrder } = useCustomOrderCart();
-  const { user, isAuthenticated } = useAuth();
-  const { toast } = useToast();
   const router = useRouter();
 
   // Form states
