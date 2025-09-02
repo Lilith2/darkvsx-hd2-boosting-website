@@ -55,6 +55,7 @@ interface SimplePaymentFormProps {
   customOrderData?: CustomOrderData | null;
   referralCode?: string;
   referralDiscount?: number;
+  creditsUsed?: number;
   onPaymentSuccess: (paymentIntent: any) => void;
   onPaymentError: (error: string) => void;
   isProcessing: boolean;
@@ -67,6 +68,7 @@ export function SimplePaymentForm({
   customOrderData = null,
   referralCode = "",
   referralDiscount = 0,
+  creditsUsed = 0,
   onPaymentSuccess,
   onPaymentError,
   isProcessing,
@@ -102,7 +104,7 @@ export function SimplePaymentForm({
             : undefined,
           referralCode: referralCode || "",
           referralDiscount: Math.max(0, referralDiscount || 0),
-          creditsUsed: 0,
+          creditsUsed: Math.max(0, creditsUsed || 0),
           currency: "usd",
           metadata: {
             ...metadata,
@@ -193,7 +195,7 @@ export function SimplePaymentForm({
     };
 
     initializePayment();
-  }, [total, cartItems.length, referralCode, referralDiscount, metadata]);
+  }, [total, cartItems.length, referralCode, referralDiscount, creditsUsed, metadata]);
 
   // Handle form submission
   const handleSubmit = async (event: React.FormEvent) => {
