@@ -86,6 +86,7 @@ export function StepperCheckout({
   taxAmount: providedTax,
   total: providedTotal,
   getCartTotal,
+  isAuthenticated,
 }: StepperCheckoutProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
@@ -95,6 +96,8 @@ export function StepperCheckout({
     promoDiscount: 0,
     agreeToTerms: false,
     discordUsername: "",
+    useReferralCredits: false,
+    creditsUsed: 0,
   });
 
   // Calculate totals (prefer provided values)
@@ -103,14 +106,16 @@ export function StepperCheckout({
       ? providedSubtotal
       : (typeof getCartTotal === "function" ? getCartTotal() : 0) +
         (customOrder?.total || 0);
+  const discount = stepData.promoDiscount;
+  const taxBase = Math.max(0, baseSubtotal - discount);
   const tax =
-    typeof providedTax === "number"
-      ? providedTax
-      : (baseSubtotal - stepData.promoDiscount) * 0.08;
+    typeof providedTax === "number" ? providedTax : taxBase * 0.08;
+  const totalBeforeCredits = Math.max(0, taxBase + tax);
+  const creditsApplied = Math.min(stepData.creditsUsed || 0, totalBeforeCredits);
   const total =
     typeof providedTotal === "number"
       ? providedTotal
-      : Math.max(0, baseSubtotal - stepData.promoDiscount + tax);
+      : Math.max(0.5, totalBeforeCredits - creditsApplied);
   const subtotal = baseSubtotal;
 
   // Step validation
@@ -306,6 +311,7 @@ export function StepperCheckout({
                   cartItems={normalizedCartItems}
                   customOrder={customOrder}
                   user={user}
+                  isAuthenticated={isAuthenticated}
                   updateQuantity={updateQuantity}
                   removeFromCart={removeFromCart}
                   stepData={stepData}
