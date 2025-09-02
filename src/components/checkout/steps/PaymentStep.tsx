@@ -12,6 +12,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { SimplePaymentForm } from "../SimplePaymentForm";
+import { Button } from "@/components/ui/button";
 
 // Initialize Stripe
 const stripePromise = loadStripe(
@@ -32,6 +33,7 @@ interface PaymentStepProps {
   total: number;
   onPaymentSuccess: (paymentIntent: any, stepData?: any) => void;
   onPaymentError: (error: string) => void;
+  onCreditsOnly?: () => void;
   isProcessing: boolean;
   user: any;
 }
@@ -43,6 +45,7 @@ export function PaymentStep({
   total,
   onPaymentSuccess,
   onPaymentError,
+  onCreditsOnly,
   isProcessing,
   user,
 }: PaymentStepProps) {
@@ -61,6 +64,7 @@ export function PaymentStep({
     orderId: `order_${Date.now()}`,
     userEmail: user?.email || "",
     userName: user?.username || "",
+    userId: user?.id || "",
   };
 
   const canProceedToPayment = () => {
@@ -123,7 +127,36 @@ export function PaymentStep({
       </motion.div>
 
       {/* Payment Form */}
-      {canProceedToPayment() ? (
+      {canProceedToPayment() && total < 0.5 && (stepData.creditsUsed || 0) > 0 ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between text-2xl">
+                <div className="flex items-center">
+                  <CreditCard className="w-6 h-6 mr-3" />
+                  Pay with Credits
+                </div>
+                <div className="text-xl text-primary font-bold">${total.toFixed(2)}</div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
+                <CheckCircle className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-800 dark:text-blue-200">
+                  Your available credits cover the full order amount. Complete your purchase without a card.
+                </AlertDescription>
+              </Alert>
+              <Button onClick={onCreditsOnly} className="w-full h-14 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90">
+                Complete Order with Credits
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+      ) : canProceedToPayment() ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

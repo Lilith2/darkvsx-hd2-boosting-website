@@ -35,6 +35,7 @@ interface StepperCheckoutProps {
   isAuthenticated?: boolean;
   onPaymentSuccess: (paymentIntent: any, stepData?: any) => void;
   onPaymentError: (error: string) => void;
+  onCreditsOnly?: (payload: { stepData: any; cartItems: any[] }) => void;
   isProcessing: boolean;
   updateQuantity: (serviceId: string, quantity: number) => void;
   removeFromCart: (serviceId: string) => void;
@@ -115,7 +116,7 @@ export function StepperCheckout({
   const total =
     typeof providedTotal === "number"
       ? providedTotal
-      : Math.max(0.5, totalBeforeCredits - creditsApplied);
+      : Math.max(0, totalBeforeCredits - creditsApplied);
   const subtotal = baseSubtotal;
 
   // Step validation
@@ -321,6 +322,12 @@ export function StepperCheckout({
                   total={total}
                   onPaymentSuccess={onPaymentSuccess}
                   onPaymentError={onPaymentError}
+                  onCreditsOnly={
+                    // Provide access to original cart items and step data
+                    steps[currentStep - 1]?.title === "Payment" && typeof (onCreditsOnly) === "function"
+                      ? () => onCreditsOnly?.({ stepData, cartItems })
+                      : undefined
+                  }
                   isProcessing={isProcessing}
                 />
               </motion.div>

@@ -173,6 +173,57 @@ export default async function handler(
       });
     }
 
+    // Validate credits availability and deduct if needed
+    const creditsUsed = orderData.creditsUsed || 0;
+    if (creditsUsed > 0 && orderData.userId) {
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("credit_balance")
+        .eq("id", orderData.userId)
+        .single();
+
+      if (profileError) {
+        return res.status(500).json({ error: "Failed to fetch user profile" });
+      }
+
+      const availableCredits = parseFloat(String(profile?.credit_balance || 0));
+
+      // Recompute totals to determine maximum usable credits
+      const subtotalAmount = orderData.items.reduce((s, it) => s + it.total_price, 0);
+      const discountAmount = orderData.referralDiscount || 0;
+      const taxAmount = Math.max(0, (subtotalAmount - discountAmount) * 0.08);
+      const maxUsableCredits = Math.max(0, subtotalAmount - discountAmount + taxAmount);
+
+      const creditsToDeduct = Math.min(creditsUsed, availableCredits, maxUsableCredits);
+      if (creditsToDeduct < creditsUsed - 0.001) {
+        return res.status(400).json({ error: "Insufficient credits", details: `Available: $${availableCredits.toFixed(2)}` });
+      }
+
+      const newBalance = parseFloat((availableCredits - creditsToDeduct).toFixed(2));
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ credit_balance: newBalance, updated_at: new Date().toISOString() })
+        .eq("id", orderData.userId);
+      if (updateError) {
+        return res.status(500).json({ error: "Failed to deduct credits" });
+      }
+
+      // Best-effort transaction log
+      try {
+        await supabase.from("credit_transactions").insert([
+          {
+            user_id: orderData.userId,
+            amount: creditsToDeduct,
+            type: "debit",
+            description: "Credits applied to order",
+            balance_before: availableCredits,
+            balance_after: newBalance,
+            created_at: new Date().toISOString(),
+          } as any,
+        ]);
+      } catch {}
+    }
+
     // Determine order type based on items
     let orderType: "standard" | "custom" | "bundle" = "standard";
     const hasCustomItems = orderData.items.some(

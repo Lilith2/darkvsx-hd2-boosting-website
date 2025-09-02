@@ -30,6 +30,7 @@ interface PaymentMetadata {
   orderId: string;
   userEmail: string;
   userName: string;
+  userId?: string;
 }
 
 interface CustomOrderData {
