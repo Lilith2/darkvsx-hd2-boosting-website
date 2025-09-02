@@ -34,8 +34,12 @@ export function CartReviewStep({
   updateQuantity,
   removeFromCart,
 }: CartReviewStepProps) {
+  const safeItems = (cartItems || []).filter(
+    (item: any) => item && item.service && item.service.id && typeof item.quantity === "number",
+  );
+
   const handleUpdateQuantity = (serviceId: string, change: number) => {
-    const currentItem = cartItems.find((item) => item.service.id === serviceId);
+    const currentItem = safeItems.find((item) => item.service.id === serviceId);
     if (currentItem) {
       const newQuantity = Math.max(1, currentItem.quantity + change);
       updateQuantity(serviceId, newQuantity);
@@ -74,7 +78,7 @@ export function CartReviewStep({
       </motion.div>
 
       <div className="space-y-4">
-        {cartItems.map((item, index) => (
+        {safeItems.map((item, index) => (
           <motion.div
             key={item.service.id}
             custom={index}
@@ -91,7 +95,7 @@ export function CartReviewStep({
 
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-lg">
-                      {item.service.title}
+                      {item.service.title || "Item"}
                     </h4>
                     <div className="flex items-center space-x-3 mt-2">
                       <Badge variant="outline" className="text-xs">
@@ -135,10 +139,10 @@ export function CartReviewStep({
 
                   <div className="text-right">
                     <p className="font-bold text-xl text-primary">
-                      ${(item.service.price * item.quantity).toFixed(2)}
+                      ${(((item.service.price as number) || 0) * item.quantity).toFixed(2)}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      ${item.service.price} each
+                      ${item.service.price ?? 0} each
                     </p>
                   </div>
 
