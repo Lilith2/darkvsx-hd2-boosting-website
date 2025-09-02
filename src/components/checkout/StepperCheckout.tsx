@@ -80,6 +80,7 @@ export function StepperCheckout({
   user,
   onPaymentSuccess,
   onPaymentError,
+  onCreditsOnly,
   isProcessing,
   updateQuantity,
   removeFromCart,
