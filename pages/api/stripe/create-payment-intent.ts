@@ -144,8 +144,8 @@ export default async function handler(
     if (services.length > 0) {
       const allIds = services.map((s) => s.id);
 
-      // Query both services and bundles tables in parallel
-      const [servicesResult, bundlesResult] = await Promise.all([
+      // Query legacy services/bundles AND unified products in parallel
+      const [servicesResult, bundlesResult, productsResult] = await Promise.all([
         supabase
           .from("services")
           .select("id, title, price, active")
@@ -156,6 +156,14 @@ export default async function handler(
           .select("id, name, discounted_price, active")
           .in("id", allIds)
           .eq("active", true),
+        supabase
+          .from("products")
+          .select(
+            "id, name, product_type, base_price, sale_price, price_per_unit, status, visibility",
+          )
+          .in("id", allIds)
+          .eq("status", "active")
+          .in("visibility", ["public"]),
       ]);
 
       if (servicesResult.error) {
@@ -176,11 +184,21 @@ export default async function handler(
         });
       }
 
+      if (productsResult.error) {
+        console.error("Error fetching products:", productsResult.error);
+        return res.status(500).json({
+          error: "Failed to fetch product pricing",
+          details: "Database error occurred while validating products",
+          code: productsResult.error.code || "DATABASE_ERROR",
+        });
+      }
+
       const dbServices = servicesResult.data || [];
       const dbBundles = bundlesResult.data || [];
+      const dbProducts = productsResult.data || [];
 
       // Verify all requested items exist and are active (services OR bundles)
-      console.log("Database services and bundles found:", {
+      console.log("Database items found:", {
         requested: allIds,
         foundServices: dbServices.map((s) => ({
           id: s.id,
@@ -194,13 +212,24 @@ export default async function handler(
           active: b.active,
           type: "bundle",
         })),
+        foundProducts: dbProducts.map((p: any) => ({
+          id: p.id,
+          type: p.product_type,
+          price: p.sale_price || p.base_price,
+        })),
         serviceCount: dbServices.length,
         bundleCount: dbBundles.length,
+        productCount: dbProducts.length,
       });
 
       const foundServiceIds = new Set(dbServices.map((s) => s.id));
       const foundBundleIds = new Set(dbBundles.map((b) => b.id));
-      const allFoundIds = new Set([...foundServiceIds, ...foundBundleIds]);
+      const foundProductIds = new Set(dbProducts.map((p: any) => p.id));
+      const allFoundIds = new Set([
+        ...foundServiceIds,
+        ...foundBundleIds,
+        ...foundProductIds,
+      ]);
 
       const missingItems = allIds.filter((id) => !allFoundIds.has(id));
       if (missingItems.length > 0) {
@@ -241,7 +270,21 @@ export default async function handler(
       );
 
       servicesTotal = services.reduce((sum, serviceRequest) => {
-        // Check both services and bundles for price
+        const prod = dbProducts.find((p: any) => p.id === serviceRequest.id);
+        if (prod) {
+          // Pricing rules consistent with validate-pricing
+          let unitPrice: number;
+          if (prod.product_type === "custom_item") {
+            const base = parseFloat(prod.base_price);
+            const perUnit = parseFloat(prod.price_per_unit || 0);
+            unitPrice = base + perUnit * serviceRequest.quantity;
+          } else {
+            unitPrice = parseFloat(prod.sale_price || prod.base_price);
+          }
+          return sum + unitPrice * serviceRequest.quantity;
+        }
+
+        // Fallback to legacy services/bundles
         let dbPrice = servicesPriceMap.get(serviceRequest.id);
         if (dbPrice === undefined) {
           dbPrice = bundlesPriceMap.get(serviceRequest.id);
