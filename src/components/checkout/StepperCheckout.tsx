@@ -32,6 +32,7 @@ interface StepperCheckoutProps {
   cartItems: any[];
   customOrder?: any;
   user: any;
+  isAuthenticated?: boolean;
   onPaymentSuccess: (paymentIntent: any, stepData?: any) => void;
   onPaymentError: (error: string) => void;
   isProcessing: boolean;
