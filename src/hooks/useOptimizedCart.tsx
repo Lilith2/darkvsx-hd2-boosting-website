@@ -168,27 +168,18 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
     if (items.length === 0) return;
 
     try {
-      // Separate regular services/bundles from special items (like custom orders)
-      const regularItems = items.filter(
-        (item) =>
-          !item.service.id.startsWith("custom-order-") &&
-          !item.service.isBundle
-      );
-
-      const bundleItems = items.filter(
-        (item) => item.service.isBundle === true
+      // Separate non-custom items from special items (like custom orders)
+      const nonCustomItems = items.filter(
+        (item) => !item.service.id.startsWith("custom-order-")
       );
 
       const customOrderItems = items.filter(
         (item) => item.service.id.startsWith("custom-order-")
       );
 
-      // Only validate regular services and bundles if there are any
-      if (regularItems.length > 0 || bundleItems.length > 0) {
-        const serviceIds = [
-          ...regularItems.map((item) => item.service.id),
-          ...bundleItems.map((item) => item.service.id),
-        ];
+      // Only validate non-custom items if there are any
+      if (nonCustomItems.length > 0) {
+        const serviceIds = nonCustomItems.map((item) => item.service.id);
 
         const response = await fetch("/api/services/validate", {
           method: "POST",
@@ -204,12 +195,10 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
           const { validServiceIds, invalidServiceIds } = await response.json();
 
           if (invalidServiceIds.length > 0) {
-            // Remove only the invalid regular items, keep custom orders
+            // Remove only the invalid non-custom items, keep custom orders
             setItems((prev) =>
               prev.filter((item) => {
-                // Keep custom orders always
                 if (item.service.id.startsWith("custom-order-")) return true;
-                // Keep valid services/bundles
                 return validServiceIds.includes(item.service.id);
               }),
             );
