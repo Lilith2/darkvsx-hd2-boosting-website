@@ -19,6 +19,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { security } from "@/lib/security";
 import Link from "next/link";
+import { useReferrals } from "@/hooks/useReferrals";
 
 interface OrderDetailsStepProps {
   stepData: {
@@ -27,10 +28,13 @@ interface OrderDetailsStepProps {
     promoDiscount: number;
     agreeToTerms: boolean;
     discordUsername: string;
+    useReferralCredits: boolean;
+    creditsUsed: number;
   };
   updateStepData: (data: any) => void;
   user: any;
   subtotal: number;
+  isAuthenticated: boolean;
 }
 
 interface ValidationResponse {
@@ -46,12 +50,17 @@ export function OrderDetailsStep({
   updateStepData,
   user,
   subtotal,
+  isAuthenticated,
 }: OrderDetailsStepProps) {
   const { toast } = useToast();
   const [promoCodeStatus, setPromoCodeStatus] = useState<
     "idle" | "loading" | "applied" | "error"
   >("idle");
   const [discordError, setDiscordError] = useState<string>("");
+  const { stats } = useReferrals();
+  const availableCredits = isAuthenticated
+    ? Math.max(0, Number(stats?.creditBalance || 0))
+    : 0;
 
   const validateDiscordUsername = (username: string) => {
     if (!username.trim()) {
@@ -350,6 +359,60 @@ export function OrderDetailsStep({
           </motion.div>
         </div>
       </div>
+
+      {/* Credits Application */}
+      {isAuthenticated && (
+        <motion.div
+          variants={formVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.35, duration: 0.5 }}
+        >
+          <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm h-fit">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center">
+                <DollarSign className="w-5 h-5 mr-2" />
+                Use Credits
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="useCredits"
+                    checked={!!stepData.useReferralCredits}
+                    onCheckedChange={(checked) =>
+                      updateStepData({
+                        useReferralCredits: !!checked,
+                        creditsUsed: checked ? availableCredits : 0,
+                      })
+                    }
+                    className="mt-1"
+                  />
+                  <Label htmlFor="useCredits" className="text-base">
+                    Apply available credits to this order
+                  </Label>
+                </div>
+                <div className="text-right">
+                  <span className="text-2xl font-bold text-green-600">
+                    ${availableCredits.toFixed(2)}
+                  </span>
+                  <p className="text-xs text-muted-foreground">Available</p>
+                </div>
+              </div>
+
+              {stepData.useReferralCredits && stepData.creditsUsed > 0 && (
+                <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
+                  <CheckCircle className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-800 dark:text-blue-200">
+                    ${Math.min(stepData.creditsUsed, availableCredits).toFixed(2)} credits will be applied at payment.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Terms Agreement */}
       <motion.div
