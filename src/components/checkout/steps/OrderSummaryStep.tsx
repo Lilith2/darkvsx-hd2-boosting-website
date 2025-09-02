@@ -48,6 +48,9 @@ export function OrderSummaryStep({
   tax,
   total,
 }: OrderSummaryStepProps) {
+  const safeItems = (cartItems || []).filter(
+    (item: any) => item && item.service && item.service.id && typeof item.quantity === "number",
+  );
   const itemVariants = {
     hidden: { opacity: 0, x: -20 },
     visible: (i: number) => ({
@@ -104,7 +107,7 @@ export function OrderSummaryStep({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {cartItems.map((item, index) => (
+                {safeItems.map((item, index) => (
                   <motion.div
                     key={item.service.id}
                     custom={index}
@@ -118,7 +121,7 @@ export function OrderSummaryStep({
                         <Trophy className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <h4 className="font-medium">{item.service.title}</h4>
+                        <h4 className="font-medium">{item.service.title || "Item"}</h4>
                         <div className="flex items-center space-x-2 mt-1">
                           <Badge variant="outline" className="text-xs">
                             <Clock className="w-3 h-3 mr-1" />
@@ -133,10 +136,10 @@ export function OrderSummaryStep({
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-primary">
-                        ${(item.service.price * item.quantity).toFixed(2)}
+                        ${(((item.service.price as number) || 0) * item.quantity).toFixed(2)}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        ${item.service.price} × {item.quantity}
+                        ${item.service.price ?? 0} × {item.quantity}
                       </p>
                     </div>
                   </motion.div>
