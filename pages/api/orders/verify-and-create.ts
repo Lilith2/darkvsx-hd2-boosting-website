@@ -6,7 +6,7 @@ import { security } from "@/lib/security";
 
 // Initialize Stripe according to official documentation
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2024-06-20",
+  apiVersion: "2024-06-20" as any,
   typescript: true,
 });
 
@@ -412,15 +412,10 @@ async function createOrdersInDatabase(
       customer_email: orderData.customerEmail,
       customer_name: orderData.customerName,
       items: orderData.services.map((service) => {
-        // Use server-validated price from database, not client-provided price
-        let dbPrice = servicesPriceMap.get(service.id);
-        if (dbPrice === undefined) {
-          dbPrice = bundlesPriceMap.get(service.id);
-        }
         return {
           service_id: service.id,
           service_name: service.name,
-          price: dbPrice || 0, // Use server price for security
+          price: service.price || 0,
           quantity: service.quantity,
         };
       }),
