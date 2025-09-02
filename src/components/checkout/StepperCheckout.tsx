@@ -302,7 +302,7 @@ export function StepperCheckout({
                 }}
               >
                 <CurrentStepComponent
-                  cartItems={cartItems}
+                  cartItems={normalizedCartItems}
                   customOrder={customOrder}
                   user={user}
                   updateQuantity={updateQuantity}
