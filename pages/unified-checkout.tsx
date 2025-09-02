@@ -32,12 +32,14 @@ export default function UnifiedCheckoutPage() {
   // Form states
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Validate cart items when page loads and cart is hydrated
+  // Validate cart items once after hydration to avoid loops
   useEffect(() => {
     if (isHydrated && cartItems.length > 0) {
       validateAndCleanCart();
     }
-  }, [isHydrated, validateAndCleanCart]);
+    // Intentionally depend only on isHydrated so this runs once post-hydration
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHydrated]);
 
   // Show cart error if any
   useEffect(() => {
