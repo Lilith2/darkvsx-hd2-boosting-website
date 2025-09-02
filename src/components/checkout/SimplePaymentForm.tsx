@@ -121,48 +121,38 @@ export function SimplePaymentForm({
           body: JSON.stringify(requestBody),
         });
 
-        let data;
-        let responseText = "";
+        let data: any = null;
         try {
-          responseText = await response.text();
-          if (!responseText.trim()) {
-            throw new Error("Empty response from server");
-          }
-          data = JSON.parse(responseText);
-        } catch (parseError) {
-          console.error("Failed to parse response:", {
-            error:
-              parseError instanceof Error
-                ? parseError.message
-                : JSON.stringify(parseError),
-            responseText: responseText.substring(0, 500), // Log first 500 chars for debugging
-            status: response.status,
-            statusText: response.statusText,
-          });
+          // Prefer JSON parsing; fall back to text if needed
+          data = await response.clone().json();
+        } catch {
+          let responseText = "";
+          try {
+            responseText = await response.text();
+          } catch {}
 
-          // Try to provide a more helpful error message based on status
-          if (response.status === 500) {
-            throw new Error(
-              "Server error occurred. Please try again or clear your cart if the issue persists.",
-            );
-          } else if (response.status === 400) {
-            // Try to extract any error information from the response text
-            let errorMessage =
-              "Invalid cart data. Please clear your cart and try again.";
-            if (
-              responseText &&
-              responseText.includes("payment_method_configuration")
-            ) {
-              errorMessage =
-                "Payment configuration error. Please try again or contact support.";
-            } else if (responseText && responseText.includes("Stripe")) {
-              errorMessage = "Payment processor error. Please try again.";
+          try {
+            if (responseText && responseText.trim().startsWith("{")) {
+              data = JSON.parse(responseText);
+            } else {
+              throw new Error("Non-JSON response");
             }
-            throw new Error(errorMessage);
-          } else {
-            throw new Error(
-              `Payment server error (${response.status}). Please try again.`,
-            );
+          } catch (parseError) {
+            console.error("Failed to parse response:", responseText?.slice(0, 500) || String(parseError));
+
+            if (response.status === 500) {
+              throw new Error(
+                "Server error occurred. Please try again or clear your cart if the issue persists.",
+              );
+            } else if (response.status === 400) {
+              throw new Error(
+                "Invalid cart data. Please clear your cart and try again.",
+              );
+            } else {
+              throw new Error(
+                `Payment server error (${response.status}). Please try again.`,
+              );
+            }
           }
         }
 
