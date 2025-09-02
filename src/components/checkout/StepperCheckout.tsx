@@ -81,6 +81,9 @@ export function StepperCheckout({
   isProcessing,
   updateQuantity,
   removeFromCart,
+  subtotal: providedSubtotal,
+  taxAmount: providedTax,
+  total: providedTotal,
   getCartTotal,
 }: StepperCheckoutProps) {
   const [currentStep, setCurrentStep] = useState(1);
