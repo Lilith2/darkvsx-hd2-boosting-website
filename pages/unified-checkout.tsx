@@ -280,6 +280,53 @@ export default function UnifiedCheckoutPage() {
           isProcessing={isProcessing}
           user={user}
           isAuthenticated={isAuthenticated}
+          onCreditsOnly={async ({ stepData: s }) => {
+            try {
+              const orderData = {
+                userId: user?.id || null,
+                customerEmail: user?.email || s?.guestEmail || "",
+                customerName: user?.username || s?.guestName || "",
+                customerDiscord: s?.discordUsername || "",
+                orderNotes: s?.orderNotes || "",
+                specialInstructions: s?.specialInstructions || "",
+                items: cartItems.map((item) => ({
+                  product_id: item.product.id,
+                  quantity: item.quantity,
+                  unit_price: item.unit_price,
+                  total_price: item.total_price,
+                  product_name: item.product.name,
+                  product_type: item.product.product_type,
+                  custom_options: item.custom_options || {},
+                })),
+                referralCode: s?.promoCode || "",
+                referralDiscount: s?.promoDiscount || 0,
+                creditsUsed: total,
+                ipAddress: s?.ipAddress || "",
+              };
+
+              const resp = await fetch("/api/orders/create-credits-only", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderData }),
+              });
+
+              const data = await resp.json();
+              if (!resp.ok) {
+                throw new Error(data?.details || data?.error || "Failed to place order with credits");
+              }
+
+              toast({ title: "Order placed with credits!" });
+
+              const synthetic = {
+                id: String(data.transactionId || `credits_${Date.now()}`),
+                status: "succeeded",
+                metadata: { orderId: data.orderId, orderNumber: data.orderNumber },
+              };
+              await handlePaymentSuccess(synthetic, s);
+            } catch (e: any) {
+              toast({ title: "Credits payment failed", description: e?.message || String(e), variant: "destructive" });
+            }
+          }}
         />
       </div>
     </div>
