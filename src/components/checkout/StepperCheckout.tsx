@@ -96,10 +96,21 @@ export function StepperCheckout({
     discordUsername: "",
   });
 
-  // Calculate totals
-  const subtotal = getCartTotal() + (customOrder?.total || 0);
-  const tax = (subtotal - stepData.promoDiscount) * 0.08;
-  const total = Math.max(0, subtotal - stepData.promoDiscount + tax);
+  // Calculate totals (prefer provided values)
+  const baseSubtotal =
+    typeof providedSubtotal === "number"
+      ? providedSubtotal
+      : (typeof getCartTotal === "function" ? getCartTotal() : 0) +
+        (customOrder?.total || 0);
+  const tax =
+    typeof providedTax === "number"
+      ? providedTax
+      : (baseSubtotal - stepData.promoDiscount) * 0.08;
+  const total =
+    typeof providedTotal === "number"
+      ? providedTotal
+      : Math.max(0, baseSubtotal - stepData.promoDiscount + tax);
+  const subtotal = baseSubtotal;
 
   // Step validation
   const canProceedToStep = (step: number): boolean => {
