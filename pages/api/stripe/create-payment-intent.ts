@@ -5,7 +5,7 @@ import { z } from "zod";
 
 // Initialize Stripe with latest stable API version
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2024-06-20",
+  apiVersion: "2024-06-20" as any,
   typescript: true,
 });
 
