@@ -376,8 +376,22 @@ export default async function handler(
     const tax = Math.max(0, totalAfterDiscount * TAX_RATE);
     const totalWithTax = totalAfterDiscount + tax;
 
-    // Validate credits used don't exceed the total
-    const validatedCreditsUsed = Math.min(creditsUsed, totalWithTax);
+    // Clamp credits by available balance (if userId provided via metadata)
+    let availableCredits = Infinity;
+    const userId = (metadata as any)?.userId || null;
+    if (userId) {
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("credit_balance")
+          .eq("id", userId)
+          .single();
+        availableCredits = parseFloat(String((profile as any)?.credit_balance || 0));
+      } catch {}
+    }
+
+    // Validate credits used don't exceed the total or available balance
+    const validatedCreditsUsed = Math.min(creditsUsed, totalWithTax, availableCredits);
     const finalAmount = Math.max(0.5, totalWithTax - validatedCreditsUsed); // Stripe minimum $0.50
 
     // Minimum charge validation (Stripe minimum is $0.50)
