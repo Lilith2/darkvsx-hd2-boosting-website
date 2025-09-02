@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
@@ -74,25 +75,6 @@ export default async function handler(
       services = servicesResult.data || [];
       bundles = bundlesResult.data || [];
     }
-
-    if (servicesResult.error) {
-      console.error("Error validating services:", servicesResult.error);
-      return res.status(500).json({
-        error: "Failed to validate services",
-        details: "Database error occurred while checking services",
-      });
-    }
-
-    if (bundlesResult.error) {
-      console.error("Error validating bundles:", bundlesResult.error);
-      return res.status(500).json({
-        error: "Failed to validate bundles",
-        details: "Database error occurred while checking bundles",
-      });
-    }
-
-    const services = servicesResult.data || [];
-    const bundles = bundlesResult.data || [];
 
     // Determine valid service IDs (active services)
     const validServices = services
