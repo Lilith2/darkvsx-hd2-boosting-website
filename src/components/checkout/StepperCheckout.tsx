@@ -30,14 +30,19 @@ interface StepData {
 interface StepperCheckoutProps {
   // Props will match what the current checkout page needs
   cartItems: any[];
-  customOrder: any;
+  customOrder?: any;
   user: any;
   onPaymentSuccess: (paymentIntent: any, stepData?: any) => void;
   onPaymentError: (error: string) => void;
   isProcessing: boolean;
   updateQuantity: (serviceId: string, quantity: number) => void;
   removeFromCart: (serviceId: string) => void;
-  getCartTotal: () => number;
+  // Optional totals provided by parent
+  subtotal?: number;
+  taxAmount?: number;
+  total?: number;
+  // Optional fallback function for legacy callers
+  getCartTotal?: () => number;
 }
 
 const steps: StepData[] = [
