@@ -27,6 +27,7 @@ interface PaymentStepProps {
     promoDiscount: number;
     agreeToTerms: boolean;
     discordUsername: string;
+    creditsUsed?: number;
   };
   total: number;
   onPaymentSuccess: (paymentIntent: any, stepData?: any) => void;
