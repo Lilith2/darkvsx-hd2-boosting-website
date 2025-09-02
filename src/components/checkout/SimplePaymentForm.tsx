@@ -141,7 +141,10 @@ export function SimplePaymentForm({
               throw new Error("Non-JSON response");
             }
           } catch (parseError) {
-            console.error("Failed to parse response:", responseText?.slice(0, 500) || String(parseError));
+            console.error(
+              "Failed to parse response:",
+              responseText?.slice(0, 500) || String(parseError),
+            );
 
             if (response.status === 500) {
               throw new Error(
@@ -196,7 +199,14 @@ export function SimplePaymentForm({
     };
 
     initializePayment();
-  }, [total, cartItems.length, referralCode, referralDiscount, creditsUsed, metadata]);
+  }, [
+    total,
+    cartItems.length,
+    referralCode,
+    referralDiscount,
+    creditsUsed,
+    metadata,
+  ]);
 
   // Handle form submission
   const handleSubmit = async (event: React.FormEvent) => {

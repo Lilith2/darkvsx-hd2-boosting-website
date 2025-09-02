@@ -70,12 +70,17 @@ export default function UnifiedCheckoutPage() {
 
     try {
       // Credits-only fast-path: if a synthetic paymentIntent is provided
-      if (paymentIntent?.id && String(paymentIntent.id).startsWith("credits_")) {
+      if (
+        paymentIntent?.id &&
+        String(paymentIntent.id).startsWith("credits_")
+      ) {
         clearCart();
         const orderId = paymentIntent?.metadata?.orderId;
         const orderNumber = paymentIntent?.metadata?.orderNumber;
         if (orderId && orderNumber) {
-          router.push(`/order-confirmation?orderId=${orderId}&orderNumber=${orderNumber}&paymentId=${paymentIntent.id}`);
+          router.push(
+            `/order-confirmation?orderId=${orderId}&orderNumber=${orderNumber}&paymentId=${paymentIntent.id}`,
+          );
           return;
         }
         router.push("/account");
@@ -312,7 +317,11 @@ export default function UnifiedCheckoutPage() {
 
               const data = await resp.json();
               if (!resp.ok) {
-                throw new Error(data?.details || data?.error || "Failed to place order with credits");
+                throw new Error(
+                  data?.details ||
+                    data?.error ||
+                    "Failed to place order with credits",
+                );
               }
 
               toast({ title: "Order placed with credits!" });
@@ -320,11 +329,18 @@ export default function UnifiedCheckoutPage() {
               const synthetic = {
                 id: String(data.transactionId || `credits_${Date.now()}`),
                 status: "succeeded",
-                metadata: { orderId: data.orderId, orderNumber: data.orderNumber },
+                metadata: {
+                  orderId: data.orderId,
+                  orderNumber: data.orderNumber,
+                },
               };
               await handlePaymentSuccess(synthetic, s);
             } catch (e: any) {
-              toast({ title: "Credits payment failed", description: e?.message || String(e), variant: "destructive" });
+              toast({
+                title: "Credits payment failed",
+                description: e?.message || String(e),
+                variant: "destructive",
+              });
             }
           }}
         />

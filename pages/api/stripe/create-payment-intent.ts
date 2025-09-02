@@ -145,26 +145,28 @@ export default async function handler(
       const allIds = services.map((s) => s.id);
 
       // Query legacy services/bundles AND unified products in parallel
-      const [servicesResult, bundlesResult, productsResult] = await Promise.all([
-        supabase
-          .from("services")
-          .select("id, title, price, active")
-          .in("id", allIds)
-          .eq("active", true),
-        supabase
-          .from("bundles")
-          .select("id, name, discounted_price, active")
-          .in("id", allIds)
-          .eq("active", true),
-        supabase
-          .from("products")
-          .select(
-            "id, name, product_type, base_price, sale_price, price_per_unit, status, visibility",
-          )
-          .in("id", allIds)
-          .eq("status", "active")
-          .in("visibility", ["public"]),
-      ]);
+      const [servicesResult, bundlesResult, productsResult] = await Promise.all(
+        [
+          supabase
+            .from("services")
+            .select("id, title, price, active")
+            .in("id", allIds)
+            .eq("active", true),
+          supabase
+            .from("bundles")
+            .select("id, name, discounted_price, active")
+            .in("id", allIds)
+            .eq("active", true),
+          supabase
+            .from("products")
+            .select(
+              "id, name, product_type, base_price, sale_price, price_per_unit, status, visibility",
+            )
+            .in("id", allIds)
+            .eq("status", "active")
+            .in("visibility", ["public"]),
+        ],
+      );
 
       if (servicesResult.error) {
         console.error("Error fetching services:", servicesResult.error);
@@ -386,12 +388,18 @@ export default async function handler(
           .select("credit_balance")
           .eq("id", userId)
           .single();
-        availableCredits = parseFloat(String((profile as any)?.credit_balance || 0));
+        availableCredits = parseFloat(
+          String((profile as any)?.credit_balance || 0),
+        );
       } catch {}
     }
 
     // Validate credits used don't exceed the total or available balance
-    const validatedCreditsUsed = Math.min(creditsUsed, totalWithTax, availableCredits);
+    const validatedCreditsUsed = Math.min(
+      creditsUsed,
+      totalWithTax,
+      availableCredits,
+    );
     const finalAmount = Math.max(0.5, totalWithTax - validatedCreditsUsed); // Stripe minimum $0.50
 
     // Minimum charge validation (Stripe minimum is $0.50)

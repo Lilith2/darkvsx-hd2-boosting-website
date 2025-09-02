@@ -259,8 +259,14 @@ export function initializeAnalytics() {
           const reason = event?.reason;
 
           // Extremely defensive guard: if reason isn't an Error or string, just record a generic error and bail
-          if (!reason || (typeof reason !== "string" && !(reason instanceof Error))) {
-            trackError(new Error("Unhandled promise rejection"), "unhandled_promise_rejection");
+          if (
+            !reason ||
+            (typeof reason !== "string" && !(reason instanceof Error))
+          ) {
+            trackError(
+              new Error("Unhandled promise rejection"),
+              "unhandled_promise_rejection",
+            );
             return;
           }
 
@@ -279,15 +285,19 @@ export function initializeAnalytics() {
               messageStr.includes("Loading chunk") ||
               messageStr.includes("hmr") ||
               messageStr.includes("fullstory") ||
-              (messageStr.includes("Failed to fetch") && process.env.NODE_ENV === "development")
+              (messageStr.includes("Failed to fetch") &&
+                process.env.NODE_ENV === "development")
             ) {
               return;
             }
           }
 
-          const errorMessage = messageStr && typeof messageStr === "string" && messageStr.length > 0
-            ? messageStr
-            : "Unknown error";
+          const errorMessage =
+            messageStr &&
+            typeof messageStr === "string" &&
+            messageStr.length > 0
+              ? messageStr
+              : "Unknown error";
 
           trackError(new Error(errorMessage), "unhandled_promise_rejection");
         } catch (error) {
@@ -295,7 +305,8 @@ export function initializeAnalytics() {
             error,
             originalReason: event?.reason,
             errorType: typeof error,
-            errorMessage: error instanceof Error ? error.message : String(error),
+            errorMessage:
+              error instanceof Error ? error.message : String(error),
           });
         }
       });

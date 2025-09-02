@@ -127,7 +127,9 @@ export function PaymentStep({
       </motion.div>
 
       {/* Payment Form */}
-      {canProceedToPayment() && total < 0.5 && (stepData.creditsUsed || 0) > 0 ? (
+      {canProceedToPayment() &&
+      total < 0.5 &&
+      (stepData.creditsUsed || 0) > 0 ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -140,17 +142,23 @@ export function PaymentStep({
                   <CreditCard className="w-6 h-6 mr-3" />
                   Pay with Credits
                 </div>
-                <div className="text-xl text-primary font-bold">${total.toFixed(2)}</div>
+                <div className="text-xl text-primary font-bold">
+                  ${total.toFixed(2)}
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
                 <CheckCircle className="h-4 w-4 text-blue-600" />
                 <AlertDescription className="text-blue-800 dark:text-blue-200">
-                  Your available credits cover the full order amount. Complete your purchase without a card.
+                  Your available credits cover the full order amount. Complete
+                  your purchase without a card.
                 </AlertDescription>
               </Alert>
-              <Button onClick={onCreditsOnly} className="w-full h-14 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90">
+              <Button
+                onClick={onCreditsOnly}
+                className="w-full h-14 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
+              >
                 Complete Order with Credits
               </Button>
             </CardContent>

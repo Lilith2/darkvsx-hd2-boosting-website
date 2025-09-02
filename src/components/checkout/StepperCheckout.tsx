@@ -110,10 +110,12 @@ export function StepperCheckout({
         (customOrder?.total || 0);
   const discount = stepData.promoDiscount;
   const taxBase = Math.max(0, baseSubtotal - discount);
-  const tax =
-    typeof providedTax === "number" ? providedTax : taxBase * 0.08;
+  const tax = typeof providedTax === "number" ? providedTax : taxBase * 0.08;
   const totalBeforeCredits = Math.max(0, taxBase + tax);
-  const creditsApplied = Math.min(stepData.creditsUsed || 0, totalBeforeCredits);
+  const creditsApplied = Math.min(
+    stepData.creditsUsed || 0,
+    totalBeforeCredits,
+  );
   const total =
     typeof providedTotal === "number"
       ? providedTotal
@@ -325,7 +327,8 @@ export function StepperCheckout({
                   onPaymentError={onPaymentError}
                   onCreditsOnly={
                     // Provide access to original cart items and step data
-                    steps[currentStep - 1]?.title === "Payment" && typeof (onCreditsOnly) === "function"
+                    steps[currentStep - 1]?.title === "Payment" &&
+                    typeof onCreditsOnly === "function"
                       ? () => onCreditsOnly?.({ stepData, cartItems })
                       : undefined
                   }

@@ -170,11 +170,11 @@ export function OptimizedCartProvider({ children }: { children: ReactNode }) {
     try {
       // Separate non-custom items from special items (like custom orders)
       const nonCustomItems = items.filter(
-        (item) => !item.service.id.startsWith("custom-order-")
+        (item) => !item.service.id.startsWith("custom-order-"),
       );
 
-      const customOrderItems = items.filter(
-        (item) => item.service.id.startsWith("custom-order-")
+      const customOrderItems = items.filter((item) =>
+        item.service.id.startsWith("custom-order-"),
       );
 
       // Only validate non-custom items if there are any

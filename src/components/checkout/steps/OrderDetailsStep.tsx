@@ -405,7 +405,11 @@ export function OrderDetailsStep({
                 <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
                   <CheckCircle className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-800 dark:text-blue-200">
-                    ${Math.min(stepData.creditsUsed, availableCredits).toFixed(2)} credits will be applied at payment.
+                    $
+                    {Math.min(stepData.creditsUsed, availableCredits).toFixed(
+                      2,
+                    )}{" "}
+                    credits will be applied at payment.
                   </AlertDescription>
                 </Alert>
               )}

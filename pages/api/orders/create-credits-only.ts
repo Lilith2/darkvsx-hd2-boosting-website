@@ -48,22 +48,35 @@ export default async function handler(
   }
 
   try {
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      return res.status(500).json({ error: "Server configuration error", details: "Database access not configured" });
+    if (
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      !process.env.SUPABASE_SERVICE_ROLE_KEY
+    ) {
+      return res
+        .status(500)
+        .json({
+          error: "Server configuration error",
+          details: "Database access not configured",
+        });
     }
 
     const parse = createCreditsOnlySchema.safeParse(req.body);
     if (!parse.success) {
       return res.status(400).json({
         error: "Invalid request data",
-        details: parse.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join(", "),
+        details: parse.error.issues
+          .map((i) => `${i.path.join(".")}: ${i.message}`)
+          .join(", "),
       });
     }
 
     const { orderData } = parse.data;
 
     // Calculate totals
-    const subtotalAmount = orderData.items.reduce((s, item) => s + item.total_price, 0);
+    const subtotalAmount = orderData.items.reduce(
+      (s, item) => s + item.total_price,
+      0,
+    );
 
     // Validate referral code discount server-side
     let validatedReferralDiscount = 0;
@@ -73,25 +86,45 @@ export default async function handler(
         { code: orderData.referralCode.trim(), user_id: orderData.userId },
       );
       if (validationError) {
-        return res.status(400).json({ error: "Invalid referral code", details: "Could not validate referral code" });
+        return res
+          .status(400)
+          .json({
+            error: "Invalid referral code",
+            details: "Could not validate referral code",
+          });
       }
       if (validation && (validation as any).valid) {
         if ((validation as any).type === "promo") {
           if ((validation as any).discount_type === "percentage") {
-            validatedReferralDiscount = subtotalAmount * ((validation as any).discount_value / 100);
+            validatedReferralDiscount =
+              subtotalAmount * ((validation as any).discount_value / 100);
           } else {
-            validatedReferralDiscount = Math.min((validation as any).discount_value, subtotalAmount);
+            validatedReferralDiscount = Math.min(
+              (validation as any).discount_value,
+              subtotalAmount,
+            );
           }
         } else {
           validatedReferralDiscount = subtotalAmount * 0.15;
         }
       } else {
-        return res.status(400).json({ error: "Invalid referral code", details: (validation as any)?.error || "Code invalid or expired" });
+        return res
+          .status(400)
+          .json({
+            error: "Invalid referral code",
+            details: (validation as any)?.error || "Code invalid or expired",
+          });
       }
     }
 
-    const taxAmount = Math.max(0, (subtotalAmount - validatedReferralDiscount) * 0.08);
-    const totalAmount = Math.max(0, subtotalAmount - validatedReferralDiscount + taxAmount);
+    const taxAmount = Math.max(
+      0,
+      (subtotalAmount - validatedReferralDiscount) * 0.08,
+    );
+    const totalAmount = Math.max(
+      0,
+      subtotalAmount - validatedReferralDiscount + taxAmount,
+    );
 
     // Fetch user credits and validate sufficient balance
     const { data: profile, error: profileError } = await supabase
@@ -117,7 +150,10 @@ export default async function handler(
     const newBalance = parseFloat((availableCredits - totalAmount).toFixed(2));
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({ credit_balance: newBalance, updated_at: new Date().toISOString() })
+      .update({
+        credit_balance: newBalance,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", orderData.userId);
 
     if (updateError) {
@@ -168,10 +204,17 @@ export default async function handler(
         created_via: "unified_cart_system",
         payment_amount_cents: 0,
         item_count: orderData.items.length,
-        total_quantity: orderData.items.reduce((sum, item) => sum + item.quantity, 0),
+        total_quantity: orderData.items.reduce(
+          (sum, item) => sum + item.quantity,
+          0,
+        ),
       },
       status_history: [
-        { status: "Order Created", created_at: new Date().toISOString(), description: "Order created and paid with credits" },
+        {
+          status: "Order Created",
+          created_at: new Date().toISOString(),
+          description: "Order created and paid with credits",
+        },
       ],
       confirmed_at: new Date().toISOString(),
     };
@@ -183,7 +226,12 @@ export default async function handler(
       .single();
 
     if (createError) {
-      return res.status(500).json({ error: "Failed to create order", details: createError.message });
+      return res
+        .status(500)
+        .json({
+          error: "Failed to create order",
+          details: createError.message,
+        });
     }
 
     return res.status(200).json({
@@ -193,6 +241,11 @@ export default async function handler(
       transactionId: orderRecord.transaction_id,
     });
   } catch (error: any) {
-    return res.status(500).json({ error: "Internal server error", details: error.message || String(error) });
+    return res
+      .status(500)
+      .json({
+        error: "Internal server error",
+        details: error.message || String(error),
+      });
   }
 }

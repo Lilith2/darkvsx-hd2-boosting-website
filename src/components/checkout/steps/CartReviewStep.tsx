@@ -35,7 +35,11 @@ export function CartReviewStep({
   removeFromCart,
 }: CartReviewStepProps) {
   const safeItems = (cartItems || []).filter(
-    (item: any) => item && item.service && item.service.id && typeof item.quantity === "number",
+    (item: any) =>
+      item &&
+      item.service &&
+      item.service.id &&
+      typeof item.quantity === "number",
   );
 
   const handleUpdateQuantity = (serviceId: string, change: number) => {
@@ -139,7 +143,10 @@ export function CartReviewStep({
 
                   <div className="text-right">
                     <p className="font-bold text-xl text-primary">
-                      ${(((item.service.price as number) || 0) * item.quantity).toFixed(2)}
+                      $
+                      {(
+                        ((item.service.price as number) || 0) * item.quantity
+                      ).toFixed(2)}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       ${item.service.price ?? 0} each
