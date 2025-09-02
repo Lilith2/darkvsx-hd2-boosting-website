@@ -69,6 +69,19 @@ export default function UnifiedCheckoutPage() {
     setIsProcessing(true);
 
     try {
+      // Credits-only fast-path: if a synthetic paymentIntent is provided
+      if (paymentIntent?.id && String(paymentIntent.id).startsWith("credits_")) {
+        clearCart();
+        const orderId = paymentIntent?.metadata?.orderId;
+        const orderNumber = paymentIntent?.metadata?.orderNumber;
+        if (orderId && orderNumber) {
+          router.push(`/order-confirmation?orderId=${orderId}&orderNumber=${orderNumber}&paymentId=${paymentIntent.id}`);
+          return;
+        }
+        router.push("/account");
+        return;
+      }
+
       // Prepare order data for unified system
       const orderData = {
         userId: user?.id || null,
