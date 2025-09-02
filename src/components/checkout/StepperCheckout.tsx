@@ -181,6 +181,25 @@ export function StepperCheckout({
     setPage([currentStep, currentStep > page ? 1 : -1]);
   }, [currentStep]);
 
+  // Normalize cart items to legacy shape expected by step components
+  const normalizedCartItems = useMemo(() => {
+    return (cartItems || []).map((item: any) => {
+      if (item?.service && item?.quantity != null) return item;
+      const product = item?.product || {};
+      const id = product.id ?? item?.id ?? "";
+      const title =
+        product.name ?? product.title ?? item?.service?.title ?? "Item";
+      const price =
+        item?.unit_price ??
+        product.sale_price ??
+        product.base_price ??
+        product.price ??
+        0;
+      const quantity = item?.quantity ?? 1;
+      return { service: { id, title, price }, quantity };
+    });
+  }, [cartItems]);
+
   // Safe component access with bounds checking
   const currentStepData = steps[currentStep - 1];
   const CurrentStepComponent = currentStepData?.component;
