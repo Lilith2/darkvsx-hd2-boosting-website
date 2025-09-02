@@ -174,8 +174,8 @@ export default async function handler(
     }
 
     // Validate credits availability and deduct if needed
-    const creditsUsed = orderData.creditsUsed || 0;
-    if (creditsUsed > 0 && orderData.userId) {
+    const creditsUsedToDeduct = orderData.creditsUsed || 0;
+    if (creditsUsedToDeduct > 0 && orderData.userId) {
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("credit_balance")
@@ -194,8 +194,8 @@ export default async function handler(
       const taxAmount = Math.max(0, (subtotalAmount - discountAmount) * 0.08);
       const maxUsableCredits = Math.max(0, subtotalAmount - discountAmount + taxAmount);
 
-      const creditsToDeduct = Math.min(creditsUsed, availableCredits, maxUsableCredits);
-      if (creditsToDeduct < creditsUsed - 0.001) {
+      const creditsToDeduct = Math.min(creditsUsedToDeduct, availableCredits, maxUsableCredits);
+      if (creditsToDeduct < creditsUsedToDeduct - 0.001) {
         return res.status(400).json({ error: "Insufficient credits", details: `Available: $${availableCredits.toFixed(2)}` });
       }
 
