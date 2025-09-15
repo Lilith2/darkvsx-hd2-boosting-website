@@ -31,6 +31,7 @@ interface UnifiedCartItem {
   unit_price: number;
   total_price: number;
   custom_options?: any;
+  service: string;
 }
 
 interface NewStepperCheckoutProps {
